@@ -1,0 +1,34 @@
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Heading Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    letter-spacing: -0.02em;
+}
+
+.bg-theme {
+    background-color: var(--theme-color) !important;
+}
+
+.text-theme {
+    color: var(--theme-color) !important;
+}
+
+.border-theme {
+    border-color: var(--theme-color) !important;
+}
+
+.hover-bg-theme:hover {
+    background-color: var(--theme-color) !important;
+}
+
+.tab-btn.active {
+    background-color: var(--theme-color);
+    color: white;
+}

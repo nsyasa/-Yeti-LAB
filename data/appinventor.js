@@ -1,0 +1,208 @@
+window.courseData = window.courseData || {};
+window.courseData.appinventor = {
+    "title": "MIT App Inventor",
+    "description": "Mobil Uygulama Geliştirme",
+    "icon": "📱",
+    "data": {
+        "componentInfo": {},
+        "phases": [
+            {
+                "title": "📱 Giriş ve Arayüz",
+                "weeks": [1, 2],
+                "color": "green"
+            },
+            {
+                "title": "🎨 Çizim ve Animasyon",
+                "weeks": [3, 4],
+                "color": "orange"
+            },
+            {
+                "title": "🤖 Sensörler ve Mantık",
+                "weeks": [5, 6],
+                "color": "purple"
+            },
+            {
+                "title": "🚀 İleri Seviye",
+                "weeks": [7, 8],
+                "color": "pink"
+            }
+        ],
+        "projects": [
+            {
+                "id": 401,
+                "phase": 0,
+                "title": "App Inventor Arayüzü",
+                "icon": "🖥️",
+                "desc": "Geliştirme ortamını tanıyalım.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "App Inventor arayüzünü ve bileşen sistemini öğren.",
+                "theory": "MIT App Inventor, blok tabanlı programlama ile Android uygulamaları geliştirmemizi sağlar. Designer (Tasarım) ve Blocks (Kodlama) olmak üzere iki ana ekran vardır.",
+                "materials": [],
+                "circuit_desc": "ai2.appinventor.mit.edu adresine git.",
+                "code": "",
+                "challenge": "Palette bölümündeki bileşen kategorilerini incele.",
+                "quiz": [
+                    { "q": "App Inventor hangi platform için uygulama yapar?", "options": ["iOS", "Android", "Windows", "MacOS"], "answer": 1 },
+                    { "q": "Tasarım ekranı ne için kullanılır?", "options": ["Kod yazmak", "Arayüz oluşturmak", "Test etmek", "Yayınlamak"], "answer": 1 }
+                ]
+            },
+            {
+                "id": 402,
+                "phase": 0,
+                "title": "Konuşan Uygulama",
+                "icon": "🗣️",
+                "desc": "Metin Okuma (Text-to-Speech).",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Yazdığın metni sesli okuyan bir uygulama yap.",
+                "theory": "App Inventor'da 'Media' bileşenleri altında 'TextToSpeech' bulunur. Bu bileşen yazıları sese çevirir.",
+                "materials": ["Buton", "Metin Kutusu", "TextToSpeech"],
+                "circuit_desc": "Arayüze bir buton ve metin kutusu ekle.",
+                "code": "Button1.Click:\\n  call TextToSpeech1.Speak(TextBox1.Text)",
+                "challenge": "Telefonu sallayınca konuşsun (Accelerometer kullan).",
+                "quiz": [
+                    { "q": "TextToSpeech hangi kategoride bulunur?", "options": ["Drawing", "Media", "Sensors", "Layout"], "answer": 1 },
+                    { "q": "Metin okutmak için hangi metot kullanılır?", "options": ["Say()", "Talk()", "Speak()", "Read()"], "answer": 2 }
+                ]
+            },
+            {
+                "id": 403,
+                "phase": 0,
+                "title": "Sayaç Uygulaması",
+                "icon": "🔢",
+                "desc": "Değişkenler ve Butonlar.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Butona her basışta sayıyı artıran bir sayaç yap.",
+                "theory": "Değişkenler (Variables), programın çalışması sırasında verileri hafızada tutmamızı sağlar. Global değişkenler her yerden erişilebilir.",
+                "materials": ["Buton", "Label"],
+                "circuit_desc": "Ortada büyük bir Label, altında + ve - butonları ekle.",
+                "code": "initialize global sayac to 0\\n\\nButton1.Click:\\n  set global sayac to (get global sayac + 1)\\n  set Label1.Text to (get global sayac)",
+                "challenge": "Sıfırla butonu ekle.",
+                "quiz": [
+                    { "q": "Global değişken ne demektir?", "options": ["Sadece bir yerde kullanılır", "Her yerden erişilebilir", "Silinebilir değişken", "Sabit değer"], "answer": 1 }
+                ]
+            },
+            {
+                "id": 404,
+                "phase": 1,
+                "title": "Çizim Defteri",
+                "icon": "🎨",
+                "desc": "Canvas Bileşeni.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Parmağınla ekrana çizim yapabileceğin bir uygulama.",
+                "theory": "'Canvas' (Tuval) bileşeni üzerinde koordinatları kullanarak çizim yapabiliriz. Dragged olayı, parmak sürüklendiğinde tetiklenir.",
+                "materials": ["Canvas", "Renk Butonları"],
+                "circuit_desc": "Ekranı kaplayan bir Canvas ekle.",
+                "code": "Canvas1.Dragged (startX, startY, prevX, prevY, currentX, currentY):\\n  call Canvas1.DrawLine(prevX, prevY, currentX, currentY)",
+                "challenge": "Sallayınca ekranı temizle.",
+                "quiz": [
+                    { "q": "Canvas üzerinde çizgi çizmek için hangi metot kullanılır?", "options": ["DrawCircle", "DrawLine", "DrawPoint", "DrawShape"], "answer": 1 }
+                ]
+            },
+            {
+                "id": 405,
+                "phase": 1,
+                "title": "Animasyonlu Top",
+                "icon": "⚽",
+                "desc": "Ball ve ImageSprite.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Canvas içinde zıplayan bir top animasyonu yap.",
+                "theory": "'Ball' bileşeni, Canvas içinde hareket edebilen ve kenarlara çarpıp sekebilen bir nesnedir. Heading (yön) ve Speed (hız) özellikleri vardır.",
+                "materials": ["Canvas", "Ball", "Clock"],
+                "circuit_desc": "Canvas içine bir Ball ekle, Clock bileşeni ile hareketi başlat.",
+                "code": "Clock1.Timer:\\n  call Ball1.MoveTo(Ball1.X + 5, Ball1.Y)\\n\\nBall1.EdgeReached(edge):\\n  call Ball1.Bounce(edge)",
+                "challenge": "Topun hızını butonlarla kontrol et."
+            },
+            {
+                "id": 406,
+                "phase": 1,
+                "title": "Fotoğraf Çekici",
+                "icon": "📷",
+                "desc": "Kamera Kullanımı.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Fotoğraf çekip ekranda gösteren uygulama.",
+                "theory": "'Camera' bileşeni cihazın kamerasını kullanmamızı sağlar. AfterPicture olayı, fotoğraf çekildikten sonra resmin yolunu döner.",
+                "materials": ["Camera", "Image", "Button"],
+                "circuit_desc": "Ekrana Image bileşeni ve Çek butonu ekle.",
+                "code": "Button1.Click:\\n  call Camera1.TakePicture\\n\\nCamera1.AfterPicture(image):\\n  set Image1.Picture to image",
+                "challenge": "Çekilen fotoğrafı galeriye kaydet."
+            },
+            {
+                "id": 407,
+                "phase": 2,
+                "title": "Adım Sayar",
+                "icon": "👣",
+                "desc": "İvmeölçer (Accelerometer).",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Telefon sallandığında adım sayan uygulama.",
+                "theory": "Accelerometer sensörü telefonun hareket ve titreşimlerini algılar. Shaking olayı, telefon sallandığında tetiklenir.",
+                "materials": ["AccelerometerSensor", "Label"],
+                "circuit_desc": "Görünmez sensör olarak Accelerometer ekle.",
+                "code": "initialize global adim to 0\\n\\nAccelerometerSensor1.Shaking:\\n  set global adim to (get global adim + 1)\\n  set Label1.Text to (get global adim)",
+                "challenge": "Günlük hedef belirle ve hedefe ulaşınca tebrik mesajı göster."
+            },
+            {
+                "id": 408,
+                "phase": 2,
+                "title": "Pusula",
+                "icon": "🧭",
+                "desc": "Yön Sensörü.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Telefonla yön bulan pusula uygulaması.",
+                "theory": "OrientationSensor, telefonun hangi yöne baktığını derece olarak söyler. 0° = Kuzey, 90° = Doğu, 180° = Güney, 270° = Batı.",
+                "materials": ["OrientationSensor", "Label", "Canvas"],
+                "circuit_desc": "Ortada yön gösteren bir ok çiz.",
+                "code": "OrientationSensor1.OrientationChanged:\\n  set Label1.Text to OrientationSensor1.Azimuth\\n  set ImageSprite1.Heading to OrientationSensor1.Azimuth",
+                "challenge": "Kuzey'e dönünce telefonu titret."
+            },
+            {
+                "id": 409,
+                "phase": 3,
+                "title": "Topu Yakala Oyunu",
+                "icon": "🎮",
+                "desc": "Oyun Tasarımı.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Ekranda kaçan topa dokunarak puan kazan.",
+                "theory": "'Ball' ve 'ImageSprite' bileşenleri birbirine dokunduğunda CollidedWith olayı tetiklenir. Böylece çarpışma algılama yapabiliriz.",
+                "materials": ["Canvas", "Ball", "ImageSprite", "Label (Puan)"],
+                "circuit_desc": "Canvas içine bir Top ve üst kısma Puan etiketi ekle.",
+                "code": "Ball1.Touched(x, y):\\n  set global score to (get global score + 1)\\n  set ScoreLabel.Text to (get global score)\\n  call Ball1.MoveTo(random 1 to Canvas1.Width, random 1 to Canvas1.Height)",
+                "challenge": "Süre sayacı ekle (Clock) ve süre bitince oyunu bitir."
+            },
+            {
+                "id": 410,
+                "phase": 3,
+                "title": "Yapılacaklar Listesi",
+                "icon": "📝",
+                "desc": "Liste ve TinyDB.",
+                "hasGraph": false,
+                "hasSim": false,
+                "simType": "none",
+                "mission": "Görev ekleyip silebileceğin kalıcı bir liste uygulaması.",
+                "theory": "TinyDB, verileri telefonun hafızasına kalıcı olarak kaydetmemizi sağlar. Uygulama kapansa bile veriler silinmez.",
+                "materials": ["ListView", "TextBox", "Button", "TinyDB"],
+                "circuit_desc": "Üstte ekleme kutusu, altta liste görünümü.",
+                "code": "Screen1.Initialize:\\n  set global liste to TinyDB1.GetValue(tag: 'gorevler', defaultValue: create empty list)\\n  set ListView1.Elements to get global liste\\n\\nEkleButton.Click:\\n  add items to list (get global liste) item TextBox1.Text\\n  call TinyDB1.StoreValue(tag: 'gorevler', valueToStore: get global liste)",
+                "challenge": "Tamamlanan görevleri işaretleme özelliği ekle."
+            }
+        ]
+    }
+};
+

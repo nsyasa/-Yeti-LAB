@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli | Yeti LAB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="modules/supabaseClient.js"></script>
+    <script src="data/base.js"></script>
+    <!-- Course data is now loaded dynamically via CourseLoader -->
+    <script src="modules/courseLoader.js"></script>
+    <script src="data/quiz.js"></script>
+    <script src="themes.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen"
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <span class="text-5xl">🏔️</span>
+                <h1 class="text-2xl font-bold text-gray-800 mt-4">Yeti LAB</h1>
+                <p class="text-gray-500">Yönetim Paneli</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-1">Email</label>
+                    <input type="email" id="login-email" required
+                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition"
+                        placeholder="admin@example.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-1">Şifre</label>
+                    <input type="password" id="login-password" required
+                        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition"
+                        placeholder="••••••••">
+                </div>
+                <div id="login-error" class="hidden bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm"></div>
+                <button type="submit" id="login-btn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition shadow-lg">
+                    🔐 Giriş Yap
+                </button>
+            </form>
+
+            <p class="text-center text-gray-400 text-xs mt-6">
+                Sadece yetkili kullanıcılar giriş yapabilir.
+            </p>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN PANEL (hidden until logged in) -->
+    <div id="admin-panel" class="hidden">
+
+        <!-- Üst Bar -->
+        <nav class="bg-theme text-white shadow-md sticky top-0 z-50 transition-colors duration-500">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-2">🏔️</span>
+                        <div>
+                            <h1 class="text-xl font-bold" style="letter-spacing: -0.03em;">Yeti <span
+                                    style="font-weight: 900;">LAB</span> <span
+                                    class="font-normal text-gray-300">|</span>
+                                Yönetim</h1>
+                        </div>
+                        <span id="autosave-status" class="text-xs font-mono ml-4 text-gray-300"></span>
+                    </div>
+
+                    <!-- Ders Seçimi -->
+                    <div class="ml-4">
+                        <select id="course-selector" onchange="admin.changeCourse(this.value)"
+                            class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1 text-sm font-bold focus:outline-none focus:border-blue-500">
+                            <option value="arduino">Arduino</option>
+                            <option value="microbit">Microbit</option>
+                            <option value="scratch">Scratch</option>
+                            <option value="mblock">mBlock</option>
+                            <option value="appinventor">App Inventor</option>
+                        </select>
+                    </div>
+
+                    <div class="flex bg-gray-700 rounded-lg p-1 space-x-1">
+                        <button onclick="admin.showTab('projects')" id="tab-projects"
+                            class="tab-btn px-4 py-1 rounded-md text-sm font-bold transition active">Dersler</button>
+                        <button onclick="admin.showTab('phases')" id="tab-phases"
+                            class="tab-btn px-4 py-1 rounded-md text-sm font-bold transition text-gray-300 hover:text-white">Fazlar</button>
+                        <button onclick="admin.showTab('components')" id="tab-components"
+                            class="tab-btn px-4 py-1 rounded-md text-sm font-bold transition text-gray-300 hover:text-white">Devre
+                            Elemanları</button>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="user-email" class="text-gray-300 text-sm hidden"></span>
+                    <a href="index.html" class="text-gray-300 hover:text-white transition">← Siteye Dön</a>
+                    <button onclick="admin.undo()" id="btn-undo"
+                        class="hidden bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded font-bold transition shadow text-sm"
+                        title="Son silinen öğeyi geri al">
+                        ↩️ Geri Al
+                    </button>
+                    <button onclick="admin.downloadBackup()"
+                        class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-bold transition shadow"
+                        title="Tüm verileri JSON olarak indir">📥 Yedekle</button>
+                    <button onclick="admin.saveData()"
+                        class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-bold transition shadow">💾 Kayıt
+                        Et</button>
+                    <button onclick="handleLogout()"
+                        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold transition shadow"
+                        title="Çıkış Yap">🚪 Çıkış</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto w-full px-4 py-8 flex-grow">
+
+            <!-- KURS AYARLARI (Collapsible) -->
+            <div class="bg-gradient-to-r from-theme/10 to-transparent border border-theme/20 rounded-lg mb-6">
+                <button type="button" onclick="admin.toggleCourseSettings()"
+                    class="w-full flex items-center justify-between p-4 text-left">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl" id="course-icon-preview">🔧</span>
+                        <div>
+                            <h3 class="font-bold text-gray-700" id="course-title-preview">Kurs Başlığı</h3>
+                            <p class="text-sm text-gray-500" id="course-desc-preview">Kurs açıklaması</p>
+                        </div>
+                    </div>
+                    <span id="course-settings-toggle" class="text-gray-400 text-xl transition-transform">▼</span>
+                </button>
+                <div id="course-settings-form" class="hidden border-t border-theme/20 p-4 bg-white/50">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Simge</label>
+                            <input type="text" id="course-icon" class="w-full border rounded p-2 text-center text-2xl"
+                                placeholder="🎓" onchange="admin.updateCourseSettings()">
+                        </div>
+                        <div class="col-span-4">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Kurs Başlığı</label>
+                            <input type="text" id="course-title" class="w-full border rounded p-2 font-bold"
+                                placeholder="Arduino ile Robotik" oninput="admin.updateCourseSettings()">
+                        </div>
+                        <div class="col-span-6">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Açıklama</label>
+                            <input type="text" id="course-description" class="w-full border rounded p-2"
+                                placeholder="20 Haftalık Kapsamlı Eğitim Seti" oninput="admin.updateCourseSettings()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">💡 Bu bilgiler ana sayfada kurs seçim kartlarında görünür.</p>
+                </div>
+            </div>
+
+            <!-- PROJELER SEKMESİ -->
+            <div id="view-projects" class="flex items-start gap-6 h-full">
+                <!-- Sol Menü -->
+                <div class="w-1/3 bg-white rounded-lg shadow overflow-hidden sticky top-24 max-h-[80vh] flex flex-col">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="font-bold text-lg text-gray-700">Ders Listesi</h2>
+                        <button onclick="admin.addNewProject()"
+                            class="text-xs bg-gray-100 text-theme hover:bg-gray-200 px-2 py-1 rounded font-bold">+ Yeni
+                            Ekle</button>
+                    </div>
+                    <div id="project-list" class="overflow-y-auto p-2 space-y-1 flex-grow"></div>
+                </div>
+
+                <!-- Sağ Form -->
+                <div class="w-2/3 bg-white rounded-lg shadow p-6">
+                    <div id="project-welcome" class="text-center py-20 text-gray-500">
+                        <h2 class="text-2xl font-bold text-gray-400">Düzenlemek için bir ders seçin</h2>
+                    </div>
+                    <form id="project-form" class="hidden h-full flex flex-col">
+                        <div class="flex justify-between items-center border-b pb-4 mb-4">
+                            <div class="flex items-center gap-4">
+                                <h3 class="text-xl font-bold text-theme">Ders Düzenle</h3>
+                                <!-- Language Switcher -->
+                                <div class="flex bg-gray-100 rounded-lg p-1" id="lang-switcher">
+                                    <button type="button" onclick="admin.switchLang('tr')" id="lang-btn-tr"
+                                        class="lang-btn px-3 py-1 rounded text-sm font-bold bg-theme text-white">🇹🇷
+                                        TR</button>
+                                    <button type="button" onclick="admin.switchLang('en')" id="lang-btn-en"
+                                        class="lang-btn px-3 py-1 rounded text-sm font-bold text-gray-500 hover:text-gray-700">🇬🇧
+                                        EN</button>
+                                </div>
+                            </div>
+                            <div class="space-x-2">
+                                <button type="button" onclick="admin.duplicateProject()"
+                                    class="text-blue-500 hover:text-blue-700 text-sm font-bold">📋 Kopyala</button>
+                                <button type="button" onclick="admin.deleteProject()"
+                                    class="text-red-500 hover:text-red-700 text-sm font-bold">🗑️ Sil</button>
+                            </div>
+                        </div>
+
+                        <!-- Project Tabs Header -->
+                        <div class="flex border-b border-gray-200 mb-4 overflow-x-auto">
+                            <button type="button" onclick="admin.switchProjectTab('genel')" id="ptab-genel"
+                                class="project-tab-btn active px-4 py-2 text-sm font-bold border-b-2 border-theme text-theme">⚙️
+                                Genel</button>
+                            <button type="button" onclick="admin.switchProjectTab('amac')" id="ptab-amac"
+                                class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">🎯
+                                Amaç</button>
+                            <button type="button" onclick="admin.switchProjectTab('donanim')" id="ptab-donanim"
+                                class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">🧩
+                                Donanım</button>
+                            <button type="button" onclick="admin.switchProjectTab('devre')" id="ptab-devre"
+                                class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">⚡
+                                Devre</button>
+                            <button type="button" onclick="admin.switchProjectTab('kod')" id="ptab-kod"
+                                class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">💻
+                                Kod</button>
+                            <button type="button" onclick="admin.switchProjectTab('gorev')" id="ptab-gorev"
+                                class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">🏆
+                                Görev</button>
+                            <button type="button" onclick="admin.switchProjectTab('test')" id="ptab-test"
+                                class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">📝
+                                Test</button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div class="overflow-y-auto flex-grow pr-2">
+
+                            <!-- TAB: GENEL -->
+                            <div id="pcontent-genel" class="project-tab-content space-y-4">
+                                <div class="grid grid-cols-12 gap-4">
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">ID</label>
+                                        <input type="text" id="p-id"
+                                            class="w-full border rounded p-2 bg-gray-100 font-mono text-center font-bold"
+                                            readonly disabled>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">İkon</label>
+                                        <input type="text" id="p-icon" class="w-full border rounded p-2 text-center">
+                                    </div>
+                                    <div class="col-span-8">
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">Ders
+                                            Başlığı</label>
+                                        <div class="lang-field lang-tr">
+                                            <input type="text" id="p-title-tr" class="w-full border rounded p-2"
+                                                placeholder="Türkçe başlık...">
+                                        </div>
+                                        <div class="lang-field lang-en hidden">
+                                            <input type="text" id="p-title-en" class="w-full border rounded p-2"
+                                                placeholder="English title...">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">Faz
+                                            (Phase)</label>
+                                        <input type="number" id="p-phase" class="w-full border rounded p-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">Hafta
+                                            (Opsiyonel)</label>
+                                        <input type="number" id="p-week" class="w-full border rounded p-2"
+                                            placeholder="1">
+                                    </div>
+                                </div>
+
+                                <!-- NEW: Metadata Fields -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">Zorluk
+                                            Seviyesi</label>
+                                        <select id="p-difficulty" class="w-full border rounded p-2">
+                                            <option value="beginner">🟢 Başlangıç</option>
+                                            <option value="intermediate">🟡 Orta</option>
+                                            <option value="advanced">🔴 İleri</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">Tahmini
+                                            Süre</label>
+                                        <input type="text" id="p-duration" class="w-full border rounded p-2"
+                                            placeholder="30 dakika">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Etiketler (virgülle
+                                        ayırın)</label>
+                                    <input type="text" id="p-tags" class="w-full border rounded p-2"
+                                        placeholder="led, temel, dijital">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Ön Gereksinimler
+                                        (Ders
+                                        ID'leri, virgülle)</label>
+                                    <input type="text" id="p-prerequisites" class="w-full border rounded p-2"
+                                        placeholder="1, 2, 3">
+                                </div>
+                                <!-- END: Metadata Fields -->
+
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Kısa Açıklama
+                                        (Listede
+                                        görünür)</label>
+                                    <div class="lang-field lang-tr">
+                                        <input type="text" id="p-desc-tr" class="w-full border rounded p-2"
+                                            placeholder="Türkçe açıklama...">
+                                    </div>
+                                    <div class="lang-field lang-en hidden">
+                                        <input type="text" id="p-desc-en" class="w-full border rounded p-2"
+                                            placeholder="English description...">
+                                    </div>
+                                </div>
+
+                                <!-- Tab Visibility Toggles -->
+                                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Sekme Görünürlük
+                                        Ayarları</label>
+                                    <div class="flex flex-wrap gap-4">
+                                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
+                                            <input type="checkbox" id="p-show-mission" class="rounded text-green-600"
+                                                checked>
+                                            <span>🎯 Amaç</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
+                                            <input type="checkbox" id="p-show-materials" class="rounded text-green-600"
+                                                checked>
+                                            <span>🧩 Donanım</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
+                                            <input type="checkbox" id="p-show-circuit" class="rounded text-green-600"
+                                                checked>
+                                            <span>⚡ Devre</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
+                                            <input type="checkbox" id="p-show-code" class="rounded text-green-600"
+                                                checked>
+                                            <span>💻 Kod</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
+                                            <input type="checkbox" id="p-show-challenge" class="rounded text-green-600"
+                                                checked>
+                                            <span>🏆 Görev</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
+                                            <input type="checkbox" id="p-show-quiz" class="rounded text-green-600"
+                                                checked>
+                                            <span>📝 Test</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB: AMAÇ -->
+                            <div id="pcontent-amac" class="project-tab-content hidden space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Dersin Amacı</label>
+                                    <div class="lang-field lang-tr">
+                                        <textarea id="p-mission-tr" rows="6" class="w-full border rounded p-2 text-sm"
+                                            placeholder="Türkçe amaç açıklaması..."></textarea>
+                                    </div>
+                                    <div class="lang-field lang-en hidden">
+                                        <textarea id="p-mission-en" rows="6" class="w-full border rounded p-2 text-sm"
+                                            placeholder="English mission description..."></textarea>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Teorik Bilgi</label>
+                                    <div class="lang-field lang-tr">
+                                        <textarea id="p-theory-tr" rows="6" class="w-full border rounded p-2 text-sm"
+                                            placeholder="Türkçe teori..."></textarea>
+                                    </div>
+                                    <div class="lang-field lang-en hidden">
+                                        <textarea id="p-theory-en" rows="6" class="w-full border rounded p-2 text-sm"
+                                            placeholder="English theory..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB: DONANIM -->
+                            <div id="pcontent-donanim" class="project-tab-content hidden space-y-4">
+                                <label id="lbl-materials"
+                                    class="block text-xs font-bold text-gray-500 uppercase mb-1">Devre
+                                    Elemanları</label>
+                                <div class="bg-gray-50 border rounded p-2">
+                                    <div id="p-materials-list"
+                                        class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2 max-h-60 overflow-y-auto">
+                                    </div>
+                                    <input type="text" id="p-materials-custom"
+                                        placeholder="Diğer malzemeler (virgül ile ayırın...)"
+                                        class="w-full border-t pt-2 mt-2 bg-transparent text-sm">
+                                </div>
+                            </div>
+
+                            <!-- TAB: DEVRE -->
+                            <div id="pcontent-devre" class="project-tab-content hidden space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Simülasyon
+                                            Tipi</label>
+                                        <div class="flex gap-2">
+                                            <select id="p-simType"
+                                                class="flex-1 border p-2 rounded text-sm bg-gray-50 focus:bg-white transition"
+                                                onchange="admin.toggleCustomSimType()">
+                                                <option value="led">LED Yakma</option>
+                                                <option value="button">Buton Kullanımı</option>
+                                                <option value="pot">Potansiyometre</option>
+                                                <option value="streetLight">Sokak Lambası</option>
+                                                <option value="traffic">Trafik Lambası</option>
+                                                <option value="rgb">RGB Led</option>
+                                                <option value="dht">Sıcaklık Sensörü</option>
+                                                <option value="ultrasonic">Mesafe Sensörü</option>
+                                                <option value="servo">Servo Motor</option>
+                                                <option value="countdown">Geri Sayım</option>
+                                                <option value="melody">Melodi Çal</option>
+                                                <option value="radar">Radar Ekranı</option>
+                                                <option value="clap">Alkış Sensörü</option>
+                                                <option value="fire">Ateş Sensörü</option>
+                                                <option value="moisture">Toprak Nem</option>
+                                                <option value="flood">Su Seviyesi</option>
+                                                <option value="theremin">Theremin</option>
+                                                <option value="hourglass">Kum Saati</option>
+                                                <option value="knight_rider">Kara Şimşek</option>
+                                                <option value="explorer_board">Kart Keşfi</option>
+                                                <option value="custom">-- Özel Gir --</option>
+                                            </select>
+                                            <input type="text" id="p-simType-custom"
+                                                class="flex-1 border p-2 rounded text-sm bg-white hidden"
+                                                placeholder="Simülasyon Kodu...">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase">Devre/Blok
+                                            Resmi</label>
+                                        <div class="flex gap-1">
+                                            <input type="text" id="p-circuitImage" class="w-full border rounded p-2">
+                                            <button type="button"
+                                                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded text-xs whitespace-nowrap"
+                                                onclick="admin.openImageSelector('p-circuitImage')">
+                                                🖼️ Seç
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hotspots - Always Visible -->
+                                <div id="container-hotspots"
+                                    class="transition-all duration-300 bg-orange-50 p-4 rounded border border-orange-200 mt-4">
+                                    <!-- Enable Checkboxes -->
+                                    <div class="flex items-center justify-between mb-3 border-b border-orange-200 pb-3">
+                                        <div class="flex items-center gap-4">
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" id="p-enableHotspots"
+                                                    class="rounded text-orange-600"
+                                                    onchange="admin.toggleHotspotEnabled()">
+                                                <span class="text-sm font-bold text-orange-800">Etkileşim Noktası
+                                                    Ekle</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" id="p-showInLab" class="rounded text-blue-600">
+                                                <span class="text-sm font-bold text-blue-700">🧪 Sanal Lab'da
+                                                    Göster</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Editor Content (Hidden until enabled) -->
+                                    <div id="hotspot-editor-content" class="hidden">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <label class="block text-xs font-bold text-orange-800 uppercase">Etkileşim
+                                                Noktaları</label>
+                                            <div class="flex gap-2">
+                                                <button type="button" onclick="admin.toggleHotspotMode()"
+                                                    id="btn-hotspot-mode"
+                                                    class="text-xs bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700">
+                                                    🎯 Nokta Ekle Modu
+                                                </button>
+                                                <button type="button" onclick="admin.clearAllHotspots()"
+                                                    class="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                                                    🗑️ Tümünü Sil
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Visual Editor Canvas -->
+                                        <div id="hotspot-editor"
+                                            class="relative bg-gray-200 rounded overflow-hidden mb-3"
+                                            style="height: 350px;">
+                                            <img id="hotspot-image" src="" alt="Devre Resmi"
+                                                class="max-w-full max-h-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                                                style="cursor: crosshair;">
+                                            <div id="hotspot-markers" class="absolute inset-0 pointer-events-none">
+                                            </div>
+                                            <div id="hotspot-click-layer" class="absolute inset-0"
+                                                onclick="admin.handleEditorClick(event)" style="cursor: crosshair;">
+                                            </div>
+                                        </div>
+
+                                        <!-- Hotspot List -->
+                                        <div id="hotspot-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+
+                                        <!-- Hidden JSON field for data sync -->
+                                        <input type="hidden" id="p-hotspots">
+                                    </div> <!-- /hotspot-editor-content -->
+                                </div>
+
+                            </div>
+
+                            <!-- TAB: KOD -->
+                            <div id="pcontent-kod" class="project-tab-content hidden space-y-4">
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Proje Kodu</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex items-center space-x-2">
+                                            <label class="text-xs font-bold">Grafik:</label>
+                                            <select id="p-hasGraph" class="text-xs border rounded p-1">
+                                                <option value="false">Yok</option>
+                                                <option value="true">Var</option>
+                                            </select>
+                                        </div>
+                                        <select id="p-code-mode" class="text-xs border rounded p-1"
+                                            onchange="admin.toggleCodeMode()">
+                                            <option value="text">Metin Modu</option>
+                                            <option value="image">Resim Modu (Blok)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="code-text-area">
+                                    <textarea id="p-code" rows="12"
+                                        class="w-full border rounded p-2 font-mono text-xs bg-gray-900 text-green-400"></textarea>
+                                </div>
+                                <div id="code-image-area" class="hidden">
+                                    <label class="block text-xs text-gray-500 mb-1">Resim Dosya Adı:</label>
+                                    <div class="flex gap-1">
+                                        <input type="text" id="p-code-image-input" class="w-full border rounded p-2"
+                                            placeholder="ornek: blok_kodu.png"
+                                            oninput="document.getElementById('p-code').value = this.value">
+                                        <button
+                                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded text-xs whitespace-nowrap"
+                                            onclick="admin.openImageSelector('p-code-image-input', 'p-code')">
+                                            🖼️ Seç
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Görselin 'img/' klasöründe olduğundan emin
+                                        olun.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- TAB: GÖREV -->
+                            <div id="pcontent-gorev" class="project-tab-content hidden space-y-4">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Meydan Okuma
+                                    Görevi</label>
+                                <div class="lang-field lang-tr">
+                                    <textarea id="p-challenge-tr" rows="4" class="w-full border rounded p-2 text-sm"
+                                        placeholder="Türkçe görev açıklaması..."></textarea>
+                                </div>
+                                <div class="lang-field lang-en hidden">
+                                    <textarea id="p-challenge-en" rows="4" class="w-full border rounded p-2 text-sm"
+                                        placeholder="English challenge description..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- TAB: TEST (QUIZ) -->
+                            <div id="pcontent-test" class="project-tab-content hidden space-y-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-bold text-gray-700">Soru Listesi</h4>
+                                    <button type="button" onclick="admin.addQuestion()"
+                                        class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded text-sm font-bold">+
+                                        Soru Ekle</button>
+                                </div>
+                                <div id="quiz-editor-list" class="space-y-6"></div>
+                                <div id="quiz-empty-msg" class="text-center text-gray-400 py-8 hidden">Bu derste henüz
+                                    test
+                                    sorusu yok.</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MALZEMELER SEKMESİ -->
+            <div id="view-components" class="hidden flex items-start gap-6 h-full">
+                <!-- Sol Menü -->
+                <div class="w-1/3 bg-white rounded-lg shadow overflow-hidden sticky top-24 max-h-[80vh] flex flex-col">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                        <h2 id="lbl-components" class="font-bold text-lg text-gray-700">Devre Elemanları</h2>
+                        <button onclick="admin.addNewComponent()"
+                            class="text-xs bg-purple-100 text-purple-800 hover:bg-purple-200 px-2 py-1 rounded font-bold">+
+                            Yeni Ekle</button>
+                    </div>
+                    <div id="component-list" class="overflow-y-auto p-2 space-y-1 flex-grow"></div>
+                </div>
+
+                <!-- Sağ Form -->
+                <div class="w-2/3 bg-white rounded-lg shadow p-6">
+                    <div id="component-welcome" class="text-center py-20 text-gray-500">
+                        <h2 class="text-2xl font-bold text-gray-400">Düzenlemek için bir malzeme seçin</h2>
+                    </div>
+                    <form id="component-form" class="hidden space-y-4">
+                        <div class="flex justify-between items-center border-b pb-4 mb-4">
+                            <h3 class="text-xl font-bold text-purple-600">Eleman Düzenle</h3>
+                            <button type="button" onclick="admin.deleteComponent()"
+                                class="text-red-500 hover:text-red-700 text-sm">🗑️ Sil</button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">ID (Anahtar İsim)</label>
+                            <input type="text" id="c-key" class="w-full border rounded p-2 bg-gray-100" readonly>
+                            <p class="text-xs text-gray-400 mt-1">Bu isim kod içinde kullanılır, değiştirilemez.</p>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="col-span-3">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Görünen İsim</label>
+                                <input type="text" id="c-name" class="w-full border rounded p-2">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">İkon</label>
+                                <input type="text" id="c-icon" class="w-full border rounded p-2 text-center">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Resim Dosyası (örn:
+                                sensor_ldr.jpg)</label>
+                            <div class="flex gap-1">
+                                <input type="text" id="c-imgFileName" class="w-full border rounded p-2">
+                                <button type="button"
+                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded text-xs whitespace-nowrap"
+                                    onclick="admin.openImageSelector('c-imgFileName')">
+                                    🖼️ Seç
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Açıklama</label>
+                            <textarea id="c-desc" rows="3" class="w-full border rounded p-2"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- FAZLAR SEKMESİ -->
+            <div id="view-phases" class="hidden flex items-start gap-6 h-full">
+                <!-- Sol Menü -->
+                <div class="w-1/3 bg-white rounded-lg shadow overflow-hidden sticky top-24 max-h-[80vh] flex flex-col">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="font-bold text-lg text-gray-700">Faz Listesi</h2>
+                        <button onclick="admin.addNewPhase()"
+                            class="text-xs bg-amber-100 text-amber-800 hover:bg-amber-200 px-2 py-1 rounded font-bold">+
+                            Yeni
+                            Ekle</button>
+                    </div>
+                    <div id="phase-list" class="overflow-y-auto p-2 space-y-1 flex-grow"></div>
+                </div>
+
+                <!-- Sağ Form -->
+                <div class="w-2/3 bg-white rounded-lg shadow p-6">
+                    <div id="phase-welcome" class="text-center py-20 text-gray-500">
+                        <h2 class="text-2xl font-bold text-gray-400">Düzenlemek için bir faz seçin</h2>
+                    </div>
+                    <form id="phase-form" class="hidden space-y-4">
+                        <div class="flex justify-between items-center border-b pb-4 mb-4">
+                            <h3 class="text-xl font-bold text-amber-600">Faz Düzenle</h3>
+                            <button type="button" onclick="admin.deletePhase()"
+                                class="text-red-500 hover:text-red-700 text-sm">🗑️ Sil</button>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-12 md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Faz Adı</label>
+                                <input type="text" id="ph-fixed-name"
+                                    class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-600" readonly>
+                            </div>
+                            <div class="col-span-12 md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">İkon</label>
+                                <input type="text" id="ph-icon" class="w-full border rounded p-2 text-center text-xl"
+                                    placeholder="🚀">
+                            </div>
+                            <div class="col-span-12 md:col-span-4">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Açıklama</label>
+                                <input type="text" id="ph-desc" class="w-full border rounded p-2"
+                                    placeholder="Giriş Seviyesi">
+                            </div>
+                            <div class="col-span-4">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Renk (Tailwind)</label>
+                                <select id="ph-color" class="w-full border rounded p-2">
+                                    <option value="blue">Mavi</option>
+                                    <option value="green">Yeşil</option>
+                                    <option value="purple">Mor</option>
+                                    <option value="orange">Turuncu</option>
+                                    <option value="red">Kırmızı</option>
+                                    <option value="teal">Turkuaz</option>
+                                    <option value="pink">Pembe</option>
+                                    <option value="gray">Gri</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Bu faza ait dersler, Ders düzenleme ekranından "Phase" alanı
+                            ile
+                            atanır.</p>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div> <!-- /admin-panel -->
+
+    <!-- Image Selector Modal -->
+    <div id="image-selector-modal"
+        class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-lg">
+                <h3 class="font-bold text-lg text-gray-800">🖼️ Resim Seç</h3>
+                <button onclick="admin.closeImageSelector()"
+                    class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="p-4 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4"
+                id="image-selector-grid">
+                <!-- Images will be loaded here -->
+            </div>
+            <div class="p-4 border-t bg-gray-50 rounded-b-lg text-right">
+                <button onclick="admin.closeImageSelector()"
+                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded text-gray-800 font-bold text-sm">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Module -->
+    <!-- Core Modules -->
+    <script src="constants/elements.js"></script>
+    <script src="modules/admin.js"></script>
+    <script>
+        // ========================================
+        // AUTH HANDLERS
+        // ========================================
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
+
+            errorDiv.classList.add('hidden');
+            loginBtn.disabled = true;
+            loginBtn.textContent = '⏳ Giriş yapılıyor...';
+
+            try {
+                // Initialize Supabase if not already
+                if (!SupabaseClient.client) {
+                    SupabaseClient.init();
+                }
+
+                await SupabaseClient.signIn(email, password);
+
+                if (!SupabaseClient.isAdmin) {
+                    throw new Error('Bu hesap admin yetkisine sahip değil.');
+                }
+
+                showAdminPanel();
+
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = error.message || 'Giriş başarısız. Email veya şifre hatalı.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔐 Giriş Yap';
+            }
+        }
+
+        async function handleLogout() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                try {
+                    await SupabaseClient.signOut();
+                    showLoginScreen();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+        }
+
+        function showLoginScreen() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+        }
+
+        function showAdminPanel() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('admin-panel').classList.remove('hidden');
+
+            // Show user email
+            const userEmail = document.getElementById('user-email');
+            if (SupabaseClient.currentUser) {
+                userEmail.textContent = SupabaseClient.currentUser.email;
+                userEmail.classList.remove('hidden');
+            }
+
+            // Initialize admin if courses loaded
+            initializeAdmin();
+        }
+
+        function initializeAdmin() {
+            // Initialize courseData container
+            window.courseData = window.courseData || {};
+
+            // Use the centralized CourseLoader to load all available courses
+            if (window.CourseLoader) {
+                CourseLoader.loadAll().then(() => {
+                    console.log("All courses loaded for Admin:", Object.keys(window.courseData));
+                    admin.init();
+                }).catch(err => {
+                    console.error("Error loading courses:", err);
+                    alert("Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.");
+                });
+            } else {
+                console.error("CourseLoader module not found!");
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        window.onload = async () => {
+            // Initialize Supabase
+            SupabaseClient.init();
+
+            // Check if already logged in
+            const session = await SupabaseClient.getSession();
+
+            if (session && SupabaseClient.isAdmin) {
+                showAdminPanel();
+            } else {
+                showLoginScreen();
+            }
+        };
+    </script>
+</body>
+
+</html>

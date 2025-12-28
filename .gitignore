@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Environment variables (GİZLİ!)
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# ========================================
+# 🔒 GÜVENLİK - Bu dosyalar GitHub'a yüklenmez!
+# ========================================
+
+# İç dökümanlar (public olması gerekmiyor)
+docs/
+
+# Şifre içeren scriptler
+scripts/create-admin.js
+scripts/add-team-admins.js
+
+# Service role key içeren scriptler
+scripts/import-to-supabase.js
+
+# Export dosyaları (gereksiz büyük dosyalar)
+scripts/exports/
+
+# Hassas yapılandırmalar
+*.pem
+*.key

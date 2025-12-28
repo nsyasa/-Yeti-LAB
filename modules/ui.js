@@ -1,0 +1,456 @@
+/**
+ * UI Module
+ * Handles all DOM manipulation and HTML generation.
+ */
+
+const UI = {
+    // --- Course Selection Screen ---
+    renderCourseSelection: (manifest) => {
+        document.getElementById('course-selection-view').classList.remove('hidden');
+        document.getElementById('dashboard-view').classList.add('hidden');
+        document.getElementById('project-view').classList.add('hidden');
+
+        const container = document.getElementById('course-list');
+        container.innerHTML = "";
+
+        Object.entries(manifest).forEach(([key, manifestCourse]) => {
+            // Prefer actual courseData values if loaded (reflects admin changes)
+            const loadedCourse = window.courseData && window.courseData[key];
+            const title = loadedCourse?.title || manifestCourse.title;
+            const description = loadedCourse?.description || manifestCourse.description;
+            const icon = loadedCourse?.icon || manifestCourse.icon || '🤖';
+
+            container.innerHTML += `
+                <div onclick="app.selectCourse('${key}')" class="course-card bg-white rounded-xl shadow-lg p-8 cursor-pointer group flex flex-col items-center text-center h-full">
+                    <div class="card-icon text-6xl mb-6 bg-gray-50 p-6 rounded-full">
+                        ${icon}
+                    </div>
+                    <h3 class="card-title text-2xl text-gray-800 mb-2 group-hover:text-theme transition-colors">${title}</h3>
+                    <p class="text-gray-500 relative z-10">${description}</p>
+                    <div class="mt-auto pt-6 w-full relative z-10">
+                        <span class="card-btn block w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-bold group-hover:bg-theme group-hover:text-white">
+                            ${I18n.t('start')}
+                        </span>
+                    </div>
+                </div>`;
+        });
+    },
+
+    showLoading: (containerId, msg) => {
+        const message = msg || I18n.t('loading');
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <div class="text-6xl mb-4 animate-bounce">⏳</div>
+                    <p class="text-gray-500 font-bold">${message}</p>
+                </div>`;
+        }
+    },
+
+    showError: (containerId, msg, retryAction) => {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-20 text-red-500">
+                    <div class="text-6xl mb-4">❌</div>
+                    <p class="font-bold">${msg || I18n.t('error_loading')}</p>
+                    ${retryAction ? `<button onclick="${retryAction}" class="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">${I18n.t('back')}</button>` : ''}
+                </div>`;
+        }
+    },
+
+    // --- Dashboard ---
+    renderDashboard: (phases, projects, progressModule) => {
+        document.getElementById('course-selection-view').classList.add('hidden');
+        document.getElementById('dashboard-view').classList.remove('hidden');
+        document.getElementById('project-view').classList.add('hidden');
+
+        const container = document.getElementById('dashboard-content');
+        container.innerHTML = "";
+
+        if (phases.length === 0) {
+            container.innerHTML = `<div class="text-center text-gray-500 py-10">${I18n.t('no_content')}</div>`;
+            return;
+        }
+
+        phases.forEach((phase, index) => {
+            const phaseProjects = projects.filter(p => p.phase === index);
+            if (phaseProjects.length === 0) return;
+
+            const isIntro = index === 0;
+            const fixedName = isIntro ? I18n.t('intro') : `${I18n.t('episode')} ${index}`;
+            const pIcon = phase.icon || (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '📂');
+            const pDesc = phase.description || (phase.title && typeof phase.title === 'string' ? phase.title.replace(pIcon, '').trim() : '');
+
+            let sectionHTML = `
+                <div class="mt-8 mb-4 border-b-2 border-${phase.color}-200 pb-2 flex items-baseline">
+                    <span class="text-3xl mr-3">${pIcon}</span>
+                    <h3 class="text-2xl font-bold text-${phase.color}-700 mr-3">${fixedName}</h3>
+                    <span class="text-lg text-gray-500 font-medium">${pDesc}</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+
+            phaseProjects.forEach(p => {
+                const isComplete = progressModule.isComplete(p.id);
+                sectionHTML += `
+                    <div onclick="app.loadProject(${p.id})" class="cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border-l-4 ${phase.color === 'green' ? 'border-green-400' : (phase.color === 'blue' ? 'border-blue-400' : 'border-purple-400')} p-4 group relative overflow-hidden">
+                        ${isComplete ? `<div class="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-bl-lg z-10 font-bold">${I18n.t('completed')}</div>` : ''}
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-3xl group-hover:scale-110 transition-transform duration-300">${p.icon}</div>
+                            <div class="text-xs font-bold text-gray-400">#${p.id}</div>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-1 group-hover:text-theme transition-colors">${p.title}</h3>
+                        <p class="text-sm text-gray-500 line-clamp-2">${p.desc}</p>
+                        ${p.simType !== 'none' ? `<div class="absolute bottom-2 right-2 text-xs text-blue-500 bg-blue-50 px-2 py-1 rounded-full">${I18n.t('simulation_badge')}</div>` : ''}
+                    </div>
+                `;
+            });
+            sectionHTML += `</div>`;
+            container.innerHTML += sectionHTML;
+        });
+    },
+
+    renderProgressBar: (rate) => {
+        const bar = document.getElementById('course-progress-bar');
+        const text = document.getElementById('course-progress-text');
+
+        if (bar) bar.style.width = `${rate}%`;
+        if (text) text.innerText = I18n.t('percent_completed', { rate });
+    },
+
+    // --- Sidebar ---
+    renderSidebar: (phases, projects, currentProjectId) => {
+        const container = document.getElementById('sidebar-content');
+        container.innerHTML = "";
+
+        if (!phases || phases.length === 0) return;
+
+        phases.forEach((phase, index) => {
+            const phaseProjects = projects.filter(p => p.phase === index);
+            if (phaseProjects.length === 0) return;
+
+            // Header
+            container.innerHTML += `<div class="font-bold text-gray-500 uppercase text-xs mt-4 mb-2 px-2 tracking-wider">${phase.title}</div>`;
+
+            // List
+            phaseProjects.forEach(p => {
+                const isActive = (currentProjectId === p.id);
+                const activeClass = isActive ? "active-lesson bg-theme-light text-theme font-bold border-r-4 border-theme" : "text-gray-600 hover:bg-gray-50 border-r-4 border-transparent";
+
+                container.innerHTML += `
+                <div onclick="app.loadProject(${p.id}); app.toggleSidebar();" 
+                     class="cursor-pointer p-3 rounded-l-lg text-sm transition flex items-center ${activeClass}">
+                     <span class="mr-3 text-lg">${p.icon}</span> ${p.title}
+                </div>`;
+            });
+        });
+    },
+
+    toggleSidebar: () => {
+        const sidebar = document.getElementById('lesson-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            // Trigger render update from app if needed, handled by app logic usually
+        }
+    },
+
+    toggleMobileSearch: () => {
+        const overlay = document.getElementById('mobile-search-overlay');
+        const input = document.getElementById('mobileSearchInput');
+
+        if (overlay.classList.contains('hidden')) {
+            overlay.classList.remove('hidden');
+            input.focus();
+            document.body.style.overflow = 'hidden';
+        } else {
+            overlay.classList.add('hidden');
+            input.value = '';
+            document.getElementById('mobileSearchResults').innerHTML = '';
+            document.body.style.overflow = '';
+        }
+    },
+
+    // --- Tab Rendering ---
+    renderTabs: (project, componentInfo, currentCourseKey, progressModule) => {
+        const area = document.getElementById('tab-content-area');
+        const btnContainer = document.querySelector('.overflow-x-auto');
+
+        // Resim HTML helper
+        const createImg = (src, caption) => `
+            <div class="mb-4 text-center group relative inline-block cursor-zoom-in" onclick="UI.openImageModal('${src}', '${caption || ''}')">
+                <img src="${src}" class="max-w-full h-auto mx-auto rounded shadow" onerror="this.parentElement.innerHTML='<div class=\\'bg-gray-100 p-4 rounded border-2 border-dashed\\'>${I18n.t('img_not_found')}</div>'">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition flex items-center justify-center pointer-events-none">
+                     <span class="opacity-0 group-hover:opacity-100 bg-white/90 text-gray-800 px-3 py-1 rounded-full shadow-lg text-sm font-bold transform scale-90 group-hover:scale-100 transition-all duration-300">${I18n.t('zoom_in')}</span>
+                </div>
+            </div>`;
+
+        // Circuit Image
+        const imgSrc = `img/${project.circuitImage || 'devre' + project.id + '.jpg'}`;
+        const circHTML = createImg(imgSrc, I18n.t('header_circuit'));
+
+        // Materials
+        let materialsHTML = '<div class="space-y-4">';
+        project.materials.forEach(m => {
+            const foundCompKey = Object.keys(componentInfo).find(key => key === m || componentInfo[key].name === m);
+            if (foundCompKey) {
+                const c = componentInfo[foundCompKey];
+                materialsHTML += `
+                    <div class="flex items-start bg-white p-3 rounded shadow-sm border">
+                        <div class="w-16 h-16 flex-shrink-0 mr-4 border rounded overflow-hidden bg-gray-100 group relative cursor-zoom-in" onclick="UI.openImageModal('img/${c.imgFileName}', '${c.name.replace(/'/g, "\\'")}')">
+                            <img src="img/${c.imgFileName}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-colors">
+                                <span class="text-white opacity-0 group-hover:opacity-100">🔍</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">${c.name}</h4>
+                            <p class="text-xs text-gray-600 mt-1">${c.desc}</p>
+                        </div>
+                    </div>`;
+            } else {
+                materialsHTML += `
+                    <div class="flex items-center bg-gray-50 p-3 rounded border border-dashed">
+                        <div class="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
+                        <span class="text-gray-700 font-medium">${m}</span>
+                    </div>`;
+            }
+        });
+        materialsHTML += '</div>';
+
+        // Config
+        const config = window.TabConfig?.getConfig(currentCourseKey) || window.TabConfig?.courses.default;
+        let tabs = config.tabs;
+        const headers = config.headers;
+
+        // Base Content
+        const baseContent = {
+            mission: `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('header_mission')}</h3><p>${project.mission}</p><div class="bg-gray-50 p-4 rounded mt-4 border-l-4 border-theme">${project.theory}</div></div>`,
+            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${I18n.t('header_circuit')}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`,
+            code: (() => {
+                const c = project.code || '';
+                if (c.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+                    return `<div class="fade-in">
+                        <h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('tab_blocks')}</h3>
+                        <div class="group relative inline-block cursor-zoom-in w-full" onclick="UI.openImageModal('img/${c}', '${I18n.t('tab_blocks')}')">
+                            <img src="img/${c}" class="w-full rounded shadow transition-transform group-hover:scale-[1.01]" onerror="this.parentElement.innerHTML='Resim bulunamadı: ${c}'">
+                            <div class="absolute top-2 right-2 bg-black/50 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                🔍
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    return `<div class="fade-in">
+                        <button onclick="navigator.clipboard.writeText(app.currentProject.code);alert('${I18n.t('msg_copied')}')" class="bg-gray-200 px-2 py-1 text-xs rounded mb-2 hover:bg-gray-300 transition">${I18n.t('btn_copy_code')}</button>
+                        <pre class="bg-gray-800 text-green-400 p-4 rounded text-sm overflow-auto max-h-64 code-scroll mb-4">${c || '# Kod yok'}</pre>
+                    </div>`;
+                }
+            })(),
+            challenge: `<div class="fade-in text-center py-8">
+                <div class="text-4xl mb-2">🏆</div>
+                <h3 class="font-bold text-theme text-lg">${I18n.t('header_challenge')}</h3>
+                <p class="text-gray-600 mt-2">${project.challenge}</p>
+            </div>`,
+            tip: (() => {
+                const tip = app.getPracticalTip(project); // Still using app logic helper
+                return `<div class="fade-in bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded shadow-sm">
+                    <div class="flex items-start">
+                        <div class="text-4xl mr-4">${tip.icon}</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg mb-1">${tip.title}</h3>
+                            <p class="text-gray-700 leading-relaxed">${tip.text}</p>
+                        </div>
+                    </div>
+                </div>`;
+            })(),
+            quiz: (() => {
+                const quiz = project.quiz || (window.quizData && window.quizData[project.id]);
+                const isComplete = progressModule.isComplete(project.id);
+
+                const btnHTML = `
+                    <div class="mt-8 border-t pt-6 text-center">
+                        <button id="btn-complete-project" onclick="app.progress.toggle(${project.id})" 
+                            class="${isComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600 hover:bg-green-500 hover:text-white'} 
+                            w-full md:w-2/3 py-4 rounded-xl shadow-lg font-bold text-xl transition transform hover:scale-105 active:scale-95">
+                            ${isComplete ? I18n.t('completed') : I18n.t('btn_complete')}
+                        </button>
+                        <p class="text-xs text-gray-400 mt-2">${I18n.t('msg_progress_saved')}</p>
+                    </div>`;
+
+                if (!quiz) return `<div class="text-center py-10 text-gray-400">Bu ders için henüz test eklenmemiş.</div>${btnHTML}`;
+
+                let quizHTML = `<div class="fade-in space-y-6">
+                    <h3 class="font-bold text-xl text-theme mb-4">${I18n.t('header_quiz')}</h3>`;
+
+                quiz.forEach((q, idx) => {
+                    quizHTML += `
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 quiz-question" id="q-${idx}">
+                            <p class="font-bold text-gray-800 mb-3">${idx + 1}. ${q.q}</p>
+                            <div class="space-y-2">
+                                ${q.options.map((opt, optIdx) => `
+                                    <button onclick="app.checkAnswer(${idx}, ${optIdx}, ${q.answer}, this)" 
+                                            class="w-full text-left p-3 rounded bg-white border border-gray-200 hover:bg-gray-100 transition flex items-center group">
+                                        <span class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center mr-3 text-xs font-bold bg-gray-50 group-hover:bg-theme group-hover:text-white transition-colors">${['A', 'B', 'C', 'D'][optIdx]}</span>
+                                        ${opt}
+                                    </button>
+                                `).join('')}
+                            </div>
+                            <div class="quiz-feedback hidden mt-3 p-3 rounded font-bold text-sm"></div>
+                        </div>`;
+                });
+                quizHTML += `</div>${btnHTML}`;
+                return quizHTML;
+            })()
+        };
+
+        // Construct final content map
+        const content = {
+            mission: baseContent.mission,
+            materials: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.materials || 'Devre Elemanları'}</h3>${materialsHTML}</div>`,
+            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit || 'Bağlantı Şeması'}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`,
+            code: headers.code ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>` : baseContent.code,
+
+            // Aliases
+            design: headers.circuit ? `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit}</h3>${circHTML}<p>${project.circuit_desc}</p></div>` : null,
+            blocks: headers.code ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code || 'Blok Kodları'}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>` : null,
+
+            challenge: baseContent.challenge,
+            tip: baseContent.tip,
+            quiz: baseContent.quiz
+        };
+
+        // Custom Mappings
+        if (config.mapping) {
+            Object.keys(config.mapping).forEach(key => {
+                const target = config.mapping[key];
+                if (key === 'blocks' && !content.blocks) {
+                    content[key] = `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('tab_blocks')}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`;
+                } else if (key === 'design' && !content.design) {
+                    content[key] = content.circuit;
+                }
+            });
+        }
+
+        // Filter hidden tabs
+        if (project.hiddenTabs && Array.isArray(project.hiddenTabs)) {
+            tabs = tabs.filter(t => !project.hiddenTabs.includes(t.id));
+        }
+
+        // Render Buttons
+        btnContainer.innerHTML = tabs.map(t => {
+            // Translate internal tab names if we have keys for them. 
+            // This logic assumes tab ids (mission, materials) match dictionary keys (tab_mission, tab_materials)
+            const labelKey = 'tab_' + t.id;
+            const label = I18n.translations['tr'][labelKey] ? I18n.t(labelKey) : t.label;
+
+            return `<button class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap" data-tab="${t.id}">${label}</button>`;
+        }).join('');
+
+        const btns = document.querySelectorAll('.tab-btn');
+        const clickHandler = (b) => {
+            btns.forEach(t => t.className = "tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent");
+            b.className = "tab-btn px-4 py-3 text-sm font-bold text-theme border-b-2 border-theme";
+            area.innerHTML = content[b.dataset.tab] || I18n.t('no_content');
+        };
+
+        btns.forEach(b => b.onclick = () => clickHandler(b));
+
+        // Click first
+        if (btns.length > 0) clickHandler(btns[0]);
+    },
+
+    // --- Modal & Info ---
+    openImageModal: (src, caption) => {
+        const modal = document.getElementById('image-modal');
+        const img = document.getElementById('modal-img');
+        const cap = document.getElementById('modal-caption');
+        const content = document.getElementById('modal-content');
+
+        img.src = src;
+        cap.innerText = caption || '';
+        cap.style.display = caption ? 'block' : 'none';
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }, 10);
+    },
+
+    closeImageModal: () => {
+        const modal = document.getElementById('image-modal');
+        const content = document.getElementById('modal-content');
+
+        modal.classList.add('opacity-0');
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.getElementById('modal-img').src = '';
+        }, 300);
+    },
+
+    showInfo: (msg, title) => {
+        document.getElementById('info-title').innerText = title || I18n.t('info_title');
+        document.getElementById('info-desc').innerText = msg;
+    },
+
+    // Used by interactive boards
+    setupInteractiveArea: (html) => {
+        const area = document.getElementById('interactive-area');
+        const info = document.getElementById('interactive-info');
+        area.classList.remove('hidden');
+        info.classList.remove('hidden');
+        document.getElementById('sim-title').innerText = I18n.t('sim_explore');
+        document.getElementById('sim-badge').innerText = I18n.t('sim_learn');
+        area.innerHTML = html;
+    },
+
+    setupCustomHotspots: (project) => {
+        const area = document.getElementById('interactive-area');
+        const info = document.getElementById('interactive-info');
+        const canvas = document.getElementById('simCanvas');
+
+        canvas.classList.add('hidden');
+        area.classList.remove('hidden');
+        info.classList.remove('hidden');
+
+        document.getElementById('sim-title').innerHTML = `<span class="mr-2">🎯</span> ${I18n.t('sim_interactive_img')}`;
+        document.getElementById('sim-badge').innerText = I18n.t('sim_discover');
+
+        const imgPath = project.circuitImage ?
+            (project.circuitImage.startsWith('img/') ? project.circuitImage : `img/${project.circuitImage}`) :
+            `img/devre${project.id}.jpg`;
+
+        const hotspotsHtml = (project.hotspots || []).map((hs, i) => `
+            <div class="absolute w-8 h-8 bg-orange-500/80 border-2 border-white rounded-full shadow-lg flex items-center justify-center text-sm text-white font-bold cursor-pointer hover:bg-orange-600 hover:scale-110 transition-all z-10"
+                style="left: calc(${hs.x}% - 16px); top: calc(${hs.y}% - 16px);"
+                onmouseover="UI.showInfo('${(hs.desc || '').replace(/'/g, "\\'")}', '${hs.name.replace(/'/g, "\\'")}')"
+                onmouseout="UI.showInfo('${I18n.t('exp_hotspot_msg')}', '${I18n.t('sim_discover')}')"
+                title="${hs.name}">
+                ${i + 1}
+            </div>
+        `).join('');
+
+        area.innerHTML = `
+            <div class="relative w-full h-full bg-gray-100 flex items-center justify-center">
+                <img src="${imgPath}" class="max-h-full max-w-full object-contain" 
+                    onerror="this.parentElement.innerHTML='<div class=\\'text-center p-4\\'>${I18n.t('img_not_found')}: ${imgPath}</div>'">
+                ${hotspotsHtml}
+            </div>`;
+
+        UI.showInfo(I18n.t('exp_hotspot_msg'), I18n.t('sim_discover'));
+    }
+};
+
+window.UI = UI;

@@ -1,0 +1,30 @@
+{
+  "name": "arep2",
+  "version": "1.0.0",
+  "description": "Mucit Atolyesi Egitim Platformu",
+  "main": "app.js",
+  "scripts": {
+    "build:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i src/input.css -o dist/output.css --minify",
+    "watch:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i src/input.css -o dist/output.css --watch",
+    "convert": "node --experimental-vm-modules scripts/convert-js-to-json.js",
+    "import": "node scripts/import-to-supabase.js",
+    "migrate": "npm run convert && npm run import",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "education",
+    "arduino",
+    "microbit",
+    "scratch"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.28.0"
+  }
+}

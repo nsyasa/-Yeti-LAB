@@ -1,0 +1,620 @@
+/* ============================================
+   YETI LAB - Typography System
+   Font: Nunito (Google Fonts)
+   ============================================ */
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+/* Typography Variables */
+:root {
+    --font-primary: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Letter Spacing Scale */
+    --ls-tight: -0.02em;
+    /* -2% for medium headings */
+    --ls-tighter: -0.03em;
+    /* -3% for large headings */
+    --ls-tightest: -0.04em;
+    /* -4% for hero/display text */
+}
+
+/* Base Typography */
+body {
+    font-family: var(--font-primary);
+}
+
+/* Heading Styles with Negative Letter-Spacing */
+h1,
+.h1 {
+    font-weight: 800;
+    letter-spacing: var(--ls-tighter);
+    /* Changed from -4% to -3% for better readability */
+    line-height: 1.1;
+}
+
+h2,
+.h2 {
+    font-weight: 700;
+    letter-spacing: var(--ls-tighter);
+    line-height: 1.2;
+}
+
+h3,
+.h3 {
+    font-weight: 700;
+    letter-spacing: var(--ls-tight);
+    line-height: 1.3;
+}
+
+h4,
+h5,
+h6,
+.h4,
+.h5,
+.h6 {
+    font-weight: 600;
+    letter-spacing: var(--ls-tight);
+}
+
+/* Brand Logo Style */
+.brand-logo {
+    font-weight: 700;
+    /* Lighter for "Yeti" */
+    letter-spacing: var(--ls-tighter);
+    line-height: 1;
+}
+
+.brand-logo .brand-lab {
+    font-weight: 900;
+    /* Black for "LAB" */
+    letter-spacing: var(--ls-tightest);
+    font-size: 1.1em;
+    /* Slightly larger */
+}
+
+.brand-slogan {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    opacity: 0.85;
+    font-size: 0.8rem;
+    /* Slightly larger than text-xs */
+}
+
+/* Hero/Display Text */
+.text-display {
+    font-weight: 800;
+    letter-spacing: var(--ls-tightest);
+    line-height: 1.05;
+}
+
+/* Card Titles */
+.card-title {
+    font-weight: 700;
+    letter-spacing: var(--ls-tight);
+}
+
+/* ============================================
+   COURSE CARDS - Premium Hover Effects
+   ============================================ */
+
+.course-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(0, 151, 156, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.course-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+        0 20px 40px -15px rgba(0, 151, 156, 0.25),
+        0 10px 20px -10px rgba(0, 0, 0, 0.1);
+    border-color: var(--theme-color);
+}
+
+.course-card:hover::before {
+    opacity: 1;
+}
+
+/* Card Icon Animation */
+.course-card .card-icon {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.course-card:hover .card-icon {
+    transform: scale(1.15) rotate(-5deg);
+}
+
+/* Card Button Glow */
+.course-card .card-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.course-card:hover .card-btn {
+    box-shadow: 0 4px 15px rgba(0, 151, 156, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Shimmer Effect on Hover */
+.course-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
+    transform: rotate(45deg) translateX(-100%);
+    transition: transform 0.6s;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.course-card:hover::after {
+    transform: rotate(45deg) translateX(100%);
+}
+
+/* ============================================
+   SCROLLBAR & UTILITIES
+   ============================================ */
+
+/* Kaydırma Çubuğu Tasarımı */
+.code-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.code-scroll::-webkit-scrollbar-track {
+    background: #2d3748;
+}
+
+.code-scroll::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 4px;
+}
+
+.code-scroll::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+
+/* Body font is now defined in Typography System above */
+
+:root {
+    --theme-color: #00979C;
+    --theme-light: #E6FFFA;
+    --bg-body: #f9fafb;
+    --bg-card: #ffffff;
+    --text-main: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+/* Dark Mode Override */
+body.dark-mode,
+body.dark-mode.bg-gray-50,
+body.dark-mode.bg-white {
+    background-color: var(--bg-body) !important;
+    color: var(--text-main) !important;
+    --theme-light: #134e4a;
+}
+
+/* Dark Mode Override */
+body.dark-mode {
+    --bg-body: #111827;
+    --bg-card: #1f2937;
+    --text-main: #f9fafb;
+    --text-secondary: #9ca3af;
+    --border-color: #374151;
+    /* Darker teal for backgrounds */
+}
+
+/* Backgrounds */
+body.dark-mode .bg-white {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main);
+}
+
+body.dark-mode .bg-white\/95 {
+    background-color: rgba(31, 41, 55, 0.95) !important;
+    color: var(--text-main);
+}
+
+body.dark-mode .bg-white\/50 {
+    background-color: rgba(31, 41, 55, 0.5) !important;
+}
+
+body.dark-mode .bg-gray-50 {
+    background-color: var(--bg-body) !important;
+}
+
+body.dark-mode .bg-gray-100 {
+    background-color: #374151 !important;
+}
+
+/* Lighter than card */
+body.dark-mode .bg-gray-200 {
+    background-color: #4b5563 !important;
+}
+
+/* Mobile & Overlays - Force Dark */
+body.dark-mode #mobile-bottom-nav {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+body.dark-mode #mobile-search-overlay {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main);
+}
+
+body.dark-mode #sidebar-content {
+    background-color: var(--bg-card) !important;
+}
+
+body.dark-mode #lesson-sidebar {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Navigation & Header */
+body.dark-mode nav.bg-white {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Specific Fixes for Colored Backgrounds */
+body.dark-mode .bg-blue-50 {
+    background-color: rgba(6, 182, 212, 0.1) !important;
+    color: #a5f3fc !important;
+    border-color: rgba(6, 182, 212, 0.2) !important;
+}
+
+body.dark-mode .bg-orange-50 {
+    background-color: rgba(249, 115, 22, 0.1) !important;
+}
+
+/* Text Contrast Defaults */
+body.dark-mode {
+    color: var(--text-main);
+}
+
+body.dark-mode .text-gray-900 {
+    color: #f9fafb !important;
+}
+
+body.dark-mode .text-gray-800 {
+    color: #f3f4f6 !important;
+}
+
+body.dark-mode .text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+body.dark-mode .text-gray-600 {
+    color: #d1d5db !important;
+}
+
+body.dark-mode .text-gray-500 {
+    color: #9ca3af !important;
+}
+
+/* Hover States & Interaction */
+body.dark-mode .hover\:bg-gray-50:hover {
+    background-color: #374151 !important;
+    color: var(--text-main) !important;
+}
+
+body.dark-mode .hover\:bg-gray-100:hover {
+    background-color: #4b5563 !important;
+    color: var(--text-main) !important;
+}
+
+/* Progress Bar & Containers */
+body.dark-mode .bg-gray-200 {
+    background-color: #4b5563 !important;
+}
+
+body.dark-mode .bg-green-500 {
+    background-color: #059669 !important;
+}
+
+/* Slightly darker green */
+
+/* Tab Buttons & Text */
+body.dark-mode .tab-btn {
+    color: var(--text-secondary) !important;
+}
+
+body.dark-mode .tab-btn:hover {
+    background-color: #374151 !important;
+    color: var(--text-main) !important;
+}
+
+body.dark-mode .active-lesson {
+    background-color: rgba(6, 78, 59, 0.4) !important;
+    color: #fff !important;
+    border-color: #10b981 !important;
+}
+
+/* Specific Text Overrides */
+body.dark-mode .text-gray-500 {
+    color: #9ca3af !important;
+}
+
+body.dark-mode .text-gray-600 {
+    color: #d1d5db !important;
+}
+
+body.dark-mode .text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+body.dark-mode .text-gray-800 {
+    color: #f3f4f6 !important;
+}
+
+body.dark-mode .text-gray-900 {
+    color: #f9fafb !important;
+}
+
+/* Force Text Colors in Cards */
+
+/* Borders */
+body.dark-mode .border-gray-100,
+body.dark-mode .border-gray-200,
+body.dark-mode .border-gray-300 {
+    border-color: var(--border-color) !important;
+}
+
+/* Form Elements */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: #374151 !important;
+    color: #fff !important;
+    border-color: #4b5563 !important;
+}
+
+body.dark-mode input::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Hover States */
+body.dark-mode .hover\:bg-gray-50:hover {
+    background-color: #374151 !important;
+}
+
+body.dark-mode .hover\:bg-gray-100:hover {
+    background-color: #4b5563 !important;
+}
+
+
+
+/* Eye Shield (Blue Light Filter) Override */
+body.eye-shield {
+    --bg-body: #fdf6e3;
+    --bg-card: #fffbf0;
+    --text-main: #433422;
+    --text-secondary: #8b7355;
+    --border-color: #e6dac3;
+}
+
+body.eye-shield::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 160, 0, 0.15);
+    /* Warm overlay */
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: multiply;
+}
+
+.text-theme {
+    color: var(--theme-color);
+}
+
+.bg-theme {
+    background-color: var(--theme-color);
+}
+
+.border-theme {
+    border-color: var(--theme-color);
+}
+
+.hover-text-theme:hover {
+    color: var(--theme-color);
+}
+
+.hover-bg-theme:hover {
+    background-color: var(--theme-color);
+}
+
+.border-b-theme {
+    border-bottom-color: var(--theme-color);
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Kart ve Resim Stilleri */
+.component-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .component-card {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.component-img-container {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .component-img-container {
+        margin-bottom: 0;
+        margin-right: 1.5rem;
+    }
+}
+
+/* İnteraktif Tanıtım Noktaları (Hotspots) */
+.hotspot {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(0, 151, 156, 0.8);
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.hotspot:hover {
+    transform: scale(1.5);
+    background-color: #E47128;
+    /* Arduino Orange */
+}
+
+/* Hotspot Alanı (Dikdörtgen seçim için opsiyonel stil) */
+.hotspot-area {
+    position: absolute;
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    background-color: rgba(0, 151, 156, 0.1);
+    cursor: help;
+    transition: all 0.3s;
+}
+
+.hotspot-area:hover {
+    background-color: rgba(0, 151, 156, 0.4);
+    border-color: #fff;
+}
+
+/* Sidebar (Ders Listesi) */
+#lesson-sidebar {
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
+    z-index: 60;
+}
+
+#lesson-sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 55;
+}
+
+.sidebar-overlay.open {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.active-lesson {
+    background-color: var(--theme-light);
+    color: var(--theme-color);
+    border-right: 4px solid var(--theme-color);
+}
+
+/* Mobile-first responsive styles */
+@media (min-width: 768px) {
+    #sim-content-area {
+        height: 350px !important;
+    }
+
+    /* Hide mobile bottom nav on desktop */
+    #mobile-bottom-nav {
+        display: none;
+    }
+}
+
+/* Touch-friendly minimum sizes */
+button,
+a,
+.cursor-pointer {
+    min-height: 44px;
+}
+
+/* Safe area for phones with notches */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    #mobile-bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Improve tap highlight on mobile */
+@media (hover: none) {
+
+    button:active,
+    a:active,
+    .cursor-pointer:active {
+        opacity: 0.8;
+    }
+}

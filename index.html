@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeti LAB | İçindeki Yeti'leri Keşfet</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="apple-touch-icon" href="img/favicon.svg">
+
+    <!-- Compiled Tailwind CSS (run 'npm run build:css' to regenerate) -->
+    <link href="dist/output.css" rel="stylesheet">
+    <!-- Fallback: Uncomment below for development with CDN -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Core Data (namespace init) -->
+    <script src="data/base.js"></script>
+
+    <!-- Course Data - NOW LAZY LOADED! -->
+    <!-- Individual course files (arduino.js, microbit.js, etc.) are loaded on-demand -->
+
+    <!-- Essential Data (small, always needed) -->
+    <script src="data/tips.js"></script>
+    <script src="data/quiz.js"></script>
+
+    <!-- Modules -->
+    <script src="modules/courseLoader.js"></script>
+    <script src="modules/settings.js"></script>
+    <script src="modules/i18n.js"></script>
+    <script src="modules/progress.js"></script>
+    <script src="config/tabs.js"></script>
+    <script src="modules/search.js"></script>
+    <script src="modules/ui.js"></script>
+    <script src="modules/assistant.js"></script>
+
+    <script src="themes.js"></script>
+    <script src="simulations.js"></script>
+
+
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        /* Inline critical styles or overrides can remain here if needed */
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 w-full h-full" onclick="app.toggleSidebar()"></div>
+
+    <!-- Sidebar (Ders Gezgini) -->
+    <div id="lesson-sidebar"
+        class="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl overflow-y-auto border-r border-gray-200 flex flex-col pb-10">
+        <div class="p-4 bg-theme text-white flex justify-between items-center sticky top-0 z-10 shadow-md">
+            <h2 class="font-bold text-lg">Ders Listesi</h2>
+            <button onclick="app.toggleSidebar()" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+        </div>
+        <div id="sidebar-content" class="flex-grow p-2 space-y-2">
+            <!-- Dersler buraya gelecek -->
+        </div>
+    </div>
+
+    <!-- Üst Menü -->
+    <nav class="bg-white shadow-md z-50 sticky top-0 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center cursor-pointer" onclick="window.location.reload()">
+                    <img src="img/logo.svg" alt="Yeti LAB" class="w-10 h-10 mr-3 flex-shrink-0">
+                    <div class="brand-logo">
+                        <h1 class="text-xl text-gray-800 leading-tight flex items-baseline gap-1">
+                            <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
+                        </h1>
+                        <span class="brand-slogan text-gray-500 block whitespace-nowrap">İçindeki Yeti'leri
+                            Keşfet</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Mobile Theme Toggle -->
+                    <button onclick="app.toggleTheme()"
+                        class="md:hidden p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 theme-btn">
+                        <span class="text-xl">☀️</span>
+                    </button>
+
+                    <!-- Desktop Search Bar -->
+                    <div class="relative hidden md:block">
+                        <input type="text" id="searchInput" placeholder="Ders Ara..."
+                            oninput="Search.handle(this.value)"
+                            class="w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-theme focus:ring-1 focus:ring-theme transition-colors text-sm">
+                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                        <!-- Sonuçlar Dropdown -->
+                        <div id="searchResults"
+                            class="absolute top-full left-0 w-full bg-white rounded-lg shadow-xl mt-2 border border-gray-100 hidden z-50 max-h-96 overflow-y-auto">
+                        </div>
+                    </div>
+
+                    <!-- Ana Menü - Hide text on mobile -->
+                    <button onclick="app.renderCourseSelection()"
+                        class="text-gray-600 hover-text-theme font-bold transition p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-100 flex items-center min-w-[44px] min-h-[44px] justify-center">
+                        <span class="text-xl sm:mr-2">🏠</span>
+                        <span class="hidden sm:inline">Ana Menü</span>
+                    </button>
+
+                    <!-- Desktop Theme Toggle -->
+                    <button onclick="app.toggleTheme()"
+                        class="hidden md:flex p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 theme-btn items-center justify-center min-w-[44px] min-h-[44px]"
+                        title="Temayı Değiştir">
+                        <span class="text-xl">☀️</span>
+                    </button>
+
+                    <!-- Language Toggle -->
+                    <button onclick="app.toggleLanguage()"
+                        class="p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 font-bold border border-gray-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        title="Dil Değiştir / Change Language">
+                        <span id="lang-text">TR</span>
+                    </button>
+
+
+                    <!-- Admin Linki - Visible on desktop (md:block) -->
+                    <a href="admin.html"
+                        class="hidden md:block text-gray-400 hover:text-gray-600 text-xs ml-2 py-2">Yönetici</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Search Overlay -->
+    <div id="mobile-search-overlay" class="fixed inset-0 bg-white z-50 hidden md:hidden">
+        <div class="p-4">
+            <div class="flex items-center gap-3">
+                <button onclick="app.toggleMobileSearch()" class="p-2 text-gray-500 hover:text-gray-700">
+                    <span class="text-2xl">←</span>
+                </button>
+                <div class="relative flex-grow">
+                    <input type="text" id="mobileSearchInput" placeholder="Ders ara..."
+                        oninput="Search.handleMobile(this.value)"
+                        class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-theme focus:outline-none text-lg">
+                    <span class="absolute left-3 top-3.5 text-gray-400 text-lg">🔍</span>
+                </div>
+            </div>
+            <div id="mobileSearchResults" class="mt-4 space-y-2 max-h-[70vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Ana İçerik -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- DERS SEÇİM EKRANI (Ana Sayfa) -->
+        <div id="course-selection-view" class="fade-in pb-10">
+            <div class="text-center max-w-3xl mx-auto mb-12 mt-8">
+                <h2 class="text-4xl text-gray-900 mb-4">Hangi Maceraya Atılmak İstersin? 🚀</h2>
+                <p class="text-xl text-gray-600">
+                    İçindeki Yeti'yi keşfet, ilgi alanına uygun eğitim setini seç!
+                </p>
+            </div>
+            <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Kurslar buraya dinamik olarak eklenecek -->
+            </div>
+        </div>
+
+        <!-- DASHBOARD (Proje Listesi) -->
+        <div id="dashboard-view" class="hidden space-y-6 fade-in pb-10">
+            <div class="flex items-center justify-between mb-8 mt-4">
+                <button onclick="app.renderCourseSelection()"
+                    class="text-gray-600 hover-text-theme font-bold flex items-center">
+                    ← Ders Seçimine Dön
+                </button>
+            </div>
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <h1 id="course-title" class="text-3xl font-bold text-gray-800 mb-2">Arduino Serüveni</h1>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-4 dark:bg-gray-700 relative group overflow-hidden">
+                    <div id="course-progress-bar" class="bg-green-500 h-4 rounded-full transition-all duration-500"
+                        style="width: 0%"></div>
+                    <span id="course-progress-text"
+                        class="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 group-hover:text-white transition-colors duration-200">%0
+                        Tamamlandı</span>
+                </div>
+
+                <p id="course-desc" class="text-gray-600 mb-6">Arduino dünyasına adım atın.</p>
+            </div>
+            <div id="dashboard-content"></div>
+        </div>
+
+        <!-- PROJE DETAY EKRANI -->
+        <div id="project-view" class="hidden flex flex-col lg:flex-row gap-6 h-full pb-10">
+
+            <!-- SOL KOLON: Simülasyon -->
+            <div class="w-full lg:w-5/12 flex flex-col space-y-4" id="left-column">
+                <div class="flex gap-2 mb-2">
+                    <button onclick="app.renderDashboard()"
+                        class="text-sm text-gray-700 hover-text-theme flex items-center font-bold bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                        ← Geri
+                    </button>
+                    <button onclick="app.toggleSidebar()"
+                        class="text-sm text-white bg-theme hover:brightness-90 flex items-center font-bold px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition">
+                        ☰ Ders Listesi
+                    </button>
+                </div>
+
+                <!-- Simülatör / İnteraktif Kart -->
+                <div id="sim-container"
+                    class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col relative"
+                    style="min-height: 450px;">
+                    <div class="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
+                        <h3 class="font-bold tracking-wide flex items-center" id="sim-title"><span
+                                class="mr-2">🔬</span> Sanal Laboratuvar</h3>
+                        <span class="text-xs bg-green-600 px-2 py-1 rounded text-white" id="sim-badge">CANLI</span>
+                    </div>
+
+                    <div class="p-0 bg-gray-100 relative flex-grow flex flex-col justify-center items-center overflow-hidden"
+                        id="sim-content-area" style="height: 250px;">
+                        <!-- Mobile: 250px, Desktop: will be overridden by CSS -->
+                        <!-- Canvas (Simülasyon Çizimleri) -->
+                        <canvas id="simCanvas" class="w-full h-full object-contain hidden"></canvas>
+
+                        <!-- İnteraktif Görsel (Board Tanıtımı) -->
+                        <div id="interactive-area" class="w-full h-full relative hidden bg-gray-200"></div>
+
+                        <!-- Kontrol Paneli (Butonlar/Sliderlar) -->
+                        <div id="simControls"
+                            class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur p-3 border-t border-gray-200 shadow-inner z-30">
+                        </div>
+                    </div>
+
+                    <!-- Bilgi Kutusu (Parça açıklamaları için) -->
+                    <div id="interactive-info"
+                        class="p-4 bg-blue-50 border-t border-blue-100 text-sm text-blue-900 hidden h-32 overflow-y-auto font-medium transition-all">
+                        <span class="font-bold text-lg block mb-1" id="info-title">Keşfet</span>
+                        <span id="info-desc">Parçaların üzerine gelerek ne işe yaradıklarını öğren.</span>
+                    </div>
+                </div>
+
+                <!-- Grafik Kartı -->
+                <div id="chart-card" class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 hidden">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2 flex justify-between items-center">
+                        <span>📊 Veri Grafiği (Serial Plotter)</span>
+                    </h4>
+                    <div class="chart-container">
+                        <canvas id="dataChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAĞ KOLON: İçerik (Sekmeler) -->
+            <div class="w-full lg:w-7/12 flex flex-col bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+                style="min-height: 600px;">
+
+                <div class="p-6 border-b border-gray-100 bg-gray-50">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span id="project-tag"
+                                class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 uppercase tracking-wider text-white bg-theme shadow-sm">Giriş</span>
+                            <h2 id="project-title" class="text-2xl font-bold text-gray-900 leading-tight">Başlık</h2>
+                        </div>
+                        <div class="text-5xl cursor-default" id="project-icon">⚡</div>
+                    </div>
+                    <p id="project-desc" class="mt-2 text-gray-600">Açıklama...</p>
+                </div>
+
+                <div class="flex border-b border-gray-200 overflow-x-auto bg-white sticky top-0 z-10">
+                    <button
+                        class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap"
+                        data-tab="mission">🎯 Amaç</button>
+                    <button
+                        class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent transition"
+                        data-tab="materials">Devre Elemanları</button>
+                    <button
+                        class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap"
+                        data-tab="circuit">🔌 Devre</button>
+                    <button
+                        class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap"
+                        data-tab="code">💻 Kod</button>
+                    <button
+                        class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap"
+                        data-tab="challenge">🏆 Görev</button>
+                </div>
+
+                <div class="p-6 overflow-y-auto flex-grow h-[500px] bg-white relative" id="tab-content-area"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav id="mobile-bottom-nav"
+        class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 md:hidden">
+        <div class="grid grid-cols-4 h-16">
+            <button onclick="app.renderCourseSelection()"
+                class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100">
+                <span class="text-xl">🏠</span>
+                <span class="text-xs mt-0.5">Ana Sayfa</span>
+            </button>
+            <button onclick="app.toggleSidebar()"
+                class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100">
+                <span class="text-xl">📚</span>
+                <span class="text-xs mt-0.5">Dersler</span>
+            </button>
+            <button onclick="app.toggleMobileSearch()"
+                class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100">
+                <span class="text-xl">🔍</span>
+                <span class="text-xs mt-0.5">Ara</span>
+            </button>
+            <button onclick="Assistant?.toggle()"
+                class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100">
+                <span class="text-xl">💬</span>
+                <span class="text-xs mt-0.5">Asistan</span>
+            </button>
+        </div>
+    </nav>
+
+    <footer class="bg-gray-800 text-white py-6 mt-auto text-center text-sm pb-20 md:pb-6">
+        <div class="brand-logo text-lg mb-1 flex items-center justify-center">
+            <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6 mr-2">
+            Yeti <span class="brand-lab text-theme ml-1">LAB</span>
+        </div>
+        <p class="text-gray-400">© 2024 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
+    </footer>
+
+    <!-- Image Modal -->
+    <!-- Image Modal -->
+    <div id="image-modal"
+        class="fixed inset-0 hidden flex items-center justify-center bg-black/95 backdrop-blur-md p-4 transition-opacity duration-300 opacity-0"
+        style="z-index: 2147483647 !important;" onclick="app.closeImageModal()">
+        <button onclick="app.closeImageModal()"
+            class="absolute top-4 right-4 text-white hover:text-gray-300 z-50 bg-black/50 rounded-full p-2 transition-transform hover:scale-110">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <div class="relative flex flex-col items-center justify-center bg-transparent" id="modal-content"
+            onclick="event.stopPropagation()">
+            <img id="modal-img" src="" alt="Full Screen"
+                class="rounded-lg shadow-2xl border border-gray-700 bg-white/5 cursor-zoom-out object-contain"
+                style="max-height: 85vh !important; max-width: 90vw !important; width: auto; height: auto;"
+                onclick="app.closeImageModal()">
+            <div id="modal-caption" class="mt-4 px-6 py-3 rounded-lg text-lg font-bold shadow-2xl tracking-wide"
+                style="background-color: #000000 !important; color: #ffffff !important;"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
