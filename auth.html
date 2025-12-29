@@ -332,6 +332,27 @@
             const urlParams = new URLSearchParams(window.location.search);
             const forceShow = urlParams.get('force') === 'true';
 
+            // Check for OAuth callback (URL contains access_token in hash)
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            if (hashParams.get('access_token')) {
+                // OAuth callback - wait for session to be established
+                showAlert('Giriş yapılıyor, lütfen bekleyin...', 'info');
+
+                // Give Supabase time to process the token
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Check session again
+                const session = await Auth.checkSession();
+                if (session) {
+                    showAlert('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
+                    setTimeout(() => {
+                        // Clear the hash and redirect
+                        window.location.href = 'index.html';
+                    }, 500);
+                    return;
+                }
+            }
+
             // Check if already logged in
             const session = await Auth.checkSession();
             if (session && !forceShow) {
