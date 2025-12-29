@@ -42,10 +42,14 @@ const Auth = {
      * Sign in with Google
      */
     async signInWithGoogle() {
+        // Redirect to index.html after OAuth
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+        const redirectUrl = baseUrl + '/index.html';
+
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin + window.location.pathname
+                redirectTo: redirectUrl
             }
         });
 
@@ -57,10 +61,14 @@ const Auth = {
      * Sign in with GitHub
      */
     async signInWithGitHub() {
+        // Redirect to index.html after OAuth
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+        const redirectUrl = baseUrl + '/index.html';
+
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'github',
             options: {
-                redirectTo: window.location.origin + window.location.pathname
+                redirectTo: redirectUrl
             }
         });
 
