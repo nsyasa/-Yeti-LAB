@@ -41,6 +41,7 @@ const app = {
         if (typeof courseData !== 'undefined') {
             // Init modules
             app.initTheme();
+            app.initScrollBehavior();
             window.Progress?.load();
             window.Progress.onUpdate = (projectId) => {
                 app.renderProgressBar();
@@ -78,6 +79,49 @@ const app = {
         }
     },
 
+    // --- Scroll Behavior: Hide header/bottom nav on scroll down, show on scroll up ---
+    scrollState: {
+        lastScrollY: 0,
+        ticking: false
+    },
+
+    initScrollBehavior: () => {
+        window.addEventListener('scroll', app.handleScroll, { passive: true });
+    },
+
+    handleScroll: () => {
+        if (!app.scrollState.ticking) {
+            window.requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                const header = document.getElementById('main-header');
+                const bottomNav = document.getElementById('mobile-bottom-nav');
+                const threshold = 50; // Minimum scroll amount before hiding
+
+                // Only apply scroll behavior after scrolling past threshold
+                if (currentScrollY > threshold) {
+                    if (currentScrollY > app.scrollState.lastScrollY) {
+                        // Scrolling DOWN - hide nav
+                        header?.classList.add('nav-hidden');
+                        bottomNav?.classList.add('nav-hidden');
+                    } else {
+                        // Scrolling UP - show nav
+                        header?.classList.remove('nav-hidden');
+                        bottomNav?.classList.remove('nav-hidden');
+                    }
+                } else {
+                    // At top of page - always show nav
+                    header?.classList.remove('nav-hidden');
+                    bottomNav?.classList.remove('nav-hidden');
+                }
+
+                app.scrollState.lastScrollY = currentScrollY;
+                app.scrollState.ticking = false;
+            });
+            app.scrollState.ticking = true;
+        }
+    },
+
+
     // Restore course data from localStorage (syncs with admin panel autosave)
     restoreFromLocalStorage: () => {
         try {
@@ -106,33 +150,35 @@ const app = {
 
     toggleSidebar: () => UI.toggleSidebar(),
 
-    // --- Theme Management ---
+    // --- Theme Management (System Preference Based) ---
     theme: {
-        modes: ['light', 'dark', 'shield'],
-        current: 'light',
-        icons: {
-            light: '☀️',
-            dark: '🌙',
-            shield: '🛡️'
-        }
+        current: 'light'
     },
 
     initTheme: () => {
+        // Check if user has a saved preference, otherwise use system preference
         const saved = Settings.get('theme');
-        app.setTheme(saved);
-    },
 
-    toggleTheme: () => {
-        const modes = app.theme.modes;
-        const currentIdx = modes.indexOf(app.theme.current);
-        const nextIdx = (currentIdx + 1) % modes.length;
-        app.setTheme(modes[nextIdx]);
+        if (saved) {
+            app.setTheme(saved);
+        } else {
+            // Use system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            app.setTheme(prefersDark ? 'dark' : 'light');
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            // Only auto-switch if user hasn't set a manual preference
+            if (!Settings.get('theme')) {
+                app.setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
     },
 
     setTheme: (mode) => {
         const body = document.body;
         app.theme.current = mode;
-        Settings.set('theme', mode);
 
         // Reset classes
         body.classList.remove('dark-mode', 'eye-shield');
@@ -140,11 +186,8 @@ const app = {
         // Apply new class
         if (mode === 'dark') body.classList.add('dark-mode');
         if (mode === 'shield') body.classList.add('eye-shield');
-
-        // Update icons
-        const icon = app.theme.icons[mode];
-        document.querySelectorAll('.theme-btn span').forEach(el => el.textContent = icon);
     },
+
 
     toggleLanguage: () => {
         const current = Settings.get('language') || 'tr';

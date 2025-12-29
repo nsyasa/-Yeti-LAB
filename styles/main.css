@@ -553,6 +553,23 @@ body.eye-shield::before {
     border-color: #fff;
 }
 
+/* Header & Bottom Nav - Scroll Behavior */
+#main-header {
+    transition: transform 0.3s ease-in-out;
+}
+
+#main-header.nav-hidden {
+    transform: translateY(-100%);
+}
+
+#mobile-bottom-nav {
+    transition: transform 0.3s ease-in-out;
+}
+
+#mobile-bottom-nav.nav-hidden {
+    transform: translateY(100%);
+}
+
 /* Sidebar (Ders Listesi) */
 #lesson-sidebar {
     transition: transform 0.3s ease-in-out;

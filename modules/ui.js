@@ -28,7 +28,7 @@ const UI = {
                     <h3 class="card-title text-2xl text-gray-800 mb-2 group-hover:text-theme transition-colors">${title}</h3>
                     <p class="text-gray-500 relative z-10">${description}</p>
                     <div class="mt-auto pt-6 w-full relative z-10">
-                        <span class="card-btn block w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-bold group-hover:bg-theme group-hover:text-white">
+                        <span class="card-btn block w-full py-3 px-4 bg-theme/10 text-theme rounded-lg font-bold border-2 border-theme/20 group-hover:bg-theme group-hover:text-white group-hover:border-theme transition-all">
                             ${I18n.t('start')}
                         </span>
                     </div>
@@ -81,28 +81,30 @@ const UI = {
             const isIntro = index === 0;
             const fixedName = isIntro ? I18n.t('intro') : `${I18n.t('episode')} ${index}`;
             const pIcon = phase.icon || (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '📂');
-            const pDesc = phase.description || (phase.title && typeof phase.title === 'string' ? phase.title.replace(pIcon, '').trim() : '');
+            const pDesc = phase.description || '';
 
             let sectionHTML = `
-                <div class="mt-8 mb-4 border-b-2 border-${phase.color}-200 pb-2 flex items-baseline">
-                    <span class="text-3xl mr-3">${pIcon}</span>
-                    <h3 class="text-2xl font-bold text-${phase.color}-700 mr-3">${fixedName}</h3>
-                    <span class="text-lg text-gray-500 font-medium">${pDesc}</span>
+                <div class="mt-6 mb-3 border-b border-gray-200 pb-2 flex items-center gap-2">
+                    <span class="text-xl">${pIcon}</span>
+                    <h3 class="text-lg font-bold text-gray-700">${fixedName}</h3>
+                    <span class="text-sm text-gray-400">${pDesc}</span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" style="-webkit-overflow-scrolling: touch;">`;
 
             phaseProjects.forEach(p => {
                 const isComplete = progressModule.isComplete(p.id);
+                const borderColor = phase.color === 'green' ? 'border-green-400' : (phase.color === 'blue' ? 'border-blue-400' : 'border-purple-400');
+
                 sectionHTML += `
-                    <div onclick="app.loadProject(${p.id})" class="cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border-l-4 ${phase.color === 'green' ? 'border-green-400' : (phase.color === 'blue' ? 'border-blue-400' : 'border-purple-400')} p-4 group relative overflow-hidden">
-                        ${isComplete ? `<div class="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-bl-lg z-10 font-bold">${I18n.t('completed')}</div>` : ''}
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="text-3xl group-hover:scale-110 transition-transform duration-300">${p.icon}</div>
-                            <div class="text-xs font-bold text-gray-400">#${p.id}</div>
+                    <div onclick="app.loadProject(${p.id})" 
+                         class="flex-shrink-0 w-32 sm:w-36 cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border-l-4 ${borderColor} p-3 group relative hover:scale-105">
+                        ${isComplete ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white text-xs rounded-full flex items-center justify-center z-10">✓</div>` : ''}
+                        <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">${p.icon}</div>
+                        <h3 class="font-bold text-gray-800 text-sm leading-tight group-hover:text-theme transition-colors line-clamp-2">${p.title}</h3>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-gray-400">#${p.id}</span>
+                            ${p.simType !== 'none' ? `<span class="text-xs text-blue-500">🔬</span>` : ''}
                         </div>
-                        <h3 class="font-bold text-gray-800 text-lg mb-1 group-hover:text-theme transition-colors">${p.title}</h3>
-                        <p class="text-sm text-gray-500 line-clamp-2">${p.desc}</p>
-                        ${p.simType !== 'none' ? `<div class="absolute bottom-2 right-2 text-xs text-blue-500 bg-blue-50 px-2 py-1 rounded-full">${I18n.t('simulation_badge')}</div>` : ''}
                     </div>
                 `;
             });

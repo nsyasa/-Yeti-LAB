@@ -62,7 +62,7 @@
     </div>
 
     <!-- Üst Menü -->
-    <nav class="bg-white shadow-md z-50 sticky top-0 border-b border-gray-200">
+    <nav id="main-header" class="bg-white shadow-md z-50 sticky top-0 border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center cursor-pointer" onclick="window.location.reload()">
@@ -71,17 +71,9 @@
                         <h1 class="text-xl text-gray-800 leading-tight flex items-baseline gap-1">
                             <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
                         </h1>
-                        <span class="brand-slogan text-gray-500 block whitespace-nowrap">İçindeki Yeti'leri
-                            Keşfet</span>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <!-- Mobile Theme Toggle -->
-                    <button onclick="app.toggleTheme()"
-                        class="md:hidden p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 theme-btn">
-                        <span class="text-xl">☀️</span>
-                    </button>
-
                     <!-- Desktop Search Bar -->
                     <div class="relative hidden md:block">
                         <input type="text" id="searchInput" placeholder="Ders Ara..."
@@ -94,27 +86,12 @@
                         </div>
                     </div>
 
-                    <!-- Ana Menü - Hide text on mobile -->
-                    <button onclick="app.renderCourseSelection()"
-                        class="text-gray-600 hover-text-theme font-bold transition p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-100 flex items-center min-w-[44px] min-h-[44px] justify-center">
-                        <span class="text-xl sm:mr-2">🏠</span>
-                        <span class="hidden sm:inline">Ana Menü</span>
-                    </button>
-
-                    <!-- Desktop Theme Toggle -->
-                    <button onclick="app.toggleTheme()"
-                        class="hidden md:flex p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 theme-btn items-center justify-center min-w-[44px] min-h-[44px]"
-                        title="Temayı Değiştir">
-                        <span class="text-xl">☀️</span>
-                    </button>
-
                     <!-- Language Toggle -->
                     <button onclick="app.toggleLanguage()"
                         class="p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 font-bold border border-gray-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
                         title="Dil Değiştir / Change Language">
                         <span id="lang-text">TR</span>
                     </button>
-
 
                     <!-- Admin Linki - Visible on desktop (md:block) -->
                     <a href="admin.html"
