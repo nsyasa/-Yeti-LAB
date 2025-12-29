@@ -195,6 +195,7 @@ const app = {
             document.getElementById('course-desc').innerText = course.description;
 
             app.renderDashboard();
+            app.renderSidebar();
             app.renderProgressBar();
 
         } catch (error) {
