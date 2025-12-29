@@ -34,6 +34,11 @@
     <script src="modules/ui.js"></script>
     <script src="modules/assistant.js"></script>
 
+    <!-- Auth System -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="modules/supabaseClient.js"></script>
+    <script src="modules/auth.js"></script>
+
     <script src="themes.js"></script>
     <script src="simulations.js"></script>
 
@@ -93,9 +98,48 @@
                         <span id="lang-text">TR</span>
                     </button>
 
-                    <!-- Admin Linki - Visible on desktop (md:block) -->
-                    <a href="admin.html"
-                        class="hidden md:block text-gray-400 hover:text-gray-600 text-xs ml-2 py-2">Yönetici</a>
+                    <!-- User Menu / Login Button -->
+                    <div id="user-menu-container">
+                        <!-- Giriş yapmamışsa: Giriş Yap butonu -->
+                        <a href="auth.html" id="login-btn"
+                            class="hidden md:flex items-center gap-2 px-4 py-2 bg-theme text-white rounded-lg font-bold hover:brightness-110 transition-all shadow-sm min-h-[44px]">
+                            <span>🎓</span>
+                            <span>Giriş Yap</span>
+                        </a>
+
+                        <!-- Giriş yapmışsa: Kullanıcı menüsü (başlangıçta gizli) -->
+                        <div id="user-menu" class="relative hidden">
+                            <button onclick="app.toggleUserMenu()"
+                                class="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all min-h-[44px]">
+                                <span id="user-avatar" class="text-xl">👤</span>
+                                <span id="user-name"
+                                    class="hidden md:inline font-medium text-gray-700 max-w-[120px] truncate">Kullanıcı</span>
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="user-dropdown"
+                                class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden z-50 overflow-hidden">
+                                <a href="profile.html"
+                                    class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700">
+                                    <span>👤</span> Profilim
+                                </a>
+                                <a href="teacher.html" id="teacher-link"
+                                    class="hidden items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700">
+                                    <span>👨‍🏫</span> Öğretmen Paneli
+                                </a>
+                                <hr class="my-1">
+                                <button onclick="app.logout()"
+                                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-red-600">
+                                    <span>🚪</span> Çıkış Yap
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

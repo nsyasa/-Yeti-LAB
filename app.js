@@ -42,6 +42,7 @@ const app = {
             // Init modules
             app.initTheme();
             app.initScrollBehavior();
+            app.initAuth(); // Auth durumunu kontrol et
             window.Progress?.load();
             window.Progress.onUpdate = (projectId) => {
                 app.renderProgressBar();
@@ -76,6 +77,111 @@ const app = {
             }
         } else {
             UI.showError('course-list', 'Veri Yüklenemedi', "window.location.reload()");
+        }
+    },
+
+    // --- Auth Management ---
+    initAuth: async () => {
+        // Auth modülü yüklü mü kontrol et
+        if (typeof Auth === 'undefined') {
+            console.log('[App] Auth module not loaded, showing login button');
+            app.updateUserUI(null);
+            return;
+        }
+
+        try {
+            await Auth.init();
+            app.updateUserUI(Auth.getUserInfo());
+
+            // Auth değişikliklerini dinle
+            Auth.onAuthStateChange((event, session, role) => {
+                app.updateUserUI(Auth.getUserInfo());
+            });
+        } catch (err) {
+            console.warn('[App] Auth init error:', err);
+            app.updateUserUI(null);
+        }
+    },
+
+    updateUserUI: (userInfo) => {
+        const loginBtn = document.getElementById('login-btn');
+        const userMenu = document.getElementById('user-menu');
+        const userName = document.getElementById('user-name');
+        const userAvatar = document.getElementById('user-avatar');
+        const teacherLink = document.getElementById('teacher-link');
+
+        if (!loginBtn || !userMenu) return;
+
+        if (userInfo && userInfo.isLoggedIn) {
+            // Giriş yapılmış - kullanıcı menüsünü göster
+            loginBtn.classList.add('hidden');
+            loginBtn.classList.remove('md:flex');
+            userMenu.classList.remove('hidden');
+
+            // Kullanıcı bilgilerini güncelle
+            if (userName) userName.textContent = userInfo.displayName || 'Kullanıcı';
+            if (userAvatar) {
+                if (userInfo.avatarUrl) {
+                    userAvatar.innerHTML = `<img src="${userInfo.avatarUrl}" class="w-8 h-8 rounded-full" alt="">`;
+                } else {
+                    userAvatar.textContent = userInfo.isStudent ? '🎓' : '👨‍🏫';
+                }
+            }
+
+            // Öğretmen linkini göster/gizle
+            if (teacherLink) {
+                if (userInfo.isTeacher || userInfo.isAdmin) {
+                    teacherLink.classList.remove('hidden');
+                    teacherLink.classList.add('flex');
+                } else {
+                    teacherLink.classList.add('hidden');
+                }
+            }
+        } else {
+            // Giriş yapılmamış - login butonunu göster
+            loginBtn.classList.remove('hidden');
+            loginBtn.classList.add('md:flex');
+            userMenu.classList.add('hidden');
+        }
+    },
+
+    toggleUserMenu: () => {
+        const dropdown = document.getElementById('user-dropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
+
+            // Dışarı tıklandığında kapat
+            if (!dropdown.classList.contains('hidden')) {
+                setTimeout(() => {
+                    document.addEventListener('click', app.closeUserMenu, { once: true });
+                }, 10);
+            }
+        }
+    },
+
+    closeUserMenu: (e) => {
+        const dropdown = document.getElementById('user-dropdown');
+        const userMenu = document.getElementById('user-menu');
+        if (dropdown && userMenu && !userMenu.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    },
+
+    logout: async () => {
+        if (typeof Auth === 'undefined') {
+            window.location.href = 'auth.html';
+            return;
+        }
+
+        try {
+            await Auth.signOut();
+            Auth.studentLogout();
+            app.updateUserUI(null);
+            // Sayfayı yenile (isteğe bağlı)
+            // window.location.reload();
+        } catch (err) {
+            console.error('[App] Logout error:', err);
+            alert('Çıkış yapılırken hata oluştu');
         }
     },
 
