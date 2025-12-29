@@ -151,10 +151,22 @@ const Auth = {
 
         if (data) {
             this.userRole = data.role;
+            this.profileData = data;
+            this.isProfileComplete = data.is_profile_complete || false;
             localStorage.setItem(this.USER_ROLE_KEY, data.role);
+        } else {
+            // Profile doesn't exist yet
+            this.isProfileComplete = false;
         }
 
         return data;
+    },
+
+    /**
+     * Check if user needs to complete profile
+     */
+    needsProfileCompletion() {
+        return this.currentUser && !this.isProfileComplete;
     },
 
     /**

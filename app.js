@@ -91,11 +91,24 @@ const app = {
 
         try {
             await Auth.init();
+
+            // Profil tamamlanmamışsa profile sayfasına yönlendir
+            if (Auth.needsProfileCompletion()) {
+                console.log('[App] Profile incomplete, redirecting to profile.html');
+                window.location.href = 'profile.html';
+                return;
+            }
+
             app.updateUserUI(Auth.getUserInfo());
 
             // Auth değişikliklerini dinle
             Auth.onAuthStateChange((event, session, role) => {
                 app.updateUserUI(Auth.getUserInfo());
+
+                // Yeni giriş yapıldıysa profil kontrolü
+                if (event === 'SIGNED_IN' && Auth.needsProfileCompletion()) {
+                    window.location.href = 'profile.html';
+                }
             });
         } catch (err) {
             console.warn('[App] Auth init error:', err);
