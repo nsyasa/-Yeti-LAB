@@ -13,6 +13,8 @@ const Auth = {
     currentUser: null,
     currentStudent: null,
     userRole: null, // 'teacher', 'student', 'admin'
+    profileData: null,
+    isProfileComplete: false,
 
     // Session storage keys
     STUDENT_SESSION_KEY: 'yeti_student_session',
@@ -166,7 +168,13 @@ const Auth = {
      * Check if user needs to complete profile
      */
     needsProfileCompletion() {
-        return this.currentUser && !this.isProfileComplete;
+        const needs = this.currentUser && !this.isProfileComplete;
+        console.log('[Auth] needsProfileCompletion check:', {
+            hasUser: !!this.currentUser,
+            isProfileComplete: this.isProfileComplete,
+            needs: needs
+        });
+        return needs;
     },
 
     /**
