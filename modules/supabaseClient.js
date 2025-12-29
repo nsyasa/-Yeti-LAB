@@ -368,6 +368,93 @@ const SupabaseClient = {
     },
 
     // ==========================================
+    // STORAGE METHODS (Hybrid Image Management)
+    // ==========================================
+
+    // GitHub Pages base URL
+    GITHUB_PAGES_URL: 'https://nsyasa.github.io/-Yeti-LAB/',
+
+    /**
+     * Upload image to Supabase Storage
+     * @param {File} file - The file to upload
+     * @param {string} folder - Optional folder name (default: 'uploads')
+     * @returns {Promise<string>} Public URL of uploaded file
+     */
+    async uploadImage(file, folder = 'uploads') {
+        const fileName = `${folder}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+
+        const { data, error } = await this.getClient()
+            .storage
+            .from('images')  // bucket name
+            .upload(fileName, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        // Get public URL
+        const { data: urlData } = this.getClient()
+            .storage
+            .from('images')
+            .getPublicUrl(data.path);
+
+        return urlData.publicUrl;
+    },
+
+    /**
+     * Delete image from Supabase Storage
+     * @param {string} path - The file path to delete
+     */
+    async deleteImage(path) {
+        const { error } = await this.getClient()
+            .storage
+            .from('images')
+            .remove([path]);
+
+        if (error) throw error;
+    },
+
+    /**
+     * Smart Image URL Resolver
+     * Handles: local files, Supabase storage, external URLs
+     * @param {string} imagePath - The image path/URL
+     * @returns {string} Resolved full URL
+     */
+    resolveImageUrl(imagePath) {
+        if (!imagePath) return '';
+
+        // Already a full URL (http/https)
+        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+            return imagePath;
+        }
+
+        // Supabase storage path (starts with 'supabase:' or contains supabase domain)
+        if (imagePath.startsWith('supabase:')) {
+            const path = imagePath.replace('supabase:', '');
+            const { data } = this.getClient()
+                .storage
+                .from('images')
+                .getPublicUrl(path);
+            return data.publicUrl;
+        }
+
+        // Local file - serve from GitHub Pages
+        // Remove leading 'img/' if present to avoid duplication
+        const cleanPath = imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;
+        return `${this.GITHUB_PAGES_URL}${cleanPath}`;
+    },
+
+    /**
+     * Check if image source is from Supabase
+     * @param {string} url - The URL to check
+     * @returns {boolean}
+     */
+    isSupabaseImage(url) {
+        return url && url.includes('supabase.co/storage');
+    },
+
+    // ==========================================
     // UTILITY METHODS
     // ==========================================
 

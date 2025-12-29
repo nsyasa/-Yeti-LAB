@@ -184,7 +184,18 @@ const UI = {
     // --- Tab Rendering ---
     renderTabs: (project, componentInfo, currentCourseKey, progressModule) => {
         const area = document.getElementById('tab-content-area');
-        const btnContainer = document.querySelector('.overflow-x-auto');
+        const btnContainer = document.getElementById('project-tabs-container');
+
+        // Smart image URL resolver
+        const resolveImg = (path) => {
+            if (!path) return '';
+            // Full URL - use as is
+            if (path.startsWith('http://') || path.startsWith('https://')) {
+                return path;
+            }
+            // Local file - use relative path (works in both local and GitHub Pages)
+            return path.startsWith('img/') ? path : `img/${path}`;
+        };
 
         // Resim HTML helper
         const createImg = (src, caption) => `
@@ -195,8 +206,8 @@ const UI = {
                 </div>
             </div>`;
 
-        // Circuit Image
-        const imgSrc = `img/${project.circuitImage || 'devre' + project.id + '.jpg'}`;
+        // Circuit Image - use smart resolver
+        const imgSrc = resolveImg(project.circuitImage || `devre${project.id}.jpg`);
         const circHTML = createImg(imgSrc, I18n.t('header_circuit'));
 
         // Materials
@@ -205,10 +216,11 @@ const UI = {
             const foundCompKey = Object.keys(componentInfo).find(key => key === m || componentInfo[key].name === m);
             if (foundCompKey) {
                 const c = componentInfo[foundCompKey];
+                const compImgSrc = resolveImg(c.imgFileName);
                 materialsHTML += `
                     <div class="flex items-start bg-white p-3 rounded shadow-sm border">
-                        <div class="w-16 h-16 flex-shrink-0 mr-4 border rounded overflow-hidden bg-gray-100 group relative cursor-zoom-in" onclick="UI.openImageModal('img/${c.imgFileName}', '${c.name.replace(/'/g, "\\'")}')">
-                            <img src="img/${c.imgFileName}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                        <div class="w-16 h-16 flex-shrink-0 mr-4 border rounded overflow-hidden bg-gray-100 group relative cursor-zoom-in" onclick="UI.openImageModal('${compImgSrc}', '${c.name.replace(/'/g, "\\'")}')">
+                            <img src="${compImgSrc}" class="w-full h-full object-cover" onerror="this.style.display='none'">
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-colors">
                                 <span class="text-white opacity-0 group-hover:opacity-100">🔍</span>
                             </div>

@@ -1733,17 +1733,124 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             admin.renderProjectList();
             admin.loadProject(item.data.id);
             alert(`"${item.data.title}" geri yüklendi!`);
-        } else if (item.type === 'component') {
-            admin.currentData.componentInfo[item.key] = item.data;
-            admin.renderComponentList();
-            admin.loadComponent(item.key);
-            alert(`"${item.data.name}" geri yüklendi!`);
-        } else if (item.type === 'phase') {
-            admin.currentData.phases.splice(item.index, 0, item.data);
-            admin.renderPhaseList();
-            admin.loadPhase(item.index);
-            alert(`"${item.data.title}" geri yüklendi!`);
         }
+    },
+
+    // ==========================================
+    // IMAGE MANAGEMENT (Hybrid: Local + Supabase + URL)
+    // ==========================================
+
+    /**
+     * Preview circuit image when URL/filename changes
+     */
+    previewCircuitImage: () => {
+        const input = document.getElementById('p-circuitImage');
+        const preview = document.getElementById('circuit-image-preview');
+        const img = document.getElementById('circuit-preview-img');
+
+        if (!input || !preview || !img) return;
+
+        const value = input.value.trim();
+        if (!value) {
+            preview.classList.add('hidden');
+            return;
+        }
+
+        // Resolve the URL
+        const resolvedUrl = admin.resolveImageUrl(value);
+        img.src = resolvedUrl;
+        img.onload = () => preview.classList.remove('hidden');
+        img.onerror = () => preview.classList.add('hidden');
+    },
+
+    /**
+     * Upload circuit image to Supabase Storage
+     */
+    uploadCircuitImage: async (fileInput) => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        // Show loading state
+        const statusEl = document.getElementById('autosave-status');
+        if (statusEl) {
+            statusEl.textContent = "⬆️ Resim yükleniyor...";
+            statusEl.classList.add('text-yellow-400');
+        }
+
+        try {
+            // Check if Supabase client is available
+            if (!window.SupabaseClient || !window.SupabaseClient.getClient()) {
+                throw new Error('Supabase client not initialized');
+            }
+
+            // Upload to Supabase Storage
+            const publicUrl = await window.SupabaseClient.uploadImage(file, 'circuits');
+
+            // Set the URL in the input
+            const circuitInput = document.getElementById('p-circuitImage');
+            if (circuitInput) {
+                circuitInput.value = publicUrl;
+                admin.previewCircuitImage();
+            }
+
+            if (statusEl) {
+                statusEl.textContent = "✅ Resim yüklendi!";
+                statusEl.classList.remove('text-yellow-400');
+                statusEl.classList.add('text-green-400');
+            }
+
+            admin.updateProject();
+
+        } catch (error) {
+            console.error('Image upload error:', error);
+
+            if (statusEl) {
+                statusEl.textContent = "❌ Yükleme hatası!";
+                statusEl.classList.remove('text-yellow-400');
+                statusEl.classList.add('text-red-400');
+            }
+
+            alert('Resim yüklenemedi: ' + error.message + '\n\nAlternatif: Dosya adını manuel girin veya harici URL kullanın.');
+        }
+
+        // Reset file input
+        fileInput.value = '';
+    },
+
+    /**
+     * Smart Image URL Resolver (same logic as SupabaseClient)
+     * Handles: local files, Supabase storage, external URLs
+     */
+    resolveImageUrl: (imagePath) => {
+        if (!imagePath) return '';
+
+        // Already a full URL (http/https)
+        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+            return imagePath;
+        }
+
+        // Local file - use relative path
+        return imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;
+    },
+
+    /**
+     * Open image selector modal (existing images in img/ folder)
+     */
+    openImageSelector: (targetInputId) => {
+        // This could be enhanced to show a gallery of existing images
+        // For now, just focus the input
+        const input = document.getElementById(targetInputId);
+        if (input) {
+            input.focus();
+            input.select();
+        }
+
+        // Show a helper message
+        alert('Resim ekleme seçenekleri:\n\n' +
+            '1. Dosya adı girin: led.jpg (img/ klasöründen)\n' +
+            '2. URL yapıştırın: https://example.com/img.png\n' +
+            '3. "Yükle" butonuyla Supabase\'e yükleyin\n\n' +
+            'GitHub Pages resimlerini img/ klasörüne ekleyip commit/push yapın.');
     }
 };
 

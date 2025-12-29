@@ -63,58 +63,64 @@
 
         <!-- Üst Bar -->
         <nav class="bg-theme text-white shadow-md sticky top-0 z-50 transition-colors duration-500">
-            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-6">
+            <!-- Row 1: Logo, Course Selector, Save Status -->
+            <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center border-b border-white/10">
+                <div class="flex items-center gap-4">
                     <div class="flex items-center">
                         <span class="text-2xl mr-2">🏔️</span>
-                        <div>
-                            <h1 class="text-xl font-bold" style="letter-spacing: -0.03em;">Yeti <span
-                                    style="font-weight: 900;">LAB</span> <span
-                                    class="font-normal text-gray-300">|</span>
-                                Yönetim</h1>
-                        </div>
-                        <span id="autosave-status" class="text-xs font-mono ml-4 text-gray-300"></span>
+                        <h1 class="text-xl font-bold" style="letter-spacing: -0.03em;">Yeti <span
+                                style="font-weight: 900;">LAB</span></h1>
                     </div>
+                    <span class="text-gray-300">|</span>
+                    <span class="font-medium">Yönetim Paneli</span>
 
                     <!-- Ders Seçimi -->
-                    <div class="ml-4">
-                        <select id="course-selector" onchange="admin.changeCourse(this.value)"
-                            class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1 text-sm font-bold focus:outline-none focus:border-blue-500">
-                            <option value="arduino">Arduino</option>
-                            <option value="microbit">Microbit</option>
-                            <option value="scratch">Scratch</option>
-                            <option value="mblock">mBlock</option>
-                            <option value="appinventor">App Inventor</option>
-                        </select>
-                    </div>
-
-                    <div class="flex bg-gray-700 rounded-lg p-1 space-x-1">
-                        <button onclick="admin.showTab('projects')" id="tab-projects"
-                            class="tab-btn px-4 py-1 rounded-md text-sm font-bold transition active">Dersler</button>
-                        <button onclick="admin.showTab('phases')" id="tab-phases"
-                            class="tab-btn px-4 py-1 rounded-md text-sm font-bold transition text-gray-300 hover:text-white">Fazlar</button>
-                        <button onclick="admin.showTab('components')" id="tab-components"
-                            class="tab-btn px-4 py-1 rounded-md text-sm font-bold transition text-gray-300 hover:text-white">Devre
-                            Elemanları</button>
-                    </div>
+                    <select id="course-selector" onchange="admin.changeCourse(this.value)"
+                        class="bg-white/10 text-white border border-white/20 rounded px-3 py-1 text-sm font-bold focus:outline-none focus:border-white/50 ml-2">
+                        <option value="arduino">Arduino</option>
+                        <option value="microbit">Microbit</option>
+                        <option value="scratch">Scratch</option>
+                        <option value="mblock">mBlock</option>
+                        <option value="appinventor">App Inventor</option>
+                    </select>
                 </div>
-                <div class="flex items-center space-x-4">
+
+                <!-- Kayıt Durumu & Kullanıcı -->
+                <div class="flex items-center gap-4">
+                    <span id="autosave-status" class="text-sm font-mono px-3 py-1 rounded bg-white/10"></span>
                     <span id="user-email" class="text-gray-300 text-sm hidden"></span>
-                    <a href="index.html" class="text-gray-300 hover:text-white transition">← Siteye Dön</a>
+                    <a href="index.html" class="text-gray-300 hover:text-white transition text-sm">← Siteye Dön</a>
+                </div>
+            </div>
+
+            <!-- Row 2: Tabs & Actions -->
+            <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
+                <!-- Sekmeler -->
+                <div class="flex bg-white/10 rounded-lg p-1 gap-1">
+                    <button onclick="admin.showTab('projects')" id="tab-projects"
+                        class="tab-btn px-4 py-1.5 rounded-md text-sm font-bold transition active">📚 Dersler</button>
+                    <button onclick="admin.showTab('phases')" id="tab-phases"
+                        class="tab-btn px-4 py-1.5 rounded-md text-sm font-bold transition text-gray-300 hover:text-white">📁
+                        Fazlar</button>
+                    <button onclick="admin.showTab('components')" id="tab-components"
+                        class="tab-btn px-4 py-1.5 rounded-md text-sm font-bold transition text-gray-300 hover:text-white">🔧
+                        Devre Elemanları</button>
+                </div>
+
+                <!-- Aksiyonlar -->
+                <div class="flex items-center gap-2">
                     <button onclick="admin.undo()" id="btn-undo"
-                        class="hidden bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded font-bold transition shadow text-sm"
-                        title="Son silinen öğeyi geri al">
-                        ↩️ Geri Al
-                    </button>
+                        class="hidden bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded font-bold transition text-sm"
+                        title="Son silinen öğeyi geri al">↩️ Geri Al</button>
                     <button onclick="admin.downloadBackup()"
-                        class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-bold transition shadow"
+                        class="bg-blue-500 hover:bg-blue-600 px-4 py-1.5 rounded font-bold transition text-sm"
                         title="Tüm verileri JSON olarak indir">📥 Yedekle</button>
                     <button onclick="admin.saveData()"
-                        class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-bold transition shadow">💾 Kayıt
-                        Et</button>
+                        class="bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded font-bold transition text-sm">💾
+                        Kaydet</button>
                     <button onclick="handleLogout()"
-                        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold transition shadow"
-                        title="Çıkış Yap">🚪 Çıkış</button>
+                        class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded font-bold transition text-sm"
+                        title="Çıkış Yap">🚪</button>
                 </div>
             </div>
         </nav>
@@ -206,7 +212,7 @@
                                 Amaç</button>
                             <button type="button" onclick="admin.switchProjectTab('donanim')" id="ptab-donanim"
                                 class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">🧩
-                                Donanım</button>
+                                Devre Elemanları</button>
                             <button type="button" onclick="admin.switchProjectTab('devre')" id="ptab-devre"
                                 class="project-tab-btn px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700">⚡
                                 Devre</button>
@@ -431,13 +437,28 @@
                                     <div>
                                         <label class="block text-xs font-bold text-gray-500 uppercase">Devre/Blok
                                             Resmi</label>
+                                        <p class="text-xs text-gray-400 mb-1">Dosya adı (led.jpg) veya tam URL
+                                            (https://...)</p>
                                         <div class="flex gap-1">
-                                            <input type="text" id="p-circuitImage" class="w-full border rounded p-2">
+                                            <input type="text" id="p-circuitImage"
+                                                class="flex-1 border rounded p-2 text-sm"
+                                                placeholder="devre1.jpg veya https://example.com/img.png"
+                                                onchange="admin.previewCircuitImage()">
                                             <button type="button"
-                                                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded text-xs whitespace-nowrap"
+                                                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-2 rounded text-xs whitespace-nowrap"
                                                 onclick="admin.openImageSelector('p-circuitImage')">
                                                 🖼️ Seç
                                             </button>
+                                            <label
+                                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-2 rounded text-xs cursor-pointer whitespace-nowrap">
+                                                ⬆️ Yükle
+                                                <input type="file" accept="image/*" class="hidden"
+                                                    onchange="admin.uploadCircuitImage(this)">
+                                            </label>
+                                        </div>
+                                        <div id="circuit-image-preview" class="mt-2 hidden">
+                                            <img id="circuit-preview-img" src=""
+                                                class="max-h-32 rounded border shadow-sm">
                                         </div>
                                     </div>
                                 </div>
