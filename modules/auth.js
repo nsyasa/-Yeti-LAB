@@ -44,9 +44,9 @@ const Auth = {
      * Sign in with Google
      */
     async signInWithGoogle() {
-        // Redirect to index.html after OAuth
+        // Redirect to teacher.html after OAuth (for teachers)
         const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-        const redirectUrl = baseUrl + '/index.html';
+        const redirectUrl = baseUrl + '/teacher.html';
 
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'google',
@@ -63,9 +63,9 @@ const Auth = {
      * Sign in with GitHub
      */
     async signInWithGitHub() {
-        // Redirect to index.html after OAuth
+        // Redirect to teacher.html after OAuth (for teachers)
         const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-        const redirectUrl = baseUrl + '/index.html';
+        const redirectUrl = baseUrl + '/teacher.html';
 
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'github',
