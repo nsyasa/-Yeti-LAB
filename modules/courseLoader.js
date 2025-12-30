@@ -86,7 +86,6 @@ const CourseLoader = {
 
             script.onload = () => {
                 CourseLoader.loadedCourses.add(key);
-                console.log(`[CourseLoader] Loaded: ${key}`);
                 resolve(window.courseData[key]);
             };
 

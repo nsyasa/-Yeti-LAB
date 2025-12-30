@@ -24,15 +24,12 @@ const Auth = {
      * Initialize auth module
      */
     async init() {
-        console.log('🔐 Auth module initializing...');
-
         // Check for existing Supabase session (teachers/admins)
         await this.checkSession();
 
         // Check for existing student session
         this.checkStudentSession();
 
-        console.log('✅ Auth module ready');
         return this;
     },
 
@@ -168,13 +165,7 @@ const Auth = {
      * Check if user needs to complete profile
      */
     needsProfileCompletion() {
-        const needs = this.currentUser && !this.isProfileComplete;
-        console.log('[Auth] needsProfileCompletion check:', {
-            hasUser: !!this.currentUser,
-            isProfileComplete: this.isProfileComplete,
-            needs: needs
-        });
-        return needs;
+        return this.currentUser && !this.isProfileComplete;
     },
 
     /**
@@ -248,8 +239,6 @@ const Auth = {
         this.userRole = 'student';
         localStorage.setItem(this.USER_ROLE_KEY, 'student');
 
-        console.log('✅ Student logged in:', displayName);
-
         return session;
     },
 
@@ -263,7 +252,6 @@ const Auth = {
             try {
                 this.currentStudent = JSON.parse(stored);
                 this.userRole = 'student';
-                console.log('✅ Student session restored:', this.currentStudent.displayName);
                 return this.currentStudent;
             } catch (e) {
                 console.warn('[Auth] Invalid student session, clearing...');
@@ -282,7 +270,6 @@ const Auth = {
         localStorage.removeItem(this.USER_ROLE_KEY);
         this.currentStudent = null;
         this.userRole = null;
-        console.log('👋 Student logged out');
     },
 
     /**

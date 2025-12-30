@@ -118,7 +118,6 @@ const Assistant = {
     // ============================================
     init: () => {
         Assistant.renderUI();
-        console.log('[YetiAsistan] v2.0 yüklendi');
     },
 
     renderUI: () => {

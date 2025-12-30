@@ -46,7 +46,6 @@ const Progress = {
         }
 
         Progress.isInitialized = true;
-        console.log('✅ Progress module initialized');
     },
 
     /**
@@ -54,7 +53,6 @@ const Progress = {
      */
     loadFromServer: async () => {
         if (typeof Auth === 'undefined' || !Auth.currentStudent) {
-            console.log('[Progress] Not logged in, skipping server load');
             return;
         }
 
@@ -79,8 +77,6 @@ const Progress = {
                 Progress.data[row.course_id].push(row.project_id);
             });
 
-            console.log('[Progress] Loaded from server:', Progress.data);
-
         } catch (error) {
             console.error('[Progress] Failed to load from server:', error);
         } finally {
@@ -92,20 +88,11 @@ const Progress = {
      * Save a single progress entry to Supabase
      */
     saveToServer: async (courseKey, projectId, completed) => {
-        console.log('[Progress] saveToServer called:', { courseKey, projectId, completed });
-        console.log('[Progress] Auth state:', {
-            hasAuth: typeof Auth !== 'undefined',
-            currentStudent: Auth?.currentStudent,
-            isStudent: Auth?.isStudent?.()
-        });
-
         if (typeof Auth === 'undefined' || !Auth.currentStudent) {
-            console.log('[Progress] Not logged in, progress not saved');
             return false;
         }
 
         const studentId = Auth.currentStudent.studentId;
-        console.log('[Progress] Student ID:', studentId);
 
         try {
             if (completed) {
@@ -116,22 +103,17 @@ const Progress = {
                     project_id: projectId,
                     completed_at: new Date().toISOString()
                 };
-                console.log('[Progress] Upserting:', payload);
 
-                const { data, error } = await SupabaseClient.getClient()
+                const { error } = await SupabaseClient.getClient()
                     .from('student_progress')
                     .upsert(payload, {
                         onConflict: 'student_id,project_id'
-                    })
-                    .select();
+                    });
 
                 if (error) {
-                    console.error('[Progress] Upsert error:', error);
+                    console.error('[Progress] Save error:', error.message);
                     throw error;
                 }
-
-                console.log('[Progress] Saved successfully:', data);
-
 
             } else {
                 // Delete progress record
@@ -142,16 +124,15 @@ const Progress = {
                     .eq('project_id', projectId);
 
                 if (error) {
-                    console.error('[Progress] Delete error:', error);
+                    console.error('[Progress] Delete error:', error.message);
                     throw error;
                 }
-                console.log('[Progress] Deleted from server:', { courseKey, projectId });
             }
 
             return true;
 
         } catch (error) {
-            console.error('[Progress] Failed to save to server:', error);
+            console.error('[Progress] Failed:', error.message);
             return false;
         }
     },
@@ -160,13 +141,9 @@ const Progress = {
      * Toggle lesson completion
      */
     toggle: async (projectId) => {
-        console.log('[Progress] toggle called with projectId:', projectId);
-
         const key = Progress._getKey();
-        console.log('[Progress] current course key:', key);
 
         if (!key) {
-            console.error('[Progress] No course key found, aborting');
             return;
         }
 
@@ -287,14 +264,10 @@ const Progress = {
     onUpdate: null,
 
     // Legacy compatibility - load does nothing now, init handles everything
-    load: () => {
-        console.log('[Progress] load() called - now using init() instead');
-    },
+    load: () => { },
 
     // Legacy compatibility - save does nothing now, saveToServer handles everything
-    save: () => {
-        console.log('[Progress] save() called - now auto-saving to server');
-    }
+    save: () => { }
 };
 
 // Export for global access

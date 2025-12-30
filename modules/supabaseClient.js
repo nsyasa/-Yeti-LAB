@@ -25,7 +25,6 @@ const SupabaseClient = {
         }
 
         this.client = supabase.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY);
-        console.log('✅ Supabase client initialized');
         return true;
     },
 
