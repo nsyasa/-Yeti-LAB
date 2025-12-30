@@ -117,8 +117,19 @@ const UI = {
         const bar = document.getElementById('course-progress-bar');
         const text = document.getElementById('course-progress-text');
 
+        // Check if user is logged in as a student
+        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent();
+
         if (bar) bar.style.width = `${rate}%`;
-        if (text) text.innerText = I18n.t('percent_completed', { rate });
+        if (text) {
+            if (isLoggedIn) {
+                text.innerText = I18n.t('percent_completed', { rate });
+            } else {
+                text.innerText = '🔐 Giriş yap';
+                text.style.cursor = 'pointer';
+                text.onclick = () => window.location.href = 'auth.html';
+            }
+        }
     },
 
     // --- Sidebar ---

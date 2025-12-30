@@ -879,15 +879,137 @@
         }
 
         async function loadProgress() {
-            // TODO: Implement progress loading
             const container = document.getElementById('courseProgress');
+
+            // Show loading
             container.innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">📊</div>
-                    <p>İlerleme takibi yakında aktif olacak</p>
-                    <p class="text-sm mt-2">Öğrenciler ders tamamladıkça burada görünecek</p>
+                <div class="flex justify-center py-8">
+                    <div class="spinner"></div>
                 </div>
             `;
+
+            try {
+                // Get all students from teacher's classrooms
+                if (students.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">👨‍🎓</div>
+                            <p>Henüz öğrenci yok</p>
+                            <p class="text-sm mt-2">İlerleme verisi görüntülemek için önce öğrenci gerekli</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const studentIds = students.map(s => s.id);
+
+                // Get all progress data
+                const { data: progressData, error } = await SupabaseClient.getClient()
+                    .from('student_progress')
+                    .select('student_id, course_id, project_id, completed_at')
+                    .in('student_id', studentIds);
+
+                if (error) throw error;
+
+                // Update total completed lessons stat
+                const totalCompleted = progressData?.length || 0;
+                document.getElementById('statCompletedLessons').textContent = totalCompleted;
+
+                if (!progressData || progressData.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📊</div>
+                            <p>Henüz tamamlanan ders yok</p>
+                            <p class="text-sm mt-2">Öğrenciler ders tamamladıkça burada görünecek</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Group by course
+                const courseProgress = {};
+                progressData.forEach(p => {
+                    if (!courseProgress[p.course_id]) {
+                        courseProgress[p.course_id] = {
+                            courseKey: p.course_id,
+                            students: {},
+                            totalCompleted: 0
+                        };
+                    }
+
+                    if (!courseProgress[p.course_id].students[p.student_id]) {
+                        const student = students.find(s => s.id === p.student_id);
+                        courseProgress[p.course_id].students[p.student_id] = {
+                            name: student?.display_name || 'Bilinmeyen',
+                            completed: []
+                        };
+                    }
+
+                    courseProgress[p.course_id].students[p.student_id].completed.push(p.project_id);
+                    courseProgress[p.course_id].totalCompleted++;
+                });
+
+                // Course name mapping
+                const courseNames = {
+                    'arduino': '🔌 Arduino',
+                    'microbit': '📟 Micro:bit',
+                    'scratch': '🐱 Scratch',
+                    'mblock': '🤖 mBlock',
+                    'appinventor': '📱 App Inventor'
+                };
+
+                // Render progress
+                let html = '';
+
+                Object.entries(courseProgress).forEach(([courseKey, data]) => {
+                    const courseName = courseNames[courseKey] || courseKey;
+                    const studentList = Object.entries(data.students);
+
+                    html += `
+                        <div class="glass-card rounded-xl p-4 mb-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-bold text-lg text-gray-800 dark:text-white">${courseName}</h4>
+                                <span class="text-sm text-gray-500">${data.totalCompleted} tamamlama</span>
+                            </div>
+                            <div class="space-y-3">
+                                ${studentList.map(([studentId, studentData]) => {
+                        const completedCount = studentData.completed.length;
+                        return `
+                                        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                            <div class="w-10 h-10 rounded-full bg-theme/10 flex items-center justify-center text-xl">🎓</div>
+                                            <div class="flex-grow">
+                                                <p class="font-medium text-gray-800 dark:text-white">${escapeHtml(studentData.name)}</p>
+                                                <p class="text-sm text-gray-500">${completedCount} ders tamamladı</p>
+                                            </div>
+                                            <div class="flex gap-1">
+                                                ${studentData.completed.slice(0, 5).map(() => '<span class="text-green-500">✓</span>').join('')}
+                                                ${completedCount > 5 ? `<span class="text-gray-400 text-sm">+${completedCount - 5}</span>` : ''}
+                                            </div>
+                                        </div>
+                                    `;
+                    }).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html || `
+                    <div class="empty-state">
+                        <div class="icon">📊</div>
+                        <p>İlerleme verisi henüz yok</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading progress:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">❌</div>
+                        <p>Veri yüklenirken hata oluştu</p>
+                        <button onclick="loadProgress()" class="mt-4 px-4 py-2 bg-theme text-white rounded-lg">Tekrar Dene</button>
+                    </div>
+                `;
+            }
         }
 
         // ==========================================

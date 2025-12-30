@@ -42,19 +42,23 @@ const app = {
             // Init modules
             app.initTheme();
             app.initScrollBehavior();
-            app.initAuth(); // Auth durumunu kontrol et
-            window.Progress?.load();
-            window.Progress.onUpdate = (projectId) => {
-                app.renderProgressBar();
-                const btn = document.getElementById('btn-complete-project');
-                if (btn) {
-                    const isComplete = app.progress.isComplete(projectId);
-                    btn.innerHTML = isComplete ? "✅ Tamamlandı" : "Dersi Tamamla";
-                    btn.className = isComplete ?
-                        "mt-8 w-full py-4 bg-green-500 text-white rounded-xl shadow-lg font-bold text-xl hover:bg-green-600 transition transform hover:scale-105 active:scale-95" :
-                        "mt-8 w-full py-4 bg-gray-200 text-gray-600 rounded-xl shadow-lg font-bold text-xl hover:bg-green-500 hover:text-white transition transform hover:scale-105 active:scale-95";
-                }
-            };
+            app.initAuth(); // Auth durumunu kontrol et, Progress da burada başlatılacak
+
+            // Progress callback'i ayarla (init auth içinde çağrılacak)
+            if (window.Progress) {
+                window.Progress.onUpdate = (projectId) => {
+                    app.renderProgressBar();
+                    const btn = document.getElementById('btn-complete-project');
+                    if (btn) {
+                        const isComplete = app.progress.isComplete(projectId);
+                        btn.innerHTML = isComplete ? "✅ Tamamlandı" : "Dersi Tamamla";
+                        btn.className = isComplete ?
+                            "mt-8 w-full py-4 bg-green-500 text-white rounded-xl shadow-lg font-bold text-xl hover:bg-green-600 transition transform hover:scale-105 active:scale-95" :
+                            "mt-8 w-full py-4 bg-gray-200 text-gray-600 rounded-xl shadow-lg font-bold text-xl hover:bg-green-500 hover:text-white transition transform hover:scale-105 active:scale-95";
+                    }
+                };
+            }
+
             window.Search?.init(app.selectCourse, app.loadProject);
             window.Assistant?.init();
 
@@ -99,15 +103,24 @@ const app = {
                 return;
             }
 
+            // Progress modülünü başlat (Auth'dan sonra)
+            if (window.Progress?.init) {
+                await window.Progress.init();
+            }
+
             app.updateUserUI(Auth.getUserInfo());
 
             // Auth değişikliklerini dinle
-            Auth.onAuthStateChange((event, session, role) => {
+            Auth.onAuthStateChange(async (event, session, role) => {
                 app.updateUserUI(Auth.getUserInfo());
 
-                // Yeni giriş yapıldıysa profil kontrolü
-                if (event === 'SIGNED_IN' && Auth.needsProfileCompletion()) {
-                    window.location.href = 'profile.html';
+                // Yeni giriş yapıldıysa profil kontrolü ve progress yeniden yükle
+                if (event === 'SIGNED_IN') {
+                    if (Auth.needsProfileCompletion()) {
+                        window.location.href = 'profile.html';
+                    } else if (window.Progress?.loadFromServer) {
+                        await window.Progress.loadFromServer();
+                    }
                 }
             });
         } catch (err) {
