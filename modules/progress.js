@@ -18,8 +18,19 @@ const Progress = {
     isLoading: false,
     isInitialized: false,
 
-    // Reference to app state
-    _getKey: () => window._appState?.currentCourseKey || null,
+    // Reference to app state - try multiple sources
+    _getKey: () => {
+        // Try window._appState first
+        if (window._appState?.currentCourseKey) {
+            return window._appState.currentCourseKey;
+        }
+        // Try app.state
+        if (typeof app !== 'undefined' && app.state?.currentCourseKey) {
+            return app.state.currentCourseKey;
+        }
+        console.warn('[Progress] Could not get current course key');
+        return null;
+    },
     _getCourseData: () => window.courseData || {},
 
     /**
@@ -116,12 +127,11 @@ const Progress = {
 
                 if (error) {
                     console.error('[Progress] Upsert error:', error);
-                    alert('İlerleme kaydedilemedi: ' + error.message);
                     throw error;
                 }
 
                 console.log('[Progress] Saved successfully:', data);
-                alert('✅ Ders tamamlandı!');
+
 
             } else {
                 // Delete progress record
@@ -150,8 +160,15 @@ const Progress = {
      * Toggle lesson completion
      */
     toggle: async (projectId) => {
+        console.log('[Progress] toggle called with projectId:', projectId);
+
         const key = Progress._getKey();
-        if (!key) return;
+        console.log('[Progress] current course key:', key);
+
+        if (!key) {
+            console.error('[Progress] No course key found, aborting');
+            return;
+        }
 
         // Check if user is logged in
         const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent;
