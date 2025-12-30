@@ -81,37 +81,60 @@ const Progress = {
      * Save a single progress entry to Supabase
      */
     saveToServer: async (courseKey, projectId, completed) => {
+        console.log('[Progress] saveToServer called:', { courseKey, projectId, completed });
+        console.log('[Progress] Auth state:', {
+            hasAuth: typeof Auth !== 'undefined',
+            currentStudent: Auth?.currentStudent,
+            isStudent: Auth?.isStudent?.()
+        });
+
         if (typeof Auth === 'undefined' || !Auth.currentStudent) {
             console.log('[Progress] Not logged in, progress not saved');
             return false;
         }
 
+        const studentId = Auth.currentStudent.studentId;
+        console.log('[Progress] Student ID:', studentId);
+
         try {
             if (completed) {
                 // Insert progress record
-                const { error } = await SupabaseClient.getClient()
-                    .from('student_progress')
-                    .upsert({
-                        student_id: Auth.currentStudent.studentId,
-                        course_id: courseKey, // Using courseKey as course_id for simplicity
-                        project_id: projectId,
-                        completed_at: new Date().toISOString()
-                    }, {
-                        onConflict: 'student_id,project_id'
-                    });
+                const payload = {
+                    student_id: studentId,
+                    course_id: courseKey,
+                    project_id: projectId,
+                    completed_at: new Date().toISOString()
+                };
+                console.log('[Progress] Upserting:', payload);
 
-                if (error) throw error;
-                console.log('[Progress] Saved to server:', { courseKey, projectId });
+                const { data, error } = await SupabaseClient.getClient()
+                    .from('student_progress')
+                    .upsert(payload, {
+                        onConflict: 'student_id,project_id'
+                    })
+                    .select();
+
+                if (error) {
+                    console.error('[Progress] Upsert error:', error);
+                    alert('İlerleme kaydedilemedi: ' + error.message);
+                    throw error;
+                }
+
+                console.log('[Progress] Saved successfully:', data);
+                alert('✅ Ders tamamlandı!');
 
             } else {
                 // Delete progress record
                 const { error } = await SupabaseClient.getClient()
                     .from('student_progress')
                     .delete()
-                    .eq('student_id', Auth.currentStudent.studentId)
+                    .eq('student_id', studentId)
                     .eq('project_id', projectId);
 
-                if (error) throw error;
+                if (error) {
+                    console.error('[Progress] Delete error:', error);
+                    throw error;
+                }
                 console.log('[Progress] Deleted from server:', { courseKey, projectId });
             }
 
