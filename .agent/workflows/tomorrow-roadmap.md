@@ -1,78 +1,73 @@
 ---
-description: Yarınki geliştirme planı - 30 Aralık 2024
+description: Yarınki geliştirme planı - 31 Aralık 2024
 ---
 
 # 🗓️ Yeti LAB - Yarınki Geliştirme Planı
 
-## ✅ Bugün Tamamlananlar (29 Aralık 2024)
+## ✅ Bugün Tamamlananlar (30 Aralık 2024)
 
 | Görev | Durum |
 |-------|-------|
-| Google OAuth kurulumu | ✅ Tamamlandı |
-| GitHub OAuth kurulumu | ✅ Tamamlandı |
-| `auth.html` giriş sayfası | ✅ Tamamlandı |
-| `profile.html` profil tamamlama | ✅ Tamamlandı |
-| Veritabanı şeması (user_profiles, classrooms, students) | ✅ Tamamlandı |
-| Header'a Giriş/Kullanıcı menüsü | ✅ Tamamlandı |
-| Profil tamamlama akışı (giriş → profil → ana sayfa) | ✅ Tamamlandı |
-| Trigger düzeltmeleri | ✅ Tamamlandı |
+| Öğretmen Paneli (teacher.html) | ✅ Tamamlandı |
+| OAuth yönlendirme düzeltmesi | ✅ Tamamlandı |
+| Supabase progress entegrasyonu | ✅ Tamamlandı |
+| Öğrenci ders tamamlama sistemi | ✅ Tamamlandı |
+| İlerleme takibi (öğretmen paneli) | ✅ Tamamlandı |
 
 ---
 
-## 📋 Yarın Yapılacaklar (30 Aralık 2024)
+## 📋 Yarın Yapılacaklar (31 Aralık 2024)
 
-### 1. Öğretmen Paneli (`teacher.html`) - ⏱️ ~1.5 saat
-- [ ] Dashboard görünümü (sınıflar, öğrenci sayısı)
-- [ ] Sınıf oluşturma formu
-- [ ] Sınıf kodu görüntüleme ve kopyalama
-- [ ] Öğrenci listesi görüntüleme
-- [ ] Sınıfı silme/düzenleme
+### Faz 1: Veritabanı Değişiklikleri (30 dk)
+```sql
+ALTER TABLE classrooms ADD COLUMN requires_password BOOLEAN DEFAULT false;
+ALTER TABLE students ADD COLUMN password TEXT;
+ALTER TABLE students ADD COLUMN added_by_teacher BOOLEAN DEFAULT false;
+```
 
-### 2. Öğrenci Giriş Sistemi Testi - ⏱️ ~30 dk
-- [ ] Sınıf kodu ile giriş testi
-- [ ] Google ile öğrenci girişi testi
-- [ ] `auth.html` öğrenci sekmesine GitHub ekle
+### Faz 2: Toplu Öğrenci Ekleme (1 saat)
+- [ ] "Toplu Öğrenci Ekle" butonu (teacher.html)
+- [ ] Modal: Textarea (her satıra bir isim)
+- [ ] Checkbox: "Şifre oluştur"
+- [ ] Önizleme tablosu (isim + şifre)
+- [ ] Listeyi export (kopyala/indir)
 
-### 3. İlerleme Takibi Senkronizasyonu - ⏱️ ~1 saat
-- [ ] `progress.js` modülünü Supabase'e bağla
-- [ ] Öğrenci ilerlemesini `student_progress` tablosuna kaydet
-- [ ] Öğretmen panelinde ilerleme görüntüle
+### Faz 3: Yeni Giriş Ekranı (1.5 saat)
+- [ ] Birleşik giriş ekranı tasarımı
+- [ ] Email kayıt/giriş akışı
+- [ ] Google/GitHub OAuth (mevcut)
+- [ ] "Sınıf koduyla gir" butonu
 
-### 4. Son Dokunuşlar - ⏱️ ~30 dk
-- [ ] Auth sayfası öğrenci sekmesine GitHub ekle
-- [ ] Profil görüntüleme sayfası (basit)
-- [ ] Çıkış sonrası yönlendirme düzeltmeleri
+### Faz 4: Kod ile Giriş Akışı (1 saat)
+- [ ] Kod gir → Sınıf kontrol
+- [ ] Şifreli sınıf: şifre iste
+- [ ] Şifresiz sınıf: listeden isim seç
+
+### Faz 5: Öğrenci İlerleme Sayfası (1 saat)
+- [ ] Profil sayfasında tamamlanan dersler
+- [ ] Quiz puanları listesi
+- [ ] Kurs kartlarında ilerleme göstergesi
+
+### Faz 6: Öğretmen Paneli İlerleme (30 dk)
+- [ ] Öğrenci detay modalı
+- [ ] Ders bazlı ilerleme
 
 ---
 
 ## 🎯 Öncelik Sırası
 
-```
-1. teacher.html (EN ÖNCELİKLİ - 404 hatası var!)
-2. Öğrenci giriş testi
-3. İlerleme takibi
-4. Son dokunuşlar
-```
-
----
-
-## 📁 Oluşturulacak Dosyalar
-
-- `teacher.html` - Öğretmen paneli
-- `modules/classroom.js` - Sınıf yönetimi modülü (opsiyonel)
-
----
-
-## 💡 Notlar
-
-- Profil kaydedildikten sonra öğretmenler `teacher.html`'e yönlendiriliyor
-- Öğrenciler `index.html`'e yönlendiriliyor
-- Mevcut kullanıcıların profilleri `is_profile_complete = true` olarak güncellendi
+1. **Faz 1** - Veritabanı (SQL Editor'da)
+2. **Faz 2** - Toplu öğrenci ekleme
+3. **Faz 3** - Yeni giriş ekranı
+4. **Faz 4** - Kod ile giriş akışı
+5. **Faz 5** - Öğrenci ilerleme sayfası
+6. **Faz 6** - Öğretmen paneli ilerleme
 
 ---
 
 ## 🔗 Önemli Linkler
 
 - **GitHub Pages:** https://nsyasa.github.io/-Yeti-LAB/
+- **Öğretmen Paneli:** https://nsyasa.github.io/-Yeti-LAB/teacher.html
 - **Auth Sayfası:** https://nsyasa.github.io/-Yeti-LAB/auth.html
 - **Supabase Dashboard:** https://supabase.com/dashboard/project/zuezvfojutlefdvqrica
