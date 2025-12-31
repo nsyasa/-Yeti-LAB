@@ -500,6 +500,13 @@
                             class="px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
                             <option value="all">Tüm Sınıflar</option>
                         </select>
+                        <button onclick="printStudentList()"
+                            class="ml-auto bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 px-4 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                            title="Öğrenci Şifre Listesini Yazdır">
+                            <span>🖨️</span>
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Şifre Listesini
+                                Yazdır</span>
+                        </button>
                     </div>
 
                     <div id="studentsList" class="space-y-3">
@@ -604,10 +611,18 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Şifre (Opsiyonel)</label>
-                    <input type="text" id="studentPassword" maxlength="20"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        placeholder="Boş bırakılabilir">
-                    <p class="text-xs text-gray-500 mt-1">Öğrenci girişte bu şifreyi kullanacak</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="studentPassword" maxlength="20"
+                            class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="Boş bırakılabilir">
+                        <button type="button"
+                            onclick="document.getElementById('studentPassword').value = generateRandomPassword()"
+                            class="px-4 bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xl"
+                            title="Rastgele Şifre Oluştur">
+                            🎲
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Öğrenci girişte ismini seçtikten sonra bu şifreyi girecek</p>
                 </div>
                 <div class="mb-6">
                     <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Avatar</label>
@@ -1613,6 +1628,74 @@
         // ==========================================
 
         let selectedAvatarEmoji = '🎓';
+
+        function generateRandomPassword() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        function printStudentList() {
+            if (!currentClassroom) {
+                showToast('Lütfen önce bir sınıf seçin', 'error');
+                return;
+            }
+            if (students.length === 0) {
+                showToast('Yazdırılacak öğrenci listesi yok', 'warning');
+                return;
+            }
+
+            const printWindow = window.open('', '_blank');
+            const html = `
+                <html>
+                <head>
+                    <title>${currentClassroom.name} - Sınıf Listesi</title>
+                    <style>
+                        body { font-family: 'Segoe UI', sans-serif; padding: 40px; }
+                        h1 { text-align: center; color: #111; margin-bottom: 10px; }
+                        p { text-align: center; color: #666; margin-bottom: 30px; }
+                        table { width: 100%; border-collapse: collapse; border: 2px solid #000; }
+                        th, td { border: 1px solid #000; padding: 15px; text-align: left; font-size: 16px; }
+                        th { background-color: #f0f0f0; font-weight: bold; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        .password { font-family: monospace; font-size: 18px; font-weight: bold; letter-spacing: 2px; }
+                        .no-pass { color: #999; font-style: italic; font-size: 14px; }
+                        .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${currentClassroom.name}</h1>
+                    <p>Sınıf Kodu: <b>${currentClassroom.code}</b> | Öğrenci Giriş Bilgileri</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px">#</th>
+                                <th>Öğrenci Adı</th>
+                                <th>Giriş Şifresi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${students.map((s, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${s.display_name}</td>
+                                    <td>${s.password ? `<span class="password">${s.password}</span>` : '<span class="no-pass">Şifre Yok</span>'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        Yeti LAB - yeti-lab.com - ${new Date().toLocaleDateString('tr-TR')}
+                    </div>
+                </body>
+                </html>
+             `;
+            printWindow.document.write(html);
+            printWindow.document.close();
+            // Wait for content to load then print
+            setTimeout(() => {
+                printWindow.print();
+                // printWindow.close(); // Optional: close after print
+            }, 500);
+        }
 
         function selectAvatar(emoji) {
             selectedAvatarEmoji = emoji;

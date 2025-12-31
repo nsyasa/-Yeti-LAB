@@ -275,31 +275,19 @@
                             <!-- Student Identification Section (Animated) -->
                             <div id="studentIdentifySection" class="hidden opacity-0 transition-opacity duration-500">
                                 <!-- Student Name Selection -->
-                                <div class="mb-3">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 font-bold mb-2">İsmin</label>
+
+                                    <!-- Selection Mode Only -->
                                     <div id="nameSelectMode">
                                         <select id="studentSelect"
-                                            class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-sm mb-1 cursor-pointer bg-white"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg mb-2 cursor-pointer"
                                             onchange="handleStudentSelect()">
                                             <option value="">İsmini Seç...</option>
                                         </select>
-                                        <div class="text-right">
-                                            <button type="button" onclick="toggleNameInputMode()"
-                                                class="text-[10px] text-theme hover:underline font-bold uppercase tracking-wide">
-                                                + Listede yokum
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div id="nameInputMode" class="hidden">
-                                        <input type="text" id="studentName"
-                                            class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-sm mb-1"
-                                            placeholder="Adını yaz..." minlength="2" maxlength="50">
-                                        <div class="text-right">
-                                            <button type="button" onclick="toggleNameInputMode()"
-                                                class="text-[10px] text-theme hover:underline font-bold uppercase tracking-wide">
-                                                ← Listeye dön
-                                            </button>
-                                        </div>
+                                        <p id="noStudentMessage" class="hidden text-red-500 text-sm mt-1">
+                                            Bu sınıfta kayıtlı öğrenci bulunamadı. Lütfen öğretmenine başvur.
+                                        </p>
                                     </div>
                                 </div>
 
@@ -601,12 +589,14 @@
                         studentSelect.innerHTML = '<option value="">İsmini Seç...</option>' +
                             students.map(s => `<option value="${s.id}">${escapeHtml(s.display_name)}</option>`).join('');
 
-                        // Default to selection mode if students exist
+                        // Show select mode, hide error
                         document.getElementById('nameSelectMode').classList.remove('hidden');
-                        document.getElementById('nameInputMode').classList.add('hidden');
+                        document.getElementById('noStudentMessage').classList.add('hidden');
                     } else {
-                        // No students, force input mode
-                        toggleNameInputMode(true);
+                        // No students found
+                        classroomStudents = [];
+                        studentSelect.innerHTML = '<option value="">Listede Kimse Yok</option>';
+                        document.getElementById('noStudentMessage').classList.remove('hidden');
                     }
 
                     // Reset password section initially (wait for student selection)
@@ -624,80 +614,39 @@
             } catch (err) {
                 console.warn('Code check error:', err);
                 infoBox.classList.add('hidden');
-                identifySection.classList.add('hidden'); // Also hide on error
+                identifySection.classList.add('hidden');
             }
-        }
-
-        function toggleNameInputMode(forceInput = false) {
-            const selectMode = document.getElementById('nameSelectMode');
-            const inputMode = document.getElementById('nameInputMode');
-            const studentSelect = document.getElementById('studentSelect');
-            const studentName = document.getElementById('studentName');
-
-            if (forceInput || !inputMode.classList.contains('hidden')) {
-                // Switch to Select Mode
-                if (!forceInput) {
-                    selectMode.classList.remove('hidden');
-                    inputMode.classList.add('hidden');
-                    studentName.value = ''; // clear manual input
-                } else {
-                    // Force Input
-                    selectMode.classList.add('hidden');
-                    inputMode.classList.remove('hidden');
-                    studentSelect.value = ''; // clear selection
-                }
-            } else {
-                // Switch to Input Mode
-                selectMode.classList.add('hidden');
-                inputMode.classList.remove('hidden');
-                studentSelect.value = ''; // clear selection
-            }
-
-            // Reset password field visibility when switching modes
-            handleStudentSelect();
         }
 
         function handleStudentSelect() {
             const studentId = document.getElementById('studentSelect').value;
             const passwordSection = document.getElementById('studentPasswordSection');
             const passwordInput = document.getElementById('studentPassword');
+            const submitBtn = document.getElementById('studentLoginBtn');
 
-            // If manual input mode is active or no student selected
-            if (document.getElementById('nameInputMode').classList.contains('hidden') === false) {
-                // In manual mode, obey classroom rules
-                if (currentClassroomData?.requires_password) {
-                    passwordSection.classList.remove('hidden');
-                    passwordInput.required = true;
-                } else {
-                    passwordSection.classList.add('hidden');
-                    passwordInput.required = false;
-                }
-                return;
-            }
-
-            // In selection mode
             if (!studentId) {
+                // No selection
                 passwordSection.classList.add('hidden');
                 passwordInput.required = false;
+                passwordInput.value = '';
                 return;
             }
 
+            // Find selected student
             const student = classroomStudents.find(s => s.id === studentId);
 
-            // If student has a specific password or classroom requires it
-            if ((student && student.password) || (currentClassroomData?.requires_password)) {
+            if (student && student.password) {
+                // Student has a password (or classroom requires it and it's set on student)
                 passwordSection.classList.remove('hidden');
                 passwordInput.required = true;
-
-                // Update placeholder based on requirement
-                if (student && student.password) {
-                    passwordInput.placeholder = "Öğrenci şifreni gir...";
-                } else {
-                    passwordInput.placeholder = "Sınıf şifresini gir...";
-                }
+                passwordInput.placeholder = "Şifreni gir...";
+                // Focus on password
+                setTimeout(() => passwordInput.focus(), 100);
             } else {
+                // No password needed
                 passwordSection.classList.add('hidden');
                 passwordInput.required = false;
+                passwordInput.value = '';
             }
         }
 
@@ -708,51 +657,64 @@
                 e.preventDefault();
 
                 const code = getClassroomCode();
-                let name = "";
-                let studentId = null;
-
-                // Determine name based on mode
-                if (document.getElementById('nameInputMode').classList.contains('hidden')) {
-                    // Selection Mode
-                    const select = document.getElementById('studentSelect');
-                    if (select.value) {
-                        studentId = select.value;
-                        const selectedStudent = classroomStudents.find(s => s.id === studentId);
-                        name = selectedStudent ? selectedStudent.display_name : "";
-                    }
-                } else {
-                    // Manual Input Mode
-                    name = document.getElementById('studentName').value.trim();
-                }
-
-                const password = document.getElementById('studentPassword').value.trim();
+                const studentSelect = document.getElementById('studentSelect');
+                const studentId = studentSelect.value;
+                const passwordInput = document.getElementById('studentPassword');
+                const password = passwordInput.value;
                 const btn = document.getElementById('studentLoginBtn');
 
-                if (code.length !== 5) {
-                    showAlert('Lütfen 5 haneli sınıf kodunu gir', 'error');
+                if (!studentId) {
+                    showAlert('Lütfen ismini seç.', 'error');
                     return;
                 }
 
-                if (!name || name.length < 2) {
-                    showAlert('Lütfen bir isim seç veya yaz', 'error');
+                // Find selected student
+                const student = classroomStudents.find(s => s.id === studentId);
+
+                if (!student) {
+                    showAlert('Öğrenci bulunamadı.', 'error');
                     return;
                 }
 
+                // Client-side Password Verification
+                // (Since we fetch passwords in checkClassroomCode, we can verify here)
+                // Note: For production security, verification should happen on server-side RLS/RPC
 
-                // Check password if required (based on visibility)
-                if (!document.getElementById('studentPasswordSection').classList.contains('hidden')) {
+                // 1. If student has a personal password
+                if (student.password) {
                     if (!password) {
                         showAlert('Lütfen şifreni gir.', 'error');
-                        document.getElementById('studentPassword').focus();
+                        passwordInput.focus();
                         return;
                     }
+                    if (student.password !== password) {
+                        showAlert('Hatalı şifre!', 'error');
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                        return;
+                    }
+                }
+                // 2. If classroom has a password but student doesn't (first login or shared password)
+                else if (currentClassroomData?.requires_password) {
+                    if (!password) {
+                        showAlert('Lütfen sınıf şifresini gir.', 'error');
+                        passwordInput.focus();
+                        return;
+                    }
+                    // We don't have the classroom password on client to check (it's hidden)
+                    // So we let the server handle it via Auth.studentLogin logic if applicable
+                    // OR we assume this is the first login and it will set the student password?
+                    // User requirements imply password is set by teacher.
+                    // For now, proceed to login attempting to use this password.
                 }
 
                 setLoading(btn, true);
 
                 try {
-                    // Pass password to studentLogin if provided
-                    await Auth.studentLogin(code, name, password);
+                    // Pass password to studentLogin
+                    // Auth.studentLogin uses display_name to find/create student. 
+                    // Since we selected an ID, we use that name.
+                    await Auth.studentLogin(code, student.display_name, password);
                     showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                     setTimeout(() => {
                         window.location.href = 'index.html';
