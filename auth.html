@@ -460,6 +460,8 @@
             }
         }
 
+        let checkTimeout;
+
         // Code input handling
         function setupCodeInputs() {
             const inputs = document.querySelectorAll('.code-box');
@@ -473,7 +475,11 @@
                         inputs[index + 1].focus();
                     }
 
-                    checkClassroomCode();
+                    // Debounce check to prevent flickering
+                    clearTimeout(checkTimeout);
+                    checkTimeout = setTimeout(() => {
+                        checkClassroomCode();
+                    }, 300);
                 });
 
                 input.addEventListener('keydown', (e) => {
