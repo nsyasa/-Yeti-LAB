@@ -653,6 +653,92 @@
         </div>
     </div>
 
+    <!-- Bulk Add Student Modal -->
+    <div id="bulkAddModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold">📋 Toplu Öğrenci Ekle</h3>
+                <button onclick="closeModal('bulkAddModal')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+
+            <!-- Step 1: Input -->
+            <div id="bulkStep1">
+                <p class="text-gray-600 mb-4">Her satıra bir öğrenci ismi gelecek şekilde listeyi yapıştırın.</p>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf Seçin</label>
+                    <select id="bulkStudentClassroom"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">Sınıf seçin...</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Öğrenci Listesi</label>
+                    <textarea id="bulkStudentList" rows="10"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 font-mono text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="Ahmet Yılmaz&#10;Ayşe Demir&#10;Mehmet Kaya..."></textarea>
+                </div>
+
+                <div class="mb-6">
+                    <label
+                        class="flex items-center gap-3 cursor-pointer p-4 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <input type="checkbox" id="bulkGeneratePassword"
+                            class="w-5 h-5 text-theme rounded focus:ring-theme" checked>
+                        <div>
+                            <span class="font-bold text-gray-800 dark:text-white">🔒 Otomatik Şifre Oluştur</span>
+                            <p class="text-sm text-gray-500">Her öğrenci için 6 haneli rastgele şifre oluşturulur</p>
+                        </div>
+                    </label>
+                </div>
+
+                <button onclick="previewBulkStudents()"
+                    class="w-full py-4 bg-theme text-white rounded-xl font-bold hover:brightness-110 transition-all">
+                    Önizle ve Devam Et →
+                </button>
+            </div>
+
+            <!-- Step 2: Preview & Confirm -->
+            <div id="bulkStep2" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-lg">Önizleme (<span id="bulkCount">0</span> öğrenci)</h4>
+                    <button onclick="copyBulkList()"
+                        class="text-theme hover:underline text-sm font-bold flex items-center gap-1">
+                        📋 Listeyi Kopyala
+                    </button>
+                </div>
+
+                <div
+                    class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6 max-h-[400px] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-xs text-gray-500 uppercase border-b border-gray-200 dark:border-gray-700">
+                            <tr>
+                                <th class="pb-2">Öğrenci Adı</th>
+                                <th class="pb-2">Şifre</th>
+                                <th class="pb-2">Avatar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulkPreviewTable" class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- Preview items -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="resetBulkForm()"
+                        class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                        ← Geri Dön
+                    </button>
+                    <button onclick="saveBulkStudents()" id="saveBulkBtn"
+                        class="flex-1 px-4 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
+                        Onayla ve Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Classroom Settings Modal -->
     <div id="classroomSettingsModal" class="modal-overlay">
         <div class="modal-content">
@@ -1073,6 +1159,11 @@
                                 class="px-3 py-2 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors"
                                 title="Öğrenci Ekle">
                                 ➕👨‍🎓
+                            </button>
+                            <button onclick="openBulkAddModal('${classroom.id}')"
+                                class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors"
+                                title="Toplu Ekle">
+                                📋
                             </button>
                             <button onclick="openClassroomSettings('${classroom.id}')"
                                 class="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
@@ -1556,6 +1647,151 @@
             }
 
             document.getElementById('addStudentModal').classList.add('open');
+        }
+
+        // ==========================================
+        // BULK ADD STUDENT FUNCTIONS
+        // ==========================================
+
+        let bulkStudentsData = [];
+
+        function openBulkAddModal(classroomId = null) {
+            // Populate classroom select
+            const select = document.getElementById('bulkStudentClassroom');
+            select.innerHTML = '<option value="">Sınıf seçin...</option>' +
+                classrooms.map(c => `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+
+            // Pre-select if provided
+            if (classroomId) {
+                select.value = classroomId;
+            }
+
+            resetBulkForm();
+            document.getElementById('bulkAddModal').classList.add('open');
+        }
+
+        function previewBulkStudents() {
+            const classroomId = document.getElementById('bulkStudentClassroom').value;
+            const listText = document.getElementById('bulkStudentList').value.trim();
+            const generatePassword = document.getElementById('bulkGeneratePassword').checked;
+
+            if (!classroomId) {
+                showToast('Lütfen bir sınıf seçin', 'error');
+                return;
+            }
+
+            if (!listText) {
+                showToast('Lütfen öğrenci listesini girin', 'error');
+                return;
+            }
+
+            const lines = listText.split('\n').filter(line => line.trim() !== '');
+
+            if (lines.length === 0) {
+                showToast('Geçerli isim bulunamadı', 'error');
+                return;
+            }
+
+            bulkStudentsData = lines.map(line => {
+                const name = line.trim();
+                let password = null;
+
+                if (generatePassword) {
+                    // Generate simple 6-digit numeric password
+                    password = Math.floor(100000 + Math.random() * 900000).toString();
+                }
+
+                return {
+                    name,
+                    password,
+                    avatar: '🎓'
+                };
+            });
+
+            // Update Preview UI
+            document.getElementById('bulkCount').textContent = bulkStudentsData.length;
+            const tbody = document.getElementById('bulkPreviewTable');
+            tbody.innerHTML = bulkStudentsData.map(s => `
+                <tr class="bg-white dark:bg-gray-800">
+                    <td class="py-2 pr-2 font-medium text-gray-900 dark:text-white">${escapeHtml(s.name)}</td>
+                    <td class="py-2 pr-2 font-mono text-gray-600 dark:text-gray-400">${s.password || '<span class="text-gray-300">-</span>'}</td>
+                    <td class="py-2 text-2xl">${s.avatar}</td>
+                </tr>
+            `).join('');
+
+            // Switch views
+            document.getElementById('bulkStep1').classList.add('hidden');
+            document.getElementById('bulkStep2').classList.remove('hidden');
+        }
+
+        function resetBulkForm() {
+            document.getElementById('bulkStep1').classList.remove('hidden');
+            document.getElementById('bulkStep2').classList.add('hidden');
+            document.getElementById('bulkStudentList').value = '';
+            bulkStudentsData = [];
+        }
+
+        function copyBulkList() {
+            if (bulkStudentsData.length === 0) return;
+
+            const text = bulkStudentsData.map(s => {
+                if (s.password) return `${s.name}\t${s.password}`;
+                return s.name;
+            }).join('\n');
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Liste kopyalandı (İsim + Şifre)', 'success');
+            });
+        }
+
+        async function saveBulkStudents() {
+            const classroomId = document.getElementById('bulkStudentClassroom').value;
+            const saveBtn = document.getElementById('saveBulkBtn');
+
+            if (!classroomId || bulkStudentsData.length === 0) return;
+
+            // Show loading
+            const originalText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner"></span> Kaydediliyor...';
+
+            try {
+                // Prepare data for Supabase
+                const studentsToInsert = bulkStudentsData.map(s => ({
+                    classroom_id: classroomId,
+                    display_name: s.name,
+                    password: s.password,
+                    avatar_emoji: s.avatar,
+                    added_by_teacher: true,
+                    last_active_at: new Date().toISOString()
+                }));
+
+                const { data, error } = await SupabaseClient.getClient()
+                    .from('students')
+                    .insert(studentsToInsert)
+                    .select();
+
+                if (error) throw error;
+
+                // Update local state
+                if (data) {
+                    students.push(...data);
+                }
+
+                showToast(`${data.length} öğrenci başarıyla eklendi!`, 'success');
+                closeModal('bulkAddModal');
+
+                // Refresh data
+                await loadDashboardData();
+                loadStudents();
+
+            } catch (error) {
+                console.error('Bulk save error:', error);
+                showToast('Kaydetme başarısız: ' + error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
         }
 
         async function addStudent(event) {
