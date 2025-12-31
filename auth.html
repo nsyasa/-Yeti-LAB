@@ -533,6 +533,7 @@
         // Check classroom code
         let currentClassroomData = null; // Store classroom data for later use
         let classroomStudents = [];
+        let lastCheckedCode = ""; // Cache to prevent flickering
 
         async function checkClassroomCode() {
             const code = getClassroomCode();
@@ -543,7 +544,9 @@
             const studentSelect = document.getElementById('studentSelect');
             const identifySection = document.getElementById('studentIdentifySection');
 
+            // If code is incomplete, reset logic
             if (code.length !== 5) {
+                lastCheckedCode = ""; // Reset cache
                 infoBox.classList.add('hidden');
                 identifySection.classList.add('hidden');
                 identifySection.classList.add('opacity-0');
@@ -554,6 +557,10 @@
                 studentSelect.innerHTML = '<option value="">İsmini Seç...</option>';
                 return;
             }
+
+            // If code hasn't changed, don't re-run logic (Prevents UI flickering)
+            if (code === lastCheckedCode) return;
+            lastCheckedCode = code;
 
             try {
                 // Get classroom data
