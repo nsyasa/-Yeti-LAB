@@ -211,12 +211,37 @@
                                 </div>
                             </div>
 
-                            <!-- Student Name -->
+                            <!-- Student Name Selection -->
                             <div class="mb-4">
                                 <label class="block text-gray-700 font-bold mb-2">İsmin</label>
-                                <input type="text" id="studentName"
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg"
-                                    placeholder="Adını yaz..." required minlength="2" maxlength="50">
+
+                                <!-- Selection Mode -->
+                                <div id="nameSelectMode">
+                                    <select id="studentSelect"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg mb-2 cursor-pointer"
+                                        onchange="handleStudentSelect()">
+                                        <option value="">İsmini Seç...</option>
+                                    </select>
+                                    <div class="text-right">
+                                        <button type="button" onclick="toggleNameInputMode()"
+                                            class="text-sm text-theme hover:underline font-medium">
+                                            Listede yokum, ismimi yazmak istiyorum
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Input Mode (Hidden by default) -->
+                                <div id="nameInputMode" class="hidden">
+                                    <input type="text" id="studentName"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg mb-2"
+                                        placeholder="Adını yaz..." minlength="2" maxlength="50">
+                                    <div class="text-right">
+                                        <button type="button" onclick="toggleNameInputMode()"
+                                            class="text-sm text-theme hover:underline font-medium">
+                                            Listeden seç
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Student Password (hidden by default, shown when classroom requires password) -->
@@ -492,6 +517,7 @@
 
         // Check classroom code
         let currentClassroomData = null; // Store classroom data for later use
+        let classroomStudents = [];
 
         async function checkClassroomCode() {
             const code = getClassroomCode();
@@ -499,16 +525,20 @@
             const details = document.getElementById('classroomDetails');
             const passwordSection = document.getElementById('studentPasswordSection');
             const passwordInput = document.getElementById('studentPassword');
+            const studentSelect = document.getElementById('studentSelect');
 
             if (code.length !== 5) {
                 infoBox.classList.add('hidden');
                 passwordSection.classList.add('hidden');
                 passwordInput.required = false;
                 currentClassroomData = null;
+                classroomStudents = [];
+                studentSelect.innerHTML = '<option value="">İsmini Seç...</option>';
                 return;
             }
 
             try {
+                // Get classroom data
                 const { data, error } = await SupabaseClient.getClient()
                     .from('classrooms')
                     .select('id, name, requires_password, user_profiles(full_name)')
@@ -524,14 +554,30 @@
                     const lockIcon = data.requires_password ? ' 🔒' : '';
                     details.textContent = `${data.name}${lockIcon} - ${data.user_profiles?.full_name || 'Öğretmen'}`;
 
-                    // Show/hide password section based on classroom setting
-                    if (data.requires_password) {
-                        passwordSection.classList.remove('hidden');
-                        passwordInput.required = true;
+                    // Fetch students for this classroom
+                    const { data: students, error: studentsError } = await SupabaseClient.getClient()
+                        .from('students')
+                        .select('id, display_name, password')
+                        .eq('classroom_id', data.id)
+                        .order('display_name');
+
+                    if (students && students.length > 0) {
+                        classroomStudents = students;
+                        studentSelect.innerHTML = '<option value="">İsmini Seç...</option>' +
+                            students.map(s => `<option value="${s.id}">${escapeHtml(s.display_name)}</option>`).join('');
+
+                        // Default to selection mode if students exist
+                        document.getElementById('nameSelectMode').classList.remove('hidden');
+                        document.getElementById('nameInputMode').classList.add('hidden');
                     } else {
-                        passwordSection.classList.add('hidden');
-                        passwordInput.required = false;
+                        // No students, force input mode
+                        toggleNameInputMode(true);
                     }
+
+                    // Reset password section initially (wait for student selection)
+                    passwordSection.classList.add('hidden');
+                    passwordInput.required = false;
+
                 } else {
                     infoBox.classList.add('hidden');
                     passwordSection.classList.add('hidden');
@@ -544,6 +590,79 @@
             }
         }
 
+        function toggleNameInputMode(forceInput = false) {
+            const selectMode = document.getElementById('nameSelectMode');
+            const inputMode = document.getElementById('nameInputMode');
+            const studentSelect = document.getElementById('studentSelect');
+            const studentName = document.getElementById('studentName');
+
+            if (forceInput || !inputMode.classList.contains('hidden')) {
+                // Switch to Select Mode
+                if (!forceInput) {
+                    selectMode.classList.remove('hidden');
+                    inputMode.classList.add('hidden');
+                    studentName.value = ''; // clear manual input
+                } else {
+                    // Force Input
+                    selectMode.classList.add('hidden');
+                    inputMode.classList.remove('hidden');
+                    studentSelect.value = ''; // clear selection
+                }
+            } else {
+                // Switch to Input Mode
+                selectMode.classList.add('hidden');
+                inputMode.classList.remove('hidden');
+                studentSelect.value = ''; // clear selection
+            }
+
+            // Reset password field visibility when switching modes
+            handleStudentSelect();
+        }
+
+        function handleStudentSelect() {
+            const studentId = document.getElementById('studentSelect').value;
+            const passwordSection = document.getElementById('studentPasswordSection');
+            const passwordInput = document.getElementById('studentPassword');
+
+            // If manual input mode is active or no student selected
+            if (document.getElementById('nameInputMode').classList.contains('hidden') === false) {
+                // In manual mode, obey classroom rules
+                if (currentClassroomData?.requires_password) {
+                    passwordSection.classList.remove('hidden');
+                    passwordInput.required = true;
+                } else {
+                    passwordSection.classList.add('hidden');
+                    passwordInput.required = false;
+                }
+                return;
+            }
+
+            // In selection mode
+            if (!studentId) {
+                passwordSection.classList.add('hidden');
+                passwordInput.required = false;
+                return;
+            }
+
+            const student = classroomStudents.find(s => s.id === studentId);
+
+            // If student has a specific password or classroom requires it
+            if ((student && student.password) || (currentClassroomData?.requires_password)) {
+                passwordSection.classList.remove('hidden');
+                passwordInput.required = true;
+
+                // Update placeholder based on requirement
+                if (student && student.password) {
+                    passwordInput.placeholder = "Öğrenci şifreni gir...";
+                } else {
+                    passwordInput.placeholder = "Sınıf şifresini gir...";
+                }
+            } else {
+                passwordSection.classList.add('hidden');
+                passwordInput.required = false;
+            }
+        }
+
         // Setup forms
         function setupForms() {
             // Student form
@@ -551,7 +670,23 @@
                 e.preventDefault();
 
                 const code = getClassroomCode();
-                const name = document.getElementById('studentName').value.trim();
+                let name = "";
+                let studentId = null;
+
+                // Determine name based on mode
+                if (document.getElementById('nameInputMode').classList.contains('hidden')) {
+                    // Selection Mode
+                    const select = document.getElementById('studentSelect');
+                    if (select.value) {
+                        studentId = select.value;
+                        const selectedStudent = classroomStudents.find(s => s.id === studentId);
+                        name = selectedStudent ? selectedStudent.display_name : "";
+                    }
+                } else {
+                    // Manual Input Mode
+                    name = document.getElementById('studentName').value.trim();
+                }
+
                 const password = document.getElementById('studentPassword').value.trim();
                 const btn = document.getElementById('studentLoginBtn');
 
@@ -560,38 +695,18 @@
                     return;
                 }
 
-                if (name.length < 2) {
-                    showAlert('Lütfen adını yaz', 'error');
+                if (!name || name.length < 2) {
+                    showAlert('Lütfen bir isim seç veya yaz', 'error');
                     return;
                 }
 
-                // Check password if classroom requires it
-                if (currentClassroomData?.requires_password) {
+
+                // Check password if required (based on visibility)
+                if (!document.getElementById('studentPasswordSection').classList.contains('hidden')) {
                     if (!password) {
-                        showAlert('Bu sınıf şifre gerektiriyor. Lütfen şifreni gir.', 'error');
+                        showAlert('Lütfen şifreni gir.', 'error');
                         document.getElementById('studentPassword').focus();
                         return;
-                    }
-
-                    // Check if there's an existing student with this name and verify password
-                    try {
-                        const { data: existingStudent } = await SupabaseClient.getClient()
-                            .from('students')
-                            .select('id, password')
-                            .eq('classroom_id', currentClassroomData.id)
-                            .ilike('display_name', name)
-                            .maybeSingle();
-
-                        if (existingStudent) {
-                            // Verify password for existing student
-                            if (existingStudent.password && existingStudent.password !== password) {
-                                showAlert('Şifre hatalı! Lütfen doğru şifreyi gir.', 'error');
-                                return;
-                            }
-                        }
-                        // If new student in password-required classroom, password will be set on creation
-                    } catch (err) {
-                        console.warn('Password check error:', err);
                     }
                 }
 
