@@ -170,221 +170,209 @@
                     <!-- Alert Box -->
                     <div id="alertBox" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border-l-4"></div>
 
-                    <!-- 🚀 SECTION 1: CLASSROOM CODE (Primary) -->
-                    <div id="classroomSection" class="relative z-10 transition-all duration-300">
-                        <div class="text-center mb-6">
-                            <h2 class="text-2xl font-bold text-gray-800">Sınıf Kodu ile Katıl</h2>
-                            <p class="text-gray-500">Öğretmeninden aldığın kodu gir</p>
+                    <!-- 📧 SECTION 1: EMAIL LOGIN -->
+                    <div id="emailLoginSection" class="mb-8 relative z-10 transition-all">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6 text-center">Giriş Yap</h2>
+
+                        <form id="teacherForm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-1 ml-1">E-posta</label>
+                                    <input type="email" id="teacherEmail" placeholder="mail@ornek.com" required
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 focus:bg-white outline-none">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between items-center mb-1 ml-1">
+                                        <label class="block text-gray-700 text-sm font-bold">Şifre</label>
+                                        <a href="#" class="text-xs text-theme hover:underline font-medium">Unuttum?</a>
+                                    </div>
+                                    <input type="password" id="teacherPassword" placeholder="••••••••" required
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 focus:bg-white outline-none">
+                                </div>
+
+                                <button type="submit" id="teacherLoginBtn"
+                                    class="w-full bg-gray-900 text-white py-3.5 rounded-xl font-bold hover:bg-black transition-all shadow-lg hover:shadow-xl transform active:scale-[0.98] flex items-center justify-center gap-2">
+                                    <span>Giriş Yap</span>
+                                    <span class="text-xl">🔐</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-4 text-center text-sm text-gray-500">
+                            Hesabın yok mu? <a href="#" onclick="toggleRegisterMode()"
+                                class="text-theme font-bold hover:underline">Kayıt Ol</a>
+                        </div>
+                    </div>
+
+                    <!-- 🌐 SECTION 2: SOCIAL LOGIN -->
+                    <div class="mb-8 relative z-10">
+                        <div class="relative flex justify-center text-sm mb-4">
+                            <span class="px-3 bg-white text-gray-400 text-xs font-medium relative z-10">veya</span>
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-100"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="alert('Google ile giriş yakında!')"
+                                class="flex-1 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 group">
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                    class="w-5 h-5 group-hover:scale-110 transition-transform">
+                                <span class="text-sm font-medium text-gray-600 group-hover:text-gray-900">Google</span>
+                            </button>
+                            <button onclick="alert('GitHub ile giriş yakında!')"
+                                class="flex-1 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 group">
+                                <img src="https://www.svgrepo.com/show/448224/github.svg"
+                                    class="w-5 h-5 group-hover:scale-110 transition-transform">
+                                <span class="text-sm font-medium text-gray-600 group-hover:text-gray-900">GitHub</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- 🏫 SECTION 3: CLASSROOM CODE -->
+                    <div id="classroomSection" class="relative z-10 pt-6 border-t border-dashed border-gray-200">
+                        <div class="text-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Sınıf Kodu İle Katıl
+                            </h3>
                         </div>
 
                         <form id="studentForm">
-                            <!-- Classroom Code -->
-                            <div class="mb-6">
+                            <!-- Classroom Code Inputs -->
+                            <div class="mb-4">
                                 <div class="flex gap-2 justify-center">
                                     <input type="text"
-                                        class="code-box w-12 h-14 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase"
-                                        maxlength="1" data-index="0" autocomplete="off">
+                                        class="code-box w-11 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 focus:bg-white"
+                                        maxlength="1" data-index="0" autocomplete="off" placeholder="-">
                                     <input type="text"
-                                        class="code-box w-12 h-14 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase"
-                                        maxlength="1" data-index="1" autocomplete="off">
+                                        class="code-box w-11 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 focus:bg-white"
+                                        maxlength="1" data-index="1" autocomplete="off" placeholder="-">
                                     <input type="text"
-                                        class="code-box w-12 h-14 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase"
-                                        maxlength="1" data-index="2" autocomplete="off">
+                                        class="code-box w-11 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 focus:bg-white"
+                                        maxlength="1" data-index="2" autocomplete="off" placeholder="-">
                                     <input type="text"
-                                        class="code-box w-12 h-14 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase"
-                                        maxlength="1" data-index="3" autocomplete="off">
+                                        class="code-box w-11 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 focus:bg-white"
+                                        maxlength="1" data-index="3" autocomplete="off" placeholder="-">
                                     <input type="text"
-                                        class="code-box w-12 h-14 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase"
-                                        maxlength="1" data-index="4" autocomplete="off">
+                                        class="code-box w-11 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-bold focus:border-theme focus:ring-4 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 focus:bg-white"
+                                        maxlength="1" data-index="4" autocomplete="off" placeholder="-">
                                 </div>
                             </div>
 
                             <!-- Classroom Found Info -->
                             <div id="classroomInfo"
-                                class="hidden mb-6 p-4 bg-green-50 border border-green-200 rounded-xl classroom-found animate-fade-in">
+                                class="hidden mb-4 p-3 bg-green-50 border border-green-200 rounded-xl classroom-found animate-fade-in">
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl">
+                                        class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-lg">
                                         🏫</div>
                                     <div>
-                                        <p class="font-bold text-green-800">Sınıf Bulundu!</p>
-                                        <p id="classroomDetails" class="text-green-700 text-sm"></p>
+                                        <p class="font-bold text-green-800 text-sm">Sınıf Bulundu!</p>
+                                        <p id="classroomDetails" class="text-green-700 text-xs"></p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Student Identification Section (Hidden initially) -->
+                            <!-- Student Identification Section (Animated) -->
                             <div id="studentIdentifySection" class="hidden opacity-0 transition-opacity duration-500">
-
                                 <!-- Student Name Selection -->
-                                <div class="mb-4">
-                                    <label class="block text-gray-700 font-bold mb-2">İsmin</label>
-
-                                    <!-- Selection Mode -->
+                                <div class="mb-3">
                                     <div id="nameSelectMode">
                                         <select id="studentSelect"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg mb-2 cursor-pointer"
+                                            class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-sm mb-1 cursor-pointer bg-white"
                                             onchange="handleStudentSelect()">
                                             <option value="">İsmini Seç...</option>
                                         </select>
                                         <div class="text-right">
                                             <button type="button" onclick="toggleNameInputMode()"
-                                                class="text-sm text-theme hover:underline font-medium">
-                                                Listede yokum, ismimi yazmak istiyorum
+                                                class="text-[10px] text-theme hover:underline font-bold uppercase tracking-wide">
+                                                + Listede yokum
                                             </button>
                                         </div>
                                     </div>
 
-                                    <!-- Input Mode (Hidden by default) -->
                                     <div id="nameInputMode" class="hidden">
                                         <input type="text" id="studentName"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg mb-2"
+                                            class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-sm mb-1"
                                             placeholder="Adını yaz..." minlength="2" maxlength="50">
                                         <div class="text-right">
                                             <button type="button" onclick="toggleNameInputMode()"
-                                                class="text-sm text-theme hover:underline font-medium">
-                                                Listeden seç
+                                                class="text-[10px] text-theme hover:underline font-bold uppercase tracking-wide">
+                                                ← Listeye dön
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Student Password (hidden by default, shown when classroom requires password) -->
-                                <div id="studentPasswordSection" class="mb-6 hidden">
-                                    <label class="block text-gray-700 font-bold mb-2">
-                                        <span class="flex items-center gap-2">
-                                            🔒 Şifre
-                                            <span class="text-xs font-normal text-gray-500">(Öğretmeninden aldığın
-                                                şifre)</span>
-                                        </span>
-                                    </label>
+                                <!-- Password -->
+                                <div id="studentPasswordSection" class="mb-4 hidden">
                                     <input type="password" id="studentPassword"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg"
-                                        placeholder="Şifreni gir...">
-                                    <p class="text-xs text-gray-500 mt-1">Bu sınıf şifre ile korunuyor</p>
+                                        class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-sm"
+                                        placeholder="Sınıf şifresi...">
                                 </div>
 
-                                <!-- Submit Button -->
                                 <button type="submit" id="studentLoginBtn"
-                                    class="w-full bg-theme text-white py-4 rounded-xl font-bold text-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
-                                    <span>Derse Başla</span>
-                                    <span class="text-xl">🚀</span>
+                                    class="w-full bg-theme text-white py-3 rounded-xl font-bold text-sm hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-md">
+                                    <span>Sınıfa Katıl</span>
+                                    <span class="text-lg">🚀</span>
                                 </button>
-                            </div> <!-- End of studentIdentifySection -->
+                            </div>
                         </form>
-                    </div> <!-- End of classroomSection -->
-
-                    <!-- Divider -->
-                    <div class="flex items-center gap-4 my-8 relative z-10" id="authDivider">
-                        <div class="flex-1 border-t border-gray-200"></div>
-                        <button onclick="toggleAccountLogin()" id="toggleAuthBtn"
-                            class="text-xs text-gray-500 hover:text-theme font-bold bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm transition-all uppercase tracking-wide">
-                            Hesabınla Giriş Yap (Öğretmen / Öğrenci) ▼
-                        </button>
-                        <div class="flex-1 border-t border-gray-200"></div>
                     </div>
 
-                    <!-- 🔐 SECTION 2: ACCOUNT LOGIN (Hidden by default) -->
-                    <div id="accountSection"
-                        class="hidden opacity-0 transition-all duration-300 relative z-10 bg-gray-50 -mx-8 -mb-8 p-8 border-t border-gray-100">
-
-                        <div class="flex gap-2 mb-6 text-sm">
-                            <button id="tab-login" onclick="switchAccountTab('login')"
-                                class="flex-1 py-2 font-bold text-center border-b-2 border-theme text-theme transition-colors">Giriş
-                                Yap</button>
-                            <button id="tab-register" onclick="switchAccountTab('register')"
-                                class="flex-1 py-2 font-bold text-center border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors">Kayıt
-                                Ol</button>
+                    <!-- Register Form Overlay (Simple Implementation) -->
+                    <div id="registerSection" class="hidden absolute inset-0 bg-white p-8 z-20 flex flex-col">
+                        <div class="flex items-center mb-6">
+                            <button type="button" onclick="toggleRegisterMode()"
+                                class="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                            <h2 class="text-xl font-bold text-gray-800">Kayıt Ol</h2>
                         </div>
 
-                        <!-- Login Form -->
-                        <form id="teacherForm" class="auth-sub-form">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-1">E-posta</label>
-                                <input type="email" id="teacherEmail" placeholder="ornek@okul.com" required
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 bg-white shadow-sm">
+                        <form id="registerForm" class="flex-grow">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-1">Ad Soyad</label>
+                                    <input type="text" id="regName" placeholder="Adınız Soyadınız" required
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-1">E-posta</label>
+                                    <input type="email" id="regEmail" placeholder="mail@ornek.com" required
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-1">Şifre</label>
+                                    <input type="password" id="regPassword" placeholder="En az 6 karakter" required
+                                        minlength="6"
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
+                                </div>
+                                <button type="submit" id="regBtn"
+                                    class="w-full bg-theme text-white py-3.5 rounded-xl font-bold hover:brightness-110 shadow-lg mt-4">
+                                    Hesap Oluştur
+                                </button>
                             </div>
-                            <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-1">Şifre</label>
-                                <input type="password" id="teacherPassword" placeholder="******" required
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 bg-white shadow-sm">
-                            </div>
-
-                            <button type="submit" id="teacherLoginBtn"
-                                class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-black transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95">
-                                <span>Giriş Yap</span>
-                                <span class="text-xl">🔐</span>
-                            </button>
                         </form>
-
-                        <!-- Register Form (Hidden) -->
-                        <form id="registerForm" class="auth-sub-form hidden">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-1">Ad Soyad</label>
-                                <input type="text" id="regName" placeholder="Adınız Soyadınız" required
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 bg-white shadow-sm">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-1">E-posta</label>
-                                <input type="email" id="regEmail" placeholder="ornek@okul.com" required
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 bg-white shadow-sm">
-                            </div>
-                            <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-1">Şifre</label>
-                                <input type="password" id="regPassword" placeholder="En az 6 karakter" required
-                                    minlength="6"
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 bg-white shadow-sm">
-                            </div>
-
-                            <button type="submit" id="regBtn"
-                                class="w-full bg-theme text-white py-3 rounded-xl font-bold hover:brightness-110 transition-all shadow-lg transform active:scale-95">
-                                Hesap Oluştur
-                            </button>
-                        </form>
-
-                        <!-- Social Login -->
-                        <div class="mt-8 text-center relative">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-200"></div>
-                            </div>
-                            <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-gray-50 text-gray-400 uppercase tracking-wider text-xs">veya
-                                    şununla devam et</span>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 flex gap-3 justify-center">
-                            <button type="button"
-                                class="flex-1 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2"
-                                title="Google ile Giriş" onclick="alert('Google entegrasyonu yakında!')">
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
-                                <span class="text-sm font-medium text-gray-600">Google</span>
-                            </button>
-                            <button type="button"
-                                class="flex-1 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2"
-                                title="GitHub ile Giriş" onclick="alert('GitHub entegrasyonu yakında!')">
-                                <img src="https://www.svgrepo.com/show/448224/github.svg" class="w-5 h-5">
-                                <span class="text-sm font-medium text-gray-600">GitHub</span>
-                            </button>
-                        </div>
                     </div>
-
-                </div> <!-- End of accountSection -->
-            </div> <!-- End of auth-card -->
+                </div> <!-- End of auth-card -->
+            </div>
         </div>
-    </div>
 
-    <!-- Guest/Back Link (Outside Card) -->
-    <div class="mt-8 text-center">
-        <a href="index.html" class="text-gray-500 hover:text-gray-800 text-sm font-medium transition-colors">
-            ← Misafir olarak devam et
-        </a>
-    </div>
+        <!-- Guest/Back Link (Outside Card) -->
+        <div class="mt-8 text-center">
+            <a href="index.html" class="text-gray-500 hover:text-gray-800 text-sm font-medium transition-colors">
+                ← Misafir olarak devam et
+            </a>
+        </div>
 
-    <!-- Footer -->
-    <footer class="py-4 text-center text-sm text-gray-500">
-        <p>© 2024 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
-    </footer>
+        <!-- Footer -->
+        <footer class="py-4 text-center text-sm text-gray-500">
+            <p>© 2024 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
+        </footer>
     </div>
 
     <!-- Scripts -->
@@ -470,54 +458,17 @@
             }
         }
 
-        // Toggle Account Login Section
-        function toggleAccountLogin() {
-            const section = document.getElementById('accountSection');
-            const btn = document.getElementById('toggleAuthBtn');
-            const isHidden = section.classList.contains('hidden');
-
-            if (isHidden) {
+        // Toggle Register Mode Overlay
+        function toggleRegisterMode() {
+            const section = document.getElementById('registerSection');
+            if (section.classList.contains('hidden')) {
                 section.classList.remove('hidden');
-                // Small timeout for transition
-                setTimeout(() => section.classList.remove('opacity-0'), 10);
-                btn.innerHTML = 'Hesabınla Giriş Yap ▲';
-
-                // Scroll to section
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Allow browser to render hidden removal before adding opacity class if needed
+                requestAnimationFrame(() => {
+                    section.classList.add('animate-fade-in');
+                });
             } else {
-                section.classList.add('opacity-0');
-                setTimeout(() => {
-                    section.classList.add('hidden');
-                    btn.innerHTML = 'Hesabınla Giriş Yap (Öğretmen / Öğrenci) ▼';
-                }, 300);
-            }
-        }
-
-        // Switch between Login and Register tabs in Account Section
-        function switchAccountTab(tab) {
-            const loginForm = document.getElementById('teacherForm');
-            const registerForm = document.getElementById('registerForm');
-            const tabLogin = document.getElementById('tab-login');
-            const tabRegister = document.getElementById('tab-register');
-
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-
-                tabLogin.classList.add('border-theme', 'text-theme');
-                tabLogin.classList.remove('border-transparent', 'text-gray-400', 'hover:text-gray-600');
-
-                tabRegister.classList.remove('border-theme', 'text-theme');
-                tabRegister.classList.add('border-transparent', 'text-gray-400', 'hover:text-gray-600');
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-
-                tabRegister.classList.add('border-theme', 'text-theme');
-                tabRegister.classList.remove('border-transparent', 'text-gray-400', 'hover:text-gray-600');
-
-                tabLogin.classList.remove('border-theme', 'text-theme');
-                tabLogin.classList.add('border-transparent', 'text-gray-400', 'hover:text-gray-600');
+                section.classList.add('hidden');
             }
         }
 
