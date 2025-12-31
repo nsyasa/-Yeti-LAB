@@ -584,6 +584,12 @@
                         .eq('classroom_id', data.id)
                         .order('display_name');
 
+                    if (studentsError) {
+                        console.error('Öğrenci listesi hatası:', studentsError);
+                        showAlert('Öğrenci listesi alınamadı. Lütfen veritabanı (RLS) ayarlarını kontrol edin. Hata: ' + studentsError.message, 'error');
+                        return;
+                    }
+
                     if (students && students.length > 0) {
                         classroomStudents = students;
                         studentSelect.innerHTML = '<option value="">İsmini Seç...</option>' +
@@ -593,10 +599,13 @@
                         document.getElementById('nameSelectMode').classList.remove('hidden');
                         document.getElementById('noStudentMessage').classList.add('hidden');
                     } else {
-                        // No students found
+                        // No students found OR Permission denied (returns empty array sometimes)
                         classroomStudents = [];
                         studentSelect.innerHTML = '<option value="">Listede Kimse Yok</option>';
                         document.getElementById('noStudentMessage').classList.remove('hidden');
+
+                        // Permission warning for developer
+                        console.warn('Öğrenci listesi boş. Eğer sınıf doluysa, "students" tablosunda SELECT (public/anon) izni eksik olabilir.');
                     }
 
                     // Reset password section initially (wait for student selection)
