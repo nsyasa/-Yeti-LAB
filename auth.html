@@ -212,11 +212,26 @@
                             </div>
 
                             <!-- Student Name -->
-                            <div class="mb-6">
+                            <div class="mb-4">
                                 <label class="block text-gray-700 font-bold mb-2">İsmin</label>
                                 <input type="text" id="studentName"
                                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg"
                                     placeholder="Adını yaz..." required minlength="2" maxlength="50">
+                            </div>
+
+                            <!-- Student Password (hidden by default, shown when classroom requires password) -->
+                            <div id="studentPasswordSection" class="mb-6 hidden">
+                                <label class="block text-gray-700 font-bold mb-2">
+                                    <span class="flex items-center gap-2">
+                                        🔒 Şifre
+                                        <span class="text-xs font-normal text-gray-500">(Öğretmeninden aldığın
+                                            şifre)</span>
+                                    </span>
+                                </label>
+                                <input type="password" id="studentPassword"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg"
+                                    placeholder="Şifreni gir...">
+                                <p class="text-xs text-gray-500 mt-1">Bu sınıf şifre ile korunuyor</p>
                             </div>
 
                             <!-- Submit Button -->
@@ -476,29 +491,52 @@
         }
 
         // Check classroom code
+        let currentClassroomData = null; // Store classroom data for later use
+
         async function checkClassroomCode() {
             const code = getClassroomCode();
             const infoBox = document.getElementById('classroomInfo');
             const details = document.getElementById('classroomDetails');
+            const passwordSection = document.getElementById('studentPasswordSection');
+            const passwordInput = document.getElementById('studentPassword');
 
             if (code.length !== 5) {
                 infoBox.classList.add('hidden');
+                passwordSection.classList.add('hidden');
+                passwordInput.required = false;
+                currentClassroomData = null;
                 return;
             }
 
             try {
                 const { data, error } = await SupabaseClient.getClient()
                     .from('classrooms')
-                    .select('name, user_profiles(full_name)')
+                    .select('id, name, requires_password, user_profiles(full_name)')
                     .eq('code', code)
                     .eq('is_active', true)
                     .maybeSingle();
 
                 if (data) {
+                    currentClassroomData = data;
                     infoBox.classList.remove('hidden');
-                    details.textContent = `${data.name} - ${data.user_profiles?.full_name || 'Öğretmen'}`;
+
+                    // Show password lock indicator if required
+                    const lockIcon = data.requires_password ? ' 🔒' : '';
+                    details.textContent = `${data.name}${lockIcon} - ${data.user_profiles?.full_name || 'Öğretmen'}`;
+
+                    // Show/hide password section based on classroom setting
+                    if (data.requires_password) {
+                        passwordSection.classList.remove('hidden');
+                        passwordInput.required = true;
+                    } else {
+                        passwordSection.classList.add('hidden');
+                        passwordInput.required = false;
+                    }
                 } else {
                     infoBox.classList.add('hidden');
+                    passwordSection.classList.add('hidden');
+                    passwordInput.required = false;
+                    currentClassroomData = null;
                 }
             } catch (err) {
                 console.warn('Code check error:', err);
@@ -514,6 +552,7 @@
 
                 const code = getClassroomCode();
                 const name = document.getElementById('studentName').value.trim();
+                const password = document.getElementById('studentPassword').value.trim();
                 const btn = document.getElementById('studentLoginBtn');
 
                 if (code.length !== 5) {
@@ -526,10 +565,41 @@
                     return;
                 }
 
+                // Check password if classroom requires it
+                if (currentClassroomData?.requires_password) {
+                    if (!password) {
+                        showAlert('Bu sınıf şifre gerektiriyor. Lütfen şifreni gir.', 'error');
+                        document.getElementById('studentPassword').focus();
+                        return;
+                    }
+
+                    // Check if there's an existing student with this name and verify password
+                    try {
+                        const { data: existingStudent } = await SupabaseClient.getClient()
+                            .from('students')
+                            .select('id, password')
+                            .eq('classroom_id', currentClassroomData.id)
+                            .ilike('display_name', name)
+                            .maybeSingle();
+
+                        if (existingStudent) {
+                            // Verify password for existing student
+                            if (existingStudent.password && existingStudent.password !== password) {
+                                showAlert('Şifre hatalı! Lütfen doğru şifreyi gir.', 'error');
+                                return;
+                            }
+                        }
+                        // If new student in password-required classroom, password will be set on creation
+                    } catch (err) {
+                        console.warn('Password check error:', err);
+                    }
+                }
+
                 setLoading(btn, true);
 
                 try {
-                    await Auth.studentLogin(code, name);
+                    // Pass password to studentLogin if provided
+                    await Auth.studentLogin(code, name, password);
                     showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                     setTimeout(() => {
                         window.location.href = 'index.html';
