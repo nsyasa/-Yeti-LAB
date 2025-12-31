@@ -64,7 +64,7 @@ const app = {
 
             // Load ALL courses first to ensure metadata is available
             if (window.CourseLoader?.loadAll) {
-                UI.showLoading('course-list', 'Kurslar yükleniyor...');
+                UI.renderSkeletonCards('course-list', 4);
                 CourseLoader.loadAll().then(() => {
                     console.log('[App] All courses loaded:', Object.keys(window.courseData));
 
@@ -338,10 +338,24 @@ const app = {
         app.stopSimulation();
     },
 
-    selectCourse: async (key) => {
-        // Show loading indicator
-        // Show loading indicator
-        UI.showLoading('course-list');
+    selectCourse: async (key, event) => {
+        // Prevent double-click
+        const actionId = `select-course-${key}`;
+        if (UI.isLoading(actionId)) return;
+        UI.setActionLoading(actionId, true);
+
+        // Find and add loading state to clicked card
+        let clickedCard = null;
+        if (event?.target) {
+            clickedCard = event.target.closest('.course-card');
+        } else {
+            // Fallback: find by key
+            clickedCard = document.querySelector(`[onclick*="selectCourse('${key}')"]`);
+        }
+
+        if (clickedCard) {
+            UI.setCardLoading(clickedCard, true);
+        }
 
         try {
             // Lazy load the course data
@@ -375,8 +389,13 @@ const app = {
 
         } catch (error) {
             console.error('[App] Failed to load course:', error);
-            console.error('[App] Failed to load course:', error);
             UI.showError('course-list', 'Kurs yüklenemedi!', 'app.renderCourseSelection()');
+        } finally {
+            // Clear loading state
+            UI.setActionLoading(actionId, false);
+            if (clickedCard) {
+                UI.setCardLoading(clickedCard, false);
+            }
         }
     },
 
@@ -393,6 +412,11 @@ const app = {
     },
 
     loadProject: (id) => {
+        // Prevent double-click
+        const actionId = `load-project-${id}`;
+        if (UI.isLoading(actionId)) return;
+        UI.setActionLoading(actionId, true);
+
         const { projects } = app.state;
         const p = projects.find(prj => prj.id === id);
 
@@ -400,6 +424,7 @@ const app = {
             console.error(`Project not found: ${id}`);
             alert("Ders bulunamadı!");
             app.renderDashboard();
+            UI.setActionLoading(actionId, false);
             return;
         }
 
@@ -428,6 +453,9 @@ const app = {
 
         app.renderTabs(p);
         window.scrollTo(0, 0);
+
+        // Clear loading state after a short delay
+        setTimeout(() => UI.setActionLoading(actionId, false), 100);
     },
 
     setupExplorer: (type) => {

@@ -234,7 +234,7 @@
                         </div>
 
                         <!-- Google Login for Students -->
-                        <button onclick="studentGoogleLogin()"
+                        <button id="btn-student-google" onclick="studentGoogleLogin(this)"
                             class="btn-oauth w-full py-3 px-4 border-2 border-gray-200 rounded-xl flex items-center justify-center gap-3 font-medium hover:bg-gray-50">
                             <svg class="w-5 h-5" viewBox="0 0 24 24">
                                 <path fill="#EA4335"
@@ -248,7 +248,7 @@
                     <div id="teacherPanel" class="auth-panel hidden">
                         <!-- OAuth Buttons -->
                         <div class="space-y-3 mb-6">
-                            <button onclick="teacherGoogleLogin()"
+                            <button id="btn-teacher-google" onclick="teacherGoogleLogin(this)"
                                 class="btn-oauth w-full py-3 px-4 border-2 border-red-200 bg-white rounded-xl flex items-center justify-center gap-3 font-medium hover:bg-red-50">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                                     <path fill="#EA4335"
@@ -257,7 +257,7 @@
                                 <span>Google ile Giriş Yap</span>
                             </button>
 
-                            <button onclick="teacherGitHubLogin()"
+                            <button id="btn-teacher-github" onclick="teacherGitHubLogin(this)"
                                 class="btn-oauth w-full py-3 px-4 border-2 border-gray-300 bg-gray-900 text-white rounded-xl flex items-center justify-center gap-3 font-medium hover:bg-gray-800">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path
@@ -563,27 +563,39 @@
         }
 
         // OAuth logins
-        async function teacherGoogleLogin() {
+        async function teacherGoogleLogin(btn) {
+            if (btn && btn.disabled) return; // Double-click protection
+            setLoading(btn, true);
             try {
                 await Auth.signInWithGoogle();
+                // Auth redirect will happen, keep loading
             } catch (err) {
                 showAlert(err.message, 'error');
+                setLoading(btn, false);
             }
         }
 
-        async function teacherGitHubLogin() {
+        async function teacherGitHubLogin(btn) {
+            if (btn && btn.disabled) return; // Double-click protection
+            setLoading(btn, true);
             try {
                 await Auth.signInWithGitHub();
+                // Auth redirect will happen, keep loading
             } catch (err) {
                 showAlert(err.message, 'error');
+                setLoading(btn, false);
             }
         }
 
-        async function studentGoogleLogin() {
+        async function studentGoogleLogin(btn) {
+            if (btn && btn.disabled) return; // Double-click protection
+            setLoading(btn, true);
             try {
                 await Auth.signInWithGoogle();
+                // Auth redirect will happen, keep loading
             } catch (err) {
                 showAlert(err.message, 'error');
+                setLoading(btn, false);
             }
         }
 

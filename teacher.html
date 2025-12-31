@@ -1028,12 +1028,24 @@
         async function createClassroom(event) {
             event.preventDefault();
 
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+
+            // Double-click protection
+            if (submitBtn && submitBtn.disabled) return;
+
             const name = document.getElementById('classroomName').value.trim();
             const description = document.getElementById('classroomDescription').value.trim();
 
             if (!name) {
                 showToast('Sınıf adı gerekli', 'error');
                 return;
+            }
+
+            // Show loading state
+            const originalBtnText = submitBtn?.innerHTML;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Oluşturuluyor...';
             }
 
             try {
@@ -1066,6 +1078,12 @@
             } catch (error) {
                 console.error('Error creating classroom:', error);
                 showToast('Sınıf oluşturulurken hata oluştu', 'error');
+            } finally {
+                // Reset button state
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText || 'Oluştur';
+                }
             }
         }
 

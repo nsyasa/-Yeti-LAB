@@ -21,7 +21,7 @@ const UI = {
             const icon = loadedCourse?.icon || manifestCourse.icon || '🤖';
 
             container.innerHTML += `
-                <div onclick="app.selectCourse('${key}')" class="course-card bg-white rounded-xl shadow-lg p-8 cursor-pointer group flex flex-col items-center text-center h-full">
+                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-8 cursor-pointer group flex flex-col items-center text-center h-full" data-course="${key}">
                     <div class="card-icon text-6xl mb-6 bg-gray-50 p-6 rounded-full">
                         ${icon}
                     </div>
@@ -34,6 +34,119 @@ const UI = {
                     </div>
                 </div>`;
         });
+    },
+
+    // --- Loading State Management ---
+    _loadingStates: new Map(), // Track loading states to prevent double-clicks
+
+    // Spinner SVG for buttons
+    _spinnerSVG: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>`,
+
+    /**
+     * Set loading state on a button with spinner
+     * @param {HTMLElement} btn - Button element
+     * @param {boolean} loading - Whether to show loading state
+     * @param {string} [originalContent] - Original button content (auto-stored if not provided)
+     */
+    setButtonLoading: (btn, loading, originalContent) => {
+        if (!btn) return;
+
+        const btnId = btn.id || btn.dataset.loadingId || `btn-${Date.now()}`;
+        btn.dataset.loadingId = btnId;
+
+        if (loading) {
+            // Prevent double-click
+            if (UI._loadingStates.has(btnId)) return;
+
+            // Store original content
+            UI._loadingStates.set(btnId, {
+                content: originalContent || btn.innerHTML,
+                disabled: btn.disabled
+            });
+
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+            btn.innerHTML = `<span class="btn-spinner">${UI._spinnerSVG}<span>${I18n?.t('loading') || 'Yükleniyor...'}</span></span>`;
+        } else {
+            const state = UI._loadingStates.get(btnId);
+            if (state) {
+                btn.innerHTML = state.content;
+                btn.disabled = state.disabled;
+                btn.classList.remove('is-loading');
+                UI._loadingStates.delete(btnId);
+            }
+        }
+    },
+
+    /**
+     * Check if an action is currently loading (prevents double-click)
+     * @param {string} actionId - Unique action identifier
+     * @returns {boolean}
+     */
+    isLoading: (actionId) => {
+        return UI._loadingStates.has(actionId);
+    },
+
+    /**
+     * Set loading state for an action
+     * @param {string} actionId - Unique action identifier  
+     * @param {boolean} loading - Whether action is loading
+     */
+    setActionLoading: (actionId, loading) => {
+        if (loading) {
+            UI._loadingStates.set(actionId, true);
+        } else {
+            UI._loadingStates.delete(actionId);
+        }
+    },
+
+    /**
+     * Render skeleton loader cards while content is loading
+     * @param {string} containerId - Container element ID
+     * @param {number} count - Number of skeleton cards to show
+     */
+    renderSkeletonCards: (containerId, count = 4) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <div class="skeleton-card flex flex-col items-center text-center h-full">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    <div class="skeleton skeleton-btn"></div>
+                </div>`;
+        }
+        container.innerHTML = html;
+    },
+
+    /**
+     * Add loading overlay to a specific card
+     * @param {HTMLElement} card - Card element
+     * @param {boolean} loading - Whether to show loading
+     */
+    setCardLoading: (card, loading) => {
+        if (!card) return;
+
+        if (loading) {
+            card.classList.add('is-loading');
+            // Add overlay with spinner
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `<span class="pulse-loading text-4xl">⏳</span>`;
+            card.style.position = 'relative';
+            card.appendChild(overlay);
+        } else {
+            card.classList.remove('is-loading');
+            const overlay = card.querySelector('.loading-overlay');
+            if (overlay) overlay.remove();
+        }
     },
 
     showLoading: (containerId, msg) => {
