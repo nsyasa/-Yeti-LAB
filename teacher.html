@@ -580,6 +580,123 @@
         </div>
     </div>
 
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold">👨‍🎓 Öğrenci Ekle</h3>
+                <button onclick="closeModal('addStudentModal')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="addStudentForm" onsubmit="addStudent(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf</label>
+                    <select id="studentClassroom" required
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">Sınıf seçin...</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Öğrenci Adı</label>
+                    <input type="text" id="studentName" required maxlength="50"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="Örn: Ahmet Yılmaz">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Şifre (Opsiyonel)</label>
+                    <input type="text" id="studentPassword" maxlength="20"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="Boş bırakılabilir">
+                    <p class="text-xs text-gray-500 mt-1">Öğrenci girişte bu şifreyi kullanacak</p>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Avatar</label>
+                    <div class="flex flex-wrap gap-2" id="avatarSelector">
+                        <button type="button" onclick="selectAvatar('🎓')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors selected"
+                            data-emoji="🎓">🎓</button>
+                        <button type="button" onclick="selectAvatar('👦')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👦">👦</button>
+                        <button type="button" onclick="selectAvatar('👧')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👧">👧</button>
+                        <button type="button" onclick="selectAvatar('🧑')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🧑">🧑</button>
+                        <button type="button" onclick="selectAvatar('👨‍🎓')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👨‍🎓">👨‍🎓</button>
+                        <button type="button" onclick="selectAvatar('👩‍🎓')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👩‍🎓">👩‍🎓</button>
+                        <button type="button" onclick="selectAvatar('🤖')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🤖">🤖</button>
+                        <button type="button" onclick="selectAvatar('🦸')"
+                            class="avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🦸">🦸</button>
+                    </div>
+                    <input type="hidden" id="selectedAvatar" value="🎓">
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('addStudentModal')"
+                        class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit" id="addStudentBtn"
+                        class="flex-1 px-4 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
+                        Öğrenci Ekle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Classroom Settings Modal -->
+    <div id="classroomSettingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold">⚙️ Sınıf Ayarları</h3>
+                <button onclick="closeModal('classroomSettingsModal')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="classroomSettingsForm" onsubmit="saveClassroomSettings(event)">
+                <input type="hidden" id="settingsClassroomId">
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf Adı</label>
+                    <input type="text" id="settingsClassroomName" required maxlength="100"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Açıklama</label>
+                    <textarea id="settingsClassroomDesc" rows="2"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+                </div>
+                <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="settingsRequirePassword"
+                            class="w-5 h-5 text-theme rounded focus:ring-theme">
+                        <div>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">🔒 Şifre Gerekli</span>
+                            <p class="text-xs text-gray-500">Öğrencilerin giriş yaparken şifre girmesini iste</p>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('classroomSettingsModal')"
+                        class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast"
         class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
@@ -792,11 +909,12 @@
 
             container.innerHTML = classrooms.map(classroom => {
                 const studentCount = classroom.students?.[0]?.count || 0;
+                const requiresPassword = classroom.requires_password ? '🔒' : '';
                 return `
                     <div class="glass-card rounded-2xl p-6">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h4 class="font-bold text-lg text-gray-800 dark:text-white">${escapeHtml(classroom.name)}</h4>
+                                <h4 class="font-bold text-lg text-gray-800 dark:text-white">${escapeHtml(classroom.name)} ${requiresPassword}</h4>
                                 <p class="text-sm text-gray-500">${classroom.description || 'Açıklama yok'}</p>
                             </div>
                             <span class="text-2xl">${classroom.is_active ? '✅' : '⏸️'}</span>
@@ -806,20 +924,32 @@
                             <span>👨‍🎓 ${studentCount} öğrenci</span>
                             <span>${formatDate(classroom.created_at)}</span>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 mb-3">
                             <button onclick="viewClassroom('${classroom.id}')" 
                                 class="flex-1 px-3 py-2 bg-theme/10 text-theme rounded-lg font-medium hover:bg-theme/20 transition-colors">
                                 Görüntüle
                             </button>
-                            <button onclick="toggleClassroom('${classroom.id}', ${!classroom.is_active})"
+                            <button onclick="openAddStudentModal('${classroom.id}')"
+                                class="px-3 py-2 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors"
+                                title="Öğrenci Ekle">
+                                ➕👨‍🎓
+                            </button>
+                            <button onclick="openClassroomSettings('${classroom.id}')"
                                 class="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
+                                title="Sınıf Ayarları">
+                                ⚙️
+                            </button>
+                        </div>
+                        <div class="flex gap-2 border-t border-gray-100 dark:border-gray-700 pt-3">
+                            <button onclick="toggleClassroom('${classroom.id}', ${!classroom.is_active})"
+                                class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
                                 title="${classroom.is_active ? 'Sınıfı Duraklat' : 'Sınıfı Aktifleştir'}">
-                                ${classroom.is_active ? '⏸️' : '▶️'}
+                                ${classroom.is_active ? '⏸️ Duraklat' : '▶️ Aktifleştir'}
                             </button>
                             <button onclick="deleteClassroom('${classroom.id}')"
-                                class="px-3 py-2 border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                                class="px-3 py-2 text-sm border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
                                 title="Sınıfı Sil">
-                                🗑️
+                                🗑️ Sil
                             </button>
                         </div>
                     </div>
@@ -857,6 +987,8 @@
             container.innerHTML = filteredStudents.map(student => {
                 const classroom = classrooms.find(c => c.id === student.classroom_id);
                 const lastActive = formatRelativeTime(student.last_active_at);
+                const addedByTeacher = student.added_by_teacher ? '<span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Öğretmen ekledi</span>' : '';
+                const hasPassword = student.password ? '🔒' : '';
 
                 return `
                     <div class="student-item">
@@ -864,11 +996,18 @@
                             ${student.avatar_emoji || '🎓'}
                         </div>
                         <div class="flex-grow">
-                            <p class="font-semibold text-gray-800 dark:text-white">${escapeHtml(student.display_name)}</p>
-                            <p class="text-sm text-gray-500">${classroom?.name || 'Bilinmeyen sınıf'}</p>
+                            <p class="font-semibold text-gray-800 dark:text-white">${escapeHtml(student.display_name)} ${hasPassword}</p>
+                            <p class="text-sm text-gray-500">${classroom?.name || 'Bilinmeyen sınıf'} ${addedByTeacher}</p>
                         </div>
-                        <div class="text-right text-sm text-gray-400">
-                            <p>Son aktif: ${lastActive}</p>
+                        <div class="text-right text-sm text-gray-400 flex items-center gap-3">
+                            <div>
+                                <p>Son aktif: ${lastActive}</p>
+                            </div>
+                            <button onclick="deleteStudent('${student.id}')" 
+                                class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Öğrenciyi Sil">
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1225,6 +1364,202 @@
             setTimeout(() => {
                 toast.classList.add('translate-y-20', 'opacity-0');
             }, 3000);
+        }
+
+        // ==========================================
+        // STUDENT MANAGEMENT FUNCTIONS
+        // ==========================================
+
+        let selectedAvatarEmoji = '🎓';
+
+        function selectAvatar(emoji) {
+            selectedAvatarEmoji = emoji;
+            document.getElementById('selectedAvatar').value = emoji;
+
+            // Update UI
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
+                btn.classList.add('border-gray-200');
+            });
+            const selectedBtn = document.querySelector(`.avatar-btn[data-emoji="${emoji}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('border-gray-200');
+                selectedBtn.classList.add('selected', 'border-theme', 'bg-theme/10');
+            }
+        }
+
+        function openAddStudentModal(classroomId = null) {
+            // Populate classroom select
+            const select = document.getElementById('studentClassroom');
+            select.innerHTML = '<option value="">Sınıf seçin...</option>' +
+                classrooms.map(c => `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+
+            // Reset form
+            document.getElementById('addStudentForm').reset();
+            document.getElementById('selectedAvatar').value = '🎓';
+            selectAvatar('🎓');
+
+            // Pre-select classroom if provided
+            if (classroomId) {
+                select.value = classroomId;
+            }
+
+            document.getElementById('addStudentModal').classList.add('open');
+        }
+
+        async function addStudent(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('addStudentBtn');
+            if (submitBtn.disabled) return;
+
+            const classroomId = document.getElementById('studentClassroom').value;
+            const displayName = document.getElementById('studentName').value.trim();
+            const password = document.getElementById('studentPassword').value.trim();
+            const avatar = document.getElementById('selectedAvatar').value;
+
+            if (!classroomId || !displayName) {
+                showToast('Lütfen tüm alanları doldurun', 'error');
+                return;
+            }
+
+            // Show loading
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Ekleniyor...';
+
+            try {
+                // Insert student
+                const studentData = {
+                    classroom_id: classroomId,
+                    display_name: displayName,
+                    avatar_emoji: avatar,
+                    added_by_teacher: true,
+                    last_active_at: new Date().toISOString()
+                };
+
+                // Add password if provided (simple hash for now)
+                if (password) {
+                    studentData.password = password; // In production, this should be hashed
+                }
+
+                const { data, error } = await SupabaseClient.getClient()
+                    .from('students')
+                    .insert(studentData)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                // Update local state
+                students.push(data);
+
+                // Close modal
+                closeModal('addStudentModal');
+                document.getElementById('addStudentForm').reset();
+
+                // Show success
+                showToast(`"${displayName}" öğrenci olarak eklendi!`, 'success');
+
+                // Refresh views
+                await loadDashboardData();
+                loadStudents();
+
+            } catch (error) {
+                console.error('Error adding student:', error);
+                showToast('Öğrenci eklenirken hata oluştu: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+
+        async function deleteStudent(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            if (!confirm(`"${student.display_name}" öğrencisini silmek istediğinize emin misiniz?`)) {
+                return;
+            }
+
+            try {
+                const { error } = await SupabaseClient.getClient()
+                    .from('students')
+                    .delete()
+                    .eq('id', studentId);
+
+                if (error) throw error;
+
+                // Update local state
+                students = students.filter(s => s.id !== studentId);
+
+                showToast('Öğrenci silindi', 'success');
+                await loadDashboardData();
+                loadStudents();
+
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                showToast('Öğrenci silinemedi', 'error');
+            }
+        }
+
+        // ==========================================
+        // CLASSROOM SETTINGS FUNCTIONS
+        // ==========================================
+
+        function openClassroomSettings(classroomId) {
+            const classroom = classrooms.find(c => c.id === classroomId);
+            if (!classroom) return;
+
+            document.getElementById('settingsClassroomId').value = classroomId;
+            document.getElementById('settingsClassroomName').value = classroom.name;
+            document.getElementById('settingsClassroomDesc').value = classroom.description || '';
+            document.getElementById('settingsRequirePassword').checked = classroom.requires_password || false;
+
+            document.getElementById('classroomSettingsModal').classList.add('open');
+        }
+
+        async function saveClassroomSettings(event) {
+            event.preventDefault();
+
+            const classroomId = document.getElementById('settingsClassroomId').value;
+            const name = document.getElementById('settingsClassroomName').value.trim();
+            const description = document.getElementById('settingsClassroomDesc').value.trim();
+            const requiresPassword = document.getElementById('settingsRequirePassword').checked;
+
+            if (!name) {
+                showToast('Sınıf adı gerekli', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await SupabaseClient.getClient()
+                    .from('classrooms')
+                    .update({
+                        name,
+                        description: description || null,
+                        requires_password: requiresPassword
+                    })
+                    .eq('id', classroomId);
+
+                if (error) throw error;
+
+                // Update local state
+                const classroom = classrooms.find(c => c.id === classroomId);
+                if (classroom) {
+                    classroom.name = name;
+                    classroom.description = description;
+                    classroom.requires_password = requiresPassword;
+                }
+
+                closeModal('classroomSettingsModal');
+                showToast('Sınıf ayarları güncellendi', 'success');
+                loadClassrooms();
+
+            } catch (error) {
+                console.error('Error updating classroom:', error);
+                showToast('Ayarlar kaydedilemedi', 'error');
+            }
         }
 
         async function signOut() {
