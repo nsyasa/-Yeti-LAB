@@ -781,6 +781,62 @@
         </div>
     </div>
 
+    <!-- Student Detail Modal -->
+    <div id="studentDetailModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    <span id="detailStudentAvatar" class="text-4xl">🎓</span>
+                    <div>
+                        <h3 id="detailStudentName" class="text-xl font-bold">Öğrenci Adı</h3>
+                        <p id="detailStudentClass" class="text-gray-500 text-sm">Sınıf</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('studentDetailModal')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+
+            <!-- Student Stats -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600" id="detailCompletedCount">0</div>
+                    <div class="text-xs text-green-700 dark:text-green-400">Tamamlanan</div>
+                </div>
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-600" id="detailAvgScore">0%</div>
+                    <div class="text-xs text-yellow-700 dark:text-yellow-400">Ort. Quiz</div>
+                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-600" id="detailLastActive">-</div>
+                    <div class="text-xs text-blue-700 dark:text-blue-400">Son Aktif</div>
+                </div>
+            </div>
+
+            <!-- Course Progress -->
+            <h4 class="font-bold text-gray-700 dark:text-gray-300 mb-3">📊 Kurs İlerlemesi</h4>
+            <div id="detailCourseProgress" class="space-y-3 mb-6 max-h-48 overflow-y-auto">
+                <!-- Course progress bars will be loaded here -->
+            </div>
+
+            <!-- Recent Lessons -->
+            <h4 class="font-bold text-gray-700 dark:text-gray-300 mb-3">📝 Son Tamamlanan Dersler</h4>
+            <div id="detailRecentLessons" class="space-y-2 max-h-48 overflow-y-auto">
+                <!-- Recent lessons will be loaded here -->
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button type="button" onclick="closeModal('studentDetailModal')"
+                    class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                    Kapat
+                </button>
+                <button type="button" onclick="openEditStudentFromDetail()"
+                    class="flex-1 px-4 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                    <span>✏️</span> Düzenle
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast"
         class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
@@ -1088,12 +1144,17 @@
                             <div class="hidden sm:block">
                                 <p>Son aktif: ${lastActive}</p>
                             </div>
-                            <button onclick="openEditStudentModal('${student.id}')" 
+                            <button onclick="event.stopPropagation(); openStudentDetailModal('${student.id}')" 
+                                class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Detaylı Görüntüle">
+                                📊
+                            </button>
+                            <button onclick="event.stopPropagation(); openEditStudentModal('${student.id}')" 
                                 class="p-2 text-theme hover:bg-theme/10 rounded-lg transition-colors"
                                 title="Öğrenciyi Düzenle">
                                 ✏️
                             </button>
-                            <button onclick="deleteStudent('${student.id}')" 
+                            <button onclick="event.stopPropagation(); deleteStudent('${student.id}')" 
                                 class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Öğrenciyi Sil">
                                 🗑️
@@ -1700,6 +1761,162 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
+            }
+        }
+
+        // ==========================================
+        // STUDENT DETAIL FUNCTIONS
+        // ==========================================
+
+        let currentDetailStudentId = null;
+
+        async function openStudentDetailModal(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            currentDetailStudentId = studentId;
+
+            // Set basic info
+            document.getElementById('detailStudentAvatar').textContent = student.avatar_emoji || '🎓';
+            document.getElementById('detailStudentName').textContent = student.display_name;
+
+            const classroom = classrooms.find(c => c.id === student.classroom_id);
+            document.getElementById('detailStudentClass').textContent = classroom?.name || 'Bilinmeyen sınıf';
+
+            // Set last active
+            document.getElementById('detailLastActive').textContent = formatRelativeTime(student.last_active_at).split(' ')[0] || '-';
+
+            // Show loading in sections
+            document.getElementById('detailCourseProgress').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+            document.getElementById('detailRecentLessons').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+
+            document.getElementById('studentDetailModal').classList.add('open');
+
+            // Load progress data
+            try {
+                const { data: progressData, error } = await SupabaseClient.getClient()
+                    .from('student_progress')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .order('completed_at', { ascending: false });
+
+                if (error) throw error;
+
+                renderStudentDetailStats(progressData || []);
+                renderStudentCourseProgress(progressData || []);
+                renderStudentRecentLessons(progressData || []);
+
+            } catch (error) {
+                console.error('Error loading student progress:', error);
+                document.getElementById('detailCourseProgress').innerHTML = '<p class="text-red-500 text-center">Yüklenemedi</p>';
+                document.getElementById('detailRecentLessons').innerHTML = '<p class="text-red-500 text-center">Yüklenemedi</p>';
+            }
+        }
+
+        function renderStudentDetailStats(progressData) {
+            // Total completed
+            document.getElementById('detailCompletedCount').textContent = progressData.length;
+
+            // Average quiz score
+            const quizScores = progressData.filter(p => p.quiz_score !== null).map(p => p.quiz_score);
+            const avgScore = quizScores.length > 0
+                ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length)
+                : 0;
+            document.getElementById('detailAvgScore').textContent = avgScore + '%';
+        }
+
+        function renderStudentCourseProgress(progressData) {
+            const container = document.getElementById('detailCourseProgress');
+
+            const courses = {
+                arduino: { title: 'Arduino', icon: '🤖', color: '#00979C', total: 20 },
+                microbit: { title: 'Micro:bit', icon: '💻', color: '#6C63FF', total: 10 },
+                scratch: { title: 'Scratch', icon: '🎮', color: '#FF6F00', total: 8 },
+                mblock: { title: 'mBlock', icon: '🦾', color: '#30B0C7', total: 10 }
+            };
+
+            let hasProgress = false;
+
+            container.innerHTML = Object.entries(courses).map(([key, course]) => {
+                const completed = progressData.filter(p => p.course_id === key).length;
+                if (completed === 0) return '';
+
+                hasProgress = true;
+                const percentage = Math.round((completed / course.total) * 100);
+
+                return `
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <span class="text-2xl">${course.icon}</span>
+                        <div class="flex-grow">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">${course.title}</span>
+                                <span class="text-gray-500">${completed}/${course.total}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                                <div class="h-2 rounded-full" style="width: ${percentage}%; background: ${course.color}"></div>
+                            </div>
+                        </div>
+                        <span class="font-bold" style="color: ${course.color}">${percentage}%</span>
+                    </div>
+                `;
+            }).join('');
+
+            if (!hasProgress) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        <div class="text-2xl mb-1">📭</div>
+                        <p class="text-sm">Henüz ders tamamlanmamış</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderStudentRecentLessons(progressData) {
+            const container = document.getElementById('detailRecentLessons');
+
+            if (progressData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        <div class="text-2xl mb-1">📭</div>
+                        <p class="text-sm">Henüz ders tamamlanmamış</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const courseIcons = {
+                arduino: '🤖',
+                microbit: '💻',
+                scratch: '🎮',
+                mblock: '🦾'
+            };
+
+            // Show last 5 lessons
+            container.innerHTML = progressData.slice(0, 5).map(lesson => {
+                const date = new Date(lesson.completed_at);
+                const formattedDate = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+                const icon = courseIcons[lesson.course_id] || '📚';
+                const quizBadge = lesson.quiz_score !== null
+                    ? `<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-medium">${lesson.quiz_score}%</span>`
+                    : '';
+
+                return `
+                    <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <div class="flex items-center gap-2">
+                            <span>${icon}</span>
+                            <span class="text-sm font-medium">${lesson.project_id}</span>
+                            ${quizBadge}
+                        </div>
+                        <span class="text-xs text-gray-400">${formattedDate}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openEditStudentFromDetail() {
+            if (currentDetailStudentId) {
+                closeModal('studentDetailModal');
+                openEditStudentModal(currentDetailStudentId);
             }
         }
 
