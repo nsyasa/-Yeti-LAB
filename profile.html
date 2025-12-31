@@ -264,12 +264,14 @@
                 return;
             }
 
-            // Check if profile already complete
+            // Check if profile already complete - DISABLED to allow editing
+            /*
             const profileStatus = await checkProfileStatus();
             if (profileStatus && profileStatus.is_profile_complete) {
                 window.location.href = 'index.html';
                 return;
             }
+            */
 
             // Set user info
             userData = session.user;
