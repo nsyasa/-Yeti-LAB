@@ -536,6 +536,12 @@
             return Array.from(inputs).map(i => i.value).join('');
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Check classroom code
         let currentClassroomData = null; // Store classroom data for later use
         let classroomStudents = [];
