@@ -214,18 +214,18 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-3">
-                            <button onclick="alert('Google ile giriş yakında!')"
-                                class="flex-1 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 group">
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                    class="w-5 h-5 group-hover:scale-110 transition-transform">
-                                <span class="text-sm font-medium text-gray-600 group-hover:text-gray-900">Google</span>
+                        <div class="mt-6 flex gap-3 justify-center">
+                            <button type="button" onclick="handleSocialLogin('google')"
+                                class="flex-1 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                title="Google ile Giriş">
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                                <span class="text-sm font-medium text-gray-600">Google</span>
                             </button>
-                            <button onclick="alert('GitHub ile giriş yakında!')"
-                                class="flex-1 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 group">
-                                <img src="https://www.svgrepo.com/show/448224/github.svg"
-                                    class="w-5 h-5 group-hover:scale-110 transition-transform">
-                                <span class="text-sm font-medium text-gray-600 group-hover:text-gray-900">GitHub</span>
+                            <button type="button" onclick="handleSocialLogin('github')"
+                                class="flex-1 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                title="GitHub ile Giriş">
+                                <img src="https://www.svgrepo.com/show/448224/github.svg" class="w-5 h-5">
+                                <span class="text-sm font-medium text-gray-600">GitHub</span>
                             </button>
                         </div>
                     </div>
@@ -508,6 +508,32 @@
                     }
                 });
             });
+        }
+
+        // Social Login Handler
+        async function handleSocialLogin(provider) {
+            try {
+                showAlert(`${provider === 'google' ? 'Google' : 'GitHub'} ile bağlanılıyor...`, 'info');
+
+                // Get base URL for redirect
+                // If running locally with file://, Supabase auth redirects might need specific handling or localhost server
+                // Generally redirects work best when served via http/https
+                const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                const redirectUrl = baseUrl + '/teacher.html';
+
+                const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
+                    provider: provider,
+                    options: {
+                        redirectTo: redirectUrl
+                    }
+                });
+
+                if (error) throw error;
+
+            } catch (err) {
+                console.error('Login error:', err);
+                showAlert(`Giriş hatası: ${err.message}`, 'error');
+            }
         }
 
         // Get code from inputs
