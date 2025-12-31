@@ -74,6 +74,7 @@ const app = {
                     app.renderCourseSelection();
                 }).catch(err => {
                     console.error('[App] Course loading error:', err);
+                    Toast?.errorWithRetry('Kurslar yüklenemedi. İnternet bağlantınızı kontrol edin.', () => window.location.reload());
                     app.renderCourseSelection(); // Fallback to manifest
                 });
             } else {
@@ -125,6 +126,7 @@ const app = {
             });
         } catch (err) {
             console.warn('[App] Auth init error:', err);
+            Toast?.apiError(err, 'Kimlik doğrulama');
             app.updateUserUI(null);
         }
     },
@@ -389,6 +391,7 @@ const app = {
 
         } catch (error) {
             console.error('[App] Failed to load course:', error);
+            Toast?.errorWithRetry('Kurs yüklenemedi!', () => app.selectCourse(key));
             UI.showError('course-list', 'Kurs yüklenemedi!', 'app.renderCourseSelection()');
         } finally {
             // Clear loading state

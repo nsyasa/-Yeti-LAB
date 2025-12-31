@@ -163,12 +163,26 @@ const UI = {
 
     showError: (containerId, msg, retryAction) => {
         const container = document.getElementById(containerId);
+        const errorMessage = msg || I18n.t('error_loading');
+
+        // Show toast notification
+        if (window.Toast) {
+            if (retryAction) {
+                Toast.errorWithRetry(errorMessage, () => {
+                    try { eval(retryAction); } catch (e) { console.error(e); }
+                });
+            } else {
+                Toast.error(errorMessage);
+            }
+        }
+
+        // Also show inline error in container
         if (container) {
             container.innerHTML = `
                 <div class="col-span-full text-center py-20 text-red-500">
                     <div class="text-6xl mb-4">❌</div>
-                    <p class="font-bold">${msg || I18n.t('error_loading')}</p>
-                    ${retryAction ? `<button onclick="${retryAction}" class="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">${I18n.t('back')}</button>` : ''}
+                    <p class="font-bold">${errorMessage}</p>
+                    ${retryAction ? `<button onclick="${retryAction}" class="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-semibold transition-colors">${I18n.t('back')}</button>` : ''}
                 </div>`;
         }
     },

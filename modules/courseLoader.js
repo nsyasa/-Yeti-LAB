@@ -62,10 +62,13 @@ const CourseLoader = {
     isLoaded: (key) => CourseLoader.loadedCourses.has(key),
 
     /**
-     * Load a course dynamically
+     * Load a course dynamically with retry
      * Returns a Promise that resolves when the course is loaded
      */
-    loadCourse: (key) => {
+    loadCourse: (key, retryCount = 0) => {
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 1000;
+
         return new Promise((resolve, reject) => {
             // Already loaded?
             if (CourseLoader.isLoaded(key)) {
@@ -90,7 +93,19 @@ const CourseLoader = {
             };
 
             script.onerror = () => {
-                reject(new Error(`Failed to load course: ${key}`));
+                // Retry logic
+                if (retryCount < MAX_RETRIES) {
+                    console.warn(`[CourseLoader] Retry ${retryCount + 1}/${MAX_RETRIES} for: ${key}`);
+                    script.remove(); // Clean up failed script
+
+                    setTimeout(() => {
+                        CourseLoader.loadCourse(key, retryCount + 1)
+                            .then(resolve)
+                            .catch(reject);
+                    }, RETRY_DELAY * (retryCount + 1)); // Exponential backoff
+                } else {
+                    reject(new Error(`Failed to load course after ${MAX_RETRIES} retries: ${key}`));
+                }
             };
 
             document.head.appendChild(script);

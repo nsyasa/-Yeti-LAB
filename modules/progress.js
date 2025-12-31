@@ -79,6 +79,7 @@ const Progress = {
 
         } catch (error) {
             console.error('[Progress] Failed to load from server:', error);
+            Toast?.apiError(error, 'İlerleme verileri yükleme');
         } finally {
             Progress.isLoading = false;
         }
@@ -133,6 +134,7 @@ const Progress = {
 
         } catch (error) {
             console.error('[Progress] Failed:', error.message);
+            Toast?.error('İlerleme kaydedilemedi. Lütfen tekrar deneyin.');
             return false;
         }
     },
