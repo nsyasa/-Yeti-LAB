@@ -553,9 +553,12 @@
             const passwordSection = document.getElementById('studentPasswordSection');
             const passwordInput = document.getElementById('studentPassword');
             const studentSelect = document.getElementById('studentSelect');
+            const identifySection = document.getElementById('studentIdentifySection');
 
             if (code.length !== 5) {
                 infoBox.classList.add('hidden');
+                identifySection.classList.add('hidden');
+                identifySection.classList.add('opacity-0');
                 passwordSection.classList.add('hidden');
                 passwordInput.required = false;
                 currentClassroomData = null;
@@ -576,6 +579,11 @@
                 if (data) {
                     currentClassroomData = data;
                     infoBox.classList.remove('hidden');
+
+                    // Show identify section with animation
+                    identifySection.classList.remove('hidden');
+                    // Use timeout to allow DOM to update before removing opacity (for transition)
+                    setTimeout(() => identifySection.classList.remove('opacity-0'), 50);
 
                     // Show password lock indicator if required
                     const lockIcon = data.requires_password ? ' 🔒' : '';
@@ -607,6 +615,8 @@
 
                 } else {
                     infoBox.classList.add('hidden');
+                    identifySection.classList.add('hidden');
+                    identifySection.classList.add('opacity-0');
                     passwordSection.classList.add('hidden');
                     passwordInput.required = false;
                     currentClassroomData = null;
@@ -614,6 +624,7 @@
             } catch (err) {
                 console.warn('Code check error:', err);
                 infoBox.classList.add('hidden');
+                identifySection.classList.add('hidden'); // Also hide on error
             }
         }
 
