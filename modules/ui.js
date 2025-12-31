@@ -13,12 +13,39 @@ const UI = {
         const container = document.getElementById('course-list');
         container.innerHTML = "";
 
+        // Check if user is logged in as student for progress display
+        const isStudent = typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent;
+        const progressData = typeof Progress !== 'undefined' ? Progress.data : {};
+
         Object.entries(manifest).forEach(([key, manifestCourse]) => {
             // Prefer actual courseData values if loaded (reflects admin changes)
             const loadedCourse = window.courseData && window.courseData[key];
             const title = loadedCourse?.title || manifestCourse.title;
             const description = loadedCourse?.description || manifestCourse.description;
             const icon = loadedCourse?.icon || manifestCourse.icon || '🤖';
+
+            // Calculate progress for this course
+            let progressHtml = '';
+            if (isStudent) {
+                const completed = progressData[key] ? progressData[key].length : 0;
+                const total = loadedCourse?.data?.projects?.length || 10;
+                const percentage = Math.round((completed / total) * 100);
+
+                if (completed > 0) {
+                    progressHtml = `
+                        <div class="mt-4 w-full">
+                            <div class="flex justify-between text-sm text-gray-500 mb-1">
+                                <span>İlerleme</span>
+                                <span class="font-bold text-theme">${percentage}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="h-2 rounded-full bg-theme transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">${completed}/${total} ders tamamlandı</p>
+                        </div>
+                    `;
+                }
+            }
 
             container.innerHTML += `
                 <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-8 cursor-pointer group flex flex-col items-center text-center h-full" data-course="${key}">
@@ -27,6 +54,7 @@ const UI = {
                     </div>
                     <h3 class="card-title text-2xl text-gray-800 mb-2 group-hover:text-theme transition-colors">${title}</h3>
                     <p class="text-gray-500 relative z-10">${description}</p>
+                    ${progressHtml}
                     <div class="mt-auto pt-6 w-full relative z-10">
                         <span class="card-btn block w-full py-3 px-4 bg-theme/10 text-theme rounded-lg font-bold border-2 border-theme/20 group-hover:bg-theme group-hover:text-white group-hover:border-theme transition-all">
                             ${I18n.t('start')}
