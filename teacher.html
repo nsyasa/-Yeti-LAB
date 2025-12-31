@@ -697,6 +697,90 @@
         </div>
     </div>
 
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold">✏️ Öğrenci Düzenle</h3>
+                <button onclick="closeModal('editStudentModal')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="editStudentForm" onsubmit="saveStudentEdit(event)">
+                <input type="hidden" id="editStudentId">
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Öğrenci Adı</label>
+                    <input type="text" id="editStudentName" required maxlength="50"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="Öğrenci adı">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+                        <span class="flex items-center gap-2">
+                            🔒 Şifre
+                            <span id="editPasswordStatus"
+                                class="text-xs font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"></span>
+                        </span>
+                    </label>
+                    <input type="text" id="editStudentPassword" maxlength="20"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="Yeni şifre (boş bırakırsanız değişmez)">
+                    <p class="text-xs text-gray-500 mt-1">Şifreyi değiştirmek için yeni şifre yazın</p>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Avatar</label>
+                    <div class="flex flex-wrap gap-2" id="editAvatarSelector">
+                        <button type="button" onclick="selectEditAvatar('🎓')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🎓">🎓</button>
+                        <button type="button" onclick="selectEditAvatar('👦')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👦">👦</button>
+                        <button type="button" onclick="selectEditAvatar('👧')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👧">👧</button>
+                        <button type="button" onclick="selectEditAvatar('🧑')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🧑">🧑</button>
+                        <button type="button" onclick="selectEditAvatar('👨‍🎓')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👨‍🎓">👨‍🎓</button>
+                        <button type="button" onclick="selectEditAvatar('👩‍🎓')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="👩‍🎓">👩‍🎓</button>
+                        <button type="button" onclick="selectEditAvatar('🤖')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🤖">🤖</button>
+                        <button type="button" onclick="selectEditAvatar('🦸')"
+                            class="edit-avatar-btn text-2xl p-2 rounded-lg border-2 border-gray-200 hover:border-theme transition-colors"
+                            data-emoji="🦸">🦸</button>
+                    </div>
+                    <input type="hidden" id="editSelectedAvatar" value="🎓">
+                </div>
+                <div
+                    class="mb-6 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="editRemovePassword"
+                            class="w-5 h-5 text-red-500 rounded focus:ring-red-500">
+                        <div>
+                            <span class="font-medium text-yellow-800 dark:text-yellow-200">🗑️ Şifreyi Kaldır</span>
+                            <p class="text-xs text-yellow-600 dark:text-yellow-400">Öğrencinin şifresini tamamen sil</p>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('editStudentModal')"
+                        class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit" id="saveStudentEditBtn"
+                        class="flex-1 px-4 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast"
         class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
@@ -992,17 +1076,23 @@
 
                 return `
                     <div class="student-item">
-                        <div class="w-12 h-12 rounded-full bg-theme/10 flex items-center justify-center text-2xl">
+                        <div class="w-12 h-12 rounded-full bg-theme/10 flex items-center justify-center text-2xl cursor-pointer hover:scale-110 transition-transform" 
+                             onclick="openEditStudentModal('${student.id}')" title="Düzenle">
                             ${student.avatar_emoji || '🎓'}
                         </div>
-                        <div class="flex-grow">
+                        <div class="flex-grow cursor-pointer" onclick="openEditStudentModal('${student.id}')">
                             <p class="font-semibold text-gray-800 dark:text-white">${escapeHtml(student.display_name)} ${hasPassword}</p>
                             <p class="text-sm text-gray-500">${classroom?.name || 'Bilinmeyen sınıf'} ${addedByTeacher}</p>
                         </div>
-                        <div class="text-right text-sm text-gray-400 flex items-center gap-3">
-                            <div>
+                        <div class="text-right text-sm text-gray-400 flex items-center gap-2">
+                            <div class="hidden sm:block">
                                 <p>Son aktif: ${lastActive}</p>
                             </div>
+                            <button onclick="openEditStudentModal('${student.id}')" 
+                                class="p-2 text-theme hover:bg-theme/10 rounded-lg transition-colors"
+                                title="Öğrenciyi Düzenle">
+                                ✏️
+                            </button>
                             <button onclick="deleteStudent('${student.id}')" 
                                 class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Öğrenciyi Sil">
@@ -1500,6 +1590,116 @@
             } catch (error) {
                 console.error('Error deleting student:', error);
                 showToast('Öğrenci silinemedi', 'error');
+            }
+        }
+
+        // ==========================================
+        // EDIT STUDENT FUNCTIONS
+        // ==========================================
+
+        let editSelectedAvatarEmoji = '🎓';
+
+        function selectEditAvatar(emoji) {
+            editSelectedAvatarEmoji = emoji;
+            document.getElementById('editSelectedAvatar').value = emoji;
+
+            // Update UI
+            document.querySelectorAll('.edit-avatar-btn').forEach(btn => {
+                btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
+                btn.classList.add('border-gray-200');
+            });
+            const selectedBtn = document.querySelector(`.edit-avatar-btn[data-emoji="${emoji}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('border-gray-200');
+                selectedBtn.classList.add('selected', 'border-theme', 'bg-theme/10');
+            }
+        }
+
+        function openEditStudentModal(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            document.getElementById('editStudentId').value = studentId;
+            document.getElementById('editStudentName').value = student.display_name;
+            document.getElementById('editStudentPassword').value = '';
+            document.getElementById('editRemovePassword').checked = false;
+
+            // Set password status
+            const passwordStatus = document.getElementById('editPasswordStatus');
+            if (student.password) {
+                passwordStatus.textContent = 'Şifre Var';
+                passwordStatus.className = 'text-xs font-normal px-2 py-0.5 rounded-full bg-green-100 text-green-600';
+            } else {
+                passwordStatus.textContent = 'Şifre Yok';
+                passwordStatus.className = 'text-xs font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-600';
+            }
+
+            // Set avatar
+            editSelectedAvatarEmoji = student.avatar_emoji || '🎓';
+            document.getElementById('editSelectedAvatar').value = editSelectedAvatarEmoji;
+            selectEditAvatar(editSelectedAvatarEmoji);
+
+            document.getElementById('editStudentModal').classList.add('open');
+        }
+
+        async function saveStudentEdit(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('saveStudentEditBtn');
+            if (submitBtn.disabled) return;
+
+            const studentId = document.getElementById('editStudentId').value;
+            const displayName = document.getElementById('editStudentName').value.trim();
+            const newPassword = document.getElementById('editStudentPassword').value.trim();
+            const removePassword = document.getElementById('editRemovePassword').checked;
+            const avatar = document.getElementById('editSelectedAvatar').value;
+
+            if (!displayName) {
+                showToast('Öğrenci adı gerekli', 'error');
+                return;
+            }
+
+            // Show loading
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Kaydediliyor...';
+
+            try {
+                const updateData = {
+                    display_name: displayName,
+                    avatar_emoji: avatar
+                };
+
+                // Handle password update
+                if (removePassword) {
+                    updateData.password = null;
+                } else if (newPassword) {
+                    updateData.password = newPassword;
+                }
+
+                const { error } = await SupabaseClient.getClient()
+                    .from('students')
+                    .update(updateData)
+                    .eq('id', studentId);
+
+                if (error) throw error;
+
+                // Update local state
+                const studentIndex = students.findIndex(s => s.id === studentId);
+                if (studentIndex !== -1) {
+                    students[studentIndex] = { ...students[studentIndex], ...updateData };
+                }
+
+                closeModal('editStudentModal');
+                showToast('Öğrenci güncellendi', 'success');
+                loadStudents();
+
+            } catch (error) {
+                console.error('Error updating student:', error);
+                showToast('Öğrenci güncellenemedi: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
         }
 
