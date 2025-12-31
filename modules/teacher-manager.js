@@ -105,7 +105,7 @@ function showSection(section) {
     // Load section data
     if (section === 'classrooms') loadClassrooms();
     if (section === 'students') loadStudents();
-    if (section === 'progress') loadProgress();
+    // Progress section removed
 }
 
 function hideLoading() {
@@ -249,7 +249,7 @@ async function loadDashboardData() {
 
             const { data: studentsData, error: studentsError } = await SupabaseClient.getClient()
                 .from('students')
-                .select('*')
+                .select('*, student_progress(*)')
                 .in('classroom_id', classroomIds);
 
             if (!studentsError && studentsData) {
@@ -369,12 +369,10 @@ async function loadStudents() {
     const selectedClassroom = filterSelect ? filterSelect.value : 'all';
 
     // Update filter options
-    if (filterSelect) {
+    if (filterSelect && filterSelect.options.length <= 1) {
         filterSelect.innerHTML = '<option value="all">Tüm Sınıflar</option>' +
             classrooms.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
         filterSelect.value = selectedClassroom;
-
-        // Add event listener (overwrite old one)
         filterSelect.onchange = () => loadStudents();
     }
 
@@ -386,54 +384,52 @@ async function loadStudents() {
 
     if (filteredStudents.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
-                <div class="icon">👨‍🎓</div>
-                <p>Henüz öğrenci yok</p>
-                <p class="text-sm mt-2">Öğrenciler sınıf kodunu kullanarak katılabilir</p>
+            <div class="empty-state py-8">
+                <div class="text-4xl opacity-50 mb-2">👨‍🎓</div>
+                <p class="text-sm text-gray-500">Henüz öğrenci yok</p>
+                <p class="text-xs mt-1 text-gray-400">Öğrenciler sınıf kodunu kullanarak katılabilir</p>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = filteredStudents.map(student => {
-        const classroom = classrooms.find(c => c.id === student.classroom_id);
-        const lastActive = formatRelativeTime(student.last_active_at);
-        const addedByTeacher = student.added_by_teacher ? '<span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Öğretmen ekledi</span>' : '';
-        const hasPassword = student.password ? '🔒' : '';
+    container.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-50 dark:divide-gray-700">` +
+        filteredStudents.map(student => {
+            const classroom = classrooms.find(c => c.id === student.classroom_id);
+            const progressCount = student.student_progress?.length || 0;
+            const hasPassword = student.password ? '🔒' : '';
+            const hasArduino = student.student_progress?.some(p => p.course_id === 'arduino' || p.project_id?.includes('arduino')) ? '<span title="Arduino Modülüne Başlamış">🤖</span>' : '';
 
-        return `
-            <div class="student-item">
-                <div class="w-12 h-12 rounded-full bg-theme/10 flex items-center justify-center text-2xl cursor-pointer hover:scale-110 transition-transform" 
-                     onclick="openEditStudentModal('${student.id}')" title="Düzenle">
-                    ${student.avatar_emoji || '🎓'}
-                </div>
-                <div class="flex-grow cursor-pointer" onclick="openEditStudentModal('${student.id}')">
-                    <p class="font-semibold text-gray-800 dark:text-white">${escapeHtml(student.display_name)} ${hasPassword}</p>
-                    <p class="text-sm text-gray-500">${classroom?.name || 'Bilinmeyen sınıf'} ${addedByTeacher}</p>
-                </div>
-                <div class="text-right text-sm text-gray-400 flex items-center gap-2">
-                    <div class="hidden sm:block">
-                        <p>Son aktif: ${lastActive}</p>
+            return `
+            <div class="group flex items-center justify-between p-2 hover:bg-theme/5 transition-colors cursor-pointer" 
+                 onclick="openEditStudentModal('${student.id}')">
+                
+                <div class="flex items-center gap-3 flex-grow min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg flex-shrink-0 border border-gray-200 dark:border-gray-600">
+                        ${student.avatar_emoji || '🎓'}
                     </div>
-                    <button onclick="event.stopPropagation(); openStudentDetailModal('${student.id}')" 
-                        class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Detaylı Görüntüle">
-                        📊
+                    <div class="min-w-0 flex flex-col justify-center">
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold text-gray-800 dark:text-white text-sm truncate leading-none">${escapeHtml(student.display_name)}</p>
+                            <span class="text-[10px] text-gray-400">${hasPassword}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 truncate mt-0.5">${classroom?.name || '-'} • ${progressCount} ders ${hasArduino}</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                     <button onclick="event.stopPropagation(); openStudentDetailModal('${student.id}')" 
+                        class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
+                        İlerleme
                     </button>
                     <button onclick="event.stopPropagation(); openEditStudentModal('${student.id}')" 
-                        class="p-2 text-theme hover:bg-theme/10 rounded-lg transition-colors"
-                        title="Öğrenciyi Düzenle">
+                        class="p-1.5 text-gray-400 hover:text-theme rounded hover:bg-gray-100 transition-colors" title="Düzenle">
                         ✏️
-                    </button>
-                    <button onclick="event.stopPropagation(); deleteStudent('${student.id}')" 
-                        class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Öğrenciyi Sil">
-                        🗑️
                     </button>
                 </div>
             </div>
         `;
-    }).join('');
+        }).join('') + `</div>`;
 }
 
 async function loadProgress() {
@@ -1193,8 +1189,10 @@ async function openStudentDetailModal(studentId) {
         if (error) throw error;
 
         renderStudentDetailStats(progressData || []);
-        renderStudentCourseProgress(progressData || []);
-        renderStudentRecentLessons(progressData || []);
+        renderStudentProjectList(progressData || []);
+        // Removed separate calls since renderStudentProjectList handles updating both containers if needed
+        // renderStudentCourseProgress(progressData || []);
+        // renderStudentRecentLessons(progressData || []);
 
     } catch (error) {
         console.error('Error loading student progress:', error);
@@ -1213,92 +1211,105 @@ function renderStudentDetailStats(progressData) {
     document.getElementById('detailAvgScore').textContent = avgScore + '%';
 }
 
-function renderStudentCourseProgress(progressData) {
+// Replaces both course progress and recent lessons with a detailed project list
+function renderStudentProjectList(progressData) {
     const container = document.getElementById('detailCourseProgress');
+    if (!container) return;
 
-    const courses = {
-        arduino: { title: 'Arduino', icon: '🤖', color: '#00979C', total: 20 },
-        microbit: { title: 'Micro:bit', icon: '💻', color: '#6C63FF', total: 10 },
-        scratch: { title: 'Scratch', icon: '🎮', color: '#FF6F00', total: 8 },
-        mblock: { title: 'mBlock', icon: '🦾', color: '#30B0C7', total: 10 }
-    };
+    // Project Definitions (Hardcoded for now as requested)
+    const projects = [
+        { id: 'arduino-led-blink', title: 'LED Yakıp Söndürme', course: 'Arduino' },
+        { id: 'arduino-traffic-light', title: 'Trafik Lambası', course: 'Arduino' },
+        { id: 'arduino-button-led', title: 'Buton ile LED Kontrolü', course: 'Arduino' },
+        { id: 'arduino-potentiometer', title: 'Potansiyometre', course: 'Arduino' },
+        { id: 'arduino-ldr-sensor', title: 'LDR Işık Sensörü', course: 'Arduino' },
+        { id: 'arduino-rgb-led', title: 'RGB LED Kullanımı', course: 'Arduino' },
 
-    let hasProgress = false;
+        { id: 'microbit-welcome', title: 'Micro:bit\'e Merhaba', course: 'Micro:bit' },
+        { id: 'microbit-buttons', title: 'Buton Kullanımı', course: 'Micro:bit' },
+        { id: 'microbit-heart', title: 'Yanıp Sönen Kalp', course: 'Micro:bit' },
 
-    container.innerHTML = Object.entries(courses).map(([key, course]) => {
-        const completed = progressData.filter(p => p.course_id === key).length;
-        if (completed === 0) return '';
+        { id: 'scratch-basics', title: 'Temel Hareketler', course: 'Scratch' },
+        { id: 'scratch-events', title: 'Olaylar ve Kontrol', course: 'Scratch' }
+    ];
 
-        hasProgress = true;
-        const percentage = Math.round((completed / course.total) * 100);
+    const completedProjectIds = progressData.map(p => p.project_id);
+    const formatId = (id) => id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-        return `
-            <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <span class="text-2xl">${course.icon}</span>
-                <div class="flex-grow">
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium">${course.title}</span>
-                        <span class="text-gray-500">${completed}/${course.total}</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                        <div class="h-2 rounded-full" style="width: ${percentage}%; background: ${course.color}"></div>
-                    </div>
+    let html = '<div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">';
+
+    // Group by Course
+    ['Arduino', 'Micro:bit', 'Scratch', 'mBlock'].forEach(courseName => {
+        const courseId = courseName.toLowerCase().replace(':', '');
+
+        // Projects in our static list
+        const courseProjects = projects.filter(p => p.course === courseName);
+
+        // Projects not in list but completed (dynamic)
+        const extraCompleted = progressData.filter(p => p.course_id === courseId && !projects.find(proj => proj.id === p.project_id));
+
+        if (courseProjects.length === 0 && extraCompleted.length === 0) return;
+
+        html += `
+            <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3">
+                <h5 class="font-bold text-gray-700 dark:text-gray-300 text-xs uppercase tracking-wider mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">${courseName}</h5>
+                <div class="space-y-1">
+        `;
+
+        // Render Static List
+        courseProjects.forEach(proj => {
+            const isCompleted = completedProjectIds.includes(proj.id);
+            const statusIcon = isCompleted ? '✅' : '⬜';
+            const textClass = isCompleted ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500';
+
+            html += `
+                <div class="flex items-center justify-between p-1.5 rounded hover:bg-white dark:hover:bg-gray-600 transition-colors">
+                    <span class="text-sm ${textClass}">${proj.title}</span>
+                    <span class="text-sm">${statusIcon}</span>
                 </div>
-                <span class="font-bold" style="color: ${course.color}">${percentage}%</span>
-            </div>
-        `;
-    }).join('');
+            `;
+        });
 
-    if (!hasProgress) {
-        container.innerHTML = `
-            <div class="text-center text-gray-500 py-4">
-                <div class="text-2xl mb-1">📭</div>
-                <p class="text-sm">Henüz ders tamamlanmamış</p>
-            </div>
-        `;
+        // Render Extra Dynamic
+        extraCompleted.forEach(p => {
+            html += `
+                <div class="flex items-center justify-between p-1.5 rounded bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 mt-1 border border-green-100 dark:border-green-800">
+                    <span class="text-sm font-medium capitalize">${formatId(p.project_id)}</span>
+                    <span class="text-sm">✅</span>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    });
+
+    html += '</div>';
+
+    container.innerHTML = html;
+
+    // Update Recent Lessons Log (Compact)
+    const recentContainer = document.getElementById('detailRecentLessons');
+    if (recentContainer) {
+        if (progressData.length === 0) {
+            recentContainer.innerHTML = '<p class="text-xs text-center text-gray-400 py-2">Ders kaydı yok</p>';
+        } else {
+            recentContainer.innerHTML = `
+                <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3 max-h-[150px] overflow-y-auto custom-scrollbar">
+                    ${progressData.sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at)).map(p => `
+                        <div class="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-600 last:border-0 text-xs">
+                             <span class="text-gray-600 dark:text-gray-300 truncate pr-2 font-mono">${p.project_id}</span>
+                             <span class="text-gray-400 whitespace-nowrap">${formatRelativeTime(p.completed_at)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+             `;
+        }
     }
 }
 
-function renderStudentRecentLessons(progressData) {
-    const container = document.getElementById('detailRecentLessons');
-
-    if (progressData.length === 0) {
-        container.innerHTML = `
-            <div class="text-center text-gray-500 py-4">
-                <div class="text-2xl mb-1">📭</div>
-                <p class="text-sm">Henüz ders tamamlanmamış</p>
-            </div>
-        `;
-        return;
-    }
-
-    const courseIcons = {
-        arduino: '🤖',
-        microbit: '💻',
-        scratch: '🎮',
-        mblock: '🦾'
-    };
-
-    container.innerHTML = progressData.slice(0, 5).map(lesson => {
-        const date = new Date(lesson.completed_at);
-        const formattedDate = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
-        const icon = courseIcons[lesson.course_id] || '📚';
-        const quizBadge = lesson.quiz_score !== null
-            ? `<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-medium">${lesson.quiz_score}%</span>`
-            : '';
-
-        return `
-            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                <div class="flex items-center gap-2">
-                    <span>${icon}</span>
-                    <span class="text-sm font-medium">${lesson.project_id}</span>
-                    ${quizBadge}
-                </div>
-                <span class="text-xs text-gray-400">${formattedDate}</span>
-            </div>
-        `;
-    }).join('');
-}
+// Aliases for compatibility
+function renderStudentCourseProgress(data) { renderStudentProjectList(data); }
+function renderStudentRecentLessons(data) { }
 
 function openEditStudentFromDetail() {
     if (currentDetailStudentId) {

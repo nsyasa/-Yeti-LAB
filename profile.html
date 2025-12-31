@@ -276,9 +276,55 @@
                 studentSessionData = JSON.parse(studentLocal);
                 renderStudentProfile();
             } else {
-                // Teacher Mode (Existing Logic)
+                // Teacher Mode
                 userData = teacherSession.user;
                 setupTeacherProfile();
+
+                // Check Existing Profile Logic
+                try {
+                    const profile = await checkProfileStatus();
+                    if (profile && profile.role) {
+                        console.log('Profile found:', profile);
+                        selectedRole = profile.role;
+
+                        // Pre-select role card UI (visual feedback behind the scenes)
+                        document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+                        const roleCard = document.querySelector(`.role-card[onclick*="'${profile.role}'"]`);
+                        if (roleCard) roleCard.classList.add('selected');
+
+                        // Pre-fill Form Data
+                        if (profile.city) {
+                            const citySelect = document.getElementById('citySelect');
+                            citySelect.value = profile.city;
+                            // Load districts synchronously-like since data is local
+                            loadDistricts();
+
+                            if (profile.district) {
+                                // Small delay ensuring DOM update
+                                setTimeout(() => {
+                                    const districtSelect = document.getElementById('districtSelect');
+                                    if (districtSelect) districtSelect.value = profile.district;
+                                }, 50);
+                            }
+                        }
+                        if (profile.school_name) {
+                            document.getElementById('schoolName').value = profile.school_name;
+                        }
+
+                        // Auto-skip Step 1 (Role Selection) directly to Step 2
+                        goToStep(2);
+
+                        // Hide the "Back" button on Step 2 to prevent going back to Role selection
+                        // because Role shouldn't be changed easily if profile exists
+                        const backBtn = document.querySelector('#step2 button[onclick="goToStep(1)"]');
+                        if (backBtn) backBtn.style.display = 'none';
+
+                        // Update summary in advance
+                        updateSummary();
+                    }
+                } catch (e) {
+                    console.error('Auto-fill profile error:', e);
+                }
             }
         });
 
