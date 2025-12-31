@@ -237,6 +237,8 @@
         let selectedRole = null;
         let currentStep = 1;
         let userData = null;
+        let isStudentMode = false;
+        let studentSessionData = null;
 
         // Turkey Cities & Districts (simplified)
         const turkeyData = {
@@ -257,24 +259,172 @@
         document.addEventListener('DOMContentLoaded', async () => {
             SupabaseClient.init();
 
-            // Check auth
-            const session = await Auth.checkSession();
-            if (!session) {
+            // 1. Check Teacher Auth
+            const teacherSession = await Auth.checkSession();
+
+            // 2. Check Student Auth
+            const studentLocal = localStorage.getItem('yeti_student_session');
+
+            if (!teacherSession && !studentLocal) {
                 window.location.href = 'auth.html';
                 return;
             }
 
-            // Check if profile already complete - DISABLED to allow editing
-            /*
-            const profileStatus = await checkProfileStatus();
-            if (profileStatus && profileStatus.is_profile_complete) {
-                window.location.href = 'index.html';
+            if (studentLocal && !teacherSession) {
+                // Student Mode
+                isStudentMode = true;
+                studentSessionData = JSON.parse(studentLocal);
+                renderStudentProfile();
+            } else {
+                // Teacher Mode (Existing Logic)
+                userData = teacherSession.user;
+                setupTeacherProfile();
+            }
+        });
+
+        // --- STUDENT FUNCTIONS ---
+
+        function renderStudentProfile() {
+            // Hide header user info or update it
+            document.getElementById('userName').textContent = studentSessionData.displayName;
+            document.getElementById('userAvatar').textContent = '🎓';
+
+            // Replace main content with Student View
+            const container = document.querySelector('.w-full.max-w-2xl');
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 shadow-xl animate-fade-in-up">
+                    <div class="text-center mb-8 pb-8 border-b border-gray-100">
+                        <div class="text-6xl mb-4 bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto border-4 border-theme shadow-lg transform hover:scale-105 transition-transform duration-300">
+                             ${'🎓'}
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-1">${studentSessionData.displayName}</h2>
+                        <div class="inline-block px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-500 font-medium">
+                            ${studentSessionData.classroomName || 'Öğrenci'}
+                        </div>
+                    </div>
+
+                    <!-- İlerleme Bölümü -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 mb-8 border border-blue-100">
+                        <h3 class="font-bold text-blue-900 mb-4 flex items-center gap-2 text-lg">
+                            <span>🏆</span> İlerleme Durumu
+                        </h3>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <p class="text-3xl font-bold text-theme mb-1" id="completedLessons">-</p>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Tamamlanan Ders</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <p class="text-3xl font-bold text-orange-500 mb-1" id="totalPoints">-</p>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Toplam Puan</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Düzenleme Formu -->
+                    <form onsubmit="saveStudentProfile(event)" class="space-y-5">
+                        <h3 class="font-bold text-gray-800 text-lg">Profili Düzenle</h3>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2 text-sm">Görünen İsim</label>
+                            <input type="text" id="studentName" value="${studentSessionData.displayName}" required minlength="2"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2 text-sm">Yeni Şifre <span class="text-gray-400 font-normal">(İsteğe bağlı)</span></label>
+                            <input type="text" id="studentPassword" placeholder="Değiştirmek istemiyorsan boş bırak" minlength="3"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all outline-none">
+                        </div>
+                        
+                        <div id="studentSaveError" class="hidden text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100"></div>
+
+                        <button type="submit" id="studentSaveBtn"
+                            class="w-full bg-theme text-white py-4 rounded-xl font-bold text-lg hover:brightness-110 transition-all shadow-lg shadow-theme/30 active:scale-95">
+                            Değişiklikleri Kaydet
+                        </button>
+                    </form>
+                    
+                    <button onclick="window.location.href='index.html'" 
+                        class="mt-6 w-full bg-white border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all">
+                        Ana Sayfaya Dön
+                    </button>
+                </div>
+            `;
+
+            loadStudentStats();
+        }
+
+        async function loadStudentStats() {
+            try {
+                // Get completed lessons count from student_progress table
+                const { count, error } = await SupabaseClient.getClient()
+                    .from('student_progress')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('student_id', studentSessionData.studentId)
+                    .eq('is_completed', true);
+
+                if (!error) {
+                    document.getElementById('completedLessons').textContent = count || 0;
+                    document.getElementById('totalPoints').textContent = (count || 0) * 10; // Simple logic: 10 points per lesson
+                }
+            } catch (e) {
+                console.error('Stats load error:', e);
+            }
+        }
+
+        async function saveStudentProfile(event) {
+            event.preventDefault();
+            const name = document.getElementById('studentName').value.trim();
+            const password = document.getElementById('studentPassword').value.trim();
+            const btn = document.getElementById('studentSaveBtn');
+            const errorDiv = document.getElementById('studentSaveError');
+
+            if (name.length < 2) {
+                errorDiv.textContent = 'İsim en az 2 karakter olmalı';
+                errorDiv.classList.remove('hidden');
                 return;
             }
-            */
 
-            // Set user info
-            userData = session.user;
+            btn.disabled = true;
+            btn.innerHTML = 'Kaydediliyor...';
+            errorDiv.classList.add('hidden');
+
+            try {
+                const updates = { display_name: name };
+                if (password) updates.password = password;
+
+                const { error } = await SupabaseClient.getClient()
+                    .from('students')
+                    .update(updates)
+                    .eq('id', studentSessionData.studentId);
+
+                if (error) throw error;
+
+                // Update Local Session
+                studentSessionData.displayName = name;
+                localStorage.setItem('yeti_student_session', JSON.stringify(studentSessionData));
+
+                btn.innerHTML = '✅ Kaydedildi!';
+                btn.classList.replace('bg-theme', 'bg-green-500');
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.classList.replace('bg-green-500', 'bg-theme');
+                    btn.innerHTML = 'Değişiklikleri Kaydet';
+                }, 2000);
+
+            } catch (e) {
+                console.error(e);
+                errorDiv.textContent = 'Hata: ' + e.message;
+                errorDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = 'Değişiklikleri Kaydet';
+            }
+        }
+
+
+        // --- TEACHER FUNCTIONS (Existing Logic) ---
+
+        function setupTeacherProfile() {
             document.getElementById('userName').textContent =
                 userData.user_metadata?.full_name ||
                 userData.user_metadata?.name ||
@@ -285,19 +435,16 @@
                     `<img src="${userData.user_metadata.avatar_url}" class="w-8 h-8 rounded-full" alt="">`;
             }
 
-            // Load cities
             loadCities();
-        });
+        }
 
         async function checkProfileStatus() {
+            // ... existing function ...
             try {
                 const { data, error } = await SupabaseClient.getClient()
                     .rpc('check_profile_status');
                 return data;
-            } catch (e) {
-                console.warn('Profile status check failed:', e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         function loadCities() {
@@ -311,6 +458,7 @@
         }
 
         function loadDistricts() {
+            // ... existing logic ...
             const city = document.getElementById('citySelect').value;
             const districtSelect = document.getElementById('districtSelect');
             districtSelect.innerHTML = '<option value="">İlçe seçin...</option>';
@@ -326,6 +474,7 @@
         }
 
         function selectRole(role) {
+            // ... existing logic ...
             selectedRole = role;
             document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
@@ -333,37 +482,26 @@
         }
 
         function goToStep(step) {
-            // Validation for step 1
+            // ... existing logic ...
             if (currentStep === 1 && step > 1) {
                 if (!selectedRole) {
                     document.getElementById('roleError').classList.remove('hidden');
                     return;
                 }
             }
-
-            // Update UI
             document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`step${step}`).classList.remove('hidden');
-
-            // Update step indicators
             document.querySelectorAll('.step-indicator .step').forEach((el, idx) => {
                 const stepNum = idx + 1;
                 el.classList.remove('active', 'completed');
                 if (stepNum < step) el.classList.add('completed');
                 if (stepNum === step) el.classList.add('active');
             });
-
             currentStep = step;
-
-            // Prepare summary for step 3
-            if (step === 3) {
-                updateSummary();
-            }
+            if (step === 3) updateSummary();
         }
 
-        function skipSchoolInfo() {
-            goToStep(3);
-        }
+        function skipSchoolInfo() { goToStep(3); }
 
         function updateSummary() {
             document.getElementById('summaryRole').textContent = selectedRole === 'teacher' ? '👨‍🏫 Öğretmen' : '🎓 Öğrenci';
@@ -373,6 +511,7 @@
         }
 
         async function saveProfile() {
+            // ... existing teacher save logic ...
             const btn = document.getElementById('saveBtn');
             const errorDiv = document.getElementById('saveError');
 
@@ -390,13 +529,8 @@
                     });
 
                 if (error) throw error;
-
-                // Redirect based on role
-                if (selectedRole === 'teacher') {
-                    window.location.href = 'teacher.html';
-                } else {
-                    window.location.href = 'index.html';
-                }
+                if (selectedRole === 'teacher') window.location.href = 'teacher.html';
+                else window.location.href = 'index.html';
 
             } catch (err) {
                 console.error('Profile save error:', err);
