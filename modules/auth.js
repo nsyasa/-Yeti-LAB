@@ -156,7 +156,17 @@ const Auth = {
         if (data) {
             this.userRole = data.role;
             this.profileData = data;
-            this.isProfileComplete = data.is_profile_complete || false;
+
+            // Check both DB and Metadata for completion status
+            // Metadata is now the primary source of truth for new profiles
+            if (data.is_profile_complete) {
+                this.isProfileComplete = true;
+            } else if (this.currentUser.user_metadata?.profile_completed) {
+                this.isProfileComplete = true;
+            } else {
+                this.isProfileComplete = false;
+            }
+
             localStorage.setItem(this.USER_ROLE_KEY, data.role);
         }
 
