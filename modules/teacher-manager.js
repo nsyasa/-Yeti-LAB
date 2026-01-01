@@ -1265,9 +1265,16 @@ function renderStudentProjectList(progressData) {
     if (!container) return;
 
     // Use cached projects from database instead of hardcoded list
+    // Note: project_id in student_progress is a UUID, so we compare with dbId
     const completedProjectIds = progressData.map(p => p.project_id);
+
     const formatId = (id) => {
         if (!id) return 'Bilinmeyen';
+        if (typeof id !== 'string') return 'Bilinmeyen';
+        // Handle both UUID format and slug format
+        if (id.includes('-') && id.length > 30) {
+            return 'Proje ' + id.slice(0, 8); // Truncate UUID for display
+        }
         return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     };
 
@@ -1294,8 +1301,8 @@ function renderStudentProjectList(progressData) {
         Object.entries(projectsCache).forEach(([courseSlug, projects]) => {
             const courseName = courseDisplayNames[courseSlug] || courseSlug;
 
-            // Check if student has any activity in this course
-            const courseCompletedCount = projects.filter(p => completedProjectIds.includes(p.id)).length;
+            // Check if student has any activity in this course (compare with dbId - UUID)
+            const courseCompletedCount = projects.filter(p => completedProjectIds.includes(p.dbId)).length;
 
             // Only show courses that have projects
             if (projects.length === 0) return;
@@ -1309,9 +1316,9 @@ function renderStudentProjectList(progressData) {
                     <div class="space-y-1">
             `;
 
-            // Render projects from cache
+            // Render projects from cache (compare with dbId - UUID)
             projects.forEach(proj => {
-                const isCompleted = completedProjectIds.includes(proj.id);
+                const isCompleted = completedProjectIds.includes(proj.dbId);
                 const statusIcon = isCompleted ? '✅' : '⬜';
                 const textClass = isCompleted ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500';
 
@@ -1337,10 +1344,10 @@ function renderStudentProjectList(progressData) {
         if (progressData.length === 0) {
             recentContainer.innerHTML = '<p class="text-xs text-center text-gray-400 py-2">Ders kaydı yok</p>';
         } else {
-            // Find project titles from cache
+            // Find project titles from cache (compare with dbId - UUID)
             const getProjectTitle = (projectId) => {
                 for (const courseProjects of Object.values(projectsCache)) {
-                    const found = courseProjects.find(p => p.id === projectId);
+                    const found = courseProjects.find(p => p.dbId === projectId);
                     if (found) return found.title;
                 }
                 return formatId(projectId);
