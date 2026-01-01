@@ -597,15 +597,16 @@
                     details.textContent = `${data.name}${lockIcon} - ${data.user_profiles?.full_name || 'Öğretmen'}`;
 
                     // Fetch students for this classroom
+                    // GÜVENLİK DÜZELTMESİ: password alanını sorgudan sildik.
                     const { data: students, error: studentsError } = await SupabaseClient.getClient()
                         .from('students')
-                        .select('id, display_name, password')
+                        .select('id, display_name')
                         .eq('classroom_id', data.id)
                         .order('display_name');
 
                     if (studentsError) {
                         console.error('Öğrenci listesi hatası:', studentsError);
-                        showAlert('Öğrenci listesi alınamadı. Lütfen veritabanı (RLS) ayarlarını kontrol edin. Hata: ' + studentsError.message, 'error');
+                        showAlert('Öğrenci listesi alınamadı. Hata: ' + studentsError.message, 'error');
                         return;
                     }
 
@@ -618,16 +619,12 @@
                         document.getElementById('nameSelectMode').classList.remove('hidden');
                         document.getElementById('noStudentMessage').classList.add('hidden');
                     } else {
-                        // No students found OR Permission denied (returns empty array sometimes)
                         classroomStudents = [];
                         studentSelect.innerHTML = '<option value="">Listede Kimse Yok</option>';
                         document.getElementById('noStudentMessage').classList.remove('hidden');
-
-                        // Permission warning for developer
-                        console.warn('Öğrenci listesi boş. Eğer sınıf doluysa, "students" tablosunda SELECT (public/anon) izni eksik olabilir.');
                     }
 
-                    // Reset password section initially (wait for student selection)
+                    // Reset password section initially
                     passwordSection.classList.add('hidden');
                     passwordInput.required = false;
 
@@ -650,7 +647,6 @@
             const studentId = document.getElementById('studentSelect').value;
             const passwordSection = document.getElementById('studentPasswordSection');
             const passwordInput = document.getElementById('studentPassword');
-            const submitBtn = document.getElementById('studentLoginBtn');
 
             if (!studentId) {
                 // No selection
@@ -660,22 +656,14 @@
                 return;
             }
 
-            // Find selected student
-            const student = classroomStudents.find(s => s.id === studentId);
+            // Always show password section for selected student
+            // The server will handle validation or setting new password
+            passwordSection.classList.remove('hidden');
+            passwordInput.required = true;
+            passwordInput.placeholder = "Şifreni gir (veya ilk girişinse oluştur)";
 
-            if (student && student.password) {
-                // Student has a password (or classroom requires it and it's set on student)
-                passwordSection.classList.remove('hidden');
-                passwordInput.required = true;
-                passwordInput.placeholder = "Şifreni gir...";
-                // Focus on password
-                setTimeout(() => passwordInput.focus(), 100);
-            } else {
-                // No password needed
-                passwordSection.classList.add('hidden');
-                passwordInput.required = false;
-                passwordInput.value = '';
-            }
+            // Focus on password
+            setTimeout(() => passwordInput.focus(), 100);
         }
 
         // Setup forms
@@ -704,44 +692,17 @@
                     return;
                 }
 
-                // Client-side Password Verification
-                // (Since we fetch passwords in checkClassroomCode, we can verify here)
-                // Note: For production security, verification should happen on server-side RLS/RPC
-
-                // 1. If student has a personal password
-                if (student.password) {
-                    if (!password) {
-                        showAlert('Lütfen şifreni gir.', 'error');
-                        passwordInput.focus();
-                        return;
-                    }
-                    if (student.password !== password) {
-                        showAlert('Hatalı şifre!', 'error');
-                        passwordInput.value = '';
-                        passwordInput.focus();
-                        return;
-                    }
-                }
-                // 2. If classroom has a password but student doesn't (first login or shared password)
-                else if (currentClassroomData?.requires_password) {
-                    if (!password) {
-                        showAlert('Lütfen sınıf şifresini gir.', 'error');
-                        passwordInput.focus();
-                        return;
-                    }
-                    // We don't have the classroom password on client to check (it's hidden)
-                    // So we let the server handle it via Auth.studentLogin logic if applicable
-                    // OR we assume this is the first login and it will set the student password?
-                    // User requirements imply password is set by teacher.
-                    // For now, proceed to login attempting to use this password.
+                if (!password) {
+                    showAlert('Lütfen şifreni gir.', 'error');
+                    passwordInput.focus();
+                    return;
                 }
 
                 setLoading(btn, true);
 
                 try {
                     // Pass password to studentLogin
-                    // Auth.studentLogin uses display_name to find/create student. 
-                    // Since we selected an ID, we use that name.
+                    // Server-side validation via RPC 'student_login_secure'
                     await Auth.studentLogin(code, student.display_name, password);
                     showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                     setTimeout(() => {

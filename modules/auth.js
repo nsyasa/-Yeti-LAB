@@ -190,12 +190,12 @@ const Auth = {
     // ==========================================
 
     /**
-     * Student login with classroom code and name
+     * Student login with classroom code, name and password
      * @param {string} classroomCode - 5 character classroom code
      * @param {string} displayName - Student's display name
-     * @param {string} password - Optional password for password-protected classrooms
+     * @param {string} password - Student's password
      */
-    async studentLogin(classroomCode, displayName, password = null) {
+    async studentLogin(classroomCode, displayName, password) {
         // Validate inputs
         if (!classroomCode || classroomCode.length !== 5) {
             throw new Error('Sınıf kodu 5 karakter olmalıdır');
@@ -205,34 +205,37 @@ const Auth = {
             throw new Error('İsim en az 2 karakter olmalıdır');
         }
 
-        // Call the student_login function in Supabase
+        if (!password || password.length < 3) {
+            throw new Error('Şifre en az 3 karakter olmalıdır');
+        }
+
+        // Call the student_login_secure function in Supabase
         const { data, error } = await SupabaseClient.getClient()
-            .rpc('student_login', {
+            .rpc('student_login_secure', {
                 p_classroom_code: classroomCode.toUpperCase(),
-                p_display_name: displayName.trim()
+                p_display_name: displayName.trim(),
+                p_password: password
             });
 
         if (error) {
             if (error.message.includes('Geçersiz sınıf kodu')) {
                 throw new Error('Geçersiz sınıf kodu. Lütfen öğretmeninizden doğru kodu isteyin.');
             }
+            if (error.message.includes('bulunamadı')) {
+                throw new Error('Öğrenci bulunamadı. Lütfen listeden isminizi seçtiğinizden emin olun.');
+            }
+            if (error.message.includes('Hatalı şifre')) {
+                throw new Error('Hatalı şifre. Lütfen tekrar deneyin.');
+            }
+            // Generic error
             throw error;
         }
 
         if (!data || data.length === 0) {
-            throw new Error('Giriş yapılamadı. Lütfen tekrar deneyin.');
+            throw new Error('Giriş yapılamadı. Beklenmedik bir hata oluştu.');
         }
 
         const studentData = data[0];
-
-        // If password provided and student is new (or existing without password), save it
-        if (password) {
-            await SupabaseClient.getClient()
-                .from('students')
-                .update({ password: password })
-                .eq('id', studentData.student_id)
-                .is('password', null); // Only update if no password set
-        }
 
         // Store session in localStorage
         const session = {
