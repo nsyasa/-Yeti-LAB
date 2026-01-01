@@ -583,11 +583,4 @@ Simulations.pot_led = Simulations.pot;
 Simulations.button_led = Simulations.button;
 Simulations.generic_sensor = Simulations.streetLight; // Approximation
 
-// Helper for StreetLight
-function drawLamp(ctx, x, y, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath(); ctx.arc(x, y, 20, 0, 6.28); ctx.fill();
-    ctx.fillStyle = "#555"; ctx.fillRect(x - 5, y + 20, 10, 100);
-}
-
 window.Simulations = Simulations;

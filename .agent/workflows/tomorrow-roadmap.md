@@ -1,130 +1,36 @@
 ---
-description: Yarınki geliştirme planı - 31 Aralık 2024
+description: Yarınki geliştirme planı - 1 Ocak 2025
 ---
 
-# 🗓️ Yeti LAB - Yarınki Geliştirme Planı
+# 📅 Yarınki Yol Haritası (1 Ocak 2025)
 
-## ✅ Bugün Tamamlananlar (30 Aralık 2024)
+Projenin güvenliğini sağlamak ve veri tutarlılığını düzeltmek için "Bebek Adımları" (Baby Steps) stratejisi. Hiçbir şeyi bozmadan, adım adım ilerleyeceğiz.
 
-| Görev | Durum |
-|-------|-------|
-| Öğretmen Paneli (teacher.html) | ✅ Tamamlandı |
-| OAuth yönlendirme düzeltmesi | ✅ Tamamlandı |
-| Supabase progress entegrasyonu | ✅ Tamamlandı |
-| Öğrenci ders tamamlama sistemi | ✅ Tamamlandı |
-| İlerleme takibi (öğretmen paneli) | ✅ Tamamlandı |
-| Console.log temizliği | ✅ Tamamlandı |
-| README.md profesyonelleştirme | ✅ Tamamlandı |
+## 1. 🛡️ Güvenlik Kalkanı (Sabah)
+Öncelik: **Çok Yüksek** - *Güvenlik açığını kapatıyoruz.*
 
----
+- [ ] **Adım 1.1:** Supabase SQL Editöründe `student_login_secure` adında, şifre parametresi alan ve doğrulama yapan yeni bir fonksiyon hazırlanacak.
+- [ ] **Adım 1.2:** `modules/auth.js` dosyası, bu yeni güvenli fonksiyonu kullanacak şekilde güncellenecek.
+- [ ] **Adım 1.3:** Test: Yanlış şifre ile giriş yapılamadığı, doğru şifre ile yapılabildiği teyit edilecek.
 
-## 📋 Yarın Yapılacaklar (31 Aralık 2024)
+## 2. 🗄️ Veri Kaynağını Düzeltme (Öğle)
+Öncelik: **Yüksek** - *JSON ve Veritabanı uyumsuzluğunu gideriyoruz.*
 
-### 🔴 Öncelikli: Kritik Düzeltmeler
+- [ ] **Adım 2.1:** Veritabanında `projects` (veya `lessons`) tablosunun schema yapısı kontrol edilecek.
+- [ ] **Adım 2.2:** `data.json` içindeki ders verilerini (Başlık, ID, Kategori) veritabanına aktarmak için tek kullanımlık bir script (`migration.js`) yazılacak.
+- [ ] **Adım 2.3:** Veriler Supabase'e güvenli bir şekilde aktarılacak.
 
-#### Bug Fix 1: Eksik Görseller (30 dk)
-- [ ] `devre1.jpg`, `devre2.jpg` vb. simülasyon görsellerini ekle
-- [ ] Canvas 404 hatalarını düzelt
-- [ ] Simülasyon görsel yükleyemezse fallback ekle
+## 3. 🔗 Öğretmen Paneli Entegrasyonu (Öğleden Sonra)
+Öncelik: **Orta** - *Hayalet verileri gerçek verilerle değiştiriyoruz.*
 
-#### Bug Fix 2: Loading States (45 dk)
-- [ ] Butonlara loading spinner ekle
-- [ ] Ders yüklenirken skeleton loader
-- [ ] Çift tıklama koruması
+- [ ] **Adım 3.1:** `modules/teacher-manager.js` içindeki "elle yazılmış" proje listesi (hardcoded list) silinecek.
+- [ ] **Adım 3.2:** Bunun yerine projeleri veritabanından çeken (`loadProjects`) dinamik bir yapı kurulacak.
+- [ ] **Adım 3.3:** Öğrenci detay modalı, artık veritabanındaki gerçek proje isimlerini ve ID'lerini kullanacak.
 
-#### Bug Fix 3: Error Handling (1 saat)
-- [ ] Kullanıcıya görünür hata mesajları (toast notifications)
-- [ ] Network hatalarında retry mekanizması
-- [ ] Supabase bağlantı hatalarını yakala
+## 4. 🧹 Temizlik ve Test (Akşam)
+Öncelik: **Düşük** - *Günü temiz kapatıyoruz.*
 
----
+- [ ] **Adım 4.1:** Kullanılmayan eski kod blokları temizlenecek.
+- [ ] **Adım 4.2:** Genel sistem testi (Öğrenci giriş yapar -> Ders tamamlar -> Öğretmen panelinde görünür) yapılacak.
 
-### 🟡 Orta Öncelik: Yeni Özellikler
-
-#### Faz 1: Veritabanı Değişiklikleri (30 dk)
-```sql
-ALTER TABLE classrooms ADD COLUMN requires_password BOOLEAN DEFAULT false;
-ALTER TABLE students ADD COLUMN password TEXT;
-ALTER TABLE students ADD COLUMN added_by_teacher BOOLEAN DEFAULT false;
-```
-
-#### Faz 2: Toplu Öğrenci Ekleme (1 saat)
-- [ ] "Toplu Öğrenci Ekle" butonu (teacher.html)
-- [ ] Modal: Textarea (her satıra bir isim)
-- [ ] Checkbox: "Şifre oluştur"
-- [ ] Önizleme tablosu (isim + şifre)
-- [ ] Listeyi export (kopyala/indir)
-
-#### Faz 3: Yeni Giriş Ekranı (1.5 saat)
-- [ ] Birleşik giriş ekranı tasarımı
-- [ ] Email kayıt/giriş akışı
-- [ ] Google/GitHub OAuth (mevcut)
-- [ ] "Sınıf koduyla gir" butonu
-
-#### Faz 4: Kod ile Giriş Akışı (1 saat)
-- [ ] Kod gir → Sınıf kontrol
-- [ ] Şifreli sınıf: şifre iste
-- [ ] Şifresiz sınıf: listeden isim seç
-
-#### Faz 5: Öğrenci İlerleme Sayfası (1 saat)
-- [ ] Profil sayfasında tamamlanan dersler
-- [ ] Quiz puanları listesi
-- [ ] Kurs kartlarında ilerleme göstergesi
-
-#### Faz 6: Öğretmen Paneli İlerleme (30 dk)
-- [ ] Öğrenci detay modalı
-- [ ] Ders bazlı ilerleme
-
----
-
-### 🟢 Düşük Öncelik: Teknik Borç
-
-#### Tailwind Production Build (1 saat)
-- [ ] `npm run build` ile Tailwind CSS üret
-- [ ] CDN yerine local CSS dosyası kullan
-- [ ] Sayfa yükleme hızını optimize et
-
-#### Kod Modülerliği (2 saat)
-- [ ] teacher.html inline JS'i ayrı dosyaya taşı
-- [ ] Duplicate fonksiyonları birleştir
-- [ ] Tutarlı modül yapısı oluştur
-
-#### Güvenlik İyileştirmeleri (1 saat)
-- [ ] Öğrenci şifrelerini hash'le (bcrypt benzeri)
-- [ ] RLS politikalarını sıkılaştır
-- [ ] Rate limiting ekle
-
----
-
-## 🎯 Öncelik Sırası
-
-| Sıra | Görev | Süre | Öncelik |
-|------|-------|------|---------|
-| 1 | Eksik görseller | 30 dk | 🔴 Kritik |
-| 2 | Loading states | 45 dk | 🔴 Kritik |
-| 3 | Error handling | 1 saat | 🔴 Kritik |
-| 4 | Faz 1: Veritabanı | 30 dk | 🟡 Orta |
-| 5 | Faz 2: Toplu öğrenci | 1 saat | 🟡 Orta |
-| 6 | Faz 3-6: Giriş sistemi | 4 saat | 🟡 Orta |
-| 7 | Tailwind build | 1 saat | 🟢 Düşük |
-| 8 | Kod modülerliği | 2 saat | 🟢 Düşük |
-| 9 | Güvenlik | 1 saat | 🟢 Düşük |
-
----
-
-## 🔗 Önemli Linkler
-
-- **GitHub Pages:** https://nsyasa.github.io/-Yeti-LAB/
-- **Öğretmen Paneli:** https://nsyasa.github.io/-Yeti-LAB/teacher.html
-- **Auth Sayfası:** https://nsyasa.github.io/-Yeti-LAB/auth.html
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/zuezvfojutlefdvqrica
-
----
-
-## 📝 Gelecekte Yapılacaklar (Backlog)
-
-- [ ] Birim testler yazma
-- [ ] E2E testler (Playwright/Cypress)
-- [ ] PWA desteği (offline çalışma)
-- [ ] Performans optimizasyonu
-- [ ] Accessibility (a11y) iyileştirmeleri
+> **Not:** Bu plan, mevcut çalışan sistemi bozmadan, yanına daha sağlam bir yapı inşa edip geçiş yapmayı hedefler.
