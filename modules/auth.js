@@ -96,13 +96,18 @@ const Auth = {
      * Sign up with email/password (for teachers)
      */
     async signUpWithEmail(email, password, fullName) {
+        // Calculate correct redirect URL dynamically
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+        const redirectUrl = baseUrl + '/auth.html';
+
         const { data, error } = await SupabaseClient.getClient().auth.signUp({
             email,
             password,
             options: {
                 data: {
                     full_name: fullName
-                }
+                },
+                emailRedirectTo: redirectUrl
             }
         });
 
