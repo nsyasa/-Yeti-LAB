@@ -1,7 +1,7 @@
 {
-  "name": "arep2",
+  "name": "yeti-lab",
   "version": "1.0.0",
-  "description": "Mucit Atolyesi Egitim Platformu",
+  "description": "Yeti LAB - İnteraktif Robotik ve Kodlama Eğitim Platformu",
   "main": "app.js",
   "scripts": {
     "build:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i styles/input.css -o styles/output.css --minify",
