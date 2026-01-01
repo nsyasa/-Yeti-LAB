@@ -158,9 +158,16 @@ const Auth = {
             this.profileData = data;
             this.isProfileComplete = data.is_profile_complete || false;
             localStorage.setItem(this.USER_ROLE_KEY, data.role);
-        } else {
-            // Profile doesn't exist yet
-            this.isProfileComplete = false;
+        }
+
+        // Fallback to metadata if profile/role missing
+        if (!this.userRole && this.currentUser.user_metadata?.role) {
+            this.userRole = this.currentUser.user_metadata.role;
+            localStorage.setItem(this.USER_ROLE_KEY, this.userRole);
+            // If metadata says completed, trust it
+            if (this.currentUser.user_metadata.profile_completed) {
+                this.isProfileComplete = true;
+            }
         }
 
         return data;
