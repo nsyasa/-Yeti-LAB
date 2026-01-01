@@ -747,6 +747,37 @@
                     setLoading(btn, false);
                 }
             });
+
+            // Register form handler
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const name = document.getElementById('regName').value;
+                    const email = document.getElementById('regEmail').value;
+                    const password = document.getElementById('regPassword').value;
+                    const btn = document.getElementById('regBtn');
+
+                    setLoading(btn, true);
+
+                    try {
+                        const { user } = await Auth.signUpWithEmail(email, password, name);
+
+                        // Check if email confirmation is required
+                        if (user && user.identities && user.identities.length === 0) {
+                            showAlert('Bu e-posta adresi zaten kayıtlı.', 'error');
+                        } else {
+                            showAlert('Kayıt başarılı! Lütfen e-postanızı kontrol edip onaylayın.', 'success');
+                            registerForm.reset();
+                        }
+                    } catch (err) {
+                        showAlert(err.message, 'error');
+                    } finally {
+                        setLoading(btn, false);
+                    }
+                });
+            }
         }
 
         // OAuth logins
