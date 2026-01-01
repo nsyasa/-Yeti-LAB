@@ -5,18 +5,61 @@
  *   node scripts/migration.js                    # Tüm kursları aktar
  *   node scripts/migration.js arduino            # Sadece Arduino
  *   node scripts/migration.js arduino,microbit   # Seçili kurslar
+ * 
+ * Gereksinimler:
+ *   .env dosyasında SUPABASE_URL ve SUPABASE_ANON_KEY tanımlanmalı
  */
 
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, existsSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { COURSE_CONFIGS } from './course-configs.js';
+
+// ==========================================
+// .ENV DOSYASINI OKU
+// ==========================================
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const envPath = join(__dirname, '..', '.env');
+
+// .env dosyasını manuel parse et (dotenv yerine)
+function loadEnv() {
+    if (!existsSync(envPath)) {
+        console.error('❌ .env dosyası bulunamadı!');
+        console.log('   Lütfen .env.example dosyasını .env olarak kopyalayıp doldurun.');
+        process.exit(1);
+    }
+
+    const content = readFileSync(envPath, 'utf-8');
+    const lines = content.split('\n');
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+
+        const [key, ...valueParts] = trimmed.split('=');
+        const value = valueParts.join('=');
+        if (key && value) {
+            process.env[key.trim()] = value.trim();
+        }
+    }
+}
+
+loadEnv();
 
 // ==========================================
 // SUPABASE BAĞLANTISI
 // ==========================================
 
-const SUPABASE_URL = 'https://zuezvfojutlefdvqrica.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error('❌ SUPABASE_URL ve SUPABASE_ANON_KEY .env dosyasında tanımlanmalı!');
+    process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
