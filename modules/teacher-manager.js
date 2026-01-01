@@ -19,7 +19,6 @@ let projectsCache = {}; // Cache for projects by course: { courseId: [project1, 
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🎓 Teacher Panel initializing...');
 
     try {
         // Initialize Supabase & Auth
@@ -59,8 +58,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await loadProjects(); // Load projects from database
                 hideLoading();
                 showSection('dashboard');
-
-                console.log('✅ Teacher Panel ready');
             }
         }
 
@@ -263,7 +260,6 @@ async function loadProjects() {
             projectsCache[course.slug] = courseProjects;
         });
 
-        console.log('📚 Projects loaded:', Object.keys(projectsCache).map(k => `${k}: ${projectsCache[k].length}`).join(', '));
         return projectsCache;
 
     } catch (error) {

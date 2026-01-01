@@ -1058,7 +1058,6 @@ const admin = {
 
     // --- PHASES MANAGEMENT ---
     renderPhaseList: () => {
-        console.log("Rendering phase list...");
         const list = document.getElementById('phase-list');
         if (!list) return;
 
