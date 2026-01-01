@@ -12,6 +12,7 @@ let bulkStudentsData = [];
 let selectedAvatarEmoji = '🎓';
 let editSelectedAvatarEmoji = '🎓';
 let currentDetailStudentId = null;
+let projectsCache = {}; // Cache for projects by course: { courseId: [project1, project2...] }
 
 // ==========================================
 // INITIALIZATION
@@ -55,8 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Load Initial Data
                 await loadDashboardData();
-
-                // Show Dashboard
+                await loadProjects(); // Load projects from database
                 hideLoading();
                 showSection('dashboard');
 
@@ -223,6 +223,54 @@ function formatRelativeTime(dateString) {
 // ==========================================
 // DATA FUNCTIONS
 // ==========================================
+
+/**
+ * Load projects from database and cache them
+ */
+async function loadProjects() {
+    try {
+        // Get all courses first
+        const { data: courses, error: coursesError } = await SupabaseClient.getClient()
+            .from('courses')
+            .select('id, slug, title')
+            .eq('is_published', true);
+
+        if (coursesError) throw coursesError;
+
+        // Get all projects
+        const { data: projects, error: projectsError } = await SupabaseClient.getClient()
+            .from('projects')
+            .select('id, slug, title, course_id, phase_id, position')
+            .eq('is_published', true)
+            .order('position', { ascending: true });
+
+        if (projectsError) throw projectsError;
+
+        // Build cache by course slug
+        projectsCache = {};
+
+        courses.forEach(course => {
+            const courseProjects = projects
+                .filter(p => p.course_id === course.id)
+                .map(p => ({
+                    id: p.slug,
+                    dbId: p.id,
+                    title: p.title,
+                    course: course.title,
+                    courseSlug: course.slug
+                }));
+
+            projectsCache[course.slug] = courseProjects;
+        });
+
+        console.log('📚 Projects loaded:', Object.keys(projectsCache).map(k => `${k}: ${projectsCache[k].length}`).join(', '));
+        return projectsCache;
+
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        return {};
+    }
+}
 
 async function loadDashboardData() {
     try {
@@ -1216,72 +1264,68 @@ function renderStudentProjectList(progressData) {
     const container = document.getElementById('detailCourseProgress');
     if (!container) return;
 
-    // Project Definitions (Hardcoded for now as requested)
-    const projects = [
-        { id: 'arduino-led-blink', title: 'LED Yakıp Söndürme', course: 'Arduino' },
-        { id: 'arduino-traffic-light', title: 'Trafik Lambası', course: 'Arduino' },
-        { id: 'arduino-button-led', title: 'Buton ile LED Kontrolü', course: 'Arduino' },
-        { id: 'arduino-potentiometer', title: 'Potansiyometre', course: 'Arduino' },
-        { id: 'arduino-ldr-sensor', title: 'LDR Işık Sensörü', course: 'Arduino' },
-        { id: 'arduino-rgb-led', title: 'RGB LED Kullanımı', course: 'Arduino' },
-
-        { id: 'microbit-welcome', title: 'Micro:bit\'e Merhaba', course: 'Micro:bit' },
-        { id: 'microbit-buttons', title: 'Buton Kullanımı', course: 'Micro:bit' },
-        { id: 'microbit-heart', title: 'Yanıp Sönen Kalp', course: 'Micro:bit' },
-
-        { id: 'scratch-basics', title: 'Temel Hareketler', course: 'Scratch' },
-        { id: 'scratch-events', title: 'Olaylar ve Kontrol', course: 'Scratch' }
-    ];
-
+    // Use cached projects from database instead of hardcoded list
     const completedProjectIds = progressData.map(p => p.project_id);
-    const formatId = (id) => id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const formatId = (id) => {
+        if (!id) return 'Bilinmeyen';
+        return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    };
+
+    // Course display names
+    const courseDisplayNames = {
+        'arduino': 'Arduino',
+        'microbit': 'Micro:bit',
+        'scratch': 'Scratch',
+        'mblock': 'mBlock',
+        'appinventor': 'App Inventor'
+    };
 
     let html = '<div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">';
 
-    // Group by Course
-    ['Arduino', 'Micro:bit', 'Scratch', 'mBlock'].forEach(courseName => {
-        const courseId = courseName.toLowerCase().replace(':', '');
-
-        // Projects in our static list
-        const courseProjects = projects.filter(p => p.course === courseName);
-
-        // Projects not in list but completed (dynamic)
-        const extraCompleted = progressData.filter(p => p.course_id === courseId && !projects.find(proj => proj.id === p.project_id));
-
-        if (courseProjects.length === 0 && extraCompleted.length === 0) return;
-
+    // Check if projectsCache is loaded
+    if (Object.keys(projectsCache).length === 0) {
         html += `
-            <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3">
-                <h5 class="font-bold text-gray-700 dark:text-gray-300 text-xs uppercase tracking-wider mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">${courseName}</h5>
-                <div class="space-y-1">
+            <div class="text-center py-4 text-gray-400 text-sm">
+                <p>Proje listesi yükleniyor...</p>
+            </div>
         `;
+    } else {
+        // Iterate through cached courses
+        Object.entries(projectsCache).forEach(([courseSlug, projects]) => {
+            const courseName = courseDisplayNames[courseSlug] || courseSlug;
 
-        // Render Static List
-        courseProjects.forEach(proj => {
-            const isCompleted = completedProjectIds.includes(proj.id);
-            const statusIcon = isCompleted ? '✅' : '⬜';
-            const textClass = isCompleted ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500';
+            // Check if student has any activity in this course
+            const courseCompletedCount = projects.filter(p => completedProjectIds.includes(p.id)).length;
+
+            // Only show courses that have projects
+            if (projects.length === 0) return;
 
             html += `
-                <div class="flex items-center justify-between p-1.5 rounded hover:bg-white dark:hover:bg-gray-600 transition-colors">
-                    <span class="text-sm ${textClass}">${proj.title}</span>
-                    <span class="text-sm">${statusIcon}</span>
-                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3">
+                    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-600 pb-1 mb-2">
+                        <h5 class="font-bold text-gray-700 dark:text-gray-300 text-xs uppercase tracking-wider">${courseName}</h5>
+                        <span class="text-xs text-gray-400">${courseCompletedCount}/${projects.length}</span>
+                    </div>
+                    <div class="space-y-1">
             `;
-        });
 
-        // Render Extra Dynamic
-        extraCompleted.forEach(p => {
-            html += `
-                <div class="flex items-center justify-between p-1.5 rounded bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 mt-1 border border-green-100 dark:border-green-800">
-                    <span class="text-sm font-medium capitalize">${formatId(p.project_id)}</span>
-                    <span class="text-sm">✅</span>
-                </div>
-            `;
-        });
+            // Render projects from cache
+            projects.forEach(proj => {
+                const isCompleted = completedProjectIds.includes(proj.id);
+                const statusIcon = isCompleted ? '✅' : '⬜';
+                const textClass = isCompleted ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500';
 
-        html += `</div></div>`;
-    });
+                html += `
+                    <div class="flex items-center justify-between p-1.5 rounded hover:bg-white dark:hover:bg-gray-600 transition-colors">
+                        <span class="text-sm ${textClass}">${proj.title}</span>
+                        <span class="text-sm">${statusIcon}</span>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+        });
+    }
 
     html += '</div>';
 
@@ -1293,11 +1337,20 @@ function renderStudentProjectList(progressData) {
         if (progressData.length === 0) {
             recentContainer.innerHTML = '<p class="text-xs text-center text-gray-400 py-2">Ders kaydı yok</p>';
         } else {
+            // Find project titles from cache
+            const getProjectTitle = (projectId) => {
+                for (const courseProjects of Object.values(projectsCache)) {
+                    const found = courseProjects.find(p => p.id === projectId);
+                    if (found) return found.title;
+                }
+                return formatId(projectId);
+            };
+
             recentContainer.innerHTML = `
                 <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3 max-h-[150px] overflow-y-auto custom-scrollbar">
                     ${progressData.sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at)).map(p => `
                         <div class="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-600 last:border-0 text-xs">
-                             <span class="text-gray-600 dark:text-gray-300 truncate pr-2 font-mono">${p.project_id}</span>
+                             <span class="text-gray-600 dark:text-gray-300 truncate pr-2">${getProjectTitle(p.project_id)}</span>
                              <span class="text-gray-400 whitespace-nowrap">${formatRelativeTime(p.completed_at)}</span>
                         </div>
                     `).join('')}
@@ -1399,6 +1452,7 @@ window.loadDashboardData = loadDashboardData;
 window.loadClassrooms = loadClassrooms;
 window.loadStudents = loadStudents;
 window.loadProgress = loadProgress;
+window.loadProjects = loadProjects;
 window.openCreateClassroomModal = openCreateClassroomModal;
 window.closeModal = closeModal;
 window.createClassroom = createClassroom;
