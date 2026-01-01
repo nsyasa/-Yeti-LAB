@@ -150,7 +150,19 @@ const app = {
             if (userName) userName.textContent = userInfo.displayName || 'Kullanıcı';
             if (userAvatar) {
                 if (userInfo.avatarUrl) {
-                    userAvatar.innerHTML = `<img src="${userInfo.avatarUrl}" class="w-8 h-8 rounded-full" alt="">`;
+                    // Emoji kontrolü - emoji karakterleri URL değil, doğrudan gösterilmeli
+                    const isEmoji = /^[\p{Emoji}\u200d]+$/u.test(userInfo.avatarUrl) ||
+                        userInfo.avatarUrl.length <= 4;
+                    const isUrl = userInfo.avatarUrl.startsWith('http') ||
+                        userInfo.avatarUrl.startsWith('/') ||
+                        userInfo.avatarUrl.includes('.');
+
+                    if (isUrl && !isEmoji) {
+                        userAvatar.innerHTML = `<img src="${userInfo.avatarUrl}" class="w-8 h-8 rounded-full object-cover" alt="" onerror="this.parentElement.textContent='👤'">`;
+                    } else {
+                        // Emoji veya kısa metin - doğrudan göster
+                        userAvatar.textContent = userInfo.avatarUrl;
+                    }
                 } else {
                     userAvatar.textContent = userInfo.isStudent ? '🎓' : '👨‍🏫';
                 }
