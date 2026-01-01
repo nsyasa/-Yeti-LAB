@@ -831,7 +831,6 @@
             // Use the centralized CourseLoader to load all available courses
             if (window.CourseLoader) {
                 CourseLoader.loadAll().then(() => {
-                    console.log("All courses loaded for Admin:", Object.keys(window.courseData));
                     admin.init();
                 }).catch(err => {
                     console.error("Error loading courses:", err);

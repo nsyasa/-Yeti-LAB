@@ -203,7 +203,7 @@ const API = {
                 maxRetries,
                 context,
                 onRetry: (attempt, error) => {
-                    console.log(`[API] Retrying ${context} (attempt ${attempt})...`);
+                    // Retry silently
                 }
             });
 

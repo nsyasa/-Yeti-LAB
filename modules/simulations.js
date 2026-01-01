@@ -373,7 +373,7 @@ const Simulations = {
             fsBtn.onclick = () => {
                 if (!document.fullscreenElement) {
                     simContainer.requestFullscreen().catch(err => {
-                        console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                        console.warn(`Fullscreen error: ${err.message}`);
                     });
                 } else {
                     document.exitFullscreen();

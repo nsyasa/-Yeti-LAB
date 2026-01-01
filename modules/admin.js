@@ -73,7 +73,7 @@ const admin = {
 
                 admin.allCourseData = parsed.data;
                 const date = new Date(parsed.timestamp).toLocaleString();
-                console.log(`Veriler LocalStorage'dan geri yüklendi (${date})`);
+                // Data restored silently
 
                 // UI update delayed to ensure element exists
                 setTimeout(() => {
@@ -651,7 +651,7 @@ const admin = {
     migrateQuizData: () => {
         // Eğer global quizData varsa ve henüz projelere taşınmamışsa taşı
         if (window.quizData && typeof window.quizData === 'object' && Object.keys(window.quizData).length > 0) {
-            console.log("Migrating quiz data to projects...");
+            // Migrating quiz data to projects (silent)
             let migratedCount = 0;
 
             // Tüm kursları gez
@@ -677,7 +677,7 @@ const admin = {
             });
 
             if (migratedCount > 0) {
-                console.log(`${migratedCount} projects enriched with quiz data.`);
+                // Migration complete
                 // Global quizData'yı temizle ki tekrar tekrar çalışmasın (veya migration flag kullan)
                 // window.quizData = null; // Şimdilik dursun, her ihtimale karşı
                 admin.triggerAutoSave(); // Değişiklikleri kaydet

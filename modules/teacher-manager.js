@@ -190,7 +190,6 @@ function showToast(message, type = 'info') {
         else if (type === 'warning') window.Toast.warning(message);
         else window.Toast.info(message);
     } else {
-        console.log(`[Toast ${type}]: ${message}`);
         // Fallback implementation if Toast module is missing
         const toast = document.getElementById('toast');
         if (toast) {
