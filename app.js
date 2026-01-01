@@ -290,8 +290,15 @@ const app = {
     },
 
     initTheme: () => {
-        // Check if user has a saved preference, otherwise use system preference
-        const saved = Settings.get('theme');
+        // Check if user has a saved preference
+        let saved = Settings.get('theme');
+
+        // Kullanıcı isteği: Göz kalkanı (shield) varsayılan olarak gelmesin
+        // Eğer kaydedilmiş tema 'shield' ise, bunu yoksay ve sistem tercihine dön
+        if (saved === 'shield') {
+            Settings.set('theme', 'light'); // Ayarı sıfırla
+            saved = null; // Sistem tercihine düşür
+        }
 
         if (saved) {
             app.setTheme(saved);
