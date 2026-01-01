@@ -185,7 +185,8 @@
                                 <div>
                                     <div class="flex justify-between items-center mb-1 ml-1">
                                         <label class="block text-gray-700 text-sm font-bold">Şifre</label>
-                                        <a href="#" class="text-xs text-theme hover:underline font-medium">Unuttum?</a>
+                                        <a href="#" onclick="forgotPassword(event)"
+                                            class="text-xs text-theme hover:underline font-medium">Unuttum?</a>
                                     </div>
                                     <input type="password" id="teacherPassword" placeholder="••••••••" required
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 focus:bg-white outline-none">
@@ -351,6 +352,12 @@
                                         minlength="6"
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
                                 </div>
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-1">Şifre Tekrar</label>
+                                    <input type="password" id="regPasswordConfirm" placeholder="Şifrenizi tekrar girin"
+                                        required minlength="6"
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
+                                </div>
                                 <button type="submit" id="regBtn"
                                     class="w-full bg-theme text-white py-3.5 rounded-xl font-bold hover:brightness-110 shadow-lg mt-4">
                                     Hesap Oluştur
@@ -455,6 +462,36 @@
                 setTimeout(() => location.reload(), 500);
             } catch (err) {
                 showAlert(err.message, 'error');
+            }
+        }
+
+        // Forgot Password Handler
+        async function forgotPassword(e) {
+            e?.preventDefault();
+            const email = prompt("Şifrenizi sıfırlamak için e-posta adresinizi girin:");
+            if (!email) return;
+
+            // Basic email validation
+            if (!email.includes('@') || !email.includes('.')) {
+                showAlert('Geçerli bir e-posta adresi girin.', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Sıfırlama bağlantısı gönderiliyor...', 'info');
+
+                // Calculate redirect URL
+                const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+                const redirectUrl = baseUrl + '/auth.html';
+
+                const { error } = await SupabaseClient.getClient().auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl
+                });
+
+                if (error) throw error;
+                showAlert('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen spam kutunuzu da kontrol edin.', 'success');
+            } catch (err) {
+                showAlert('Hata: ' + err.message, 'error');
             }
         }
 
@@ -757,7 +794,13 @@
                     const name = document.getElementById('regName').value;
                     const email = document.getElementById('regEmail').value;
                     const password = document.getElementById('regPassword').value;
+                    const passwordConfirm = document.getElementById('regPasswordConfirm').value;
                     const btn = document.getElementById('regBtn');
+
+                    if (password !== passwordConfirm) {
+                        showAlert('Şifreler eşleşmiyor, lütfen kontrol edin.', 'error');
+                        return;
+                    }
 
                     setLoading(btn, true);
 
