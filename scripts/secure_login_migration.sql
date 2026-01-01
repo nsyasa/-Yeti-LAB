@@ -1,5 +1,5 @@
 -- =====================================================
--- GÜVENLİ ÖĞRENCİ GİRİŞİ GÜNCELLEMESİ
+-- GÜVENLİ ÖĞRENCİ GİRİŞİ GÜNCELLEMESİ (v2 - Düzeltildi)
 -- =====================================================
 
 -- 1. Students tablosuna şifre kolonu ekle (Eğer yoksa)
@@ -10,17 +10,20 @@ BEGIN
     END IF;
 END $$;
 
--- 2. Güvenli Login Fonksiyonu
+-- 2. Eski fonksiyonu sil ve yeniden oluştur
+DROP FUNCTION IF EXISTS student_login_secure(VARCHAR, VARCHAR, VARCHAR);
+
+-- 3. Güvenli Login Fonksiyonu
 CREATE OR REPLACE FUNCTION student_login_secure(
     p_classroom_code VARCHAR(5),
     p_display_name VARCHAR(255),
     p_password VARCHAR(255)
 )
 RETURNS TABLE (
-    student_id UUID,
-    session_token VARCHAR(64),
-    classroom_name VARCHAR(255),
-    teacher_name VARCHAR(255)
+    out_student_id UUID,
+    out_session_token VARCHAR(64),
+    out_classroom_name VARCHAR(255),
+    out_teacher_name VARCHAR(255)
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -44,12 +47,12 @@ BEGIN
         RAISE EXCEPTION 'Geçersiz sınıf kodu';
     END IF;
 
-    -- 2. Öğrenciyi bul (Sadece mevcut öğretmen tarafından eklenmiş öğrenciler)
-    SELECT id, password, session_token
+    -- 2. Öğrenciyi bul (tablo alias 's' ile belirsizliği gider)
+    SELECT s.id, s.password, s.session_token
     INTO v_student_id, v_stored_password, v_session_token
-    FROM students
-    WHERE classroom_id = v_classroom_id 
-      AND LOWER(display_name) = LOWER(p_display_name);
+    FROM students s
+    WHERE s.classroom_id = v_classroom_id 
+      AND LOWER(s.display_name) = LOWER(p_display_name);
 
     IF v_student_id IS NULL THEN
         RAISE EXCEPTION 'Bu isimde bir öğrenci bulunamadı. Lütfen isminizi kontrol edin veya öğretmeninize danışın.';
@@ -79,6 +82,7 @@ BEGIN
     -- 5. Aktivite zamanını güncelle
     UPDATE students SET last_active_at = now() WHERE id = v_student_id;
 
+    -- 6. Sonuç döndür (out_ prefix ile belirsizlik giderildi)
     RETURN QUERY SELECT v_student_id, v_session_token, v_classroom_name, v_teacher_name;
 END;
 $$;

@@ -239,11 +239,11 @@ const Auth = {
 
         // Store session in localStorage
         const session = {
-            studentId: studentData.student_id,
-            sessionToken: studentData.session_token,
+            studentId: studentData.out_student_id,
+            sessionToken: studentData.out_session_token,
             displayName: displayName.trim(),
-            classroomName: studentData.classroom_name,
-            teacherName: studentData.teacher_name,
+            classroomName: studentData.out_classroom_name,
+            teacherName: studentData.out_teacher_name,
             loginTime: new Date().toISOString()
         };
 
