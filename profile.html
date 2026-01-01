@@ -340,9 +340,9 @@
                     window.location.href = 'auth.html';
                     return;
                 }
-                // TODO: Student mode handling can be improved here, but for now focus on Authenticated Teachers/Users
-                alert("Öğrenci modunda profil düzenleme şu an sınırlıdır. Lütfen çıkış yapıp tekrar girin.");
-                window.location.href = 'index.html';
+                // Student mode - show simplified profile view
+                const studentData = JSON.parse(studentLocal);
+                showStudentProfile(studentData);
                 return;
             }
 
@@ -637,7 +637,104 @@
 
         async function logout() {
             await Auth.signOut();
+            localStorage.removeItem('yeti_student_session');
             window.location.href = 'auth.html';
+        }
+
+        // Student Profile View
+        function showStudentProfile(studentData) {
+            // Update header
+            document.getElementById('headerName').textContent = studentData.displayName || 'Öğrenci';
+            document.getElementById('headerAvatar').textContent = '🎓';
+
+            // Show student-specific UI
+            document.getElementById('view-settings').classList.remove('hidden');
+
+            const contentArea = document.querySelector('#view-settings .flex-1');
+            contentArea.innerHTML = `
+                <div class="p-8">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">🎓</div>
+                        <h2 class="text-2xl font-bold">${studentData.displayName}</h2>
+                        <p class="text-gray-500">${studentData.classroomName || 'Öğrenci'}</p>
+                    </div>
+
+                    <form onsubmit="saveStudentChanges(event)" class="space-y-6 max-w-md mx-auto">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Görünen İsim</label>
+                            <input type="text" id="student-name" value="${studentData.displayName}" required minlength="2"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-theme outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Yeni Şifre <span class="text-gray-400 text-sm">(opsiyonel)</span></label>
+                            <input type="password" id="student-password" placeholder="Değiştirmek istemiyorsan boş bırak" minlength="3"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-theme outline-none">
+                        </div>
+                        <p id="student-msg" class="text-sm hidden"></p>
+                        <button type="submit" id="student-save-btn" class="w-full bg-theme text-white py-3 rounded-xl font-bold hover:brightness-110">
+                            Kaydet
+                        </button>
+                    </form>
+
+                    <div class="mt-8 text-center">
+                        <button onclick="window.location.href='index.html'" class="text-gray-500 hover:text-gray-700">
+                            ← Ana Sayfaya Dön
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Store student data globally for save function
+            window.currentStudentData = studentData;
+        }
+
+        async function saveStudentChanges(e) {
+            e.preventDefault();
+            const name = document.getElementById('student-name').value.trim();
+            const password = document.getElementById('student-password').value.trim();
+            const btn = document.getElementById('student-save-btn');
+            const msg = document.getElementById('student-msg');
+
+            if (name.length < 2) {
+                msg.textContent = 'İsim en az 2 karakter olmalı';
+                msg.classList.remove('hidden', 'text-green-500');
+                msg.classList.add('text-red-500');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Kaydediliyor...';
+
+            try {
+                const updates = { display_name: name };
+                if (password) updates.password = password;
+
+                const { error } = await SupabaseClient.getClient()
+                    .from('students')
+                    .update(updates)
+                    .eq('id', window.currentStudentData.studentId);
+
+                if (error) throw error;
+
+                // Update local storage
+                window.currentStudentData.displayName = name;
+                localStorage.setItem('yeti_student_session', JSON.stringify(window.currentStudentData));
+
+                msg.textContent = '✅ Kaydedildi!';
+                msg.classList.remove('hidden', 'text-red-500');
+                msg.classList.add('text-green-500');
+
+                // Update header
+                document.getElementById('headerName').textContent = name;
+
+            } catch (err) {
+                msg.textContent = 'Hata: ' + err.message;
+                msg.classList.remove('hidden', 'text-green-500');
+                msg.classList.add('text-red-500');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Kaydet';
+            }
         }
     </script>
 </body>
