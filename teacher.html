@@ -20,10 +20,26 @@
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="modules/supabaseClient.js"></script>
     <script src="modules/themeManager.js"></script>
+    <script src="modules/auth.js"></script>
+    <script src="modules/settings.js"></script>
+    <script src="data/tips.js"></script>
 
     <style>
         /* Teacher Panel Styles */
+        /* Adjustment for fixed header */
+        .sidebar {
+            top: 64px !important;
+            /* Header height */
+            height: calc(100vh - 64px) !important;
+        }
+
+        main {
+            margin-top: 64px;
+            /* Header height */
+        }
+
         .teacher-bg {
             background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
             min-height: 100vh;
@@ -183,10 +199,11 @@
             .sidebar {
                 position: fixed;
                 left: 0;
-                top: 0;
+                top: 64px !important;
                 bottom: 0;
                 z-index: 50;
                 transform: translateX(-100%);
+                height: calc(100vh - 64px) !important;
             }
 
             .sidebar.open {
@@ -196,6 +213,7 @@
             .sidebar-overlay {
                 position: fixed;
                 inset: 0;
+                top: 64px;
                 background: rgba(0, 0, 0, 0.5);
                 z-index: 40;
                 opacity: 0;
@@ -203,7 +221,7 @@
                 transition: opacity 0.3s;
             }
 
-            .sidebar-overlay.open {
+            .sidebar-overlay.active {
                 opacity: 1;
                 pointer-events: auto;
             }
@@ -329,11 +347,16 @@
                 <!-- Navigation -->
                 <nav class="flex-grow p-4 space-y-2">
                     <button onclick="showSection('dashboard')"
-                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800 bg-theme/10 text-theme"
                         data-section="dashboard">
-                        <span class="text-xl">📊</span>
-                        <span>Kontrol Paneli</span>
+                        <span>📊</span> Dashboard
                     </button>
+
+                    <a href="profile.html"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
+                        <span>👤</span> Profil Ayarları
+                    </a>
+
                     <button onclick="showSection('classrooms')"
                         class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
                         data-section="classrooms">

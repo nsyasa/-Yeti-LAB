@@ -116,43 +116,24 @@ function updateUserInfo() {
     const name = Auth.getDisplayName();
     const avatarUrl = Auth.getAvatarUrl();
 
-    const nameEl = document.getElementById('userName');
+    // Update Name (New ID: user-name)
+    const nameEl = document.getElementById('user-name');
     if (nameEl) nameEl.textContent = name;
 
-    const avatarEl = document.getElementById('userAvatar');
-    const fallbackEl = document.getElementById('userAvatarFallback');
+    // Update Avatar (New ID: user-avatar)
+    const avatarEl = document.getElementById('user-avatar');
 
-    if (avatarUrl) {
-        // Check if it's an emoji (no http/data prefix)
-        const isUrl = avatarUrl.startsWith('http') || avatarUrl.startsWith('data:');
-
-        if (isUrl) {
-            if (avatarEl) {
-                avatarEl.src = avatarUrl;
-                avatarEl.classList.remove('hidden');
-            }
-            if (fallbackEl) fallbackEl.style.display = 'none';
+    if (avatarEl) {
+        if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('data:'))) {
+            // URL Image
+            avatarEl.innerHTML = `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover">`;
+            avatarEl.classList.add('overflow-hidden'); // Ensure rounding works
+            avatarEl.classList.remove('flex', 'items-center', 'justify-center'); // Reset text centering classes if needed
         } else {
-            // It's an emoji
-            if (avatarEl) avatarEl.classList.add('hidden');
-            if (fallbackEl) {
-                fallbackEl.textContent = avatarUrl;
-                fallbackEl.style.display = 'flex';
-                fallbackEl.style.fontSize = '1.2rem';
-                fallbackEl.classList.remove('bg-theme/10', 'text-theme'); // Remove colors for native emoji
-                fallbackEl.classList.add('bg-transparent');
-            }
-        }
-    } else {
-        // No avatar, show initial
-        if (avatarEl) avatarEl.classList.add('hidden');
-        if (fallbackEl) {
-            fallbackEl.textContent = name.charAt(0).toUpperCase();
-            fallbackEl.style.display = 'flex';
-            // Restore default styles
-            fallbackEl.classList.remove('bg-transparent');
-            fallbackEl.classList.add('bg-theme/10', 'text-theme');
-            fallbackEl.style.fontSize = '';
+            // Emoji or Initial
+            avatarEl.textContent = avatarUrl || name.charAt(0).toUpperCase();
+            avatarEl.classList.remove('overflow-hidden');
+            avatarEl.classList.add('flex', 'items-center', 'justify-center');
         }
     }
 }
