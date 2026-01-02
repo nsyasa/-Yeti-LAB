@@ -40,7 +40,7 @@ const app = {
         // data.js dosyasından courseData değişkenini alıyoruz
         if (typeof courseData !== 'undefined') {
             // Init modules
-            app.initTheme();
+            // app.initTheme(); // ThemeManager handles this automatically in <head>
             app.initScrollBehavior();
             app.initAuth(); // Auth durumunu kontrol et, Progress da burada başlatılacak
 
@@ -430,43 +430,16 @@ const app = {
     },
 
     initTheme: () => {
-        // Check if user has a saved preference
-        let saved = Settings.get('theme');
-
-        // Kullanıcı isteği: Göz kalkanı (shield) varsayılan olarak gelmesin
-        // Eğer kaydedilmiş tema 'shield' ise, bunu yoksay ve sistem tercihine dön
-        if (saved === 'shield') {
-            Settings.set('theme', 'light'); // Ayarı sıfırla
-            saved = null; // Sistem tercihine düşür
-        }
-
-        if (saved) {
-            app.setTheme(saved);
-        } else {
-            // Use system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            app.setTheme(prefersDark ? 'dark' : 'light');
-        }
-
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            // Only auto-switch if user hasn't set a manual preference
-            if (!Settings.get('theme')) {
-                app.setTheme(e.matches ? 'dark' : 'light');
-            }
-        });
+        // ThemeManager zaten başta çalıştı, burada bir şey yapmaya gerek yok.
+        // Sadece app state'ini güncelleyebiliriz
+        app.theme.current = window.ThemeManager ? window.ThemeManager.getCurrentTheme() : 'light';
     },
 
     setTheme: (mode) => {
-        const body = document.body;
-        app.theme.current = mode;
-
-        // Reset classes
-        body.classList.remove('dark-mode', 'eye-shield');
-
-        // Apply new class
-        if (mode === 'dark') body.classList.add('dark-mode');
-        if (mode === 'shield') body.classList.add('eye-shield');
+        if (window.ThemeManager) {
+            window.ThemeManager.setTheme(mode);
+            app.theme.current = mode;
+        }
     },
 
 
