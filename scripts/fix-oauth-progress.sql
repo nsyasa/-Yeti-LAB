@@ -1,34 +1,52 @@
 -- =====================================================
--- Yeti LAB - OAuth Kullanıcıları İçin Progress İzni
+-- Yeti LAB - OAuth Kullanıcıları İçin RLS Politikaları
 -- Tarih: 2 Ocak 2026
 -- 
 -- Bu script, OAuth ile giriş yapan kullanıcıların
--- (students tablosunda kaydı olmayanların) ilerleme
--- kaydedebilmesi için FK constraint'ini kaldırır.
+-- kendi ilerlemelerini kaydetmesine izin verir.
+-- 
+-- NOT: Önce fix-oauth-progress.sql'i çalıştırın (FK kaldırma)
 -- =====================================================
 
--- SEÇENEK 1: FK Constraint'i Kaldır (Önerilen)
--- Bu, student_progress.student_id alanının artık
--- students tablosuna referans vermemesini sağlar.
--- Böylece OAuth user UUID'leri de kullanılabilir.
+-- 1. Mevcut INSERT politikasını kaldır
+DROP POLICY IF EXISTS "Anyone can insert progress" ON student_progress;
 
-ALTER TABLE student_progress 
-DROP CONSTRAINT IF EXISTS student_progress_student_id_fkey;
+-- 2. Giriş yapmış herkes ilerleme kaydedebilsin
+CREATE POLICY "Authenticated users can insert progress"
+    ON student_progress FOR INSERT
+    TO authenticated
+    WITH CHECK (true);
 
--- =====================================================
--- ALTERNATİF: Yeni bir user_progress tablosu oluştur
--- (Eğer students FK'sını korumak istiyorsanız)
--- =====================================================
+-- 3. Mevcut SELECT politikalarını temizle
+DROP POLICY IF EXISTS "Anyone can read progress" ON student_progress;
+DROP POLICY IF EXISTS "Teachers can view classroom progress" ON student_progress;
 
--- CREATE TABLE IF NOT EXISTS user_progress (
---     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
---     user_id UUID NOT NULL,  -- auth.users veya students ID olabilir
---     course_id TEXT NOT NULL,
---     project_id INTEGER NOT NULL,
---     completed_at TIMESTAMPTZ DEFAULT now(),
---     quiz_score INTEGER CHECK (quiz_score >= 0 AND quiz_score <= 100),
---     UNIQUE(user_id, project_id)
--- );
+-- 4. Giriş yapmış herkes kendi ilerlemesini okuyabilsin
+CREATE POLICY "Authenticated users can read own progress"
+    ON student_progress FOR SELECT
+    TO authenticated
+    USING (student_id = auth.uid());
+
+-- 5. Öğretmenler sınıflarındaki ilerlemeyi görebilsin (ekleme)
+CREATE POLICY "Teachers can view classroom progress"
+    ON student_progress FOR SELECT
+    TO authenticated
+    USING (
+        student_id IN (
+            SELECT s.id FROM students s
+            JOIN classrooms c ON s.classroom_id = c.id
+            WHERE c.teacher_id = auth.uid()
+        )
+    );
+
+-- 6. Mevcut DELETE politikasını kaldır
+DROP POLICY IF EXISTS "Students can delete own progress" ON student_progress;
+
+-- 7. Giriş yapmış herkes kendi ilerlemesini silebilsin
+CREATE POLICY "Authenticated users can delete own progress"
+    ON student_progress FOR DELETE
+    TO authenticated
+    USING (student_id = auth.uid());
 
 -- =====================================================
 -- Bu SQL'i Supabase SQL Editor'da çalıştırın!
