@@ -35,6 +35,20 @@ const Progress = {
     },
     _getCourseData: () => window.courseData || {},
 
+    // Helper to get student ID (works for both classroom and OAuth students)
+    _getStudentId: () => {
+        if (typeof Auth === 'undefined') return null;
+        // Classroom-based student
+        if (Auth.currentStudent?.studentId) {
+            return Auth.currentStudent.studentId;
+        }
+        // OAuth-based student (uses user ID from Supabase Auth)
+        if (Auth.isStudent() && Auth.currentUser?.id) {
+            return Auth.currentUser.id;
+        }
+        return null;
+    },
+
     /**
      * Initialize progress module
      * Must be called after Auth.init()
@@ -43,7 +57,7 @@ const Progress = {
         if (Progress.isInitialized) return;
 
         // Only load from server if student is logged in
-        if (typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent) {
+        if (typeof Auth !== 'undefined' && Auth.isStudent()) {
             await Progress.loadFromServer();
         }
 
@@ -54,7 +68,8 @@ const Progress = {
      * Load progress from Supabase (for logged-in students)
      */
     loadFromServer: async () => {
-        if (typeof Auth === 'undefined' || !Auth.currentStudent) {
+        const studentId = Progress._getStudentId();
+        if (!studentId) {
             return;
         }
 
@@ -64,7 +79,7 @@ const Progress = {
             const { data, error } = await SupabaseClient.getClient()
                 .from('student_progress')
                 .select('course_id, project_id, completed_at, quiz_score')
-                .eq('student_id', Auth.currentStudent.studentId);
+                .eq('student_id', studentId);
 
             if (error) throw error;
 
@@ -104,11 +119,10 @@ const Progress = {
      * Save a single progress entry to Supabase
      */
     saveToServer: async (courseKey, projectId, completed) => {
-        if (typeof Auth === 'undefined' || !Auth.currentStudent) {
+        const studentId = Progress._getStudentId();
+        if (!studentId) {
             return false;
         }
-
-        const studentId = Auth.currentStudent.studentId;
 
         try {
             if (completed) {
@@ -164,8 +178,8 @@ const Progress = {
             return;
         }
 
-        // Check if user is logged in
-        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent;
+        // Check if user is logged in as a student (either via classroom code or OAuth)
+        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent();
 
         if (!isLoggedIn) {
             // Show login prompt for guests
@@ -203,6 +217,17 @@ const Progress = {
     isComplete: (projectId) => {
         const key = Progress._getKey();
         return Progress.data[key] && Progress.data[key].includes(projectId);
+    },
+
+    /**
+     * Get all completed project IDs across all courses
+     */
+    getCompleted: () => {
+        let all = [];
+        Object.values(Progress.data).forEach(arr => {
+            all = all.concat(arr);
+        });
+        return all;
     },
 
     /**
