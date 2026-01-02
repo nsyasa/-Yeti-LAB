@@ -56,6 +56,216 @@
             background: rgba(0, 151, 156, 0.05);
             box-shadow: 0 0 0 3px rgba(0, 151, 156, 0.2);
         }
+
+        /* Modern Profile Cards */
+        .profile-card {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .profile-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f3f4f6;
+            background: #fafafa;
+        }
+
+        .profile-card-title {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-card-body {
+            padding: 1.25rem;
+        }
+
+        /* Edit Button */
+        .edit-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9ca3af;
+        }
+
+        .edit-btn:hover {
+            background: #f3f4f6;
+            color: var(--theme-color);
+        }
+
+        /* Inline Edit Field */
+        .inline-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .inline-field:last-child {
+            border-bottom: none;
+        }
+
+        .inline-field-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            min-width: 100px;
+        }
+
+        .inline-field-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1f2937;
+            text-align: right;
+        }
+
+        .inline-field-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .inline-field-input:focus {
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 3px rgba(0, 151, 156, 0.1);
+        }
+
+        /* Edit Mode */
+        .profile-card.editing .view-mode {
+            display: none;
+        }
+
+        .profile-card.editing .edit-mode {
+            display: block;
+        }
+
+        .profile-card:not(.editing) .view-mode {
+            display: block;
+        }
+
+        .profile-card:not(.editing) .edit-mode {
+            display: none;
+        }
+
+        /* Stat Badge */
+        .stat-badge {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
+            border: 1px solid #d1fae5;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-badge-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--theme-color);
+        }
+
+        .stat-badge-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        /* Hero Avatar */
+        .hero-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--theme-color) 0%, #0ea5e9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0, 151, 156, 0.3);
+            position: relative;
+        }
+
+        .hero-avatar-edit {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hero-avatar-edit:hover {
+            transform: scale(1.1);
+            background: var(--theme-color);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .btn-save {
+            background: var(--theme-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
     </style>
 </head>
 
@@ -185,128 +395,189 @@
                 </div>
             </div>
 
-            <!-- VIEW: SETTINGS (Edit Profile) -->
+            <!-- VIEW: SETTINGS (Modern Card Layout) -->
             <div id="view-settings" class="hidden">
-                <div
-                    class="bg-white rounded-3xl p-0 shadow-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[500px]">
-                    <!-- Sidebar -->
-                    <div class="w-full md:w-64 bg-gray-50 border-r border-gray-100 p-6">
-                        <h2 class="text-xl font-bold mb-6">Ayarlar</h2>
-                        <nav class="space-y-2">
-                            <button onclick="Settings.showTab('general')"
-                                class="tab-btn w-full text-left px-4 py-3 rounded-xl font-medium transition-colors bg-white shadow-sm text-theme ring-1 ring-gray-200"
-                                data-tab="general">
-                                👤 Genel Bilgiler
-                            </button>
-                            <button onclick="Settings.showTab('security')"
-                                class="tab-btn w-full text-left px-4 py-3 rounded-xl font-medium text-gray-600 hover:bg-white hover:shadow-sm transition-all"
-                                data-tab="security">
-                                🔒 Güvenlik
-                            </button>
-                        </nav>
-
-                        <div class="mt-8 pt-8 border-t border-gray-200">
-                            <div class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Hesap</div>
-                            <button onclick="logout()"
-                                class="text-red-500 hover:text-red-700 font-medium text-sm flex items-center gap-2">
-                                🚪 Çıkış Yap
-                            </button>
+                <!-- Hero Section -->
+                <div class="text-center mb-8">
+                    <div class="inline-block relative">
+                        <div class="hero-avatar" id="profile-hero-avatar">
+                            <span id="hero-avatar-emoji">👤</span>
+                        </div>
+                        <button onclick="ProfileEditor.toggleAvatarSelector()" class="hero-avatar-edit"
+                            title="Avatar Değiştir">
+                            ✏️
+                        </button>
+                    </div>
+                    <!-- Avatar Selector (hidden by default) -->
+                    <div id="avatar-selector-popup"
+                        class="hidden mt-4 p-4 bg-white rounded-2xl shadow-lg border max-w-xs mx-auto">
+                        <div class="grid grid-cols-8 gap-2" id="avatar-grid">
+                            <!-- Avatars injected via JS -->
                         </div>
                     </div>
+                    <h2 class="text-2xl font-bold mt-4" id="hero-name">Kullanıcı</h2>
+                    <div class="flex items-center justify-center gap-2 mt-1">
+                        <span id="hero-role-badge"
+                            class="text-xs font-bold px-3 py-1 rounded-full bg-theme/10 text-theme">Öğrenci</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-2" id="hero-email">email@example.com</p>
+                    <p class="text-gray-400 text-xs mt-1" id="hero-joined">Katılım: Ocak 2026</p>
+                </div>
 
-                    <!-- Content -->
-                    <div class="flex-1 p-8">
-                        <!-- Tab: General -->
-                        <div id="tab-general" class="settings-tab">
-                            <h3 class="text-2xl font-bold mb-6">Profil Bilgileri</h3>
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-badge">
+                        <div class="stat-badge-value" id="stat-lessons">0</div>
+                        <div class="stat-badge-label">Ders Tamamlandı</div>
+                    </div>
+                    <div class="stat-badge">
+                        <div class="stat-badge-value" id="stat-badges">0</div>
+                        <div class="stat-badge-label">Rozet Kazanıldı</div>
+                    </div>
+                    <div class="stat-badge">
+                        <div class="stat-badge-value" id="stat-streak">0</div>
+                        <div class="stat-badge-label">Gün Seri</div>
+                    </div>
+                    <div class="stat-badge">
+                        <div class="stat-badge-value" id="stat-quiz">0%</div>
+                        <div class="stat-badge-label">Quiz Ortalaması</div>
+                    </div>
+                </div>
 
-                            <form onsubmit="Settings.saveGeneral(event)" class="space-y-6 max-w-lg">
-                                <!-- Avatar Selection -->
-                                <div>
-                                    <label class="block font-bold text-gray-700 mb-3">Avatar</label>
-                                    <div class="flex items-center gap-4 mb-4">
-                                        <div id="currentAvatarPreview"
-                                            class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-3xl border-2 border-gray-200">
-                                            👤
-                                        </div>
-                                        <button type="button"
-                                            onclick="document.getElementById('avatar-selector').classList.toggle('hidden')"
-                                            class="text-sm bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition-colors">
-                                            Değiştir
-                                        </button>
-                                    </div>
-                                    <div id="avatar-selector"
-                                        class="hidden p-4 bg-gray-50 rounded-xl border border-gray-200 grid grid-cols-6 gap-2">
-                                        <!-- Avatars injected via JS -->
-                                    </div>
-                                    <input type="hidden" id="edit-avatar">
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-gray-700 font-medium mb-1 text-sm">Ad Soyad</label>
-                                        <input type="text" id="edit-name" required minlength="2" maxlength="50"
-                                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-theme outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 font-medium mb-1 text-sm">Rol</label>
-                                        <input type="text" id="edit-role-display" disabled
-                                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-500">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-gray-700 font-medium mb-1 text-sm">Okul</label>
-                                    <input type="text" id="edit-school" maxlength="100"
-                                        placeholder="Okul adı (opsiyonel)"
-                                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-theme outline-none">
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-gray-700 font-medium mb-1 text-sm">İl</label>
-                                        <select id="edit-city" onchange="loadDistricts('edit-city', 'edit-district')"
-                                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-theme outline-none"></select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 font-medium mb-1 text-sm">İlçe</label>
-                                        <select id="edit-district"
-                                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-theme outline-none"></select>
-                                    </div>
-                                </div>
-
-                                <button type="submit" id="save-general-btn"
-                                    class="w-full sm:w-auto bg-theme text-white px-12 py-3 rounded-xl font-bold hover:brightness-110 shadow-lg shadow-theme/20 transition-all flex items-center justify-center gap-2">
-                                    <span>💾</span> Kaydet
-                                </button>
-                                <p id="general-msg" class="mt-2 text-sm hidden"></p>
-                            </form>
+                <!-- Kişisel Bilgiler Card -->
+                <div class="profile-card mb-4" id="card-personal">
+                    <div class="profile-card-header">
+                        <div class="profile-card-title">
+                            <span>📋</span> Kişisel Bilgiler
                         </div>
-
-                        <!-- Tab: Security -->
-                        <div id="tab-security" class="settings-tab hidden">
-                            <h3 class="text-2xl font-bold mb-6">Güvenlik</h3>
-                            <form onsubmit="Settings.saveSecurity(event)" class="space-y-6 max-w-lg">
+                        <button class="edit-btn" onclick="ProfileEditor.toggleEdit('personal')" title="Düzenle">
+                            ✏️
+                        </button>
+                    </div>
+                    <div class="profile-card-body">
+                        <!-- View Mode -->
+                        <div class="view-mode">
+                            <div class="inline-field">
+                                <span class="inline-field-label">Ad Soyad</span>
+                                <span class="inline-field-value" id="view-name">—</span>
+                            </div>
+                            <div class="inline-field">
+                                <span class="inline-field-label">Okul</span>
+                                <span class="inline-field-value" id="view-school">—</span>
+                            </div>
+                            <div class="inline-field">
+                                <span class="inline-field-label">İl</span>
+                                <span class="inline-field-value" id="view-city">—</span>
+                            </div>
+                            <div class="inline-field">
+                                <span class="inline-field-label">İlçe</span>
+                                <span class="inline-field-value" id="view-district">—</span>
+                            </div>
+                        </div>
+                        <!-- Edit Mode -->
+                        <div class="edit-mode space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
+                                <input type="text" id="edit-name" class="inline-field-input"
+                                    placeholder="Adınız Soyadınız">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Okul</label>
+                                <input type="text" id="edit-school" class="inline-field-input"
+                                    placeholder="Okul adı (opsiyonel)">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-gray-700 font-medium mb-1">Yeni Şifre</label>
-                                    <input type="password" id="new-password" minlength="6"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-theme outline-none"
-                                        placeholder="En az 6 karakter">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">İl</label>
+                                    <select id="edit-city" class="inline-field-input"
+                                        onchange="ProfileEditor.loadDistricts()">
+                                        <option value="">Seçiniz</option>
+                                    </select>
                                 </div>
                                 <div>
-                                    <label class="block text-gray-700 font-medium mb-1">Yeni Şifre (Tekrar)</label>
-                                    <input type="password" id="new-password-confirm" minlength="6"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-theme outline-none"
-                                        placeholder="Şifreyi tekrar girin">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">İlçe</label>
+                                    <select id="edit-district" class="inline-field-input">
+                                        <option value="">Önce il seçin</option>
+                                    </select>
                                 </div>
-                                <button type="submit" id="save-sec-btn"
-                                    class="bg-gray-800 text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-all">
-                                    Şifreyi Güncelle
-                                </button>
-                                <p id="sec-msg" class="mt-2 text-sm hidden"></p>
-                            </form>
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button class="btn-save" onclick="ProfileEditor.savePersonal()">💾 Kaydet</button>
+                                <button class="btn-cancel" onclick="ProfileEditor.cancelEdit('personal')">İptal</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Güvenlik Card -->
+                <div class="profile-card mb-4" id="card-security">
+                    <div class="profile-card-header">
+                        <div class="profile-card-title">
+                            <span>🔐</span> Güvenlik
+                        </div>
+                        <button class="edit-btn" onclick="ProfileEditor.toggleEdit('security')" title="Şifre Değiştir">
+                            ✏️
+                        </button>
+                    </div>
+                    <div class="profile-card-body">
+                        <!-- View Mode -->
+                        <div class="view-mode">
+                            <div class="inline-field">
+                                <span class="inline-field-label">Şifre</span>
+                                <span class="inline-field-value">••••••••</span>
+                            </div>
+                            <div class="inline-field">
+                                <span class="inline-field-label">Bağlı Hesaplar</span>
+                                <span class="inline-field-value" id="view-connections">—</span>
+                            </div>
+                        </div>
+                        <!-- Edit Mode -->
+                        <div class="edit-mode space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Yeni Şifre</label>
+                                <input type="password" id="new-password" class="inline-field-input"
+                                    placeholder="En az 6 karakter" minlength="6">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Yeni Şifre (Tekrar)</label>
+                                <input type="password" id="new-password-confirm" class="inline-field-input"
+                                    placeholder="Şifreyi tekrar girin" minlength="6">
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button class="btn-save" onclick="ProfileEditor.savePassword()">🔒 Şifreyi
+                                    Güncelle</button>
+                                <button class="btn-cancel" onclick="ProfileEditor.cancelEdit('security')">İptal</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tercihler Card -->
+                <div class="profile-card mb-4" id="card-preferences">
+                    <div class="profile-card-header">
+                        <div class="profile-card-title">
+                            <span>⚙️</span> Tercihler
+                        </div>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="inline-field">
+                            <span class="inline-field-label">Tema</span>
+                            <div class="flex gap-2">
+                                <button onclick="ProfileEditor.setTheme('light')" id="theme-light-btn"
+                                    class="px-3 py-1 rounded-lg text-sm font-medium bg-gray-100">☀️ Açık</button>
+                                <button onclick="ProfileEditor.setTheme('dark')" id="theme-dark-btn"
+                                    class="px-3 py-1 rounded-lg text-sm font-medium bg-gray-100">🌙 Koyu</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Çıkış Butonu -->
+                <div class="text-center mt-8 mb-8">
+                    <button onclick="logout()"
+                        class="text-red-500 hover:text-red-700 font-medium text-sm flex items-center gap-2 mx-auto">
+                        🚪 Çıkış Yap
+                    </button>
                 </div>
             </div>
 
@@ -329,12 +600,87 @@
         // Data
         const avatars = ['👨‍🏫', '👩‍🏫', '🎓', '🚀', '⭐', '🧠', '🤖', '💻', '🦊', '🦁', '🐼', '🐨', '🦄', '🐲', '⚡', '🔥'];
         const turkeyData = {
-            "İstanbul": ["Kadıköy", "Beşiktaş", "Üsküdar", "Fatih", "Şişli", "Beyoğlu", "Maltepe", "Ataşehir", "Pendik", "Kartal", "Ümraniye", "Sarıyer", "Bağcılar", "Bahçelievler", "Avcılar", "Esenyurt", "Başakşehir", "Diğer"],
-            "Ankara": ["Çankaya", "Keçiören", "Mamak", "Etimesgut", "Sincan", "Yenimahalle", "Altındağ", "Gölbaşı", "Diğer"],
-            "İzmir": ["Konak", "Karşıyaka", "Bornova", "Buca", "Bayraklı", "Çiğli", "Karabağlar", "Urla", "Çeşme", "Diğer"],
-            "Bursa": ["Osmangazi", "Nilüfer", "Yıldırım", "İnegöl", "Gemlik", "Diğer"],
-            "Antalya": ["Muratpaşa", "Konyaaltı", "Kepez", "Alanya", "Manavgat", "Kaş", "Diğer"],
-            "Diğer": ["Diğer"]
+            "Adana": ["Seyhan", "Yüreğir", "Çukurova", "Sarıçam", "Ceyhan", "Kozan", "İmamoğlu", "Karataş", "Karaisalı", "Pozantı", "Aladağ", "Feke", "Saimbeyli", "Tufanbeyli", "Yumurtalık"],
+            "Adıyaman": ["Merkez", "Besni", "Kahta", "Gölbaşı", "Gerger", "Çelikhan", "Samsat", "Sincik", "Tut"],
+            "Afyonkarahisar": ["Merkez", "Sandıklı", "Dinar", "Bolvadin", "Emirdağ", "Çay", "Sultandağı", "Şuhut", "İscehisar", "İhsaniye", "Sinanpaşa", "Başmakçı", "Bayat", "Çobanlar", "Dazkırı", "Evciler", "Hocalar", "Kızılören"],
+            "Ağrı": ["Merkez", "Patnos", "Doğubayazıt", "Diyadin", "Eleşkirt", "Hamur", "Taşlıçay", "Tutak"],
+            "Aksaray": ["Merkez", "Ortaköy", "Güzelyurt", "Eskil", "Ağaçören", "Sarıyahşi", "Sultanhanı", "Gülağaç"],
+            "Amasya": ["Merkez", "Merzifon", "Suluova", "Taşova", "Göynücek", "Gümüşhacıköy", "Hamamözü"],
+            "Ankara": ["Çankaya", "Keçiören", "Mamak", "Etimesgut", "Sincan", "Yenimahalle", "Altındağ", "Pursaklar", "Gölbaşı", "Polatlı", "Beypazarı", "Şereflikoçhisar", "Haymana", "Kızılcahamam", "Nallıhan", "Çubuk", "Kalecik", "Akyurt", "Elmadağ", "Evren", "Bala", "Güdül", "Ayaş", "Kahramankazan", "Çamlıdere"],
+            "Antalya": ["Muratpaşa", "Konyaaltı", "Kepez", "Döşemealtı", "Aksu", "Alanya", "Manavgat", "Serik", "Kaş", "Kemer", "Kumluca", "Finike", "Demre", "Gazipaşa", "Akseki", "Elmalı", "Korkuteli", "Gündoğmuş", "İbradı"],
+            "Ardahan": ["Merkez", "Göle", "Çıldır", "Hanak", "Posof", "Damal"],
+            "Artvin": ["Merkez", "Hopa", "Borçka", "Arhavi", "Yusufeli", "Şavşat", "Ardanuç", "Murgul"],
+            "Aydın": ["Efeler", "Nazilli", "Söke", "Kuşadası", "Didim", "İncirliova", "Germencik", "Çine", "Bozdoğan", "Sultanhisar", "Köşk", "Karacasu", "Yenipazar", "Buharkent", "Kuyucak", "Koçarlı", "Karpuzlu"],
+            "Balıkesir": ["Altınoluk", "Karesi", "Bandırma", "Edremit", "Gönen", "Burhaniye", "Ayvalık", "Susurluk", "Bigadiç", "Erdek", "Dursunbey", "Sındırgı", "İvrindi", "Havran", "Manyas", "Savaştepe", "Kepsut", "Marmara", "Balya"],
+            "Bartın": ["Merkez", "Ulus", "Kurucaşile", "Amasra"],
+            "Batman": ["Merkez", "Kozluk", "Sason", "Beşiri", "Gercüş", "Hasankeyf"],
+            "Bayburt": ["Merkez", "Demirözü", "Aydıntepe"],
+            "Bilecik": ["Merkez", "Bozüyük", "Söğüt", "Osmaneli", "Pazaryeri", "Gölpazarı", "İnhisar", "Yenipazar"],
+            "Bingöl": ["Merkez", "Solhan", "Genç", "Karlıova", "Adaklı", "Kiğı", "Yayladere", "Yedisu"],
+            "Bitlis": ["Merkez", "Tatvan", "Ahlat", "Adilcevaz", "Güroymak", "Hizan", "Mutki"],
+            "Bolu": ["Merkez", "Gerede", "Mudurnu", "Mengen", "Göynük", "Seben", "Yeniçağa", "Dörtdivan", "Kıbrıscık"],
+            "Burdur": ["Merkez", "Bucak", "Gölhisar", "Tefenni", "Yeşilova", "Ağlasun", "Altınyayla", "Çavdır", "Çeltikçi", "Karamanlı", "Kemer"],
+            "Bursa": ["Osmangazi", "Nilüfer", "Yıldırım", "Gürsu", "Kestel", "İnegöl", "Gemlik", "Mudanya", "Orhangazi", "İznik", "Karacabey", "Mustafakemalpaşa", "Yenişehir", "Orhaneli", "Keles", "Büyükorhan", "Harmancık"],
+            "Çanakkale": ["Merkez", "Biga", "Çan", "Gelibolu", "Ezine", "Ayvacık", "Lapseki", "Gökçeada", "Bozcaada", "Bayramiç", "Yenice", "Eceabat"],
+            "Çankırı": ["Merkez", "Çerkeş", "Ilgaz", "Kurşunlu", "Şabanözü", "Yapraklı", "Atkaracalar", "Bayramören", "Eldivan", "Kızılırmak", "Korgun", "Orta"],
+            "Çorum": ["Merkez", "Sungurlu", "Osmancık", "Alaca", "İskilip", "Kargı", "Bayat", "Mecitözü", "Oğuzlar", "Ortaköy", "Boğazkale", "Dodurga", "Laçin", "Uğurludağ"],
+            "Denizli": ["Pamukkale", "Merkezefendi", "Çivril", "Acıpayam", "Tavas", "Buldan", "Sarayköy", "Honaz", "Çal", "Çardak", "Bozkurt", "Çameli", "Güney", "Kale", "Serinhisar", "Babadağ", "Baklan", "Beyağaç", "Bekilli"],
+            "Diyarbakır": ["Bağlar", "Kayapınar", "Sur", "Yenişehir", "Bismil", "Ergani", "Silvan", "Çermik", "Çınar", "Dicle", "Eğil", "Hani", "Hazro", "Kocaköy", "Kulp", "Lice", "Çüngüş"],
+            "Düzce": ["Merkez", "Akçakoca", "Kaynaşlı", "Cumayeri", "Gölyaka", "Çilimli", "Gümüşova", "Yığılca"],
+            "Edirne": ["Merkez", "Keşan", "Uzunköprü", "İpsala", "Havsa", "Enez", "Meriç", "Lalapaşa", "Süloğlu"],
+            "Elazığ": ["Merkez", "Kovancılar", "Karakoçan", "Palu", "Baskil", "Maden", "Sivrice", "Arıcak", "Keban", "Ağın", "Alacakaya"],
+            "Erzincan": ["Merkez", "Tercan", "Üzümlü", "Refahiye", "Çayırlı", "Kemaliye", "İliç", "Kemah", "Otlukbeli"],
+            "Erzurum": ["Yakutiye", "Aziziye", "Palandöken", "Horasan", "Oltu", "Pasinler", "Hınıs", "Karayazı", "Aşkale", "İspir", "Köprüköy", "Narman", "Olur", "Pazaryolu", "Şenkaya", "Tekman", "Tortum", "Uzundere", "Çat", "Karaçoban"],
+            "Eskişehir": ["Odunpazarı", "Tepebaşı", "Sivrihisar", "Çifteler", "Mahmudiye", "Mihalıççık", "Seyitgazi", "Alpu", "Beylikova", "Günyüzü", "Han", "İnönü", "Mihalgazi", "Sarıcakaya"],
+            "Gaziantep": ["Şahinbey", "Şehitkamil", "Nizip", "İslahiye", "Nurdağı", "Oğuzeli", "Araban", "Yavuzeli", "Karkamış"],
+            "Giresun": ["Merkez", "Bulancak", "Görele", "Tirebolu", "Espiye", "Keşap", "Eynesil", "Piraziz", "Yağlıdere", "Dereli", "Şebinkarahisar", "Alucra", "Güce", "Çanakçı", "Camoluk", "Doğankent"],
+            "Gümüşhane": ["Merkez", "Kelkit", "Şiran", "Köse", "Torul", "Kürtün"],
+            "Hakkari": ["Merkez", "Yüksekova", "Çukurca", "Şemdinli"],
+            "Hatay": ["Antakya", "İskenderun", "Defne", "Arsuz", "Payas", "Dörtyol", "Kırıkhan", "Reyhanlı", "Samandağ", "Altınözü", "Belen", "Erzin", "Hassa", "Kumlu", "Yayladağı"],
+            "Iğdır": ["Merkez", "Tuzluca", "Aralık", "Karakoyunlu"],
+            "Isparta": ["Merkez", "Yalvaç", "Eğirdir", "Şarkikaraağaç", "Gelendost", "Senirkent", "Keçiborlu", "Aksu", "Sütçüler", "Gönen", "Uluborlu", "Atabey", "Yenişarbademli"],
+            "İstanbul": ["Kadıköy", "Beşiktaş", "Bakırköy", "Üsküdar", "Fatih", "Şişli", "Beyoğlu", "Maltepe", "Ataşehir", "Pendik", "Kartal", "Ümraniye", "Sarıyer", "Bağcılar", "Bahçelievler", "Avcılar", "Esenyurt", "Başakşehir", "Beylikdüzü", "Büyükçekmece", "Küçükçekmece", "Çekmeköy", "Sancaktepe", "Sultanbeyli", "Tuzla", "Eyüpsultan", "Kağıthane", "Gaziosmanpaşa", "Esenler", "Sultangazi", "Bayrampaşa", "Güngören", "Zeytinburnu", "Beykoz", "Arnavutköy", "Çatalca", "Silivri", "Şile", "Adalar"],
+            "İzmir": ["Konak", "Karşıyaka", "Bornova", "Buca", "Bayraklı", "Çiğli", "Karabağlar", "Narlıdere", "Balçova", "Gaziemir", "Torbalı", "Menemen", "Kemalpaşa", "Aliağa", "Bergama", "Dikili", "Foça", "Urla", "Çeşme", "Seferihisar", "Menderes", "Selçuk", "Tire", "Ödemiş", "Bayındır", "Kiraz", "Beydağ", "Karaburun", "Kınık"],
+            "Kahramanmaraş": ["Dulkadiroğlu", "Onikişubat", "Elbistan", "Afşin", "Türkoğlu", "Pazarcık", "Göksun", "Andırın", "Çağlayancerit", "Nurhak", "Ekinözü"],
+            "Karabük": ["Merkez", "Safranbolu", "Eskipazar", "Yenice", "Eflani", "Ovacık"],
+            "Karaman": ["Merkez", "Ermenek", "Ayrancı", "Kazımkarabekir", "Başyayla", "Sarıveliler"],
+            "Kars": ["Merkez", "Sarıkamış", "Kağızman", "Selim", "Digor", "Arpaçay", "Akyaka", "Susuz"],
+            "Kastamonu": ["Merkez", "Tosya", "Taşköprü", "İnebolu", "Araç", "Cide", "Daday", "Devrekani", "Küre", "Abana", "Ağlı", "Azdavay", "Bozkurt", "Çatalzeytin", "Doğanyurt", "Hanönü", "İhsangazi", "Pınarbaşı", "Seydiler", "Şenpazar"],
+            "Kayseri": ["Melikgazi", "Kocasinan", "Talas", "Hacılar", "İncesu", "Develi", "Yahyalı", "Bünyan", "Pınarbaşı", "Sarıoğlan", "Tomarza", "Yeşilhisar", "Akkışla", "Felahiye", "Özvatan", "Sarız"],
+            "Kırıkkale": ["Merkez", "Yahşihan", "Keskin", "Delice", "Balışeyh", "Sulakyurt", "Bahşili", "Çelebi", "Karakeçili"],
+            "Kırklareli": ["Merkez", "Lüleburgaz", "Babaeski", "Vize", "Pehlivanköy", "Pınarhisar", "Demirköy", "Kofçaz"],
+            "Kırşehir": ["Merkez", "Kaman", "Mucur", "Çiçekdağı", "Akpınar", "Boztepe", "Akçakent"],
+            "Kilis": ["Merkez", "Musabeyli", "Elbeyli", "Polateli"],
+            "Kocaeli": ["İzmit", "Gebze", "Körfez", "Darıca", "Çayırova", "Dilovası", "Derince", "Gölcük", "Kartepe", "Başiskele", "Kandıra", "Karamürsel"],
+            "Konya": ["Selçuklu", "Meram", "Karatay", "Ereğli", "Akşehir", "Seydişehir", "Beyşehir", "Çumra", "Cihanbeyli", "Kulu", "Karapınar", "Ilgın", "Kadınhanı", "Sarayönü", "Yunak", "Bozkır", "Hadim", "Taşkent", "Güneysınır", "Ahırlı", "Altınekin", "Çeltik", "Derebucak", "Derbent", "Doğanhisar", "Emirgazi", "Halkapınar", "Hüyük", "Tuzlukçu", "Yalıhüyük"],
+            "Kütahya": ["Merkez", "Tavşanlı", "Simav", "Gediz", "Emet", "Altıntaş", "Domaniç", "Aslanapa", "Çavdarhisar", "Dumlupınar", "Hisarcık", "Pazarlar", "Şaphane"],
+            "Malatya": ["Battalgazi", "Yeşilyurt", "Doğanşehir", "Akçadağ", "Darende", "Hekimhan", "Arapgir", "Arguvan", "Kuluncak", "Pütürge", "Kale", "Yazıhan", "Doğanyol"],
+            "Manisa": ["Yunusemre", "Şehzadeler", "Akhisar", "Turgutlu", "Salihli", "Soma", "Alaşehir", "Kula", "Saruhanlı", "Demirci", "Gördes", "Kırkağaç", "Köprübaşı", "Selendi", "Ahmetli", "Gölmarmara", "Saruhanl"],
+            "Mardin": ["Artuklu", "Kızıltepe", "Nusaybin", "Midyat", "Derik", "Mazıdağı", "Ömerli", "Dargeçit", "Savur", "Yeşilli"],
+            "Mersin": ["Akdeniz", "Mezitli", "Toroslar", "Yenişehir", "Tarsus", "Silifke", "Erdemli", "Anamur", "Mut", "Gülnar", "Bozyazı", "Aydıncık", "Çamlıyayla"],
+            "Muğla": ["Menteşe", "Bodrum", "Fethiye", "Marmaris", "Milas", "Dalaman", "Ortaca", "Köyceğiz", "Datça", "Yatağan", "Ula", "Kavaklıdere", "Seydikemer"],
+            "Muş": ["Merkez", "Bulanık", "Malazgirt", "Varto", "Hasköy", "Korkut"],
+            "Nevşehir": ["Merkez", "Ürgüp", "Avanos", "Gülşehir", "Hacıbektaş", "Kozaklı", "Derinkuyu", "Acıgöl"],
+            "Niğde": ["Merkez", "Bor", "Çiftlik", "Ulukışla", "Altunhisar", "Çamardı"],
+            "Ordu": ["Altınordu", "Ünye", "Fatsa", "Perşembe", "Ulubey", "Kumru", "Korgan", "Mesudiye", "Gölköy", "Aybastı", "Gürgentepe", "İkizce", "Akkuş", "Çamaş", "Çatalpınar", "Çaybaşı", "Gülyalı", "Kabadüz", "Kabataş"],
+            "Osmaniye": ["Merkez", "Kadirli", "Düziçi", "Bahçe", "Toprakkale", "Hasanbeyli", "Sumbas"],
+            "Rize": ["Merkez", "Çayeli", "Ardeşen", "Pazar", "Fındıklı", "İyidere", "Kalkandere", "Derepazarı", "Güneysu", "İkizdere", "Hemşin", "Çamlıhemşin"],
+            "Sakarya": ["Adapazarı", "Serdivan", "Erenler", "Arifiye", "Hendek", "Sapanca", "Kaynarca", "Akyazı", "Geyve", "Karasu", "Kocaali", "Ferizli", "Söğütlü", "Pamukova", "Karapürçek", "Taraklı"],
+            "Samsun": ["İlkadım", "Atakum", "Canik", "Tekkeköy", "Bafra", "Çarşamba", "Terme", "Vezirköprü", "Havza", "Kavak", "Ladik", "Salıpazarı", "Alaçam", "Yakakent", "Asarcık", "Ayvacık", "19 Mayıs"],
+            "Siirt": ["Merkez", "Kurtalan", "Pervari", "Baykan", "Şirvan", "Eruh", "Tillo"],
+            "Sinop": ["Merkez", "Boyabat", "Gerze", "Durağan", "Ayancık", "Türkeli", "Dikmen", "Erfelek", "Saraydüzü"],
+            "Sivas": ["Merkez", "Şarkışla", "Zara", "Gemerek", "Suşehri", "Yıldızeli", "Kangal", "Divriği", "Gürün", "Hafik", "İmranlı", "Koyulhisar", "Akıncılar", "Altınyayla", "Doğanşar", "Gölova", "Ulaş"],
+            "Şanlıurfa": ["Eyyübiye", "Haliliye", "Karaköprü", "Siverek", "Viranşehir", "Suruç", "Birecik", "Akçakale", "Bozova", "Ceylanpınar", "Halfeti", "Harran", "Hilvan"],
+            "Şırnak": ["Merkez", "Cizre", "Silopi", "İdil", "Beytüşşebap", "Uludere", "Güçlükonak"],
+            "Tekirdağ": ["Süleymanpaşa", "Çorlu", "Çerkezköy", "Ergene", "Kapaklı", "Saray", "Hayrabolu", "Malkara", "Muratlı", "Şarköy", "Marmaraereğlisi"],
+            "Tokat": ["Merkez", "Turhal", "Erbaa", "Niksar", "Zile", "Almus", "Artova", "Başçiftlik", "Pazar", "Reşadiye", "Sulusaray", "Yeşilyurt"],
+            "Trabzon": ["Ortahisar", "Akçaabat", "Araklı", "Yomra", "Of", "Sürmene", "Vakfıkebir", "Beşikdüzü", "Çarşıbaşı", "Maçka", "Tonya", "Arsin", "Hayrat", "Düzköy", "Köprübaşı", "Çaykara", "Dernekpazarı", "Şalpazarı"],
+            "Tunceli": ["Merkez", "Pertek", "Çemişgezek", "Hozat", "Ovacık", "Mazgirt", "Pülümür", "Nazımiye"],
+            "Uşak": ["Merkez", "Banaz", "Eşme", "Sivaslı", "Ulubey", "Karahallı"],
+            "Van": ["İpekyolu", "Tuşba", "Edremit", "Erciş", "Çaldıran", "Özalp", "Başkale", "Gevaş", "Gürpınar", "Muradiye", "Saray", "Çatak", "Bahçesaray"],
+            "Yalova": ["Merkez", "Çınarcık", "Termal", "Altınova", "Armutlu", "Çiftlikköy"],
+            "Yozgat": ["Merkez", "Sorgun", "Akdağmadeni", "Yerköy", "Boğazlıyan", "Sarıkaya", "Çekerek", "Şefaatli", "Aydıncık", "Çandır", "Çayıralan", "Kadışehri", "Saraykent", "Yenifakılı"],
+            "Zonguldak": ["Merkez", "Ereğli", "Çaycuma", "Devrek", "Alaplı", "Gökçebey", "Kilimli", "Kozlu"]
         };
 
         // State
@@ -475,101 +821,246 @@
         };
 
 
-        // --- SETTINGS LOGIC ---
+        // --- SETTINGS LOGIC (Modern Card Layout) ---
         const Settings = {
             init() {
                 document.getElementById('view-settings').classList.remove('hidden');
                 const meta = currentUser.user_metadata || {};
 
-                // Pre-fill form
-                document.getElementById('edit-name').value = meta.full_name || '';
-                document.getElementById('edit-role-display').value = meta.role === 'teacher' ? 'Öğretmen' : 'Öğrenci';
-                document.getElementById('edit-school').value = meta.school_name || '';
-                document.getElementById('currentAvatarPreview').textContent = meta.avatar_url || '👤';
-                document.getElementById('edit-avatar').value = meta.avatar_url;
+                // Populate Hero Section
+                document.getElementById('hero-avatar-emoji').textContent = meta.avatar_url || '👤';
+                document.getElementById('hero-name').textContent = meta.full_name || 'Kullanıcı';
+                document.getElementById('hero-role-badge').textContent = meta.role === 'teacher' ? 'Öğretmen' : 'Öğrenci';
+                document.getElementById('hero-email').textContent = currentUser.email || '';
 
-                Wizard.loadCities('edit-city');
+                // Format join date
+                const joinDate = new Date(currentUser.created_at);
+                const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+                document.getElementById('hero-joined').textContent = `Katılım: ${months[joinDate.getMonth()]} ${joinDate.getFullYear()}`;
+
+                // Populate View Mode Fields
+                document.getElementById('view-name').textContent = meta.full_name || '—';
+                document.getElementById('view-school').textContent = meta.school_name || '—';
+                document.getElementById('view-city').textContent = meta.city || '—';
+                document.getElementById('view-district').textContent = meta.district || '—';
+
+                // Connection status
+                const provider = currentUser.app_metadata?.provider;
+                if (provider === 'google') {
+                    document.getElementById('view-connections').textContent = '✅ Google';
+                } else if (provider === 'github') {
+                    document.getElementById('view-connections').textContent = '✅ GitHub';
+                } else {
+                    document.getElementById('view-connections').textContent = '📧 Email';
+                }
+
+                // Pre-fill Edit Forms
+                document.getElementById('edit-name').value = meta.full_name || '';
+                document.getElementById('edit-school').value = meta.school_name || '';
+
+                // Load cities
+                ProfileEditor.loadCities();
                 if (meta.city) {
                     document.getElementById('edit-city').value = meta.city;
-                    loadDistricts('edit-city', 'edit-district');
+                    ProfileEditor.loadDistricts();
                     if (meta.district) {
                         setTimeout(() => document.getElementById('edit-district').value = meta.district, 50);
                     }
                 }
 
-                // Render avatar selector
-                Wizard.renderAvatars('avatar-selector', (av) => {
-                    document.getElementById('edit-avatar').value = av;
-                    document.getElementById('currentAvatarPreview').textContent = av;
-                    document.getElementById('avatar-selector').classList.add('hidden');
-                });
+                // Render avatar selector for popup
+                ProfileEditor.renderAvatars();
+
+                // Load stats (placeholder for now)
+                ProfileEditor.loadStats();
+            }
+        };
+
+        // --- PROFILE EDITOR MODULE ---
+        const ProfileEditor = {
+            currentAvatar: null,
+
+            toggleEdit(cardId) {
+                const card = document.getElementById(`card-${cardId}`);
+                if (card.classList.contains('editing')) {
+                    card.classList.remove('editing');
+                } else {
+                    card.classList.add('editing');
+                    // Pre-fill from view values when entering edit mode
+                    if (cardId === 'personal') {
+                        const meta = currentUser.user_metadata || {};
+                        document.getElementById('edit-name').value = meta.full_name || '';
+                        document.getElementById('edit-school').value = meta.school_name || '';
+                    }
+                }
             },
 
-            showTab(tab) {
-                document.querySelectorAll('.settings-tab').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`tab-${tab}`).classList.remove('hidden');
-
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.classList.remove('bg-white', 'shadow-sm', 'text-theme', 'ring-1', 'ring-gray-200');
-                    btn.classList.add('text-gray-600', 'hover:bg-white');
-                });
-                const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-                activeBtn.classList.remove('text-gray-600', 'hover:bg-white');
-                activeBtn.classList.add('bg-white', 'shadow-sm', 'text-theme', 'ring-1', 'ring-gray-200');
+            cancelEdit(cardId) {
+                const card = document.getElementById(`card-${cardId}`);
+                card.classList.remove('editing');
+                // Clear password fields on cancel
+                if (cardId === 'security') {
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('new-password-confirm').value = '';
+                }
             },
 
-            async saveGeneral(e) {
-                e.preventDefault();
-                const btn = document.getElementById('save-general-btn');
+            async savePersonal() {
                 const data = {
                     name: document.getElementById('edit-name').value,
                     school: document.getElementById('edit-school').value,
                     city: document.getElementById('edit-city').value,
                     district: document.getElementById('edit-district').value,
-                    avatar: document.getElementById('edit-avatar').value,
-                    // Preserve existing role
+                    avatar: this.currentAvatar || currentUser.user_metadata?.avatar_url || '👤',
                     role: currentUser.user_metadata.role
                 };
 
-                await saveToSupabase(data, btn, 'general-msg', () => {
-                    renderHeader(); // Update header immediately
-                });
+                try {
+                    const updates = {
+                        full_name: data.name,
+                        school_name: data.school,
+                        city: data.city,
+                        district: data.district,
+                        avatar_url: data.avatar,
+                        role: data.role,
+                        profile_completed: true
+                    };
+
+                    const { error } = await SupabaseClient.getClient().auth.updateUser({ data: updates });
+                    if (error) throw error;
+
+                    // Also update DB
+                    await SupabaseClient.getClient().from('user_profiles').upsert({
+                        id: currentUser.id,
+                        ...updates,
+                        email: currentUser.email
+                    });
+
+                    // Update UI
+                    document.getElementById('view-name').textContent = data.name || '—';
+                    document.getElementById('view-school').textContent = data.school || '—';
+                    document.getElementById('view-city').textContent = data.city || '—';
+                    document.getElementById('view-district').textContent = data.district || '—';
+                    document.getElementById('hero-name').textContent = data.name || 'Kullanıcı';
+                    document.getElementById('hero-avatar-emoji').textContent = data.avatar;
+
+                    // Close edit mode
+                    this.cancelEdit('personal');
+
+                    // Update header
+                    renderHeader();
+
+                    // Show toast
+                    if (typeof Toast !== 'undefined') {
+                        Toast.show('Bilgiler güncellendi!', 'success');
+                    }
+
+                } catch (err) {
+                    console.error('Save error:', err);
+                    if (typeof Toast !== 'undefined') {
+                        Toast.show('Kaydetme hatası: ' + err.message, 'error');
+                    }
+                }
             },
 
-            async saveSecurity(e) {
-                e.preventDefault();
+            async savePassword() {
                 const p1 = document.getElementById('new-password').value;
                 const p2 = document.getElementById('new-password-confirm').value;
-                const msg = document.getElementById('sec-msg');
-                const btn = document.getElementById('save-sec-btn');
 
-                if (p1 !== p2) {
-                    msg.textContent = 'Şifreler eşleşmiyor!';
-                    msg.classList.remove('hidden', 'text-green-500');
-                    msg.classList.add('text-red-500');
+                if (!p1 || p1.length < 6) {
+                    Toast?.show('Şifre en az 6 karakter olmalı!', 'error');
                     return;
                 }
 
-                btn.disabled = true;
-                btn.innerHTML = 'Güncelleniyor...';
+                if (p1 !== p2) {
+                    Toast?.show('Şifreler eşleşmiyor!', 'error');
+                    return;
+                }
 
                 try {
                     const { error } = await SupabaseClient.getClient().auth.updateUser({ password: p1 });
                     if (error) throw error;
 
-                    msg.textContent = 'Şifre başarıyla güncellendi!';
-                    msg.classList.remove('hidden', 'text-red-500');
-                    msg.classList.add('text-green-500');
-                    document.getElementById('new-password').value = '';
-                    document.getElementById('new-password-confirm').value = '';
+                    this.cancelEdit('security');
+                    Toast?.show('Şifre başarıyla güncellendi!', 'success');
                 } catch (err) {
-                    msg.textContent = err.message;
-                    msg.classList.remove('hidden', 'text-green-500');
-                    msg.classList.add('text-red-500');
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = 'Şifreyi Güncelle';
+                    Toast?.show('Şifre hatası: ' + err.message, 'error');
                 }
+            },
+
+            toggleAvatarSelector() {
+                const popup = document.getElementById('avatar-selector-popup');
+                popup.classList.toggle('hidden');
+            },
+
+            renderAvatars() {
+                const grid = document.getElementById('avatar-grid');
+                grid.innerHTML = avatars.map(av =>
+                    `<div class="avatar-option text-2xl p-2 bg-gray-50 rounded-lg flex items-center justify-center border-2 border-transparent cursor-pointer hover:border-theme" onclick="ProfileEditor.selectAvatar('${av}')">${av}</div>`
+                ).join('');
+            },
+
+            selectAvatar(av) {
+                this.currentAvatar = av;
+                document.getElementById('hero-avatar-emoji').textContent = av;
+                this.toggleAvatarSelector();
+
+                // Auto-save avatar
+                this.saveAvatar(av);
+            },
+
+            async saveAvatar(av) {
+                try {
+                    await SupabaseClient.getClient().auth.updateUser({ data: { avatar_url: av } });
+                    await SupabaseClient.getClient().from('user_profiles').update({ avatar_url: av }).eq('id', currentUser.id);
+                    renderHeader();
+                    Toast?.show('Avatar güncellendi!', 'success');
+                } catch (err) {
+                    console.error('Avatar save error:', err);
+                }
+            },
+
+            loadCities() {
+                const select = document.getElementById('edit-city');
+                select.innerHTML = '<option value="">Seçiniz</option>';
+                Object.keys(turkeyData).sort((a, b) => a.localeCompare(b, 'tr')).forEach(city => {
+                    select.add(new Option(city, city));
+                });
+            },
+
+            loadDistricts() {
+                const city = document.getElementById('edit-city').value;
+                const distSelect = document.getElementById('edit-district');
+                distSelect.innerHTML = '<option value="">Seçiniz</option>';
+
+                if (city && turkeyData[city]) {
+                    turkeyData[city].forEach(d => distSelect.add(new Option(d, d)));
+                }
+            },
+
+            setTheme(theme) {
+                // Toggle theme buttons
+                document.getElementById('theme-light-btn').classList.toggle('bg-theme', theme === 'light');
+                document.getElementById('theme-light-btn').classList.toggle('text-white', theme === 'light');
+                document.getElementById('theme-dark-btn').classList.toggle('bg-theme', theme === 'dark');
+                document.getElementById('theme-dark-btn').classList.toggle('text-white', theme === 'dark');
+
+                // Apply theme
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                localStorage.setItem('yeti_theme', theme);
+            },
+
+            loadStats() {
+                // TODO: Load actual stats from user progress
+                // For now, show placeholder values
+                document.getElementById('stat-lessons').textContent = '0';
+                document.getElementById('stat-badges').textContent = '0';
+                document.getElementById('stat-streak').textContent = '0';
+                document.getElementById('stat-quiz').textContent = '0%';
             }
         };
 
