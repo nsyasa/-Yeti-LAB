@@ -35,15 +35,15 @@ const Progress = {
     },
     _getCourseData: () => window.courseData || {},
 
-    // Helper to get student ID (works for both classroom and OAuth students)
+    // Helper to get user ID for progress tracking (works for both classroom and OAuth users)
     _getStudentId: () => {
         if (typeof Auth === 'undefined') return null;
         // Classroom-based student
         if (Auth.currentStudent?.studentId) {
             return Auth.currentStudent.studentId;
         }
-        // OAuth-based student (uses user ID from Supabase Auth)
-        if (Auth.isStudent() && Auth.currentUser?.id) {
+        // OAuth-based user (uses user ID from Supabase Auth)
+        if (Auth.currentUser?.id) {
             return Auth.currentUser.id;
         }
         return null;
@@ -56,8 +56,8 @@ const Progress = {
     init: async () => {
         if (Progress.isInitialized) return;
 
-        // Only load from server if student is logged in
-        if (typeof Auth !== 'undefined' && Auth.isStudent()) {
+        // Load from server if user is logged in
+        if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
             await Progress.loadFromServer();
         }
 
@@ -178,8 +178,8 @@ const Progress = {
             return;
         }
 
-        // Check if user is logged in as a student (either via classroom code or OAuth)
-        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent();
+        // Check if user is logged in (any logged-in user can save progress)
+        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isLoggedIn();
 
         if (!isLoggedIn) {
             // Show login prompt for guests
