@@ -568,102 +568,30 @@ const admin = {
         admin.renderProjectList();
     },
 
-    // --- QUIZ MANAGEMENT ---
+    // --- QUIZ MANAGEMENT (Delegated to modules/admin/quizzes.js) ---
     renderQuizEditor: (projectId) => {
-        // Find project in CURRENT data
-        const p = admin.currentData.projects.find((x) => x.id === parseInt(projectId));
+        const id = projectId || admin.currentProjectId;
+        const p = admin.currentData.projects.find((x) => x.id === parseInt(id));
         if (!p) return;
 
         // Ensure quiz array exists
         if (!p.quiz) p.quiz = [];
 
-        const list = document.getElementById('quiz-editor-list');
-        const emptyMsg = document.getElementById('quiz-empty-msg');
-        list.innerHTML = '';
-
-        const questions = p.quiz;
-
-        if (questions.length === 0) {
-            emptyMsg.classList.remove('hidden');
-        } else {
-            emptyMsg.classList.add('hidden');
-            questions.forEach((q, qIndex) => {
-                list.innerHTML += `
-                <div class="bg-white border rounded p-4 shadow-sm relative group">
-                    <button type="button" onclick="admin.removeQuestion(${qIndex})" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 font-bold p-1">❌</button>
-                    
-                    <div class="mb-2">
-                        <label class="block text-xs font-bold text-gray-500 uppercase">Soru ${qIndex + 1}</label>
-                        <input type="text" class="w-full border rounded p-2 text-sm font-bold" value="${q.q}" onchange="admin.updateQuestion(${qIndex}, 'q', this.value)">
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="block text-xs font-bold text-gray-500 uppercase">Seçenekler</label>
-                        ${q.options
-                            .map(
-                                (opt, oIndex) => `
-                            <div class="flex items-center space-x-2">
-                                <input type="radio" name="q${qIndex}_ans" value="${oIndex}" ${q.answer === oIndex ? 'checked' : ''} onchange="admin.updateQuestion(${qIndex}, 'answer', ${oIndex})">
-                                <input type="text" class="w-full border rounded p-1 text-sm bg-gray-50" value="${opt}" onchange="admin.updateQuestion(${qIndex}, 'option_${oIndex}', this.value)">
-                            </div>
-                        `
-                            )
-                            .join('')}
-                    </div>
-                    <div class="mt-2 text-xs text-green-600 font-bold">
-                        * Doğru cevabın yanındaki kutucuğu işaretleyin.
-                    </div>
-                </div>`;
+        if (typeof QuizEditor !== 'undefined') {
+            QuizEditor.init(p.id, p.quiz, (newData) => {
+                p.quiz = newData;
+                admin.triggerAutoSave();
             });
+        } else {
+            console.error('QuizEditor module not loaded!');
         }
     },
 
-    addQuestion: () => {
-        const pid = admin.currentProjectId;
-        const p = admin.currentData.projects.find((x) => x.id === pid);
-        if (!p) return;
+    addQuestion: () => QuizEditor.addQuestion(),
 
-        if (!p.quiz) p.quiz = [];
+    removeQuestion: (index) => QuizEditor.removeQuestion(index),
 
-        p.quiz.push({
-            q: 'Yeni Soru?',
-            options: ['A Şıkkı', 'B Şıkkı', 'C Şıkkı', 'D Şıkkı'],
-            answer: 0,
-        });
-        admin.renderQuizEditor(pid);
-        admin.triggerAutoSave();
-    },
-
-    removeQuestion: (index) => {
-        const pid = admin.currentProjectId;
-        const p = admin.currentData.projects.find((x) => x.id === pid);
-        if (!p || !p.quiz) return;
-
-        if (!confirm('Bu soruyu silmek istediğinize emin misiniz?')) return;
-
-        p.quiz.splice(index, 1);
-        admin.renderQuizEditor(pid);
-        admin.triggerAutoSave();
-    },
-
-    updateQuestion: (qIndex, field, value) => {
-        const pid = admin.currentProjectId;
-        const p = admin.currentData.projects.find((x) => x.id === pid);
-        if (!p || !p.quiz) return;
-
-        const question = p.quiz[qIndex];
-
-        if (field === 'q') {
-            question.q = value;
-        } else if (field === 'answer') {
-            question.answer = parseInt(value);
-        } else if (field.startsWith('option_')) {
-            const optIndex = parseInt(field.split('_')[1]);
-            question.options[optIndex] = value;
-        }
-
-        admin.triggerAutoSave();
-    },
+    updateQuestion: (qIndex, field, value) => QuizEditor.updateQuestion(qIndex, field, value),
 
     // --- MIGRATION UTILS ---
     migrateQuizData: () => {

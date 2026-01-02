@@ -37,6 +37,7 @@ export default [
                 Validators: 'readonly',
                 Constants: 'readonly',
                 HotspotEditor: 'readonly',
+                QuizEditor: 'readonly',
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',
