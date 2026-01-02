@@ -41,6 +41,7 @@ export default [
                 ComponentManager: 'readonly',
                 ClassroomManager: 'readonly',
                 StudentManager: 'readonly',
+                TeacherAnalytics: 'readonly', // Added Teacher Analytics
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',

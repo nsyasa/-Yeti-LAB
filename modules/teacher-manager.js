@@ -11,7 +11,7 @@ let bulkStudentsData = [];
 let selectedAvatarEmoji = '🎓';
 let editSelectedAvatarEmoji = '🎓';
 let currentDetailStudentId = null;
-let projectsCache = {}; // Cache for projects by course: { courseId: [project1, project2...] }
+// projectsCache moved to TeacherAnalytics module
 
 // ==========================================
 // INITIALIZATION
@@ -224,46 +224,10 @@ function formatRelativeTime(dateString) {
  * Load projects from database and cache them
  */
 async function loadProjects() {
-    try {
-        // Get all courses first
-        const { data: courses, error: coursesError } = await SupabaseClient.getClient()
-            .from('courses')
-            .select('id, slug, title')
-            .eq('is_published', true);
-
-        if (coursesError) throw coursesError;
-
-        // Get all projects
-        const { data: projects, error: projectsError } = await SupabaseClient.getClient()
-            .from('projects')
-            .select('id, slug, title, course_id, phase_id, position')
-            .eq('is_published', true)
-            .order('position', { ascending: true });
-
-        if (projectsError) throw projectsError;
-
-        // Build cache by course slug
-        projectsCache = {};
-
-        courses.forEach((course) => {
-            const courseProjects = projects
-                .filter((p) => p.course_id === course.id)
-                .map((p) => ({
-                    id: p.slug,
-                    dbId: p.id,
-                    title: p.title,
-                    course: course.title,
-                    courseSlug: course.slug,
-                }));
-
-            projectsCache[course.slug] = courseProjects;
-        });
-
-        return projectsCache;
-    } catch (error) {
-        console.error('Error loading projects:', error);
-        return {};
+    if (typeof TeacherAnalytics !== 'undefined') {
+        return await TeacherAnalytics.loadProjects();
     }
+    return {};
 }
 
 async function loadDashboardData() {
@@ -358,144 +322,8 @@ function loadStudents() {
 }
 
 async function loadProgress() {
-    const container = document.getElementById('courseProgress');
-    if (!container) return;
-
-    // Show loading
-    container.innerHTML = `
-        <div class="flex justify-center py-8">
-            <div class="spinner"></div>
-        </div>
-    `;
-
-    try {
-        // Get all students from teacher's classrooms
-        if (students.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">👨‍🎓</div>
-                    <p>Henüz öğrenci yok</p>
-                    <p class="text-sm mt-2">İlerleme verisi görüntülemek için önce öğrenci gerekli</p>
-                </div>
-            `;
-            return;
-        }
-
-        const studentIds = students.map((s) => s.id);
-
-        // Get all progress data
-        const { data: progressData, error } = await SupabaseClient.getClient()
-            .from('student_progress')
-            .select('student_id, course_id, project_id, completed_at')
-            .in('student_id', studentIds);
-
-        if (error) throw error;
-
-        // Update total completed lessons stat
-        const totalCompleted = progressData?.length || 0;
-        const statEl = document.getElementById('statCompletedLessons');
-        if (statEl) statEl.textContent = totalCompleted;
-
-        if (!progressData || progressData.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">📊</div>
-                    <p>Henüz tamamlanan ders yok</p>
-                    <p class="text-sm mt-2">Öğrenciler ders tamamladıkça burada görünecek</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Group by course
-        const courseProgress = {};
-        progressData.forEach((p) => {
-            if (!courseProgress[p.course_id]) {
-                courseProgress[p.course_id] = {
-                    courseKey: p.course_id,
-                    students: {},
-                    totalCompleted: 0,
-                };
-            }
-
-            if (!courseProgress[p.course_id].students[p.student_id]) {
-                const student = students.find((s) => s.id === p.student_id);
-                courseProgress[p.course_id].students[p.student_id] = {
-                    name: student?.display_name || 'Bilinmeyen',
-                    completed: [],
-                };
-            }
-
-            courseProgress[p.course_id].students[p.student_id].completed.push(p.project_id);
-            courseProgress[p.course_id].totalCompleted++;
-        });
-
-        // Course name mapping
-        const courseNames = {
-            arduino: '🔌 Arduino',
-            microbit: '📟 Micro:bit',
-            scratch: '🐱 Scratch',
-            mblock: '🤖 mBlock',
-            appinventor: '📱 App Inventor',
-        };
-
-        // Render progress
-        let html = '';
-
-        Object.entries(courseProgress).forEach(([courseKey, data]) => {
-            const courseName = courseNames[courseKey] || courseKey;
-            const studentList = Object.entries(data.students);
-
-            html += `
-                <div class="glass-card rounded-xl p-4 mb-4">
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-bold text-lg text-gray-800 dark:text-white">${courseName}</h4>
-                        <span class="text-sm text-gray-500">${data.totalCompleted} tamamlama</span>
-                    </div>
-                    <div class="space-y-3">
-                        ${studentList
-                            .map(([studentId, studentData]) => {
-                                const completedCount = studentData.completed.length;
-                                return `
-                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                    <div class="w-10 h-10 rounded-full bg-theme/10 flex items-center justify-center text-xl">🎓</div>
-                                    <div class="flex-grow">
-                                        <p class="font-medium text-gray-800 dark:text-white">${escapeHtml(studentData.name)}</p>
-                                        <p class="text-sm text-gray-500">${completedCount} ders tamamladı</p>
-                                    </div>
-                                    <div class="flex gap-1">
-                                        ${studentData.completed
-                                            .slice(0, 5)
-                                            .map(() => '<span class="text-green-500">✓</span>')
-                                            .join('')}
-                                        ${completedCount > 5 ? `<span class="text-gray-400 text-sm">+${completedCount - 5}</span>` : ''}
-                                    </div>
-                                </div>
-                            `;
-                            })
-                            .join('')}
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML =
-            html ||
-            `
-            <div class="empty-state">
-                <div class="icon">📊</div>
-                <p>İlerleme verisi henüz yok</p>
-            </div>
-        `;
-    } catch (error) {
-        console.error('Error loading progress:', error);
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="icon">❌</div>
-                <p>Veri yüklenirken hata oluştu</p>
-                <button onclick="loadProgress()" class="mt-4 px-4 py-2 bg-theme text-white rounded-lg">Tekrar Dene</button>
-            </div>
-        `;
+    if (typeof TeacherAnalytics !== 'undefined') {
+        TeacherAnalytics.renderCourseProgress('courseProgress', students);
     }
 }
 
@@ -927,174 +755,22 @@ async function saveStudentEdit(event) {
 // STUDENT DETAIL FUNCTIONS
 // ==========================================
 
-async function openStudentDetailModal(studentId) {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
-
-    currentDetailStudentId = studentId;
-
-    document.getElementById('detailStudentAvatar').textContent = student.avatar_emoji || '🎓';
-    document.getElementById('detailStudentName').textContent = student.display_name;
-
-    const classroom = classrooms.find((c) => c.id === student.classroom_id);
-    document.getElementById('detailStudentClass').textContent = classroom?.name || 'Bilinmeyen sınıf';
-
-    document.getElementById('detailLastActive').textContent =
-        formatRelativeTime(student.last_active_at).split(' ')[0] || '-';
-
-    document.getElementById('detailCourseProgress').innerHTML =
-        '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
-    document.getElementById('detailRecentLessons').innerHTML =
-        '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
-
-    document.getElementById('studentDetailModal').classList.add('open');
-
-    try {
-        const { data: progressData, error } = await SupabaseClient.getClient()
-            .from('student_progress')
-            .select('*')
-            .eq('student_id', studentId)
-            .order('completed_at', { ascending: false });
-
-        if (error) throw error;
-
-        renderStudentDetailStats(progressData || []);
-        renderStudentProjectList(progressData || []);
-        // Removed separate calls since renderStudentProjectList handles updating both containers if needed
-        // renderStudentCourseProgress(progressData || []);
-        // renderStudentRecentLessons(progressData || []);
-    } catch (error) {
-        console.error('Error loading student progress:', error);
-        document.getElementById('detailCourseProgress').innerHTML =
-            '<p class="text-red-500 text-center">Yüklenemedi</p>';
-        document.getElementById('detailRecentLessons').innerHTML =
-            '<p class="text-red-500 text-center">Yüklenemedi</p>';
-    }
-}
+// ==========================================
+// ANALYTICS & DETAIL DELEGATES
+// ==========================================
 
 function renderStudentDetailStats(progressData) {
-    document.getElementById('detailCompletedCount').textContent = progressData.length;
-
-    const quizScores = progressData.filter((p) => p.quiz_score !== null).map((p) => p.quiz_score);
-    const avgScore = quizScores.length > 0 ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
-    document.getElementById('detailAvgScore').textContent = avgScore + '%';
+    if (typeof TeacherAnalytics !== 'undefined') {
+        const completedProjectIds = progressData.map((p) => p.project_id);
+        TeacherAnalytics.renderStudentDetailStats(completedProjectIds);
+    }
 }
 
-// Replaces both course progress and recent lessons with a detailed project list
 function renderStudentProjectList(progressData) {
-    const container = document.getElementById('detailCourseProgress');
-    if (!container) return;
-
-    // Use cached projects from database instead of hardcoded list
-    // Note: project_id in student_progress is a UUID, so we compare with dbId
-    const completedProjectIds = progressData.map((p) => p.project_id);
-
-    const formatId = (id) => {
-        if (!id) return 'Bilinmeyen';
-        if (typeof id !== 'string') return 'Bilinmeyen';
-        // Handle both UUID format and slug format
-        if (id.includes('-') && id.length > 30) {
-            return 'Proje ' + id.slice(0, 8); // Truncate UUID for display
-        }
-        return id
-            .split('-')
-            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(' ');
-    };
-
-    // Course display names
-    const courseDisplayNames = {
-        arduino: 'Arduino',
-        microbit: 'Micro:bit',
-        scratch: 'Scratch',
-        mblock: 'mBlock',
-        appinventor: 'App Inventor',
-    };
-
-    let html = '<div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">';
-
-    // Check if projectsCache is loaded
-    if (Object.keys(projectsCache).length === 0) {
-        html += `
-            <div class="text-center py-4 text-gray-400 text-sm">
-                <p>Proje listesi yükleniyor...</p>
-            </div>
-        `;
-    } else {
-        // Iterate through cached courses
-        Object.entries(projectsCache).forEach(([courseSlug, projects]) => {
-            const courseName = courseDisplayNames[courseSlug] || courseSlug;
-
-            // Check if student has any activity in this course (compare with dbId - UUID)
-            const courseCompletedCount = projects.filter((p) => completedProjectIds.includes(p.dbId)).length;
-
-            // Only show courses that have projects
-            if (projects.length === 0) return;
-
-            html += `
-                <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3">
-                    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-600 pb-1 mb-2">
-                        <h5 class="font-bold text-gray-700 dark:text-gray-300 text-xs uppercase tracking-wider">${courseName}</h5>
-                        <span class="text-xs text-gray-400">${courseCompletedCount}/${projects.length}</span>
-                    </div>
-                    <div class="space-y-1">
-            `;
-
-            // Render projects from cache (compare with dbId - UUID)
-            projects.forEach((proj) => {
-                const isCompleted = completedProjectIds.includes(proj.dbId);
-                const statusIcon = isCompleted ? '✅' : '⬜';
-                const textClass = isCompleted
-                    ? 'text-gray-900 dark:text-white font-medium'
-                    : 'text-gray-400 dark:text-gray-500';
-
-                html += `
-                    <div class="flex items-center justify-between p-1.5 rounded hover:bg-white dark:hover:bg-gray-600 transition-colors">
-                        <span class="text-sm ${textClass}">${proj.title}</span>
-                        <span class="text-sm">${statusIcon}</span>
-                    </div>
-                `;
-            });
-
-            html += '</div></div>';
-        });
-    }
-
-    html += '</div>';
-
-    container.innerHTML = html;
-
-    // Update Recent Lessons Log (Compact)
-    const recentContainer = document.getElementById('detailRecentLessons');
-    if (recentContainer) {
-        if (progressData.length === 0) {
-            recentContainer.innerHTML = '<p class="text-xs text-center text-gray-400 py-2">Ders kaydı yok</p>';
-        } else {
-            // Find project titles from cache (compare with dbId - UUID)
-            const getProjectTitle = (projectId) => {
-                for (const courseProjects of Object.values(projectsCache)) {
-                    const found = courseProjects.find((p) => p.dbId === projectId);
-                    if (found) return found.title;
-                }
-                return formatId(projectId);
-            };
-
-            recentContainer.innerHTML = `
-                <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3 max-h-[150px] overflow-y-auto custom-scrollbar">
-                    ${progressData
-                        .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
-                        .map(
-                            (p) => `
-                        <div class="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-600 last:border-0 text-xs">
-                             <span class="text-gray-600 dark:text-gray-300 truncate pr-2">${getProjectTitle(p.project_id)}</span>
-                             <span class="text-gray-400 whitespace-nowrap">${formatRelativeTime(p.completed_at)}</span>
-                        </div>
-                    `
-                        )
-                        .join('')}
-                </div>
-             `;
-        }
+    if (typeof TeacherAnalytics !== 'undefined') {
+        const completedProjectIds = progressData.map((p) => p.project_id);
+        TeacherAnalytics.renderStudentProjectList('detailCourseProgress', completedProjectIds);
+        TeacherAnalytics.renderStudentRecentLessons('detailRecentLessons', progressData);
     }
 }
 
@@ -1102,12 +778,46 @@ function renderStudentProjectList(progressData) {
 function renderStudentCourseProgress(data) {
     renderStudentProjectList(data);
 }
-function renderStudentRecentLessons(data) {}
+function renderStudentRecentLessons(data) {
+    // Handled in renderStudentProjectList
+}
 
 function openEditStudentFromDetail() {
     if (currentDetailStudentId) {
         closeModal('studentDetailModal');
         openEditStudentModal(currentDetailStudentId);
+    }
+}
+
+async function openStudentDetailModal(studentId) {
+    currentDetailStudentId = studentId;
+    const student = students.find((s) => s.id === studentId);
+    if (!student) return;
+
+    document.getElementById('detailStudentName').textContent = student.display_name;
+    document.getElementById('detailStudentAvatar').textContent = student.avatar || '🎓';
+
+    // Reset stats
+    document.getElementById('detailCompletedCount').textContent = '-';
+    document.getElementById('detailAvgScore').textContent = '-';
+    document.getElementById('detailCourseProgress').innerHTML = '<div class="spinner"></div>';
+
+    document.getElementById('studentDetailModal').classList.add('open');
+
+    try {
+        const { data: progressData, error } = await SupabaseClient.getClient()
+            .from('student_progress')
+            .select('*')
+            .eq('student_id', studentId);
+
+        if (error) throw error;
+
+        // Render stats and lists (Delegated inside these functions)
+        renderStudentDetailStats(progressData);
+        renderStudentCourseProgress(progressData); // Alias for project list
+    } catch (error) {
+        console.error('Error loading student details:', error);
+        showToast('Öğrenci detayları yüklenemedi', 'error');
     }
 }
 
