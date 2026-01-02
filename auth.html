@@ -766,10 +766,9 @@
                 showAlert(`${provider === 'google' ? 'Google' : 'GitHub'} ile bağlanılıyor...`, 'info');
 
                 // Get base URL for redirect
-                // If running locally with file://, Supabase auth redirects might need specific handling or localhost server
-                // Generally redirects work best when served via http/https
+                // Redirect to profile.html to check role and redirect appropriately
                 const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-                const redirectUrl = baseUrl + '/teacher.html';
+                const redirectUrl = baseUrl + '/profile.html';
 
                 const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
                     provider: provider,

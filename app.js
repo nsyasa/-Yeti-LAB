@@ -241,8 +241,8 @@ const app = {
             await Auth.signOut();
             Auth.studentLogout();
             app.updateUserUI(null);
-            // Sayfayı yenile (isteğe bağlı)
-            // window.location.reload();
+            // Sayfayı yenile - çıkış işlemini tamamla
+            window.location.reload();
         } catch (err) {
             console.error('[App] Logout error:', err);
             alert('Çıkış yapılırken hata oluştu');
