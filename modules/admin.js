@@ -174,6 +174,16 @@ const admin = {
             if (matLabel) matLabel.innerText = 'Devre Elemanları';
         }
 
+        // Initialize Component Manager
+        if (typeof ComponentManager !== 'undefined') {
+            ComponentManager.init(admin.currentData.componentInfo, {
+                onUpdate: admin.triggerAutoSave,
+                onLoad: (key) => {
+                    admin.currentComponentKey = key;
+                }, // Sync active key
+            });
+        }
+
         admin.renderProjectList();
         admin.renderComponentList();
         admin.renderPhaseList();
@@ -847,84 +857,16 @@ const admin = {
         admin.triggerAutoSave();
     },
 
-    // --- COMPONENTS MANAGEMENT ---
-    renderComponentList: () => {
-        const list = document.getElementById('component-list');
-        if (!list) return;
+    // --- COMPONENTS MANAGEMENT (Delegated to modules/admin/components.js) ---
+    renderComponentList: () => ComponentManager.renderList(),
 
-        list.innerHTML = '';
-        if (!admin.currentData.componentInfo) admin.currentData.componentInfo = {};
+    loadComponent: (key) => ComponentManager.load(key),
 
-        try {
-            Object.entries(admin.currentData.componentInfo).forEach(([key, comp]) => {
-                const activeClass =
-                    key === admin.currentComponentKey
-                        ? 'bg-purple-50 border-purple-500'
-                        : 'hover:bg-gray-50 border-transparent';
-                list.innerHTML += `
-                    <div onclick="admin.loadComponent('${key}')" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
-                        <div class="flex items-center">
-                            <span class="text-xl mr-3">${comp.icon || '📦'}</span>
-                            <div>
-                                <div class="font-bold text-sm text-gray-700">${comp.name || key}</div>
-                                <div class="text-xs text-gray-400 font-mono">${key}</div>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        } catch (e) {
-            console.error('Error rendering component list:', e);
-            list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Elemanlar yüklenirken sorun oluştu.</div>';
-        }
-    },
+    updateComponent: () => ComponentManager.update(),
 
-    loadComponent: (key) => {
-        admin.currentComponentKey = key;
-        const c = admin.currentData.componentInfo[key];
-        document.getElementById('component-welcome').classList.add('hidden');
-        document.getElementById('component-form').classList.remove('hidden');
+    addNewComponent: () => ComponentManager.add(),
 
-        document.getElementById('c-key').value = key;
-        document.getElementById('c-name').value = c.name;
-        document.getElementById('c-icon').value = c.icon;
-        document.getElementById('c-imgFileName').value = c.imgFileName;
-        document.getElementById('c-desc').value = c.desc;
-
-        admin.renderComponentList();
-    },
-
-    updateComponent: () => {
-        if (!admin.currentComponentKey) return;
-        const c = admin.currentData.componentInfo[admin.currentComponentKey];
-        c.name = document.getElementById('c-name').value;
-        c.icon = document.getElementById('c-icon').value;
-        c.imgFileName = document.getElementById('c-imgFileName').value;
-        c.desc = document.getElementById('c-desc').value;
-
-        admin.triggerAutoSave();
-    },
-
-    addNewComponent: () => {
-        const key = prompt('Yeni malzeme için benzersiz bir ID girin (örn: Lazer):');
-        if (!key) return;
-        if (!admin.currentData.componentInfo) admin.currentData.componentInfo = {};
-        if (admin.currentData.componentInfo[key]) {
-            alert('Bu ID zaten var!');
-            return;
-        }
-
-        admin.currentData.componentInfo[key] = {
-            name: 'Yeni Malzeme',
-            icon: '📦',
-            imgFileName: 'resim.jpg',
-            desc: 'Açıklama giriniz.',
-        };
-        admin.renderComponentList();
-        admin.loadComponent(key);
-        setTimeout(() => (document.getElementById('component-list').scrollTop = 9999), 100);
-
-        admin.triggerAutoSave();
-    },
+    deleteComponent: () => ComponentManager.delete(), // Assuming it existed or we add it now
 
     // --- IMAGE SELECTOR ---
     targetInputId: null,
