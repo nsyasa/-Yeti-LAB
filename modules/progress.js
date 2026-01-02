@@ -15,6 +15,8 @@
 
 const Progress = {
     data: {}, // { courseKey: [completedProjectId1, completedProjectId2, ...] }
+    scores: {}, // { courseKey: { projectId: score } }
+    dates: [],  // Array of ISO date strings
     isLoading: false,
     isInitialized: false,
 
@@ -61,20 +63,33 @@ const Progress = {
         try {
             const { data, error } = await SupabaseClient.getClient()
                 .from('student_progress')
-                .select('course_id, project_id')
+                .select('course_id, project_id, completed_at, quiz_score')
                 .eq('student_id', Auth.currentStudent.studentId);
 
             if (error) throw error;
 
             // Organize by course
             Progress.data = {};
+            Progress.scores = {};
+            Progress.dates = [];
+
             (data || []).forEach(row => {
-                // We need to map course_id back to course key
-                // For now, store by course_id directly
+                // Course-Project mapping
                 if (!Progress.data[row.course_id]) {
                     Progress.data[row.course_id] = [];
+                    Progress.scores[row.course_id] = {};
                 }
                 Progress.data[row.course_id].push(row.project_id);
+
+                // Store Score
+                if (row.quiz_score) {
+                    Progress.scores[row.course_id][row.project_id] = row.quiz_score;
+                }
+
+                // Store Date
+                if (row.completed_at) {
+                    Progress.dates.push(row.completed_at);
+                }
             });
 
         } catch (error) {
@@ -203,6 +218,71 @@ const Progress = {
         const courseData = Progress._getCourseData();
         const total = (courseData[key]?.data?.projects?.length) || 1;
         return Math.round((completed / total) * 100);
+    },
+
+    /**
+     * Get overall statistics for the student
+     */
+    getStats: () => {
+        if (typeof Auth !== 'undefined' && !Auth.isStudent()) {
+            return { totalLessons: 0, badges: 0, streak: 0, quizAvg: 0 };
+        }
+
+        // 1. Total Lessons
+        let totalLessons = 0;
+        Object.values(Progress.data).forEach(arr => totalLessons += arr.length);
+
+        // 2. Quiz Average
+        let totalScore = 0;
+        let quizCount = 0;
+        Object.values(Progress.scores).forEach(courseScores => {
+            Object.values(courseScores).forEach(score => {
+                totalScore += score;
+                quizCount++;
+            });
+        });
+        const quizAvg = quizCount > 0 ? Math.round(totalScore / quizCount) : 0;
+
+        // 3. Streak (Consecutive days ending today or yesterday)
+        let streak = 0;
+        if (Progress.dates.length > 0) {
+            // Sort dates descending
+            const sortedDates = [...Progress.dates]
+                .map(d => new Date(d).setHours(0, 0, 0, 0)) // Normalize to midnight
+                .sort((a, b) => b - a);
+
+            // Remove duplicates
+            const uniqueDates = [...new Set(sortedDates)];
+
+            const today = new Date().setHours(0, 0, 0, 0);
+            const yesterday = today - 86400000;
+
+            // Check if streak is active (activity today or yesterday)
+            if (uniqueDates[0] === today || uniqueDates[0] === yesterday) {
+                streak = 1;
+                let currentDate = uniqueDates[0];
+
+                for (let i = 1; i < uniqueDates.length; i++) {
+                    const diff = currentDate - uniqueDates[i];
+                    if (diff === 86400000) { // Exactly 1 day gap
+                        streak++;
+                        currentDate = uniqueDates[i];
+                    } else {
+                        break; // Streak broken
+                    }
+                }
+            }
+        }
+
+        // 4. Badges (Simple Logic for Now)
+        // 1 badge for every 5 lessons + 1 for starting (if > 0) + 1 for 3-day streak
+        let badges = 0;
+        if (totalLessons > 0) badges++; // "İlk Adım"
+        badges += Math.floor(totalLessons / 5); // "Bilgi Avcısı" (Her 5 ders)
+        if (streak >= 3) badges++; // "İstikrarlı"
+        if (quizAvg >= 80 && quizCount >= 3) badges++; // "Başarılı"
+
+        return { totalLessons, badges, streak, quizAvg };
     },
 
     /**
