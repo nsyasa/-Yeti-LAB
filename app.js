@@ -98,10 +98,27 @@ const app = {
             await Auth.init();
 
             // Profil tamamlanmamışsa profile sayfasına yönlendir
-            if (Auth.needsProfileCompletion()) {
-                console.log('[App] Profile incomplete, redirecting to profile.html');
+            // Güvenlik: Sonsuz redirect döngüsünü önle
+            const isProfilePage = window.location.pathname.includes('profile.html');
+            const redirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');
+            const MAX_REDIRECTS = 3;
+
+            if (Auth.needsProfileCompletion() && !isProfilePage && redirectCount < MAX_REDIRECTS) {
+                console.log(`[App] Profile incomplete, redirecting to profile.html (attempt ${redirectCount + 1}/${MAX_REDIRECTS})`);
+                sessionStorage.setItem('profile_redirect_count', String(redirectCount + 1));
                 window.location.href = 'profile.html';
                 return;
+            }
+
+            // Profil tamamlandı veya sayfa zaten profile.html - sayacı sıfırla
+            if (!Auth.needsProfileCompletion()) {
+                sessionStorage.removeItem('profile_redirect_count');
+            }
+
+            // Max redirect'e ulaşıldıysa uyar
+            if (redirectCount >= MAX_REDIRECTS && Auth.needsProfileCompletion()) {
+                console.error('[App] Max profile redirects reached, possible loop detected. Please check profile completion logic.');
+                Toast?.error('Profil yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.');
             }
 
             // Progress modülünü başlat (Auth'dan sonra)
@@ -117,10 +134,17 @@ const app = {
 
                 // Yeni giriş yapıldıysa profil kontrolü ve progress yeniden yükle
                 if (event === 'SIGNED_IN') {
-                    if (Auth.needsProfileCompletion()) {
+                    const currentIsProfilePage = window.location.pathname.includes('profile.html');
+                    const currentRedirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');
+
+                    if (Auth.needsProfileCompletion() && !currentIsProfilePage && currentRedirectCount < MAX_REDIRECTS) {
+                        sessionStorage.setItem('profile_redirect_count', String(currentRedirectCount + 1));
                         window.location.href = 'profile.html';
-                    } else if (window.Progress?.loadFromServer) {
-                        await window.Progress.loadFromServer();
+                    } else if (!Auth.needsProfileCompletion()) {
+                        sessionStorage.removeItem('profile_redirect_count');
+                        if (window.Progress?.loadFromServer) {
+                            await window.Progress.loadFromServer();
+                        }
                     }
                 }
             });
@@ -268,26 +292,130 @@ const app = {
     },
 
 
+    // --- Security Helpers ---
+    // HTML escape function to prevent XSS
+    escapeHtml: (str) => {
+        if (typeof str !== 'string') return str;
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    },
+
+    // Recursively sanitize all string values in an object
+    sanitizeObject: (obj) => {
+        if (obj === null || obj === undefined) return obj;
+        if (typeof obj === 'string') return app.escapeHtml(obj);
+        if (typeof obj === 'number' || typeof obj === 'boolean') return obj;
+        if (Array.isArray(obj)) return obj.map(item => app.sanitizeObject(item));
+        if (typeof obj === 'object') {
+            const sanitized = {};
+            for (const key of Object.keys(obj)) {
+                sanitized[key] = app.sanitizeObject(obj[key]);
+            }
+            return sanitized;
+        }
+        return obj;
+    },
+
+    // Validate course data structure
+    isValidCourseData: (data) => {
+        // Check if data has expected structure
+        if (!data || typeof data !== 'object') return false;
+
+        // Course data should have title and data properties
+        if (typeof data.title !== 'string') return false;
+        if (!data.data || typeof data.data !== 'object') return false;
+
+        // Validate nested data structure
+        const courseContent = data.data;
+        if (courseContent.phases && !Array.isArray(courseContent.phases)) return false;
+        if (courseContent.projects && !Array.isArray(courseContent.projects)) return false;
+        if (courseContent.componentInfo && typeof courseContent.componentInfo !== 'object') return false;
+
+        // Validate projects structure if present
+        if (courseContent.projects) {
+            for (const project of courseContent.projects) {
+                if (typeof project !== 'object') return false;
+                if (typeof project.id !== 'number') return false;
+                if (typeof project.title !== 'string') return false;
+            }
+        }
+
+        return true;
+    },
+
     // Restore course data from localStorage (syncs with admin panel autosave)
+    // Security: Validates and sanitizes data to prevent XSS attacks
     restoreFromLocalStorage: () => {
+        const allowedCourses = ['arduino', 'microbit', 'scratch', 'mblock', 'appinventor'];
+
         try {
             const saved = localStorage.getItem('mucit_atolyesi_autosave');
             if (!saved) return;
 
-            const parsed = JSON.parse(saved);
-            if (parsed.data && Object.keys(parsed.data).length > 0) {
-                // Merge saved data into courseData
-                Object.keys(parsed.data).forEach(key => {
-                    if (window.courseData[key]) {
-                        // Keep the structure, update values
-                        window.courseData[key] = parsed.data[key];
-                    }
-                });
+            // Parse with error handling
+            let parsed;
+            try {
+                parsed = JSON.parse(saved);
+            } catch (parseError) {
+                console.warn('[App] Invalid JSON in localStorage, clearing corrupted data:', parseError);
+                localStorage.removeItem('mucit_atolyesi_autosave');
+                return;
+            }
+
+            // Validate top-level structure
+            if (!parsed || typeof parsed !== 'object') {
+                console.warn('[App] Invalid autosave structure, ignoring');
+                return;
+            }
+
+            if (!parsed.data || typeof parsed.data !== 'object' || Object.keys(parsed.data).length === 0) {
+                return;
+            }
+
+            // Validate timestamp
+            if (parsed.timestamp && (typeof parsed.timestamp !== 'number' || parsed.timestamp > Date.now() + 86400000)) {
+                console.warn('[App] Invalid autosave timestamp, ignoring');
+                return;
+            }
+
+            // Process only allowed courses with validation and sanitization
+            let restoredCount = 0;
+            Object.keys(parsed.data).forEach(key => {
+                // Only accept whitelisted course keys
+                if (!allowedCourses.includes(key)) {
+                    console.warn(`[App] Unknown course key rejected: ${key}`);
+                    return;
+                }
+
+                // Only merge if course exists in window.courseData
+                if (!window.courseData[key]) {
+                    return;
+                }
+
+                const courseData = parsed.data[key];
+
+                // Validate course data structure
+                if (!app.isValidCourseData(courseData)) {
+                    console.warn(`[App] Invalid course data structure for: ${key}`);
+                    return;
+                }
+
+                // Sanitize all string values to prevent XSS
+                const sanitizedData = app.sanitizeObject(courseData);
+
+                // Merge sanitized data
+                window.courseData[key] = sanitizedData;
+                restoredCount++;
+            });
+
+            if (restoredCount > 0) {
                 const date = new Date(parsed.timestamp).toLocaleString();
-                console.log(`[App] Course data restored from localStorage (${date})`);
+                console.log(`[App] Course data restored from localStorage (${date}), ${restoredCount} course(s)`);
             }
         } catch (e) {
             console.error('[App] Failed to restore from localStorage:', e);
+            // Don't propagate error, just log it
         }
     },
 

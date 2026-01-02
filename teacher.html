@@ -14,6 +14,8 @@
     <link href="styles/output.css" rel="stylesheet">
 
     <!-- Main Styles -->
+    <link rel="stylesheet" href="styles/tokens.css">
+    <link rel="stylesheet" href="styles/components.css">
     <link rel="stylesheet" href="styles/main.css">
 
     <!-- Supabase -->
@@ -305,214 +307,228 @@
 </head>
 
 <body class="bg-gray-50 text-gray-800">
-    <div class="teacher-bg flex min-h-screen">
-        <!-- Sidebar Overlay (mobile) -->
-        <div id="sidebarOverlay" class="sidebar-overlay lg:hidden" onclick="toggleSidebar()"></div>
+    <div class="teacher-bg min-h-screen flex flex-col">
+        <div class="flex flex-grow">
+            <!-- Sidebar Overlay (mobile) -->
+            <div id="sidebarOverlay" class="sidebar-overlay lg:hidden" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar flex flex-col">
-            <!-- Logo -->
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                <a href="index.html" class="flex items-center gap-3">
-                    <span class="text-4xl">❄️</span>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-800 dark:text-white">Yeti LAB</h1>
-                        <p class="text-xs text-gray-500">Öğretmen Paneli</p>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="flex-grow p-4 space-y-2">
-                <button onclick="showSection('dashboard')"
-                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
-                    data-section="dashboard">
-                    <span class="text-xl">📊</span>
-                    <span>Dashboard</span>
-                </button>
-                <button onclick="showSection('classrooms')"
-                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
-                    data-section="classrooms">
-                    <span class="text-xl">🏫</span>
-                    <span>Sınıflarım</span>
-                </button>
-                <button onclick="showSection('students')"
-                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
-                    data-section="students">
-                    <span class="text-xl">👨‍🎓</span>
-                    <span>Öğrenciler</span>
-                </button>
-
-            </nav>
-
-            <!-- User Info -->
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
-                    <img id="userAvatar" src="" class="w-10 h-10 rounded-full bg-gray-300 hidden"
-                        onerror="this.style.display='none'; document.getElementById('userAvatarFallback').style.display='flex';">
-                    <div id="userAvatarFallback"
-                        class="w-10 h-10 rounded-full bg-theme flex items-center justify-center text-white font-bold">
-                        ?
-                    </div>
-                    <div class="flex-grow min-w-0">
-                        <p id="userName" class="font-semibold text-gray-800 dark:text-white truncate">Yükleniyor...</p>
-                        <p class="text-xs text-gray-500">Öğretmen</p>
-                    </div>
-                    <button onclick="signOut()" title="Çıkış Yap"
-                        class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                            </path>
-                        </svg>
-                    </button>
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar flex flex-col">
+                <!-- Logo -->
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <span class="text-4xl">❄️</span>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800 dark:text-white">Yeti LAB</h1>
+                            <p class="text-xs text-gray-500">Öğretmen Paneli</p>
+                        </div>
+                    </a>
                 </div>
-            </div>
-        </aside>
 
-        <!-- Main Content -->
-        <main class="flex-grow flex flex-col">
-            <!-- Header -->
-            <header
-                class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
-                <div class="flex items-center justify-between px-6 py-4">
-                    <div class="flex items-center gap-4">
-                        <!-- Mobile Menu Button -->
-                        <button onclick="toggleSidebar()"
-                            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Navigation -->
+                <nav class="flex-grow p-4 space-y-2">
+                    <button onclick="showSection('dashboard')"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
+                        data-section="dashboard">
+                        <span class="text-xl">📊</span>
+                        <span>Kontrol Paneli</span>
+                    </button>
+                    <button onclick="showSection('classrooms')"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
+                        data-section="classrooms">
+                        <span class="text-xl">🏫</span>
+                        <span>Sınıflarım</span>
+                    </button>
+                    <button onclick="showSection('students')"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800"
+                        data-section="students">
+                        <span class="text-xl">👨‍🎓</span>
+                        <span>Öğrenciler</span>
+                    </button>
+
+                </nav>
+
+                <!-- User Info -->
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
+                        <img id="userAvatar" src="" class="w-10 h-10 rounded-full bg-gray-300 hidden"
+                            onerror="this.style.display='none'; document.getElementById('userAvatarFallback').style.display='flex';">
+                        <div id="userAvatarFallback"
+                            class="w-10 h-10 rounded-full bg-theme flex items-center justify-center text-white font-bold">
+                            ?
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p id="userName" class="font-semibold text-gray-800 dark:text-white truncate">Yükleniyor...
+                            </p>
+                            <p class="text-xs text-gray-500">Öğretmen</p>
+                        </div>
+                        <button onclick="signOut()" title="Çıkış Yap"
+                            class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16"></path>
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                </path>
                             </svg>
                         </button>
-                        <h2 id="sectionTitle" class="text-xl font-bold text-gray-800 dark:text-white">Dashboard</h2>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <!-- Theme Toggle -->
-                        <button onclick="toggleTheme()"
-                            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                            <span id="themeIcon">🌙</span>
-                        </button>
-                        <!-- Quick Add Classroom -->
-                        <button onclick="openCreateClassroomModal()"
-                            class="hidden sm:flex items-center gap-2 px-4 py-2 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all shadow-lg hover:shadow-xl">
-                            <span>+</span>
-                            <span>Yeni Sınıf</span>
-                        </button>
                     </div>
                 </div>
-            </header>
+            </aside>
 
-            <!-- Content Area -->
-            <div class="flex-grow p-6 overflow-auto">
-                <!-- Loading State -->
-                <div id="loadingState" class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <div class="spinner mx-auto mb-4"></div>
-                        <p class="text-gray-500">Yükleniyor...</p>
+            <!-- Main Content -->
+            <main class="flex-grow flex flex-col">
+                <!-- Header -->
+                <header
+                    class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <!-- Mobile Menu Button -->
+                            <button onclick="toggleSidebar()"
+                                class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <h2 id="sectionTitle" class="text-xl font-bold text-gray-800 dark:text-white">Kontrol Paneli
+                            </h2>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <!-- Theme Toggle -->
+                            <button onclick="toggleTheme()"
+                                class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <span id="themeIcon">🌙</span>
+                            </button>
+                            <!-- Quick Add Classroom -->
+                            <button onclick="openCreateClassroomModal()"
+                                class="hidden sm:flex items-center gap-2 px-4 py-2 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all shadow-lg hover:shadow-xl">
+                                <span>+</span>
+                                <span>Yeni Sınıf</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </header>
 
-                <!-- Dashboard Section -->
-                <section id="dashboardSection" class="hidden space-y-6">
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="stat-card animate-fade-in-up">
-                            <p class="text-white/80 text-sm mb-1">Toplam Sınıf</p>
-                            <p id="statClassrooms" class="text-3xl font-bold">0</p>
-                        </div>
-                        <div class="stat-card secondary animate-fade-in-up delay-100">
-                            <p class="text-white/80 text-sm mb-1">Toplam Öğrenci</p>
-                            <p id="statStudents" class="text-3xl font-bold">0</p>
-                        </div>
-                        <div class="stat-card warning animate-fade-in-up delay-200">
-                            <p class="text-white/80 text-sm mb-1">Aktif Bugün</p>
-                            <p id="statActiveToday" class="text-3xl font-bold">0</p>
-                        </div>
-                        <div class="stat-card success animate-fade-in-up delay-300">
-                            <p class="text-white/80 text-sm mb-1">Tamamlanan Ders</p>
-                            <p id="statCompletedLessons" class="text-3xl font-bold">0</p>
+                <!-- Content Area -->
+                <div class="flex-grow p-6 overflow-auto">
+                    <!-- Loading State -->
+                    <div id="loadingState" class="flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <div class="spinner mx-auto mb-4"></div>
+                            <p class="text-gray-500">Yükleniyor...</p>
                         </div>
                     </div>
 
-                    <!-- Recent Activity -->
-                    <div class="glass-card rounded-2xl p-6">
-                        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">📋 Son Aktiviteler</h3>
-                        <div id="recentActivity" class="space-y-3">
-                            <div class="empty-state">
-                                <div class="icon">📭</div>
-                                <p>Henüz aktivite yok</p>
+                    <!-- Dashboard Section -->
+                    <section id="dashboardSection" class="hidden space-y-6">
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="stat-card animate-fade-in-up">
+                                <p class="text-white/80 text-sm mb-1">Toplam Sınıf</p>
+                                <p id="statClassrooms" class="text-3xl font-bold">0</p>
+                            </div>
+                            <div class="stat-card secondary animate-fade-in-up delay-100">
+                                <p class="text-white/80 text-sm mb-1">Toplam Öğrenci</p>
+                                <p id="statStudents" class="text-3xl font-bold">0</p>
+                            </div>
+                            <div class="stat-card warning animate-fade-in-up delay-200">
+                                <p class="text-white/80 text-sm mb-1">Aktif Bugün</p>
+                                <p id="statActiveToday" class="text-3xl font-bold">0</p>
+                            </div>
+                            <div class="stat-card success animate-fade-in-up delay-300">
+                                <p class="text-white/80 text-sm mb-1">Tamamlanan Ders</p>
+                                <p id="statCompletedLessons" class="text-3xl font-bold">0</p>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Quick Actions -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button onclick="openCreateClassroomModal()"
-                            class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
-                            <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">🏫</span>
-                            <h4 class="font-bold text-gray-800 dark:text-white">Sınıf Oluştur</h4>
-                            <p class="text-sm text-gray-500 mt-1">Yeni bir sınıf oluştur ve öğrenci ekle</p>
-                        </button>
-                        <button onclick="showSection('students')"
-                            class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
-                            <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">👨‍🎓</span>
-                            <h4 class="font-bold text-gray-800 dark:text-white">Öğrenci Listesi</h4>
-                            <p class="text-sm text-gray-500 mt-1">Tüm öğrencilerinizi görüntüle</p>
-                        </button>
-                        <a href="index.html"
-                            class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
-                            <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">🎮</span>
-                            <h4 class="font-bold text-gray-800 dark:text-white">Ders Platformu</h4>
-                            <p class="text-sm text-gray-500 mt-1">Ana eğitim platformuna git</p>
-                        </a>
-                    </div>
-                </section>
+                        <!-- Recent Activity -->
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">📋 Son Aktiviteler</h3>
+                            <div id="recentActivity" class="space-y-3">
+                                <div class="empty-state">
+                                    <div class="icon">📭</div>
+                                    <p>Henüz aktivite yok</p>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Classrooms Section -->
-                <section id="classroomsSection" class="hidden space-y-6">
-                    <div class="flex justify-between items-center">
-                        <p class="text-gray-600 dark:text-gray-400">Öğrencileriniz için sınıflar oluşturun ve kod
-                            paylaşın</p>
-                        <button onclick="openCreateClassroomModal()"
-                            class="flex items-center gap-2 px-4 py-2 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
-                            <span>+</span>
-                            <span>Yeni Sınıf</span>
-                        </button>
-                    </div>
+                        <!-- Quick Actions -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button onclick="openCreateClassroomModal()"
+                                class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
+                                <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">🏫</span>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Sınıf Oluştur</h4>
+                                <p class="text-sm text-gray-500 mt-1">Yeni bir sınıf oluştur ve öğrenci ekle</p>
+                            </button>
+                            <button onclick="showSection('students')"
+                                class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
+                                <span
+                                    class="text-3xl mb-3 block group-hover:scale-110 transition-transform">👨‍🎓</span>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Öğrenci Listesi</h4>
+                                <p class="text-sm text-gray-500 mt-1">Tüm öğrencilerinizi görüntüle</p>
+                            </button>
+                            <a href="index.html"
+                                class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
+                                <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">🎮</span>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Ders Platformu</h4>
+                                <p class="text-sm text-gray-500 mt-1">Ana eğitim platformuna git</p>
+                            </a>
+                        </div>
+                    </section>
 
-                    <div id="classroomsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Classrooms will be rendered here -->
-                    </div>
-                </section>
+                    <!-- Classrooms Section -->
+                    <section id="classroomsSection" class="hidden space-y-6">
+                        <div class="flex justify-between items-center">
+                            <p class="text-gray-600 dark:text-gray-400">Öğrencileriniz için sınıflar oluşturun ve kod
+                                paylaşın</p>
+                            <button onclick="openCreateClassroomModal()"
+                                class="flex items-center gap-2 px-4 py-2 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
+                                <span>+</span>
+                                <span>Yeni Sınıf</span>
+                            </button>
+                        </div>
 
-                <!-- Students Section -->
-                <section id="studentsSection" class="hidden space-y-6">
-                    <!-- Filter by Classroom -->
-                    <div class="flex flex-wrap gap-4 items-center">
-                        <label class="text-gray-600 dark:text-gray-400">Sınıf Filtresi:</label>
-                        <select id="classroomFilter"
-                            class="px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
-                            <option value="all">Tüm Sınıflar</option>
-                        </select>
-                        <button onclick="printStudentList()"
-                            class="ml-auto bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 px-4 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                            title="Öğrenci Şifre Listesini Yazdır">
-                            <span>🖨️</span>
-                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Şifre Listesini
-                                Yazdır</span>
-                        </button>
-                    </div>
+                        <div id="classroomsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Classrooms will be rendered here -->
+                        </div>
+                    </section>
 
-                    <div id="studentsList" class="space-y-3">
-                        <!-- Students will be rendered here -->
-                    </div>
-                </section>
+                    <!-- Students Section -->
+                    <section id="studentsSection" class="hidden space-y-6">
+                        <!-- Filter by Classroom -->
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <label class="text-gray-600 dark:text-gray-400">Sınıf Filtresi:</label>
+                            <select id="classroomFilter"
+                                class="px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                <option value="all">Tüm Sınıflar</option>
+                            </select>
+                            <button onclick="printStudentList()"
+                                class="ml-auto bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 px-4 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                                title="Öğrenci Şifre Listesini Yazdır">
+                                <span>🖨️</span>
+                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Şifre Listesini
+                                    Yazdır</span>
+                            </button>
+                        </div>
 
-                <!-- Progress Section -->
+                        <div id="studentsList" class="space-y-3">
+                            <!-- Students will be rendered here -->
+                        </div>
+                    </section>
 
+                    <!-- Progress Section -->
+
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6">
+                <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
             </div>
-        </main>
+            <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
+        </footer>
     </div>
 
     <!-- Create Classroom Modal -->
