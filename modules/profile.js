@@ -383,11 +383,11 @@ const Profile = {
             const p1 = document.getElementById('new-password').value;
             const p2 = document.getElementById('new-password-confirm').value;
 
-            if (p1.length < 6) {
+            if (!Validators.minLength(p1, 6)) {
                 Toast?.show('Şifre en az 6 karakter olmalı', 'error');
                 return;
             }
-            if (p1 !== p2) {
+            if (!Validators.passwordsMatch(p1, p2)) {
                 Toast?.show('Şifreler eşleşmiyor', 'error');
                 return;
             }

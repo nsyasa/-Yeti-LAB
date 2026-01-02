@@ -34,6 +34,8 @@ export default [
                 CourseLoader: 'readonly',
                 Chart: 'readonly',
                 Utils: 'readonly',
+                Validators: 'readonly',
+                Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',
                 it: 'readonly',
