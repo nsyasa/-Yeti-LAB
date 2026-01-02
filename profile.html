@@ -541,7 +541,24 @@
                     <div class="flex items-center justify-center gap-2 mt-1">
                         <span id="hero-role-badge"
                             class="text-xs font-bold px-3 py-1 rounded-full bg-theme/10 text-theme">Öğrenci</span>
+                        <span id="hero-level-badge"
+                            class="text-xs font-bold px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">Level
+                            1</span>
                     </div>
+
+                    <!-- XP Progress Bar -->
+                    <div class="max-w-xs mx-auto mt-3">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Kazanılan XP: <span id="hero-xp" class="text-theme font-bold">0</span></span>
+                            <span>Sonraki Seviye: <span id="hero-next-xp">1000</span></span>
+                        </div>
+                        <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div id="hero-xp-bar"
+                                class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-1000"
+                                style="width: 0%"></div>
+                        </div>
+                    </div>
+
                     <p class="text-gray-500 text-sm mt-2" id="hero-email">email@example.com</p>
                     <p class="text-gray-400 text-xs mt-1" id="hero-joined">Katılım: Ocak 2026</p>
                 </div>
@@ -563,6 +580,36 @@
                     <div class="stat-badge">
                         <div class="stat-badge-value" id="stat-quiz">0%</div>
                         <div class="stat-badge-label">Quiz Ortalaması</div>
+                    </div>
+                </div>
+
+                <!-- Activity Heatmap -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span>📊</span> Son 30 Günlük Aktivite
+                    </h3>
+                    <div
+                        class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <div id="activity-heatmap" class="flex flex-wrap gap-2 justify-center sm:justify-start">
+                            <!-- Heatmap cells injected via JS -->
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 text-xs text-gray-400 justify-end">
+                            <span>Az</span>
+                            <div class="w-3 h-3 rounded-sm bg-gray-100 dark:bg-gray-700"></div>
+                            <div class="w-3 h-3 rounded-sm bg-theme/40"></div>
+                            <div class="w-3 h-3 rounded-sm bg-theme"></div>
+                            <span>Çok</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge Gallery -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span>🏆</span> Rozet Koleksiyonu
+                    </h3>
+                    <div id="badge-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <!-- Badges injected via JS -->
                     </div>
                 </div>
 
@@ -740,6 +787,7 @@
     <script src="modules/auth.js"></script>
     <script src="modules/progress.js"></script>
     <script src="data/cities.js"></script>
+    <script src="modules/badges.js"></script>
     <script>
         // Data
         const avatars = ['👨‍🏫', '👩‍🏫', '🎓', '🚀', '⭐', '🧠', '🤖', '💻', '🦊', '🦁', '🐼', '🐨', '🦄', '🐲', '⚡', '🔥'];
@@ -998,6 +1046,34 @@
                     setVal('stat-badges', stats.badges);
                     setVal('stat-streak', stats.streak);
                     setVal('stat-quiz', stats.quizAvg + '%');
+
+                    // Update Level UI
+                    setVal('hero-level-badge', 'Level ' + stats.level);
+                    setVal('hero-xp', stats.xp);
+                    setVal('hero-next-xp', stats.nextLevelXP);
+
+                    const xpBar = document.getElementById('hero-xp-bar');
+                    if (xpBar) xpBar.style.width = stats.levelProgress + '%';
+
+                    // Render Badge Gallery
+                    ProfileEditor.renderBadgeGallery(stats.earnedBadges);
+
+                    // Render Activity Heatmap
+                    ProfileEditor.renderHeatmap(Progress.dates);
+                } else {
+                    // For now, show placeholder values if not a student or progress not loaded
+                    document.getElementById('stat-lessons').textContent = '0';
+                    document.getElementById('stat-badges').textContent = '0';
+                    document.getElementById('stat-streak').textContent = '0';
+                    document.getElementById('stat-quiz').textContent = '0%';
+
+                    // Reset Level UI
+                    document.getElementById('hero-level-badge').textContent = 'Level 1';
+                    document.getElementById('hero-xp').textContent = '0';
+                    document.getElementById('hero-xp-bar').style.width = '0%';
+
+                    this.renderBadgeGallery([]);
+                    this.renderHeatmap([]);
                 }
             },
 
@@ -1177,6 +1253,88 @@
                 document.getElementById('stat-badges').textContent = '0';
                 document.getElementById('stat-streak').textContent = '0';
                 document.getElementById('stat-quiz').textContent = '0%';
+
+                // Reset Level UI
+                document.getElementById('hero-level-badge').textContent = 'Level 1';
+                document.getElementById('hero-xp').textContent = '0';
+                document.getElementById('hero-xp-bar').style.width = '0%';
+
+                this.renderBadgeGallery([]);
+            },
+
+            renderHeatmap(dates) {
+                const container = document.getElementById('activity-heatmap');
+                if (!container) return;
+
+                // Normalize dates to YYYY-MM-DD
+                const activityMap = {};
+                (dates || []).forEach(dateStr => {
+                    const d = new Date(dateStr).toISOString().split('T')[0];
+                    activityMap[d] = (activityMap[d] || 0) + 1;
+                });
+
+                // Generate last 30 days
+                const today = new Date();
+                let html = '';
+
+                // 30 squares, reverse order (Today is last)
+                // Actually usually heatmaps go left-to-right, past-to-future.
+                // So lets go from 29 days ago to today.
+                for (let i = 29; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(today.getDate() - i);
+                    const iso = d.toISOString().split('T')[0];
+                    const dayName = d.toLocaleDateString('tr-TR', { weekday: 'short' });
+                    const dateDisplay = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+
+                    const count = activityMap[iso] || 0;
+
+                    // Determine color
+                    let colorClass = 'bg-gray-100 dark:bg-gray-700';
+                    if (count > 0) colorClass = 'bg-theme/40'; // Light green
+                    if (count > 2) colorClass = 'bg-theme';    // Dark green
+
+                    html += `
+                        <div class="group relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${colorClass} transition-all hover:scale-110 cursor-default">
+                            <!-- Tooltip -->
+                            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-32 bg-gray-900 text-white text-xs p-2 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 pointer-events-none text-center">
+                                <p class="font-bold">${dateDisplay}</p>
+                                <p>${count} ders</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML = html;
+            },
+
+            renderBadgeGallery(earnedBadges) {
+                const container = document.getElementById('badge-gallery');
+                if (!window.BadgeSystem) return;
+
+                const allBadges = window.BadgeSystem.getAll();
+                const earnedIds = earnedBadges.map(b => typeof b === 'string' ? b : b.id);
+
+                container.innerHTML = allBadges.map(badge => {
+                    const isEarned = earnedIds.includes(badge.id);
+                    const opacity = isEarned ? 'opacity-100' : 'opacity-40 grayscale';
+                    const border = isEarned ? 'border-theme bg-theme/5' : 'border-gray-200 bg-gray-50';
+                    const icon = isEarned ? badge.icon : '🔒';
+
+                    return `
+                    <div class="group relative p-4 rounded-xl border-2 ${border} ${opacity} transition-all hover:scale-105 flex flex-col items-center text-center gap-2">
+                        <div class="text-4xl mb-1">${isEarned ? badge.icon : '🛡️'}</div>
+                        <div class="font-bold text-sm text-gray-800 dark:text-gray-200">${badge.title}</div>
+                        
+                        <!-- Tooltip -->
+                        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 bg-gray-900 text-white text-xs p-2 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 pointer-events-none">
+                            <p class="font-bold mb-1">${badge.title}</p>
+                            <p>${badge.description}</p>
+                            ${!isEarned ? '<p class="mt-1 text-yellow-300 font-bold">Nasıl kazanılır?</p>' : '<p class="mt-1 text-green-300 font-bold">Kazanıldı! 🎉</p>'}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
             }
         };
 

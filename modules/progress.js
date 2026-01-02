@@ -230,59 +230,87 @@ const Progress = {
 
         // 1. Total Lessons
         let totalLessons = 0;
-        Object.values(Progress.data).forEach(arr => totalLessons += arr.length);
+        const completedLessons = Progress.getCompleted();
+        const quizScores = Progress.scores || {};
+        const quizKeys = Object.keys(quizScores);
+        let quizSum = 0;
 
-        // 2. Quiz Average
-        let totalScore = 0;
-        let quizCount = 0;
-        Object.values(Progress.scores).forEach(courseScores => {
-            Object.values(courseScores).forEach(score => {
-                totalScore += score;
-                quizCount++;
-            });
-        });
-        const quizAvg = quizCount > 0 ? Math.round(totalScore / quizCount) : 0;
+        quizKeys.forEach(k => quizSum += quizScores[k]);
 
-        // 3. Streak (Consecutive days ending today or yesterday)
+        const quizAvg = quizKeys.length > 0 ? (quizSum / quizKeys.length) : 0;
+
+        // Calculate Streak
+        const dates = Progress.dates || [];
         let streak = 0;
-        if (Progress.dates.length > 0) {
-            // Sort dates descending
-            const sortedDates = [...Progress.dates]
-                .map(d => new Date(d).setHours(0, 0, 0, 0)) // Normalize to midnight
-                .sort((a, b) => b - a);
-
-            // Remove duplicates
+        if (dates.length > 0) {
+            // Sort dates new to old
+            const sortedDates = dates.map(d => new Date(d).toDateString()).sort((a, b) => new Date(b) - new Date(a));
             const uniqueDates = [...new Set(sortedDates)];
 
-            const today = new Date().setHours(0, 0, 0, 0);
-            const yesterday = today - 86400000;
+            // Check if today or yesterday is present to start streak
+            const today = new Date().toDateString();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toDateString();
 
-            // Check if streak is active (activity today or yesterday)
-            if (uniqueDates[0] === today || uniqueDates[0] === yesterday) {
+            if (uniqueDates.includes(today) || uniqueDates.includes(yesterdayStr)) {
                 streak = 1;
-                let currentDate = uniqueDates[0];
+                let currentDate = new Date(uniqueDates[0]); // Start checking from most recent
 
                 for (let i = 1; i < uniqueDates.length; i++) {
-                    const diff = currentDate - uniqueDates[i];
-                    if (diff === 86400000) { // Exactly 1 day gap
+                    const prevDate = new Date(uniqueDates[i]);
+                    const diffTime = Math.abs(currentDate - prevDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 1) {
                         streak++;
-                        currentDate = uniqueDates[i];
+                        currentDate = prevDate;
                     } else {
-                        break; // Streak broken
+                        break;
                     }
                 }
             }
         }
 
-        // 4. Badges (Simple Logic for Now)
-        // 1 badge for every 5 lessons + 1 for starting (if > 0) + 1 for 3-day streak
-        let badges = 0;
-        if (totalLessons > 0) badges++; // "İlk Adım"
-        badges += Math.floor(totalLessons / 5); // "Bilgi Avcısı" (Her 5 ders)
-        if (streak >= 3) badges++; // "İstikrarlı"
-        if (quizAvg >= 80 && quizCount >= 3) badges++; // "Başarılı"
+        // --- XP & LEVEL CALCULATION ---
+        // 1 Lesson = 150 XP
+        // 1 Badge = 500 XP
+        const baseXP = completedLessons.length * 150;
 
-        return { totalLessons, badges, streak, quizAvg };
+        // Calculate Badges first
+        let earnedBadges = [];
+        if (window.BadgeSystem) {
+            earnedBadges = window.BadgeSystem.calculateEarned({
+                totalLessons: completedLessons.length,
+                quizAvg: quizAvg,
+                streak: streak
+            });
+        } else {
+            // Fallback
+            if (completedLessons.length >= 1) earnedBadges.push('newbie');
+        }
+
+        const badgeXP = earnedBadges.length * 500;
+        const totalXP = baseXP + badgeXP;
+
+        // Level Logic: Level 1 = 0-1000 XP, Level 2 = 1001-2000...
+        // Formula: Floor(XP / 1000) + 1
+        const level = Math.floor(totalXP / 1000) + 1;
+        const nextLevelXP = level * 1000;
+        const currentLevelXP = totalXP % 1000; // Progress within current level
+        const levelProgress = (currentLevelXP / 1000) * 100;
+
+        return {
+            totalLessons: completedLessons.length,
+            quizAvg: Math.round(quizAvg),
+            streak: streak,
+            badges: earnedBadges.length,
+            earnedBadges: earnedBadges,
+            xp: totalXP,
+            level: level,
+            levelProgress: Math.round(levelProgress),
+            nextLevelXP: nextLevelXP
+        };
     },
 
     /**
