@@ -494,6 +494,7 @@
 
     <!-- Scripts -->
     <script src="modules/supabaseClient.js"></script>
+    <script src="modules/themeManager.js"></script>
     <script src="modules/auth.js"></script>
     <script>
         // ========================================
@@ -615,8 +616,8 @@
                 if (session) {
                     showAlert('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
                     setTimeout(() => {
-                        // Clear the hash and redirect to teacher panel
-                        window.location.href = 'teacher.html';
+                        // Clear the hash and redirect to index (teacher can access panel from there)
+                        window.location.href = 'index.html';
                     }, 500);
                     return;
                 }
@@ -983,7 +984,7 @@
                     await Auth.signInWithEmail(email, password);
                     showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                     setTimeout(() => {
-                        window.location.href = 'teacher.html';
+                        window.location.href = 'index.html';
                     }, 1000);
                 } catch (err) {
                     showAlert(err.message, 'error');
