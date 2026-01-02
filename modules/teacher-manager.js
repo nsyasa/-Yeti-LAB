@@ -326,7 +326,15 @@ async function loadDashboardData() {
         if (typeof ClassroomManager !== 'undefined') {
             ClassroomManager.init(currentUser, classrooms, {
                 onStateChange: () => {
-                    // Refresh data when manager changes something
+                    loadDashboardData();
+                },
+            });
+        }
+
+        // Initialize Student Manager
+        if (typeof StudentManager !== 'undefined') {
+            StudentManager.init(currentUser, students, classrooms, {
+                onStateChange: () => {
                     loadDashboardData();
                 },
             });
@@ -343,84 +351,10 @@ function loadClassrooms() {
     }
 }
 
-async function loadStudents() {
-    const container = document.getElementById('studentsList');
-    if (!container) return;
-
-    const filterSelect = document.getElementById('classroomFilter');
-    const selectedClassroom = filterSelect ? filterSelect.value : 'all';
-
-    // Update filter options
-    if (filterSelect && filterSelect.options.length <= 1) {
-        filterSelect.innerHTML =
-            '<option value="all">Tüm Sınıflar</option>' +
-            classrooms.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-        filterSelect.value = selectedClassroom;
-        filterSelect.onchange = () => loadStudents();
+function loadStudents() {
+    if (typeof StudentManager !== 'undefined') {
+        StudentManager.renderList();
     }
-
-    // Filter students
-    let filteredStudents = students;
-    if (selectedClassroom !== 'all') {
-        filteredStudents = students.filter((s) => s.classroom_id === selectedClassroom);
-    }
-
-    if (filteredStudents.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state py-8">
-                <div class="text-4xl opacity-50 mb-2">👨‍🎓</div>
-                <p class="text-sm text-gray-500">Henüz öğrenci yok</p>
-                <p class="text-xs mt-1 text-gray-400">Öğrenciler sınıf kodunu kullanarak katılabilir</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML =
-        '<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-50 dark:divide-gray-700">' +
-        filteredStudents
-            .map((student) => {
-                const classroom = classrooms.find((c) => c.id === student.classroom_id);
-                const progressCount = student.student_progress?.length || 0;
-                const hasPassword = student.password ? '🔒' : '';
-                const hasArduino = student.student_progress?.some(
-                    (p) => p.course_id === 'arduino' || p.project_id?.includes('arduino')
-                )
-                    ? '<span title="Arduino Modülüne Başlamış">🤖</span>'
-                    : '';
-
-                return `
-            <div class="group flex items-center justify-between p-2 hover:bg-theme/5 transition-colors cursor-pointer" 
-                 onclick="openEditStudentModal('${student.id}')">
-                
-                <div class="flex items-center gap-3 flex-grow min-w-0">
-                    <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg flex-shrink-0 border border-gray-200 dark:border-gray-600">
-                        ${student.avatar_emoji || '🎓'}
-                    </div>
-                    <div class="min-w-0 flex flex-col justify-center">
-                        <div class="flex items-center gap-2">
-                            <p class="font-semibold text-gray-800 dark:text-white text-sm truncate leading-none">${escapeHtml(student.display_name)}</p>
-                            <span class="text-[10px] text-gray-400">${hasPassword}</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500 truncate mt-0.5">${classroom?.name || '-'} • ${progressCount} ders ${hasArduino}</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                     <button onclick="event.stopPropagation(); openStudentDetailModal('${student.id}')" 
-                        class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
-                        İlerleme
-                    </button>
-                    <button onclick="event.stopPropagation(); openEditStudentModal('${student.id}')" 
-                        class="p-1.5 text-gray-400 hover:text-theme rounded hover:bg-gray-100 transition-colors" title="Düzenle">
-                        ✏️
-                    </button>
-                </div>
-            </div>
-        `;
-            })
-            .join('') +
-        '</div>';
 }
 
 async function loadProgress() {
@@ -679,8 +613,11 @@ function shareClassroomCode() {
     }
 }
 
+// Old student functions removed - now using delegates below
+
 // ==========================================
-// STUDENT MANAGEMENT FUNCTIONS
+// ==========================================
+// STUDENT MANAGEMENT DELEGATES
 // ==========================================
 
 function selectAvatar(emoji) {
@@ -688,7 +625,6 @@ function selectAvatar(emoji) {
     const input = document.getElementById('selectedAvatar');
     if (input) input.value = emoji;
 
-    // Update UI
     document.querySelectorAll('.avatar-btn').forEach((btn) => {
         btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
         btn.classList.add('border-gray-200');
@@ -700,28 +636,16 @@ function selectAvatar(emoji) {
     }
 }
 
-function generateRandomPassword() {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
-function openAddStudentModal(classroomId = null) {
-    const select = document.getElementById('studentClassroom');
-    select.innerHTML =
-        '<option value="">Sınıf seçin...</option>' +
-        classrooms
-            .map(
-                (c) =>
-                    `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
-            )
-            .join('');
-
-    document.getElementById('addStudentForm').reset();
-    document.getElementById('selectedAvatar').value = '🎓';
-    selectAvatar('🎓');
-
+function openAddStudentModal(classroomId) {
     if (classroomId) {
-        select.value = classroomId;
+        document.getElementById('newStudentClassroom').value = classroomId;
     }
+    document.getElementById('studentName').value = '';
+
+    if (typeof selectAvatar === 'function') selectAvatar('🎓');
+
+    const password = typeof StudentManager !== 'undefined' ? StudentManager.generatePassword() : '123456';
+    document.getElementById('studentPassword').value = password;
 
     document.getElementById('addStudentModal').classList.add('open');
 }
@@ -729,147 +653,77 @@ function openAddStudentModal(classroomId = null) {
 async function addStudent(event) {
     event.preventDefault();
 
-    const submitBtn = document.getElementById('addStudentBtn');
-    if (submitBtn.disabled) return;
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn && submitBtn.disabled) return;
 
-    const classroomId = document.getElementById('studentClassroom').value;
+    const classroomId = document.getElementById('newStudentClassroom').value;
     const displayName = document.getElementById('studentName').value.trim();
     const password = document.getElementById('studentPassword').value.trim();
-    const avatar = document.getElementById('selectedAvatar').value;
+    const avatarEmoji = selectedAvatarEmoji || '🎓';
 
-    if (!classroomId || !displayName) {
-        showToast('Lütfen tüm alanları doldurun', 'error');
+    if (!displayName) {
+        showToast('Öğrenci adı gerekli', 'error');
         return;
     }
 
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML =
-        '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Ekleniyor...';
+    const originalText = submitBtn ? submitBtn.innerHTML : 'Ekle';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Ekleniyor...';
+    }
 
-    try {
-        const studentData = {
-            classroom_id: classroomId,
-            display_name: displayName,
-            avatar_emoji: avatar,
-            added_by_teacher: true,
-            last_active_at: new Date().toISOString(),
-        };
+    if (typeof StudentManager !== 'undefined') {
+        const result = await StudentManager.add(classroomId, displayName, password, avatarEmoji);
 
-        if (password) {
-            studentData.password = password;
+        if (result.success) {
+            closeModal('addStudentModal');
+            document.getElementById('addStudentForm').reset();
+            showToast(`${result.data.display_name} eklendi!`, 'success');
+        } else {
+            showToast('Öğrenci eklenemedi', 'error');
         }
+    }
 
-        const { data, error } = await SupabaseClient.getClient().from('students').insert(studentData).select().single();
-
-        if (error) throw error;
-
-        students.push(data);
-
-        closeModal('addStudentModal');
-        document.getElementById('addStudentForm').reset();
-
-        showToast(`"${displayName}" öğrenci olarak eklendi!`, 'success');
-
-        await loadDashboardData();
-        loadStudents();
-    } catch (error) {
-        console.error('Error adding student:', error);
-        showToast('Öğrenci eklenirken hata oluştu: ' + error.message, 'error');
-    } finally {
+    if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
     }
 }
 
 async function deleteStudent(studentId) {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
+    if (!confirm('Bu öğrenciyi silmek istediğinize emin misiniz?')) return;
 
-    if (!confirm(`"${student.display_name}" öğrencisini silmek istediğinize emin misiniz?`)) {
-        return;
-    }
-
-    try {
-        const { error } = await SupabaseClient.getClient().from('students').delete().eq('id', studentId);
-
-        if (error) throw error;
-
-        students = students.filter((s) => s.id !== studentId);
-
-        showToast('Öğrenci silindi', 'success');
-        await loadDashboardData();
-        loadStudents();
-    } catch (error) {
-        console.error('Error deleting student:', error);
-        showToast('Öğrenci silinemedi', 'error');
+    if (typeof StudentManager !== 'undefined') {
+        const result = await StudentManager.delete(studentId);
+        if (result.success) {
+            showToast('Öğrenci silindi', 'success');
+        } else {
+            showToast('Silme hatası', 'error');
+        }
     }
 }
 
 function printStudentList() {
-    if (!currentClassroom) {
-        showToast('Lütfen önce bir sınıf seçin', 'error');
-        return;
+    if (typeof StudentManager !== 'undefined') {
+        StudentManager.printList();
     }
-    if (students.length === 0) {
-        showToast('Yazdırılacak öğrenci listesi yok', 'warning');
-        return;
+}
+
+function generateRandomPassword() {
+    const password = typeof StudentManager !== 'undefined' ? StudentManager.generatePassword() : '123456';
+
+    const addInput = document.getElementById('studentPassword');
+    if (addInput && document.getElementById('addStudentModal').classList.contains('open')) {
+        addInput.value = password;
     }
 
-    const printWindow = window.open('', '_blank');
-    const html = `
-        <html>
-        <head>
-            <title>${currentClassroom.name} - Sınıf Listesi</title>
-            <style>
-                body { font-family: 'Segoe UI', sans-serif; padding: 40px; }
-                h1 { text-align: center; color: #111; margin-bottom: 10px; }
-                p { text-align: center; color: #666; margin-bottom: 30px; }
-                table { width: 100%; border-collapse: collapse; border: 2px solid #000; }
-                th, td { border: 1px solid #000; padding: 15px; text-align: left; font-size: 16px; }
-                th { background-color: #f0f0f0; font-weight: bold; }
-                tr:nth-child(even) { background-color: #f9f9f9; }
-                .password { font-family: monospace; font-size: 18px; font-weight: bold; letter-spacing: 2px; }
-                .no-pass { color: #999; font-style: italic; font-size: 14px; }
-                .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
-            </style>
-        </head>
-        <body>
-            <h1>${currentClassroom.name}</h1>
-            <p>Sınıf Kodu: <b>${currentClassroom.code}</b> | Öğrenci Giriş Bilgileri</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px">#</th>
-                        <th>Öğrenci Adı</th>
-                        <th>Giriş Şifresi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${students
-                        .map(
-                            (s, index) => `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${s.display_name}</td>
-                            <td>${s.password ? `<span class="password">${s.password}</span>` : '<span class="no-pass">Şifre Yok</span>'}</td>
-                        </tr>
-                    `
-                        )
-                        .join('')}
-                </tbody>
-            </table>
-            <div class="footer">
-                Yeti LAB - yeti-lab.com - ${new Date().toLocaleDateString('tr-TR')}
-            </div>
-        </body>
-        </html>
-     `;
-    printWindow.document.write(html);
-    printWindow.document.close();
-    setTimeout(() => {
-        printWindow.print();
-    }, 500);
+    const editInput = document.getElementById('editStudentPassword');
+    if (editInput && document.getElementById('editStudentModal').classList.contains('open')) {
+        editInput.value = password;
+        document.getElementById('editRemovePassword').checked = false;
+    }
+
+    return password;
 }
 
 // ==========================================
@@ -878,59 +732,44 @@ function printStudentList() {
 
 function openBulkAddModal(classroomId = null) {
     const select = document.getElementById('bulkStudentClassroom');
-    select.innerHTML =
-        '<option value="">Sınıf seçin...</option>' +
-        classrooms
-            .map(
-                (c) =>
-                    `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
-            )
-            .join('');
-
-    if (classroomId) {
-        select.value = classroomId;
+    if (select && classrooms) {
+        select.innerHTML =
+            '<option value="">Sınıf seçin...</option>' +
+            classrooms
+                .map(
+                    (c) =>
+                        `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
+                )
+                .join('');
+        if (classroomId) select.value = classroomId;
     }
 
-    resetBulkForm();
+    if (typeof resetBulkForm === 'function') resetBulkForm(); // Ensure reset
     document.getElementById('bulkAddModal').classList.add('open');
 }
 
 function previewBulkStudents() {
+    // Basic validation handled here, data processing in StudentManager could be better but let's keep UI logic here for now
     const classroomId = document.getElementById('bulkStudentClassroom').value;
     const listText = document.getElementById('bulkStudentList').value.trim();
     const generatePassword = document.getElementById('bulkGeneratePassword').checked;
 
-    if (!classroomId) {
-        showToast('Lütfen bir sınıf seçin', 'error');
-        return;
-    }
-
-    if (!listText) {
-        showToast('Lütfen öğrenci listesini girin', 'error');
+    if (!classroomId || !listText) {
+        showToast('Sınıf ve liste gerekli', 'error');
         return;
     }
 
     const lines = listText.split('\n').filter((line) => line.trim() !== '');
-
     if (lines.length === 0) {
         showToast('Geçerli isim bulunamadı', 'error');
         return;
     }
 
-    bulkStudentsData = lines.map((line) => {
-        const name = line.trim();
-        let password = null;
-
-        if (generatePassword) {
-            password = Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
-        return {
-            name,
-            password,
-            avatar: '🎓',
-        };
-    });
+    bulkStudentsData = lines.map((line) => ({
+        name: line.trim(),
+        password: generatePassword ? Math.floor(100000 + Math.random() * 900000).toString() : null,
+        avatar: '🎓',
+    }));
 
     document.getElementById('bulkCount').textContent = bulkStudentsData.length;
     const tbody = document.getElementById('bulkPreviewTable');
@@ -939,7 +778,7 @@ function previewBulkStudents() {
             (s) => `
         <tr class="bg-white dark:bg-gray-800">
             <td class="py-2 pr-2 font-medium text-gray-900 dark:text-white">${escapeHtml(s.name)}</td>
-            <td class="py-2 pr-2 font-mono text-gray-600 dark:text-gray-400">${s.password || '<span class="text-gray-300">-</span>'}</td>
+            <td class="py-2 pr-2 font-mono text-gray-600 dark:text-gray-400">${s.password || '-'}</td>
             <td class="py-2 text-2xl">${s.avatar}</td>
         </tr>
     `
@@ -958,59 +797,39 @@ function resetBulkForm() {
 }
 
 function copyBulkList() {
+    // Legacy support
     if (bulkStudentsData.length === 0) return;
-
-    const text = bulkStudentsData
-        .map((s) => {
-            if (s.password) return `${s.name}\t${s.password}`;
-            return s.name;
-        })
-        .join('\n');
-
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Liste kopyalandı (İsim + Şifre)', 'success');
-    });
+    const text = bulkStudentsData.map((s) => (s.password ? `${s.name}\t${s.password}` : s.name)).join('\n');
+    navigator.clipboard.writeText(text).then(() => showToast('Liste kopyalandı', 'success'));
 }
 
 async function saveBulkStudents() {
     const classroomId = document.getElementById('bulkStudentClassroom').value;
     const saveBtn = document.getElementById('saveBulkBtn');
 
-    if (!classroomId || bulkStudentsData.length === 0) return;
-
-    const originalText = saveBtn.innerHTML;
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span class="spinner"></span> Kaydediliyor...';
-
-    try {
+    if (typeof StudentManager !== 'undefined') {
         const studentsToInsert = bulkStudentsData.map((s) => ({
             classroom_id: classroomId,
             display_name: s.name,
             password: s.password,
             avatar_emoji: s.avatar,
             added_by_teacher: true,
-            last_active_at: new Date().toISOString(),
         }));
 
-        const { data, error } = await SupabaseClient.getClient().from('students').insert(studentsToInsert).select();
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
 
-        if (error) throw error;
+        const result = await StudentManager.bulkAdd(studentsToInsert);
 
-        if (data) {
-            students.push(...data);
-        }
-
-        showToast(`${data.length} öğrenci başarıyla eklendi!`, 'success');
-        closeModal('bulkAddModal');
-
-        await loadDashboardData();
-        loadStudents();
-    } catch (error) {
-        console.error('Bulk save error:', error);
-        showToast('Kaydetme başarısız: ' + error.message, 'error');
-    } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = originalText;
+
+        if (result.success) {
+            closeModal('bulkAddModal');
+            showToast(`${result.data.length} öğrenci eklendi`, 'success');
+        } else {
+            showToast('Ekleme hatası', 'error');
+        }
     }
 }
 
@@ -1019,45 +838,51 @@ async function saveBulkStudents() {
 // ==========================================
 
 function selectEditAvatar(emoji) {
-    editSelectedAvatarEmoji = emoji;
-    const input = document.getElementById('editSelectedAvatar');
-    if (input) input.value = emoji;
+    if (typeof StudentManager !== 'undefined') {
+        // UI logic remains here
+        editSelectedAvatarEmoji = emoji;
+        const input = document.getElementById('editSelectedAvatar');
+        if (input) input.value = emoji;
 
-    document.querySelectorAll('.edit-avatar-btn').forEach((btn) => {
-        btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
-        btn.classList.add('border-gray-200');
-    });
-    const selectedBtn = document.querySelector(`.edit-avatar-btn[data-emoji="${emoji}"]`);
-    if (selectedBtn) {
-        selectedBtn.classList.remove('border-gray-200');
-        selectedBtn.classList.add('selected', 'border-theme', 'bg-theme/10');
+        document.querySelectorAll('.edit-avatar-btn').forEach((btn) => {
+            btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
+            btn.classList.add('border-gray-200');
+        });
+        const selectedBtn = document.querySelector(`.edit-avatar-btn[data-emoji="${emoji}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.remove('border-gray-200');
+            selectedBtn.classList.add('selected', 'border-theme', 'bg-theme/10');
+        }
     }
 }
 
 function openEditStudentModal(studentId) {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
+    if (typeof StudentManager !== 'undefined') {
+        // We need existing student data. StudentManager has it.
+        const student = StudentManager.students.find((s) => s.id === studentId);
+        if (!student) return;
 
-    document.getElementById('editStudentId').value = studentId;
-    document.getElementById('editStudentName').value = student.display_name;
-    document.getElementById('editStudentPassword').value = '';
-    document.getElementById('editRemovePassword').checked = false;
+        document.getElementById('editStudentId').value = studentId;
+        document.getElementById('editStudentName').value = student.display_name;
+        document.getElementById('editStudentPassword').value = '';
+        document.getElementById('editRemovePassword').checked = false;
 
-    const passwordStatus = document.getElementById('editPasswordStatus');
-    if (student.password) {
-        passwordStatus.textContent = 'Şifre Var';
-        passwordStatus.className = 'text-xs font-normal px-2 py-0.5 rounded-full bg-green-100 text-green-600';
-    } else {
-        passwordStatus.textContent = 'Şifre Yok';
-        passwordStatus.className = 'text-xs font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-600';
+        const passwordStatus = document.getElementById('editPasswordStatus');
+        if (student.password) {
+            passwordStatus.textContent = 'Şifre Var';
+            passwordStatus.className = 'text-xs font-normal px-2 py-0.5 rounded-full bg-green-100 text-green-600';
+        } else {
+            passwordStatus.textContent = 'Şifre Yok';
+            passwordStatus.className = 'text-xs font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-600';
+        }
+
+        editSelectedAvatarEmoji = student.avatar_emoji || '🎓';
+        const input = document.getElementById('editSelectedAvatar');
+        if (input) input.value = editSelectedAvatarEmoji;
+        selectEditAvatar(editSelectedAvatarEmoji);
+
+        document.getElementById('editStudentModal').classList.add('open');
     }
-
-    editSelectedAvatarEmoji = student.avatar_emoji || '🎓';
-    const input = document.getElementById('editSelectedAvatar');
-    if (input) input.value = editSelectedAvatarEmoji;
-    selectEditAvatar(editSelectedAvatarEmoji);
-
-    document.getElementById('editStudentModal').classList.add('open');
 }
 
 async function saveStudentEdit(event) {
@@ -1073,46 +898,29 @@ async function saveStudentEdit(event) {
     const avatar = document.getElementById('editSelectedAvatar').value;
 
     if (!displayName) {
-        showToast('Öğrenci adı gerekli', 'error');
+        showToast('İsim gerekli', 'error');
         return;
     }
 
+    const updateData = { display_name: displayName, avatar_emoji: avatar };
+    if (removePassword) updateData.password = null;
+    else if (newPassword) updateData.password = newPassword;
+
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML =
-        '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Kaydediliyor...';
 
-    try {
-        const updateData = {
-            display_name: displayName,
-            avatar_emoji: avatar,
-        };
-
-        if (removePassword) {
-            updateData.password = null;
-        } else if (newPassword) {
-            updateData.password = newPassword;
+    if (typeof StudentManager !== 'undefined') {
+        const result = await StudentManager.update(studentId, updateData);
+        if (result.success) {
+            closeModal('editStudentModal');
+            showToast('Güncellendi', 'success');
+        } else {
+            showToast('Güncelleme hatası', 'error');
         }
-
-        const { error } = await SupabaseClient.getClient().from('students').update(updateData).eq('id', studentId);
-
-        if (error) throw error;
-
-        const studentIndex = students.findIndex((s) => s.id === studentId);
-        if (studentIndex !== -1) {
-            students[studentIndex] = { ...students[studentIndex], ...updateData };
-        }
-
-        closeModal('editStudentModal');
-        showToast('Öğrenci güncellendi', 'success');
-        loadStudents();
-    } catch (error) {
-        console.error('Error updating student:', error);
-        showToast('Öğrenci güncellenemedi: ' + error.message, 'error');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
     }
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
 }
 
 // ==========================================

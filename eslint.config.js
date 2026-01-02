@@ -40,6 +40,7 @@ export default [
                 QuizEditor: 'readonly',
                 ComponentManager: 'readonly',
                 ClassroomManager: 'readonly',
+                StudentManager: 'readonly',
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',
