@@ -56,6 +56,10 @@ const Profile = {
         }
     },
 
+    goHome() {
+        window.location.href = 'index.html';
+    },
+
     // --- WIZARD SUB-MODULE ---
     Wizard: {
         step: 1,
