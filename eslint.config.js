@@ -33,6 +33,7 @@ export default [
                 ProfileEditor: 'readonly',
                 CourseLoader: 'readonly',
                 Chart: 'readonly',
+                Utils: 'readonly',
                 // Test globals
                 describe: 'readonly',
                 it: 'readonly',

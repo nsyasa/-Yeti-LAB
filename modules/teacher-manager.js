@@ -196,11 +196,8 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
-}
+// Eski formatDate fonksiyonu modules/utils.js'e taşındı.
+// Kullanım: Utils.formatDate(dateString);
 
 function formatRelativeTime(dateString) {
     if (!dateString) return 'Hiç';
@@ -216,7 +213,7 @@ function formatRelativeTime(dateString) {
     if (minutes < 60) return `${minutes} dk önce`;
     if (hours < 24) return `${hours} saat önce`;
     if (days < 7) return `${days} gün önce`;
-    return formatDate(dateString);
+    return Utils.formatDate(dateString);
 }
 
 // ==========================================
@@ -366,7 +363,7 @@ async function loadClassrooms() {
                 <div class="code-box text-xl mb-4" onclick="copyCode(this)">${classroom.code}</div>
                 <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <span>👨‍🎓 ${studentCount} öğrenci</span>
-                    <span>${formatDate(classroom.created_at)}</span>
+                    <span>${Utils.formatDate(classroom.created_at)}</span>
                 </div>
                 <div class="flex gap-2 mb-3">
                     <button onclick="viewClassroom('${classroom.id}')" 
@@ -1487,8 +1484,8 @@ window.toggleSidebar = toggleSidebar;
 window.toggleTheme = toggleTheme;
 window.applyTheme = applyTheme;
 window.showToast = showToast;
-window.escapeHtml = escapeHtml;
-window.formatDate = formatDate;
+window.escapeHtml = Utils.escapeHtml;
+window.formatDate = Utils.formatDate;
 window.formatRelativeTime = formatRelativeTime;
 window.loadDashboardData = loadDashboardData;
 window.loadClassrooms = loadClassrooms;
