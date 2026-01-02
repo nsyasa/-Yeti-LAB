@@ -321,87 +321,26 @@ async function loadDashboardData() {
         if (elTotalStudents) elTotalStudents.textContent = totalStudents;
         if (elActiveToday) elActiveToday.textContent = activeToday;
         if (elCompletedLessons) elCompletedLessons.textContent = '0'; // Will be updated by loadProgress if needed
+
+        // Initialize Classroom Manager
+        if (typeof ClassroomManager !== 'undefined') {
+            ClassroomManager.init(currentUser, classrooms, {
+                onStateChange: () => {
+                    // Refresh data when manager changes something
+                    loadDashboardData();
+                },
+            });
+        }
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         showToast('Veri yüklenirken hata oluştu', 'error');
     }
 }
 
-async function loadClassrooms() {
-    const container = document.getElementById('classroomsList');
-    if (!container) return;
-
-    if (classrooms.length === 0) {
-        container.innerHTML = `
-            <div class="col-span-full">
-                <div class="empty-state">
-                    <div class="icon">🏫</div>
-                    <p class="text-lg mb-2">Henüz sınıf oluşturmadınız</p>
-                    <button onclick="openCreateClassroomModal()" 
-                        class="mt-4 px-6 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
-                        İlk Sınıfını Oluştur
-                    </button>
-                </div>
-            </div>
-        `;
-        return;
+function loadClassrooms() {
+    if (typeof ClassroomManager !== 'undefined') {
+        ClassroomManager.renderList();
     }
-
-    container.innerHTML = classrooms
-        .map((classroom) => {
-            const studentCount = classroom.students?.[0]?.count || 0;
-            const requiresPassword = classroom.requires_password ? '🔒' : '';
-            return `
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h4 class="font-bold text-lg text-gray-800 dark:text-white">${escapeHtml(classroom.name)} ${requiresPassword}</h4>
-                        <p class="text-sm text-gray-500">${classroom.description || 'Açıklama yok'}</p>
-                    </div>
-                    <span class="text-2xl">${classroom.is_active ? '✅' : '⏸️'}</span>
-                </div>
-                <div class="code-box text-xl mb-4" onclick="copyCode(this)">${classroom.code}</div>
-                <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span>👨‍🎓 ${studentCount} öğrenci</span>
-                    <span>${Utils.formatDate(classroom.created_at)}</span>
-                </div>
-                <div class="flex gap-2 mb-3">
-                    <button onclick="viewClassroom('${classroom.id}')" 
-                        class="flex-1 px-3 py-2 bg-theme/10 text-theme rounded-lg font-medium hover:bg-theme/20 transition-colors">
-                        Görüntüle
-                    </button>
-                    <button onclick="openAddStudentModal('${classroom.id}')"
-                        class="px-3 py-2 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors"
-                        title="Öğrenci Ekle">
-                        ➕👨‍🎓
-                    </button>
-                    <button onclick="openBulkAddModal('${classroom.id}')"
-                        class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors"
-                        title="Toplu Ekle">
-                        📋
-                    </button>
-                    <button onclick="openClassroomSettings('${classroom.id}')"
-                        class="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
-                        title="Sınıf Ayarları">
-                        ⚙️
-                    </button>
-                </div>
-                <div class="flex gap-2 border-t border-gray-100 dark:border-gray-700 pt-3">
-                    <button onclick="toggleClassroom('${classroom.id}', ${!classroom.is_active})"
-                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
-                        title="${classroom.is_active ? 'Sınıfı Duraklat' : 'Sınıfı Aktifleştir'}">
-                        ${classroom.is_active ? '⏸️ Duraklat' : '▶️ Aktifleştir'}
-                    </button>
-                    <button onclick="deleteClassroom('${classroom.id}')"
-                        class="px-3 py-2 text-sm border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
-                        title="Sınıfı Sil">
-                        🗑️ Sil
-                    </button>
-                </div>
-            </div>
-        `;
-        })
-        .join('');
 }
 
 async function loadStudents() {
@@ -654,49 +593,19 @@ async function createClassroom(event) {
         return;
     }
 
-    // Show loading state
-    const originalBtnText = submitBtn?.innerHTML;
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML =
-            '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Oluşturuluyor...';
-    }
+    if (typeof ClassroomManager !== 'undefined') {
+        const result = await ClassroomManager.create(name, description, submitBtn);
 
-    try {
-        const { data, error } = await SupabaseClient.getClient()
-            .from('classrooms')
-            .insert({
-                teacher_id: currentUser.id,
-                name: name,
-                description: description || null,
-            })
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        // Update local state
-        classrooms.push(data);
-
-        // Close modal and reset form
-        closeModal('createClassroomModal');
-        document.getElementById('createClassroomForm').reset();
-
-        // Show success
-        showToast(`"${name}" sınıfı oluşturuldu! Kod: ${data.code}`, 'success');
-
-        // Refresh view
-        await loadDashboardData();
-        loadClassrooms();
-    } catch (error) {
-        console.error('Error creating classroom:', error);
-        showToast('Sınıf oluşturulurken hata oluştu', 'error');
-    } finally {
-        // Reset button state
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText || 'Oluştur';
+        if (result.success) {
+            closeModal('createClassroomModal');
+            document.getElementById('createClassroomForm').reset();
+            showToast(`"${result.data.name}" sınıfı oluşturuldu! Kod: ${result.data.code}`, 'success');
+            // Data refresh is handled via onStateChange callback in init
+        } else {
+            showToast('Sınıf oluşturulurken hata oluştu', 'error');
         }
+    } else {
+        console.error('ClassroomManager not loaded');
     }
 }
 
@@ -710,23 +619,13 @@ function viewClassroom(classroomId) {
 }
 
 async function toggleClassroom(classroomId, isActive) {
-    try {
-        const { error } = await SupabaseClient.getClient()
-            .from('classrooms')
-            .update({ is_active: isActive })
-            .eq('id', classroomId);
-
-        if (error) throw error;
-
-        // Update local state
-        const classroom = classrooms.find((c) => c.id === classroomId);
-        if (classroom) classroom.is_active = isActive;
-
-        showToast(isActive ? 'Sınıf aktifleştirildi' : 'Sınıf duraklatıldı', 'success');
-        loadClassrooms();
-    } catch (error) {
-        console.error('Error toggling classroom:', error);
-        showToast('İşlem başarısız', 'error');
+    if (typeof ClassroomManager !== 'undefined') {
+        const result = await ClassroomManager.toggle(classroomId, isActive);
+        if (result.success) {
+            showToast(isActive ? 'Sınıf aktifleştirildi' : 'Sınıf duraklatıldı', 'success');
+        } else {
+            showToast('İşlem başarısız', 'error');
+        }
     }
 }
 
@@ -742,20 +641,13 @@ async function deleteClassroom(classroomId) {
         return;
     }
 
-    try {
-        const { error } = await SupabaseClient.getClient().from('classrooms').delete().eq('id', classroomId);
-
-        if (error) throw error;
-
-        // Update local state
-        classrooms = classrooms.filter((c) => c.id !== classroomId);
-
-        showToast('Sınıf silindi', 'success');
-        await loadDashboardData();
-        loadClassrooms();
-    } catch (error) {
-        console.error('Error deleting classroom:', error);
-        showToast('Sınıf silinirken hata oluştu', 'error');
+    if (typeof ClassroomManager !== 'undefined') {
+        const result = await ClassroomManager.delete(classroomId);
+        if (result.success) {
+            showToast('Sınıf silindi', 'success');
+        } else {
+            showToast('Sınıf silinirken hata oluştu', 'error');
+        }
     }
 }
 

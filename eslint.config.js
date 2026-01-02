@@ -39,6 +39,7 @@ export default [
                 HotspotEditor: 'readonly',
                 QuizEditor: 'readonly',
                 ComponentManager: 'readonly',
+                ClassroomManager: 'readonly',
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',
