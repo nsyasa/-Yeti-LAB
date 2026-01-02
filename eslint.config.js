@@ -35,6 +35,7 @@ export default [
                 Chart: 'readonly',
                 Utils: 'readonly',
                 Validators: 'readonly',
+                Constants: 'readonly',
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',

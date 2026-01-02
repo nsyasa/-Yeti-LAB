@@ -4,7 +4,9 @@
  */
 
 const Profile = {
-    avatars: ['👨‍🏫', '👩‍🏫', '🎓', '🚀', '⭐', '🧠', '🤖', '💻', '🦊', '🦁', '🐼', '🐨', '🦄', '🐲', '⚡', '🔥'],
+    avatars: window.Constants
+        ? Constants.AVATARS
+        : ['👨‍🎓', '👩‍🎓', '👨‍🏫', '👩‍🏫', '👦', '👧', '🧑', '🤖', '🐱', '🐶', '🚀', '⭐'],
 
     // State
     currentUser: null, // Supabase user or Student session object
