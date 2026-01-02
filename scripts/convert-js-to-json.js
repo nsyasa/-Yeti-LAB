@@ -1,11 +1,11 @@
 /**
  * convert-js-to-json.js
- * 
+ *
  * Bu script data/ klasöründeki JS dosyalarını JSON formatına dönüştürür.
  * Supabase import scripti için hazırlık yapar.
- * 
+ *
  * Kullanım: node scripts/convert-js-to-json.js
- * 
+ *
  * Çıktı: scripts/exports/ klasörüne JSON dosyaları oluşturur
  */
 
@@ -27,20 +27,14 @@ if (!fs.existsSync(exportsDir)) {
 }
 
 // Files to convert
-const jsFiles = [
-    'arduino.js',
-    'microbit.js',
-    'scratch.js',
-    'mblock.js',
-    'appinventor.js'
-];
+const jsFiles = ['arduino.js', 'microbit.js', 'scratch.js', 'mblock.js', 'appinventor.js'];
 
 // Mock window object for evaluation
 function createMockWindow() {
     return {
         courseData: {},
         YetiLab: { courseData: {} },
-        ArduinoCity: {}
+        ArduinoCity: {},
     };
 }
 
@@ -58,7 +52,7 @@ function convertFile(fileName) {
 
     // Create a sandbox with mock window
     const sandbox = {
-        window: createMockWindow()
+        window: createMockWindow(),
     };
 
     // Also add direct courseData reference
@@ -71,7 +65,8 @@ function convertFile(fileName) {
 
         // Extract course data
         const courseName = fileName.replace('.js', '');
-        let courseData = sandbox.window.courseData[courseName] ||
+        const courseData =
+            sandbox.window.courseData[courseName] ||
             sandbox.courseData[courseName] ||
             sandbox.window.YetiLab?.courseData?.[courseName];
 
@@ -95,9 +90,8 @@ function convertFile(fileName) {
             title: courseData.title,
             phasesCount: data.phases?.length || 0,
             projectsCount: data.projects?.length || 0,
-            componentsCount: Object.keys(data.componentInfo || {}).length
+            componentsCount: Object.keys(data.componentInfo || {}).length,
         };
-
     } catch (error) {
         console.error(`❌ Hata (${fileName}):`, error.message);
         return null;
@@ -124,7 +118,7 @@ console.log('─'.repeat(60));
 if (results.length === 0) {
     console.log('❌ Hiçbir dosya dönüştürülemedi!');
 } else {
-    results.forEach(r => {
+    results.forEach((r) => {
         console.log(`✅ ${r.title}`);
         console.log(`   📁 ${r.file}`);
         console.log(`   📚 ${r.phasesCount} bölüm, ${r.projectsCount} proje, ${r.componentsCount} bileşen`);

@@ -11,7 +11,7 @@ const UI = {
         document.getElementById('project-view').classList.add('hidden');
 
         const container = document.getElementById('course-list');
-        container.innerHTML = "";
+        container.innerHTML = '';
 
         // Check if user is logged in as student for progress display
         const isStudent = typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent;
@@ -92,7 +92,7 @@ const UI = {
             // Store original content
             UI._loadingStates.set(btnId, {
                 content: originalContent || btn.innerHTML,
-                disabled: btn.disabled
+                disabled: btn.disabled,
             });
 
             btn.disabled = true;
@@ -120,7 +120,7 @@ const UI = {
 
     /**
      * Set loading state for an action
-     * @param {string} actionId - Unique action identifier  
+     * @param {string} actionId - Unique action identifier
      * @param {boolean} loading - Whether action is loading
      */
     setActionLoading: (actionId, loading) => {
@@ -167,7 +167,7 @@ const UI = {
             // Add overlay with spinner
             const overlay = document.createElement('div');
             overlay.className = 'loading-overlay';
-            overlay.innerHTML = `<span class="pulse-loading text-4xl">⏳</span>`;
+            overlay.innerHTML = '<span class="pulse-loading text-4xl">⏳</span>';
             card.style.position = 'relative';
             card.appendChild(overlay);
         } else {
@@ -197,7 +197,11 @@ const UI = {
         if (window.Toast) {
             if (retryAction) {
                 Toast.errorWithRetry(errorMessage, () => {
-                    try { eval(retryAction); } catch (e) { console.error(e); }
+                    try {
+                        eval(retryAction);
+                    } catch (e) {
+                        console.error(e);
+                    }
                 });
             } else {
                 Toast.error(errorMessage);
@@ -222,7 +226,7 @@ const UI = {
         document.getElementById('project-view').classList.add('hidden');
 
         const container = document.getElementById('dashboard-content');
-        container.innerHTML = "";
+        container.innerHTML = '';
 
         if (phases.length === 0) {
             container.innerHTML = `<div class="text-center text-gray-500 py-10">${I18n.t('no_content')}</div>`;
@@ -230,12 +234,13 @@ const UI = {
         }
 
         phases.forEach((phase, index) => {
-            const phaseProjects = projects.filter(p => p.phase === index);
+            const phaseProjects = projects.filter((p) => p.phase === index);
             if (phaseProjects.length === 0) return;
 
             const isIntro = index === 0;
             const fixedName = isIntro ? I18n.t('intro') : `${I18n.t('episode')} ${index}`;
-            const pIcon = phase.icon || (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '📂');
+            const pIcon =
+                phase.icon || (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '📂');
             const pDesc = phase.description || '';
 
             let sectionHTML = `
@@ -246,24 +251,29 @@ const UI = {
                 </div>
                 <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" style="-webkit-overflow-scrolling: touch;">`;
 
-            phaseProjects.forEach(p => {
+            phaseProjects.forEach((p) => {
                 const isComplete = progressModule.isComplete(p.id);
-                const borderColor = phase.color === 'green' ? 'border-green-400' : (phase.color === 'blue' ? 'border-blue-400' : 'border-purple-400');
+                const borderColor =
+                    phase.color === 'green'
+                        ? 'border-green-400'
+                        : phase.color === 'blue'
+                          ? 'border-blue-400'
+                          : 'border-purple-400';
 
                 sectionHTML += `
                     <div onclick="app.loadProject(${p.id})" 
                          class="flex-shrink-0 w-32 sm:w-36 cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border-l-4 ${borderColor} p-3 group relative hover:scale-105">
-                        ${isComplete ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white text-xs rounded-full flex items-center justify-center z-10">✓</div>` : ''}
+                        ${isComplete ? '<div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white text-xs rounded-full flex items-center justify-center z-10">✓</div>' : ''}
                         <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">${p.icon}</div>
                         <h3 class="font-bold text-gray-800 text-sm leading-tight group-hover:text-theme transition-colors line-clamp-2">${p.title}</h3>
                         <div class="flex items-center justify-between mt-2">
                             <span class="text-xs text-gray-400">#${p.id}</span>
-                            ${p.simType !== 'none' ? `<span class="text-xs text-blue-500">🔬</span>` : ''}
+                            ${p.simType !== 'none' ? '<span class="text-xs text-blue-500">🔬</span>' : ''}
                         </div>
                     </div>
                 `;
             });
-            sectionHTML += `</div>`;
+            sectionHTML += '</div>';
             container.innerHTML += sectionHTML;
         });
     },
@@ -282,7 +292,7 @@ const UI = {
             } else {
                 text.innerText = '🔐 Giriş yap';
                 text.style.cursor = 'pointer';
-                text.onclick = () => window.location.href = 'auth.html';
+                text.onclick = () => (window.location.href = 'auth.html');
             }
         }
     },
@@ -290,21 +300,23 @@ const UI = {
     // --- Sidebar ---
     renderSidebar: (phases, projects, currentProjectId) => {
         const container = document.getElementById('sidebar-content');
-        container.innerHTML = "";
+        container.innerHTML = '';
 
         if (!phases || phases.length === 0) return;
 
         phases.forEach((phase, index) => {
-            const phaseProjects = projects.filter(p => p.phase === index);
+            const phaseProjects = projects.filter((p) => p.phase === index);
             if (phaseProjects.length === 0) return;
 
             // Header
             container.innerHTML += `<div class="font-bold text-gray-500 uppercase text-xs mt-4 mb-2 px-2 tracking-wider">${phase.title}</div>`;
 
             // List
-            phaseProjects.forEach(p => {
-                const isActive = (currentProjectId === p.id);
-                const activeClass = isActive ? "active-lesson bg-theme-light text-theme font-bold border-r-4 border-theme" : "text-gray-600 hover:bg-gray-50 border-r-4 border-transparent";
+            phaseProjects.forEach((p) => {
+                const isActive = currentProjectId === p.id;
+                const activeClass = isActive
+                    ? 'active-lesson bg-theme-light text-theme font-bold border-r-4 border-theme'
+                    : 'text-gray-600 hover:bg-gray-50 border-r-4 border-transparent';
 
                 container.innerHTML += `
                 <div onclick="app.loadProject(${p.id}); app.toggleSidebar();" 
@@ -378,8 +390,8 @@ const UI = {
 
         // Materials
         let materialsHTML = '<div class="space-y-4">';
-        project.materials.forEach(m => {
-            const foundCompKey = Object.keys(componentInfo).find(key => key === m || componentInfo[key].name === m);
+        project.materials.forEach((m) => {
+            const foundCompKey = Object.keys(componentInfo).find((key) => key === m || componentInfo[key].name === m);
             if (foundCompKey) {
                 const c = componentInfo[foundCompKey];
                 const compImgSrc = resolveImg(c.imgFileName);
@@ -465,7 +477,8 @@ const UI = {
                         <p class="text-xs text-gray-400 mt-2">${I18n.t('msg_progress_saved')}</p>
                     </div>`;
 
-                if (!quiz) return `<div class="text-center py-10 text-gray-400">Bu ders için henüz test eklenmemiş.</div>${btnHTML}`;
+                if (!quiz)
+                    return `<div class="text-center py-10 text-gray-400">Bu ders için henüz test eklenmemiş.</div>${btnHTML}`;
 
                 let quizHTML = `<div class="fade-in space-y-6">
                     <h3 class="font-bold text-xl text-theme mb-4">${I18n.t('header_quiz')}</h3>`;
@@ -475,20 +488,24 @@ const UI = {
                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 quiz-question" id="q-${idx}">
                             <p class="font-bold text-gray-800 mb-3">${idx + 1}. ${q.q}</p>
                             <div class="space-y-2">
-                                ${q.options.map((opt, optIdx) => `
+                                ${q.options
+                                    .map(
+                                        (opt, optIdx) => `
                                     <button onclick="app.checkAnswer(${idx}, ${optIdx}, ${q.answer}, this)" 
                                             class="w-full text-left p-3 rounded bg-white border border-gray-200 hover:bg-gray-100 transition flex items-center group">
                                         <span class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center mr-3 text-xs font-bold bg-gray-50 group-hover:bg-theme group-hover:text-white transition-colors">${['A', 'B', 'C', 'D'][optIdx]}</span>
                                         ${opt}
                                     </button>
-                                `).join('')}
+                                `
+                                    )
+                                    .join('')}
                             </div>
                             <div class="quiz-feedback hidden mt-3 p-3 rounded font-bold text-sm"></div>
                         </div>`;
                 });
                 quizHTML += `</div>${btnHTML}`;
                 return quizHTML;
-            })()
+            })(),
         };
 
         // Construct final content map
@@ -496,23 +513,30 @@ const UI = {
             mission: baseContent.mission,
             materials: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.materials || 'Devre Elemanları'}</h3>${materialsHTML}</div>`,
             circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit || 'Bağlantı Şeması'}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`,
-            code: headers.code ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>` : baseContent.code,
+            code: headers.code
+                ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`
+                : baseContent.code,
 
             // Aliases
-            design: headers.circuit ? `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit}</h3>${circHTML}<p>${project.circuit_desc}</p></div>` : null,
-            blocks: headers.code ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code || 'Blok Kodları'}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>` : null,
+            design: headers.circuit
+                ? `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`
+                : null,
+            blocks: headers.code
+                ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code || 'Blok Kodları'}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`
+                : null,
 
             challenge: baseContent.challenge,
             tip: baseContent.tip,
-            quiz: baseContent.quiz
+            quiz: baseContent.quiz,
         };
 
         // Custom Mappings
         if (config.mapping) {
-            Object.keys(config.mapping).forEach(key => {
+            Object.keys(config.mapping).forEach((key) => {
                 const target = config.mapping[key];
                 if (key === 'blocks' && !content.blocks) {
-                    content[key] = `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('tab_blocks')}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`;
+                    content[key] =
+                        `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('tab_blocks')}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`;
                 } else if (key === 'design' && !content.design) {
                     content[key] = content.circuit;
                 }
@@ -521,27 +545,33 @@ const UI = {
 
         // Filter hidden tabs
         if (project.hiddenTabs && Array.isArray(project.hiddenTabs)) {
-            tabs = tabs.filter(t => !project.hiddenTabs.includes(t.id));
+            tabs = tabs.filter((t) => !project.hiddenTabs.includes(t.id));
         }
 
         // Render Buttons
-        btnContainer.innerHTML = tabs.map(t => {
-            // Translate internal tab names if we have keys for them. 
-            // This logic assumes tab ids (mission, materials) match dictionary keys (tab_mission, tab_materials)
-            const labelKey = 'tab_' + t.id;
-            const label = I18n.translations['tr'][labelKey] ? I18n.t(labelKey) : t.label;
+        btnContainer.innerHTML = tabs
+            .map((t) => {
+                // Translate internal tab names if we have keys for them.
+                // This logic assumes tab ids (mission, materials) match dictionary keys (tab_mission, tab_materials)
+                const labelKey = 'tab_' + t.id;
+                const label = I18n.translations['tr'][labelKey] ? I18n.t(labelKey) : t.label;
 
-            return `<button class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap" data-tab="${t.id}">${label}</button>`;
-        }).join('');
+                return `<button class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap" data-tab="${t.id}">${label}</button>`;
+            })
+            .join('');
 
         const btns = document.querySelectorAll('.tab-btn');
         const clickHandler = (b) => {
-            btns.forEach(t => t.className = "tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent");
-            b.className = "tab-btn px-4 py-3 text-sm font-bold text-theme border-b-2 border-theme";
+            btns.forEach(
+                (t) =>
+                    (t.className =
+                        'tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent')
+            );
+            b.className = 'tab-btn px-4 py-3 text-sm font-bold text-theme border-b-2 border-theme';
             area.innerHTML = content[b.dataset.tab] || I18n.t('no_content');
         };
 
-        btns.forEach(b => b.onclick = () => clickHandler(b));
+        btns.forEach((b) => (b.onclick = () => clickHandler(b)));
 
         // Click first
         if (btns.length > 0) clickHandler(btns[0]);
@@ -605,14 +635,19 @@ const UI = {
         area.classList.remove('hidden');
         info.classList.remove('hidden');
 
-        document.getElementById('sim-title').innerHTML = `<span class="mr-2">🎯</span> ${I18n.t('sim_interactive_img')}`;
+        document.getElementById('sim-title').innerHTML =
+            `<span class="mr-2">🎯</span> ${I18n.t('sim_interactive_img')}`;
         document.getElementById('sim-badge').innerText = I18n.t('sim_discover');
 
-        const imgPath = project.circuitImage ?
-            (project.circuitImage.startsWith('img/') ? project.circuitImage : `img/${project.circuitImage}`) :
-            `img/devre${project.id}.jpg`;
+        const imgPath = project.circuitImage
+            ? project.circuitImage.startsWith('img/')
+                ? project.circuitImage
+                : `img/${project.circuitImage}`
+            : `img/devre${project.id}.jpg`;
 
-        const hotspotsHtml = (project.hotspots || []).map((hs, i) => `
+        const hotspotsHtml = (project.hotspots || [])
+            .map(
+                (hs, i) => `
             <div class="absolute w-8 h-8 bg-orange-500/80 border-2 border-white rounded-full shadow-lg flex items-center justify-center text-sm text-white font-bold cursor-pointer hover:bg-orange-600 hover:scale-110 transition-all z-10"
                 style="left: calc(${hs.x}% - 16px); top: calc(${hs.y}% - 16px);"
                 onmouseover="UI.showInfo('${(hs.desc || '').replace(/'/g, "\\'")}', '${hs.name.replace(/'/g, "\\'")}')"
@@ -620,7 +655,9 @@ const UI = {
                 title="${hs.name}">
                 ${i + 1}
             </div>
-        `).join('');
+        `
+            )
+            .join('');
 
         area.innerHTML = `
             <div class="relative w-full h-full bg-gray-100 flex items-center justify-center">
@@ -630,7 +667,7 @@ const UI = {
             </div>`;
 
         UI.showInfo(I18n.t('exp_hotspot_msg'), I18n.t('sim_discover'));
-    }
+    },
 };
 
 window.UI = UI;

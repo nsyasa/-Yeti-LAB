@@ -28,28 +28,29 @@ Yeti LAB, öğrencilere Arduino, Micro:bit, Scratch, mBlock ve App Inventor gibi
 
 **Canlı Site:** https://nsyasa.github.io/-Yeti-LAB/
 
-| Sayfa | Link |
-|-------|------|
-| Ana Sayfa | [index.html](https://nsyasa.github.io/-Yeti-LAB/) |
-| Giriş | [auth.html](https://nsyasa.github.io/-Yeti-LAB/auth.html) |
+| Sayfa           | Link                                                            |
+| --------------- | --------------------------------------------------------------- |
+| Ana Sayfa       | [index.html](https://nsyasa.github.io/-Yeti-LAB/)               |
+| Giriş           | [auth.html](https://nsyasa.github.io/-Yeti-LAB/auth.html)       |
 | Öğretmen Paneli | [teacher.html](https://nsyasa.github.io/-Yeti-LAB/teacher.html) |
 
 ---
 
 ## 🛠️ Teknolojiler
 
-| Teknoloji | Kullanım |
-|-----------|----------|
-| **HTML/CSS/JS** | Frontend |
-| **Tailwind CSS** | Styling |
-| **Supabase** | Backend (Auth, Database, Storage) |
-| **GitHub Pages** | Hosting |
+| Teknoloji        | Kullanım                          |
+| ---------------- | --------------------------------- |
+| **HTML/CSS/JS**  | Frontend                          |
+| **Tailwind CSS** | Styling                           |
+| **Supabase**     | Backend (Auth, Database, Storage) |
+| **GitHub Pages** | Hosting                           |
 
 ---
 
 ## 📦 Kurulum
 
 ### Gereksinimler
+
 - Node.js 18+
 - npm veya yarn
 
@@ -99,11 +100,13 @@ Tarayıcıda `http://localhost:3000` adresini açın.
 ## 🎓 Kullanım
 
 ### Öğrenci Olarak
+
 1. Öğretmeninizden **sınıf kodunu** alın
 2. [Giriş sayfası](https://nsyasa.github.io/-Yeti-LAB/auth.html)'ndan kodu girin
 3. İsminizi yazın ve derslere başlayın!
 
 ### Öğretmen Olarak
+
 1. Google veya GitHub ile giriş yapın
 2. [Öğretmen paneli](https://nsyasa.github.io/-Yeti-LAB/teacher.html)'nden sınıf oluşturun
 3. Sınıf kodunu öğrencilerinizle paylaşın

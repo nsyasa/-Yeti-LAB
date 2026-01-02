@@ -82,7 +82,7 @@ const ThemeManager = {
     toggle() {
         const current = this.getCurrentTheme();
         this.setTheme(current === 'dark' ? 'light' : 'dark');
-    }
+    },
 };
 
 // Auto-initialize on DOMContentLoaded

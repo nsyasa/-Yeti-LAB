@@ -10,7 +10,7 @@ export const COURSE_CONFIGS = {
         description: 'Kapsamlı Arduino Eğitimi',
         theme_color: '#00979D',
         icon: '⚡',
-        dataFile: 'data/arduino.js'
+        dataFile: 'data/arduino.js',
     },
     microbit: {
         slug: 'microbit',
@@ -18,7 +18,7 @@ export const COURSE_CONFIGS = {
         description: 'Eğlenceli ve Kolay Başlangıç',
         theme_color: '#00ED00',
         icon: '📟',
-        dataFile: 'data/microbit.js'
+        dataFile: 'data/microbit.js',
     },
     scratch: {
         slug: 'scratch',
@@ -26,7 +26,7 @@ export const COURSE_CONFIGS = {
         description: 'Kendi Oyununu Yap',
         theme_color: '#FF9F1C',
         icon: '🐱',
-        dataFile: 'data/scratch.js'
+        dataFile: 'data/scratch.js',
     },
     mblock: {
         slug: 'mblock',
@@ -34,7 +34,7 @@ export const COURSE_CONFIGS = {
         description: 'Blok Tabanlı Arduino Kodlama',
         theme_color: '#0078D7',
         icon: '🤖',
-        dataFile: 'data/mblock.js'
+        dataFile: 'data/mblock.js',
     },
     appinventor: {
         slug: 'appinventor',
@@ -42,8 +42,8 @@ export const COURSE_CONFIGS = {
         description: 'Mobil Uygulama Geliştirme',
         theme_color: '#8BC34A',
         icon: '📱',
-        dataFile: 'data/appinventor.js'
-    }
+        dataFile: 'data/appinventor.js',
+    },
 };
 
 // Yeni kurs eklemek için yukarıya config ekleyip

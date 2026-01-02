@@ -160,10 +160,7 @@ h6,
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.1),
-            transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     transform: rotate(45deg) translateX(-100%);
     transition: transform 0.6s;
     pointer-events: none;
@@ -206,8 +203,8 @@ h6,
 /* Body font is now defined in Typography System above */
 
 :root {
-    --theme-color: #00979C;
-    --theme-light: #E6FFFA;
+    --theme-color: #00979c;
+    --theme-light: #e6fffa;
     --bg-body: #f9fafb;
     --bg-card: #ffffff;
     --text-main: #1f2937;
@@ -414,8 +411,6 @@ body.dark-mode .hover\:bg-gray-100:hover {
     background-color: #4b5563 !important;
 }
 
-
-
 /* Eye Shield (Blue Light Filter) Override */
 body.eye-shield {
     --bg-body: #fdf6e3;
@@ -426,7 +421,7 @@ body.eye-shield {
 }
 
 body.eye-shield::before {
-    content: "";
+    content: '';
     position: fixed;
     top: 0;
     left: 0;
@@ -535,7 +530,7 @@ body.eye-shield::before {
 
 .hotspot:hover {
     transform: scale(1.5);
-    background-color: #E47128;
+    background-color: #e47128;
     /* Arduino Orange */
 }
 
@@ -628,7 +623,6 @@ a,
 
 /* Improve tap highlight on mobile */
 @media (hover: none) {
-
     button:active,
     a:active,
     .cursor-pointer:active {
@@ -642,26 +636,24 @@ a,
 
 /* Skeleton Loader Base */
 .skeleton {
-    background: linear-gradient(90deg, 
-        var(--bg-card, #f3f4f6) 25%, 
-        #e5e7eb 50%, 
-        var(--bg-card, #f3f4f6) 75%);
+    background: linear-gradient(90deg, var(--bg-card, #f3f4f6) 25%, #e5e7eb 50%, var(--bg-card, #f3f4f6) 75%);
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s infinite ease-in-out;
     border-radius: 0.5rem;
 }
 
 body.dark-mode .skeleton {
-    background: linear-gradient(90deg, 
-        #374151 25%, 
-        #4b5563 50%, 
-        #374151 75%);
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
     background-size: 200% 100%;
 }
 
 @keyframes skeleton-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* Skeleton Card */
@@ -669,7 +661,7 @@ body.dark-mode .skeleton {
     background: var(--bg-card, #fff);
     border-radius: 0.75rem;
     padding: 2rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color, #e5e7eb);
 }
 
@@ -711,8 +703,12 @@ body.dark-mode .skeleton {
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Button Disabled State */
@@ -745,8 +741,15 @@ body.dark-mode .loading-overlay {
 }
 
 @keyframes pulse-scale {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.7; }
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
 }
 
 /* Course Card Loading State */
@@ -759,7 +762,7 @@ body.dark-mode .loading-overlay {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(255,255,255,0.7);
+    background: rgba(255, 255, 255, 0.7);
     border-radius: inherit;
     z-index: 5;
 }

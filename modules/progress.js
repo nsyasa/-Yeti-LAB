@@ -1,10 +1,10 @@
 /**
  * Progress Tracking Module - Yeti LAB
  * Handles lesson completion with Supabase integration.
- * 
+ *
  * For logged-in students: Saves to Supabase (student_progress table)
  * For guests: No progress saving (removed localStorage to avoid confusion)
- * 
+ *
  * Usage:
  *   Progress.init()             - Initialize (called after Auth.init)
  *   Progress.toggle(id)         - Toggle lesson completion
@@ -16,7 +16,7 @@
 const Progress = {
     data: {}, // { courseKey: [completedProjectId1, completedProjectId2, ...] }
     scores: {}, // { courseKey: { projectId: score } }
-    dates: [],  // Array of ISO date strings
+    dates: [], // Array of ISO date strings
     isLoading: false,
     isInitialized: false,
 
@@ -88,7 +88,7 @@ const Progress = {
             Progress.scores = {};
             Progress.dates = [];
 
-            (data || []).forEach(row => {
+            (data || []).forEach((row) => {
                 // Course-Project mapping
                 if (!Progress.data[row.course_id]) {
                     Progress.data[row.course_id] = [];
@@ -106,7 +106,6 @@ const Progress = {
                     Progress.dates.push(row.completed_at);
                 }
             });
-
         } catch (error) {
             console.error('[Progress] Failed to load from server:', error);
             Toast?.apiError(error, 'İlerleme verileri yükleme');
@@ -131,20 +130,17 @@ const Progress = {
                     student_id: studentId,
                     course_id: courseKey,
                     project_id: projectId,
-                    completed_at: new Date().toISOString()
+                    completed_at: new Date().toISOString(),
                 };
 
-                const { error } = await SupabaseClient.getClient()
-                    .from('student_progress')
-                    .upsert(payload, {
-                        onConflict: 'student_id,project_id'
-                    });
+                const { error } = await SupabaseClient.getClient().from('student_progress').upsert(payload, {
+                    onConflict: 'student_id,project_id',
+                });
 
                 if (error) {
                     console.error('[Progress] Save error:', error.message);
                     throw error;
                 }
-
             } else {
                 // Delete progress record
                 const { error } = await SupabaseClient.getClient()
@@ -160,7 +156,6 @@ const Progress = {
             }
 
             return true;
-
         } catch (error) {
             console.error('[Progress] Failed:', error.message);
             Toast?.error('İlerleme kaydedilemedi. Lütfen tekrar deneyin.');
@@ -183,7 +178,9 @@ const Progress = {
 
         if (!isLoggedIn) {
             // Show login prompt for guests
-            if (confirm('İlerlemenizi kaydetmek için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?')) {
+            if (
+                confirm('İlerlemenizi kaydetmek için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?')
+            ) {
                 window.location.href = 'auth.html';
             }
             return;
@@ -224,7 +221,7 @@ const Progress = {
      */
     getCompleted: () => {
         let all = [];
-        Object.values(Progress.data).forEach(arr => {
+        Object.values(Progress.data).forEach((arr) => {
             all = all.concat(arr);
         });
         return all;
@@ -241,7 +238,7 @@ const Progress = {
 
         const completed = Progress.data[key] ? Progress.data[key].length : 0;
         const courseData = Progress._getCourseData();
-        const total = (courseData[key]?.data?.projects?.length) || 1;
+        const total = courseData[key]?.data?.projects?.length || 1;
         return Math.round((completed / total) * 100);
     },
 
@@ -254,22 +251,22 @@ const Progress = {
         }
 
         // 1. Total Lessons
-        let totalLessons = 0;
+        const totalLessons = 0;
         const completedLessons = Progress.getCompleted();
         const quizScores = Progress.scores || {};
         const quizKeys = Object.keys(quizScores);
         let quizSum = 0;
 
-        quizKeys.forEach(k => quizSum += quizScores[k]);
+        quizKeys.forEach((k) => (quizSum += quizScores[k]));
 
-        const quizAvg = quizKeys.length > 0 ? (quizSum / quizKeys.length) : 0;
+        const quizAvg = quizKeys.length > 0 ? quizSum / quizKeys.length : 0;
 
         // Calculate Streak
         const dates = Progress.dates || [];
         let streak = 0;
         if (dates.length > 0) {
             // Sort dates new to old
-            const sortedDates = dates.map(d => new Date(d).toDateString()).sort((a, b) => new Date(b) - new Date(a));
+            const sortedDates = dates.map((d) => new Date(d).toDateString()).sort((a, b) => new Date(b) - new Date(a));
             const uniqueDates = [...new Set(sortedDates)];
 
             // Check if today or yesterday is present to start streak
@@ -308,7 +305,7 @@ const Progress = {
             earnedBadges = window.BadgeSystem.calculateEarned({
                 totalLessons: completedLessons.length,
                 quizAvg: quizAvg,
-                streak: streak
+                streak: streak,
             });
         } else {
             // Fallback
@@ -334,7 +331,7 @@ const Progress = {
             xp: totalXP,
             level: level,
             levelProgress: Math.round(levelProgress),
-            nextLevelXP: nextLevelXP
+            nextLevelXP: nextLevelXP,
         };
     },
 
@@ -352,7 +349,6 @@ const Progress = {
 
             if (error) throw error;
             return data || [];
-
         } catch (error) {
             console.error('[Progress] Failed to get student progress:', error);
             return [];
@@ -373,7 +369,7 @@ const Progress = {
             if (studentsError) throw studentsError;
             if (!students || students.length === 0) return [];
 
-            const studentIds = students.map(s => s.id);
+            const studentIds = students.map((s) => s.id);
 
             // Get all progress for these students
             const { data: progressData, error: progressError } = await SupabaseClient.getClient()
@@ -384,11 +380,10 @@ const Progress = {
             if (progressError) throw progressError;
 
             // Combine data
-            return students.map(student => ({
+            return students.map((student) => ({
                 ...student,
-                progress: (progressData || []).filter(p => p.student_id === student.id)
+                progress: (progressData || []).filter((p) => p.student_id === student.id),
             }));
-
         } catch (error) {
             console.error('[Progress] Failed to get classroom progress:', error);
             return [];
@@ -399,10 +394,10 @@ const Progress = {
     onUpdate: null,
 
     // Legacy compatibility - load does nothing now, init handles everything
-    load: () => { },
+    load: () => {},
 
     // Legacy compatibility - save does nothing now, saveToServer handles everything
-    save: () => { }
+    save: () => {},
 };
 
 // Export for global access

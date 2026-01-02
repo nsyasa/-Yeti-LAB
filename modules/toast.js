@@ -14,28 +14,28 @@ const Toast = {
         success: {
             icon: '✅',
             bgClass: 'bg-green-600',
-            borderClass: 'border-green-500'
+            borderClass: 'border-green-500',
         },
         error: {
             icon: '❌',
             bgClass: 'bg-red-600',
-            borderClass: 'border-red-500'
+            borderClass: 'border-red-500',
         },
         warning: {
             icon: '⚠️',
             bgClass: 'bg-amber-500',
-            borderClass: 'border-amber-400'
+            borderClass: 'border-amber-400',
         },
         info: {
             icon: 'ℹ️',
             bgClass: 'bg-blue-600',
-            borderClass: 'border-blue-500'
+            borderClass: 'border-blue-500',
         },
         loading: {
             icon: '⏳',
             bgClass: 'bg-gray-700',
-            borderClass: 'border-gray-600'
-        }
+            borderClass: 'border-gray-600',
+        },
     },
 
     /**
@@ -73,23 +73,33 @@ const Toast = {
             flex items-start gap-3 pointer-events-auto
             transform translate-x-full opacity-0 transition-all duration-300 ease-out
             border-l-4 ${config.borderClass}
-        `.replace(/\s+/g, ' ').trim();
+        `
+            .replace(/\s+/g, ' ')
+            .trim();
 
         toast.innerHTML = `
             <span class="text-lg flex-shrink-0 ${type === 'loading' ? 'animate-pulse' : ''}">${config.icon}</span>
             <div class="flex-grow min-w-0">
                 <p class="font-medium text-sm leading-snug">${message}</p>
-                ${action ? `
+                ${
+                    action
+                        ? `
                     <button class="mt-2 text-xs font-bold underline hover:no-underline opacity-90 hover:opacity-100 transition-opacity" 
                             onclick="Toast.handleAction('${id}')">
                         ${action.label}
                     </button>
-                ` : ''}
+                `
+                        : ''
+                }
             </div>
-            ${type !== 'loading' ? `
+            ${
+                type !== 'loading'
+                    ? `
                 <button class="flex-shrink-0 opacity-70 hover:opacity-100 text-lg leading-none" 
                         onclick="Toast.dismiss('${id}')">&times;</button>
-            ` : ''}
+            `
+                    : ''
+            }
         `;
 
         // Store action callback
@@ -147,7 +157,7 @@ const Toast = {
     dismissAll() {
         if (!this.container) return;
         const toasts = this.container.querySelectorAll('[id^="toast-"]');
-        toasts.forEach(t => this.dismiss(t.id));
+        toasts.forEach((t) => this.dismiss(t.id));
     },
 
     /**
@@ -199,8 +209,8 @@ const Toast = {
             duration: 8000,
             action: {
                 label: '🔄 Tekrar Dene',
-                onClick: retryFn
-            }
+                onClick: retryFn,
+            },
         });
     },
 
@@ -221,15 +231,15 @@ const Toast = {
                 // Common error translations
                 const errorMap = {
                     'Failed to fetch': 'Sunucuya bağlanılamadı. İnternet bağlantınızı kontrol edin.',
-                    'NetworkError': 'Ağ hatası. İnternet bağlantınızı kontrol edin.',
-                    'timeout': 'İstek zaman aşımına uğradı.',
+                    NetworkError: 'Ağ hatası. İnternet bağlantınızı kontrol edin.',
+                    timeout: 'İstek zaman aşımına uğradı.',
                     'JWT expired': 'Oturum süresi doldu. Lütfen tekrar giriş yapın.',
                     'Invalid login credentials': 'Hatalı e-posta veya şifre.',
                     'Email not confirmed': 'E-posta adresi doğrulanmamış.',
                     'User already registered': 'Bu e-posta adresi zaten kayıtlı.',
                     'duplicate key value': 'Bu kayıt zaten mevcut.',
                     'foreign key constraint': 'İlişkili kayıtlar var, önce onları silmelisiniz.',
-                    'permission denied': 'Bu işlem için yetkiniz yok.'
+                    'permission denied': 'Bu işlem için yetkiniz yok.',
                 };
 
                 for (const [key, translation] of Object.entries(errorMap)) {
@@ -261,10 +271,10 @@ const Toast = {
             duration: 0,
             action: {
                 label: '🔄 Tekrar Dene',
-                onClick: retryFn
-            }
+                onClick: retryFn,
+            },
         });
-    }
+    },
 };
 
 // Make globally available

@@ -7,7 +7,7 @@ const Profile = {
     avatars: ['👨‍🏫', '👩‍🏫', '🎓', '🚀', '⭐', '🧠', '🤖', '💻', '🦊', '🦁', '🐼', '🐨', '🦄', '🐲', '⚡', '🔥'],
 
     // State
-    currentUser: null,  // Supabase user or Student session object
+    currentUser: null, // Supabase user or Student session object
     isStudentCodeAuth: false, // True if logged in via Classroom Code
 
     async init() {
@@ -30,7 +30,7 @@ const Profile = {
         // For Supabase users, check metadata
 
         const isProfileComplete = Auth.isProfileComplete || (userInfo.isStudent && !userInfo.isAdmin);
-        // Note: Students via code usually just start. 
+        // Note: Students via code usually just start.
 
         // Initial Header Render
         this.renderHeader(userInfo);
@@ -77,7 +77,9 @@ const Profile = {
 
             this.renderAvatars('wiz-avatar-grid', (av) => {
                 this.data.avatar = av;
-                document.querySelectorAll('#wiz-avatar-grid .avatar-option').forEach(el => el.classList.remove('selected'));
+                document
+                    .querySelectorAll('#wiz-avatar-grid .avatar-option')
+                    .forEach((el) => el.classList.remove('selected'));
                 event.target.classList.add('selected');
             });
 
@@ -86,7 +88,7 @@ const Profile = {
 
         selectRole(role) {
             this.data.role = role;
-            document.querySelectorAll('.role-card').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.role-card').forEach((el) => el.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
             document.getElementById('wiz-btn-1').disabled = false;
             document.getElementById('wiz-btn-1').classList.replace('bg-gray-200', 'bg-theme');
@@ -115,11 +117,14 @@ const Profile = {
 
         renderAvatars(containerId, cb) {
             const container = document.getElementById(containerId);
-            container.innerHTML = Profile.avatars.map(av =>
-                `<div onclick="event.stopPropagation();" class="avatar-option text-4xl p-4 bg-gray-50 rounded-xl flex items-center justify-center border-2 border-transparent">
+            container.innerHTML = Profile.avatars
+                .map(
+                    (av) =>
+                        `<div onclick="event.stopPropagation();" class="avatar-option text-4xl p-4 bg-gray-50 rounded-xl flex items-center justify-center border-2 border-transparent">
                     ${av}
                 </div>`
-            ).join('');
+                )
+                .join('');
 
             Array.from(container.children).forEach((el, idx) => {
                 el.onclick = (e) => cb(Profile.avatars[idx]);
@@ -129,9 +134,11 @@ const Profile = {
         loadCities(id) {
             const select = document.getElementById(id);
             if (!window.turkeyData) return;
-            Object.keys(window.turkeyData).sort((a, b) => a.localeCompare(b, 'tr')).forEach(city => {
-                select.add(new Option(city, city));
-            });
+            Object.keys(window.turkeyData)
+                .sort((a, b) => a.localeCompare(b, 'tr'))
+                .forEach((city) => {
+                    select.add(new Option(city, city));
+                });
         },
 
         async complete() {
@@ -147,9 +154,9 @@ const Profile = {
 
             await Profile.Editor.saveToSupabase(this.data, btn, 'wiz-error', () => {
                 if (typeof Toast !== 'undefined') Toast.show('Profil oluşturuldu! Yönlendiriliyorsunuz...', 'success');
-                setTimeout(() => window.location.href = 'index.html', 1000);
+                setTimeout(() => (window.location.href = 'index.html'), 1000);
             });
-        }
+        },
     },
 
     // --- SETTINGS (MAIN VIEW) SUB-MODULE ---
@@ -169,7 +176,7 @@ const Profile = {
 
             // Load Stats (Wait for it)
             await Profile.Editor.loadStats();
-        }
+        },
     },
 
     // --- EDITOR LOGIC ---
@@ -179,20 +186,27 @@ const Profile = {
         populateHero(userInfo) {
             // Hero Basics
             document.getElementById('hero-name').textContent = userInfo.displayName;
-            document.getElementById('hero-email').textContent = userInfo.studentInfo ? userInfo.studentInfo.classroomName : (Auth.currentUser?.email || '');
+            document.getElementById('hero-email').textContent = userInfo.studentInfo
+                ? userInfo.studentInfo.classroomName
+                : Auth.currentUser?.email || '';
 
             const roleText = userInfo.isTeacher ? 'Öğretmen' : 'Öğrenci';
             document.getElementById('hero-role-badge').textContent = roleText;
 
             // Date
-            const dateStr = Auth.currentUser?.created_at ? new Date(Auth.currentUser.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) : 'Ocak 2026';
+            const dateStr = Auth.currentUser?.created_at
+                ? new Date(Auth.currentUser.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
+                : 'Ocak 2026';
             document.getElementById('hero-joined').textContent = 'Katılım: ' + dateStr;
 
             // Avatar
             const heroAvatarEl = document.getElementById('profile-hero-avatar');
             const heroEmojiEl = document.getElementById('hero-avatar-emoji');
 
-            if (userInfo.avatarUrl && (userInfo.avatarUrl.startsWith('http') || userInfo.avatarUrl.startsWith('data:'))) {
+            if (
+                userInfo.avatarUrl &&
+                (userInfo.avatarUrl.startsWith('http') || userInfo.avatarUrl.startsWith('data:'))
+            ) {
                 heroAvatarEl.innerHTML = `<img src="${userInfo.avatarUrl}" alt="Avatar" class="w-full h-full object-cover rounded-full">`;
                 heroAvatarEl.classList.add('overflow-hidden', 'bg-transparent');
             } else {
@@ -265,7 +279,7 @@ const Profile = {
             if (!container) return;
 
             const activityMap = {};
-            (dates || []).forEach(dateStr => {
+            (dates || []).forEach((dateStr) => {
                 const d = new Date(dateStr).toISOString().split('T')[0];
                 activityMap[d] = (activityMap[d] || 0) + 1;
             });
@@ -301,14 +315,15 @@ const Profile = {
             if (!container || !window.BadgeSystem) return;
 
             const allBadges = window.BadgeSystem.getAll();
-            const earnedIds = earnedBadges.map(b => typeof b === 'string' ? b : b.id);
+            const earnedIds = earnedBadges.map((b) => (typeof b === 'string' ? b : b.id));
 
-            container.innerHTML = allBadges.map(badge => {
-                const isEarned = earnedIds.includes(badge.id);
-                const opacity = isEarned ? 'opacity-100' : 'opacity-40 grayscale';
-                const border = isEarned ? 'border-theme bg-theme/5' : 'border-gray-200 bg-gray-50';
+            container.innerHTML = allBadges
+                .map((badge) => {
+                    const isEarned = earnedIds.includes(badge.id);
+                    const opacity = isEarned ? 'opacity-100' : 'opacity-40 grayscale';
+                    const border = isEarned ? 'border-theme bg-theme/5' : 'border-gray-200 bg-gray-50';
 
-                return `
+                    return `
                     <div class="group relative p-4 rounded-xl border-2 ${border} ${opacity} transition-all hover:scale-105 flex flex-col items-center text-center gap-2">
                         <div class="text-4xl mb-1">${isEarned ? badge.icon : '🛡️'}</div>
                         <div class="font-bold text-sm text-gray-800 dark:text-gray-200">${badge.title}</div>
@@ -318,7 +333,8 @@ const Profile = {
                             ${!isEarned ? '<p class="mt-1 text-yellow-300 font-bold">Nasıl kazanılır?</p>' : '<p class="mt-1 text-green-300 font-bold">Kazanıldı! 🎉</p>'}
                         </div>
                     </div>`;
-            }).join('');
+                })
+                .join('');
         },
 
         // --- EDIT METHODS ---
@@ -347,7 +363,7 @@ const Profile = {
                 city: document.getElementById('edit-city').value,
                 district: document.getElementById('edit-district').value,
                 avatar: this.currentAvatar || document.getElementById('hero-avatar-emoji').textContent,
-                role: Auth.userRole
+                role: Auth.userRole,
             };
 
             await this.saveToSupabase(data, btn, null, () => {
@@ -367,8 +383,14 @@ const Profile = {
             const p1 = document.getElementById('new-password').value;
             const p2 = document.getElementById('new-password-confirm').value;
 
-            if (p1.length < 6) { Toast?.show('Şifre en az 6 karakter olmalı', 'error'); return; }
-            if (p1 !== p2) { Toast?.show('Şifreler eşleşmiyor', 'error'); return; }
+            if (p1.length < 6) {
+                Toast?.show('Şifre en az 6 karakter olmalı', 'error');
+                return;
+            }
+            if (p1 !== p2) {
+                Toast?.show('Şifreler eşleşmiyor', 'error');
+                return;
+            }
 
             // If Student Code Auth
             const userInfo = Auth.getUserInfo();
@@ -408,9 +430,12 @@ const Profile = {
 
         renderAvatars() {
             const grid = document.getElementById('avatar-grid');
-            grid.innerHTML = Profile.avatars.map(av =>
-                `<div class="avatar-option text-2xl p-2 bg-gray-50 rounded-lg flex items-center justify-center border-2 border-transparent cursor-pointer hover:border-theme" onclick="Profile.Editor.selectAvatar('${av}')">${av}</div>`
-            ).join('');
+            grid.innerHTML = Profile.avatars
+                .map(
+                    (av) =>
+                        `<div class="avatar-option text-2xl p-2 bg-gray-50 rounded-lg flex items-center justify-center border-2 border-transparent cursor-pointer hover:border-theme" onclick="Profile.Editor.selectAvatar('${av}')">${av}</div>`
+                )
+                .join('');
         },
 
         selectAvatar(av) {
@@ -420,7 +445,7 @@ const Profile = {
         },
 
         // Save Helper
-        async saveToSupabase(data, btn, errorId, successCb) {
+        async saveToSupabase(data, btn, errorId, successCb, originalText = 'Kaydet') {
             try {
                 // If Student (Classroom)
                 const userInfo = Auth.getUserInfo();
@@ -429,7 +454,7 @@ const Profile = {
                     const { error } = await SupabaseClient.getClient()
                         .from('students')
                         .update({
-                            display_name: data.name
+                            display_name: data.name,
                             // Classroom students don't usually store city/district in their table schema yet
                             // We focus on display_name
                         })
@@ -441,8 +466,7 @@ const Profile = {
                     const session = JSON.parse(localStorage.getItem('yeti_student_session') || '{}');
                     session.displayName = data.name;
                     localStorage.setItem('yeti_student_session', JSON.stringify(session));
-                }
-                else {
+                } else {
                     // Standard Supabase Auth Update
                     const updates = {
                         full_name: data.name,
@@ -451,7 +475,7 @@ const Profile = {
                         district: data.district,
                         avatar_url: data.avatar,
                         role: data.role,
-                        profile_completed: true
+                        profile_completed: true,
                     };
 
                     const { error: metaError } = await SupabaseClient.getClient().auth.updateUser({ data: updates });
@@ -459,17 +483,20 @@ const Profile = {
 
                     // Try Table Update
                     try {
-                        await SupabaseClient.getClient().from('user_profiles').upsert({
-                            id: userInfo.userId,
-                            ...updates,
-                            email: Auth.currentUser?.email
-                        });
-                    } catch (e) { console.warn('Profile table update skipped'); }
+                        await SupabaseClient.getClient()
+                            .from('user_profiles')
+                            .upsert({
+                                id: userInfo.userId,
+                                ...updates,
+                                email: Auth.currentUser?.email,
+                            });
+                    } catch (_e) {
+                        console.warn('Profile table update skipped');
+                    }
                 }
 
                 btn.textContent = '✅ Kaydedildi';
                 if (successCb) successCb();
-
             } catch (err) {
                 console.error(err);
                 if (typeof Toast !== 'undefined') Toast.show('Hata: ' + err.message, 'error');
@@ -489,7 +516,9 @@ const Profile = {
             const select = document.getElementById('edit-city');
             if (!select || !window.turkeyData) return;
             select.innerHTML = '<option value="">Seçiniz</option>';
-            Object.keys(window.turkeyData).sort((a, b) => a.localeCompare(b, 'tr')).forEach(c => select.add(new Option(c, c)));
+            Object.keys(window.turkeyData)
+                .sort((a, b) => a.localeCompare(b, 'tr'))
+                .forEach((c) => select.add(new Option(c, c)));
         },
 
         loadDistricts() {
@@ -497,7 +526,7 @@ const Profile = {
             const distSelect = document.getElementById('edit-district');
             distSelect.innerHTML = '<option value="">Seçiniz</option>';
             if (city && window.turkeyData[city]) {
-                window.turkeyData[city].forEach(d => distSelect.add(new Option(d, d)));
+                window.turkeyData[city].forEach((d) => distSelect.add(new Option(d, d)));
             }
         },
 
@@ -509,7 +538,7 @@ const Profile = {
             document.getElementById('theme-light-btn').classList.toggle('text-white', isLight);
             document.getElementById('theme-dark-btn').classList.toggle('bg-theme', !isLight);
             document.getElementById('theme-dark-btn').classList.toggle('text-white', !isLight);
-        }
+        },
     },
 
     logout() {
@@ -517,7 +546,7 @@ const Profile = {
             if (Auth.isStudent()) Auth.studentLogout();
             window.location.href = 'auth.html';
         });
-    }
+    },
 };
 
 window.Profile = Profile;

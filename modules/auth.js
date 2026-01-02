@@ -1,7 +1,7 @@
 /**
  * Auth Module - Yeti LAB
  * Kullanıcı kimlik doğrulama ve oturum yönetimi
- * 
+ *
  * Desteklenen giriş yöntemleri:
  * - Öğretmen: Google/GitHub OAuth veya E-posta/Şifre
  * - Öğrenci: Sınıf Kodu + İsim (5 harfli kod)
@@ -48,8 +48,8 @@ const Auth = {
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: redirectUrl
-            }
+                redirectTo: redirectUrl,
+            },
         });
 
         if (error) throw error;
@@ -67,8 +67,8 @@ const Auth = {
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'github',
             options: {
-                redirectTo: redirectUrl
-            }
+                redirectTo: redirectUrl,
+            },
         });
 
         if (error) throw error;
@@ -81,7 +81,7 @@ const Auth = {
     async signInWithEmail(email, password) {
         const { data, error } = await SupabaseClient.getClient().auth.signInWithPassword({
             email,
-            password
+            password,
         });
 
         if (error) throw error;
@@ -105,10 +105,10 @@ const Auth = {
             password,
             options: {
                 data: {
-                    full_name: fullName
+                    full_name: fullName,
                 },
-                emailRedirectTo: redirectUrl
-            }
+                emailRedirectTo: redirectUrl,
+            },
         });
 
         if (error) throw error;
@@ -131,7 +131,9 @@ const Auth = {
      * Check existing session
      */
     async checkSession() {
-        const { data: { session } } = await SupabaseClient.getClient().auth.getSession();
+        const {
+            data: { session },
+        } = await SupabaseClient.getClient().auth.getSession();
 
         if (session) {
             this.currentUser = session.user;
@@ -232,12 +234,11 @@ const Auth = {
         }
 
         // Call the student_login_secure function in Supabase
-        const { data, error } = await SupabaseClient.getClient()
-            .rpc('student_login_secure', {
-                p_classroom_code: classroomCode.toUpperCase(),
-                p_display_name: displayName.trim(),
-                p_password: password
-            });
+        const { data, error } = await SupabaseClient.getClient().rpc('student_login_secure', {
+            p_classroom_code: classroomCode.toUpperCase(),
+            p_display_name: displayName.trim(),
+            p_password: password,
+        });
 
         if (error) {
             if (error.message.includes('Geçersiz sınıf kodu')) {
@@ -266,7 +267,7 @@ const Auth = {
             displayName: displayName.trim(),
             classroomName: studentData.out_classroom_name,
             teacherName: studentData.out_teacher_name,
-            loginTime: new Date().toISOString()
+            loginTime: new Date().toISOString(),
         };
 
         localStorage.setItem(this.STUDENT_SESSION_KEY, JSON.stringify(session));
@@ -374,10 +375,12 @@ const Auth = {
             return this.currentStudent.displayName;
         }
         if (this.currentUser) {
-            return this.currentUser.user_metadata?.full_name ||
+            return (
+                this.currentUser.user_metadata?.full_name ||
                 this.currentUser.user_metadata?.name ||
                 this.currentUser.email?.split('@')[0] ||
-                'Kullanıcı';
+                'Kullanıcı'
+            );
         }
         return 'Misafir';
     },
@@ -409,9 +412,9 @@ const Auth = {
             isStudent: this.isStudent(),
             isAdmin: this.isAdmin(),
             studentInfo: this.currentStudent,
-            userId: this.currentUser?.id || this.currentStudent?.studentId
+            userId: this.currentUser?.id || this.currentStudent?.studentId,
         };
-    }
+    },
 };
 
 // Make available globally

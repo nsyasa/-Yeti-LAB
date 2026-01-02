@@ -1,314 +1,312 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>İlerleme - Yeti LAB</title>
+        <meta name="description" content="Yeti LAB öğrenci ilerleme paneli" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İlerleme - Yeti LAB</title>
-    <meta name="description" content="Yeti LAB öğrenci ilerleme paneli">
+        <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+        <link rel="apple-touch-icon" href="img/favicon.svg" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-    <link rel="apple-touch-icon" href="img/favicon.svg">
+        <!-- Tailwind CSS -->
+        <link href="styles/output.css" rel="stylesheet" />
 
-    <!-- Tailwind CSS -->
-    <link href="styles/output.css" rel="stylesheet">
+        <!-- Main Styles -->
+        <link rel="stylesheet" href="styles/tokens.css" />
+        <link rel="stylesheet" href="styles/components.css" />
+        <link rel="stylesheet" href="styles/main.css" />
 
-    <!-- Main Styles -->
-    <link rel="stylesheet" href="styles/tokens.css">
-    <link rel="stylesheet" href="styles/components.css">
-    <link rel="stylesheet" href="styles/main.css">
+        <!-- Supabase -->
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="modules/toast.js"></script>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="modules/toast.js"></script>
+        <style>
+            .dashboard-bg {
+                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+                min-height: 100vh;
+            }
 
-    <style>
-        .dashboard-bg {
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
-            min-height: 100vh;
-        }
+            body.dark-mode .dashboard-bg {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            }
 
-        body.dark-mode .dashboard-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
+            .progress-ring {
+                transform: rotate(-90deg);
+            }
 
-        .progress-ring {
-            transform: rotate(-90deg);
-        }
+            .course-progress-card {
+                transition: all 0.3s ease;
+            }
 
-        .course-progress-card {
-            transition: all 0.3s ease;
-        }
+            .course-progress-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+            }
 
-        .course-progress-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
-        }
+            .lesson-item {
+                transition: all 0.2s ease;
+            }
 
-        .lesson-item {
-            transition: all 0.2s ease;
-        }
+            .lesson-item:hover {
+                background: rgba(0, 151, 156, 0.05);
+            }
 
-        .lesson-item:hover {
-            background: rgba(0, 151, 156, 0.05);
-        }
+            .lesson-item.completed {
+                background: rgba(16, 185, 129, 0.05);
+                border-left: 3px solid #10b981;
+            }
 
-        .lesson-item.completed {
-            background: rgba(16, 185, 129, 0.05);
-            border-left: 3px solid #10b981;
-        }
+            .stat-card {
+                background: white;
+                border-radius: 1rem;
+                padding: 1.5rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
 
-        .stat-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+            body.dark-mode .stat-card {
+                background: #1e293b;
+            }
+        </style>
+    </head>
 
-        body.dark-mode .stat-card {
-            background: #1e293b;
-        }
-    </style>
-</head>
-
-<body class="bg-gray-50 text-gray-800">
-    <div class="dashboard-bg min-h-screen pb-8">
-        <!-- Header -->
-        <header class="py-4 px-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-            <div class="max-w-6xl mx-auto flex items-center justify-between">
-                <a href="index.html" class="flex items-center">
-                    <img src="img/logo.svg" alt="Yeti LAB" class="w-10 h-10 mr-2">
-                    <div class="brand-logo">
-                        <h1 class="text-xl text-gray-800 leading-tight flex items-baseline gap-1">
-                            <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
-                        </h1>
-                    </div>
-                </a>
-                <div class="flex items-center gap-4">
-                    <a href="index.html" class="text-gray-600 hover:text-theme transition-colors">
-                        🏠 Ana Sayfa
+    <body class="bg-gray-50 text-gray-800">
+        <div class="dashboard-bg min-h-screen pb-8">
+            <!-- Header -->
+            <header class="py-4 px-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+                <div class="max-w-6xl mx-auto flex items-center justify-between">
+                    <a href="index.html" class="flex items-center">
+                        <img src="img/logo.svg" alt="Yeti LAB" class="w-10 h-10 mr-2" />
+                        <div class="brand-logo">
+                            <h1 class="text-xl text-gray-800 leading-tight flex items-baseline gap-1">
+                                <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
+                            </h1>
+                        </div>
                     </a>
-                    <div id="userInfo" class="flex items-center gap-2">
-                        <span id="userAvatar" class="text-2xl">👤</span>
-                        <span id="userName" class="font-medium">Yükleniyor...</span>
+                    <div class="flex items-center gap-4">
+                        <a href="index.html" class="text-gray-600 hover:text-theme transition-colors"> 🏠 Ana Sayfa </a>
+                        <div id="userInfo" class="flex items-center gap-2">
+                            <span id="userAvatar" class="text-2xl">👤</span>
+                            <span id="userName" class="font-medium">Yükleniyor...</span>
+                        </div>
+                        <button
+                            onclick="logout()"
+                            class="text-red-500 hover:text-red-600 transition-colors"
+                            title="Çıkış"
+                        >
+                            🚪
+                        </button>
                     </div>
-                    <button onclick="logout()" class="text-red-500 hover:text-red-600 transition-colors" title="Çıkış">
-                        🚪
-                    </button>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <!-- Main Content -->
-        <main class="max-w-6xl mx-auto px-4 py-8">
-            <!-- Welcome Section -->
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold mb-2">Merhaba, <span id="welcomeName">Öğrenci</span>! 👋</h2>
-                <p class="text-gray-600">İşte senin öğrenme yolculuğun</p>
-            </div>
-
-            <!-- Stats Overview -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="stat-card text-center">
-                    <div class="text-4xl mb-2">📚</div>
-                    <div id="totalLessons" class="text-3xl font-bold text-theme">0</div>
-                    <div class="text-gray-500 text-sm">Tamamlanan Ders</div>
+            <!-- Main Content -->
+            <main class="max-w-6xl mx-auto px-4 py-8">
+                <!-- Welcome Section -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">Merhaba, <span id="welcomeName">Öğrenci</span>! 👋</h2>
+                    <p class="text-gray-600">İşte senin öğrenme yolculuğun</p>
                 </div>
-                <div class="stat-card text-center">
-                    <div class="text-4xl mb-2">🏆</div>
-                    <div id="avgScore" class="text-3xl font-bold text-yellow-500">0</div>
-                    <div class="text-gray-500 text-sm">Ortalama Puan</div>
+
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card text-center">
+                        <div class="text-4xl mb-2">📚</div>
+                        <div id="totalLessons" class="text-3xl font-bold text-theme">0</div>
+                        <div class="text-gray-500 text-sm">Tamamlanan Ders</div>
+                    </div>
+                    <div class="stat-card text-center">
+                        <div class="text-4xl mb-2">🏆</div>
+                        <div id="avgScore" class="text-3xl font-bold text-yellow-500">0</div>
+                        <div class="text-gray-500 text-sm">Ortalama Puan</div>
+                    </div>
+                    <div class="stat-card text-center">
+                        <div class="text-4xl mb-2">🔥</div>
+                        <div id="streak" class="text-3xl font-bold text-orange-500">0</div>
+                        <div class="text-gray-500 text-sm">Gün Seri</div>
+                    </div>
+                    <div class="stat-card text-center">
+                        <div class="text-4xl mb-2">⭐</div>
+                        <div id="totalQuizzes" class="text-3xl font-bold text-purple-500">0</div>
+                        <div class="text-gray-500 text-sm">Tamamlanan Quiz</div>
+                    </div>
                 </div>
-                <div class="stat-card text-center">
-                    <div class="text-4xl mb-2">🔥</div>
-                    <div id="streak" class="text-3xl font-bold text-orange-500">0</div>
-                    <div class="text-gray-500 text-sm">Gün Seri</div>
+
+                <!-- Course Progress -->
+                <h3 class="text-xl font-bold mb-4">📊 Kurs İlerlemen</h3>
+                <div id="courseProgress" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Course cards will be loaded here -->
+                    <div class="flex justify-center py-12">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
-                <div class="stat-card text-center">
-                    <div class="text-4xl mb-2">⭐</div>
-                    <div id="totalQuizzes" class="text-3xl font-bold text-purple-500">0</div>
-                    <div class="text-gray-500 text-sm">Tamamlanan Quiz</div>
+
+                <!-- Recent Activity -->
+                <h3 class="text-xl font-bold mb-4">📝 Son Aktiviteler</h3>
+                <div id="recentActivity" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <!-- Activity items will be loaded here -->
+                    <div class="flex justify-center py-12">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Course Progress -->
-            <h3 class="text-xl font-bold mb-4">📊 Kurs İlerlemen</h3>
-            <div id="courseProgress" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <!-- Course cards will be loaded here -->
-                <div class="flex justify-center py-12">
-                    <div class="spinner"></div>
+                <!-- Quiz History -->
+                <h3 class="text-xl font-bold mb-4 mt-8">🎯 Quiz Puanları</h3>
+                <div id="quizHistory" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <!-- Quiz items will be loaded here -->
+                    <div class="flex justify-center py-12">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
-            </div>
+            </main>
 
-            <!-- Recent Activity -->
-            <h3 class="text-xl font-bold mb-4">📝 Son Aktiviteler</h3>
-            <div id="recentActivity" class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <!-- Activity items will be loaded here -->
-                <div class="flex justify-center py-12">
-                    <div class="spinner"></div>
+            <!-- Footer -->
+            <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6" />
+                    <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
                 </div>
-            </div>
+                <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
+            </footer>
+        </div>
 
-            <!-- Quiz History -->
-            <h3 class="text-xl font-bold mb-4 mt-8">🎯 Quiz Puanları</h3>
-            <div id="quizHistory" class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <!-- Quiz items will be loaded here -->
-                <div class="flex justify-center py-12">
-                    <div class="spinner"></div>
-                </div>
-            </div>
-        </main>
+        <!-- Scripts -->
+        <script src="modules/supabaseClient.js"></script>
+        <script src="modules/auth.js"></script>
+        <script src="modules/courseLoader.js"></script>
+        <script>
+            // State
+            let studentData = null;
+            let progressData = [];
+            let quizData = [];
 
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
-            <div class="flex items-center justify-center gap-2 mb-2">
-                <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6">
-                <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
-            </div>
-            <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
-        </footer>
-    </div>
+            // Initialize
+            document.addEventListener('DOMContentLoaded', async () => {
+                SupabaseClient.init();
+                await Auth.init();
 
-    <!-- Scripts -->
-    <script src="modules/supabaseClient.js"></script>
-    <script src="modules/auth.js"></script>
-    <script src="modules/courseLoader.js"></script>
-    <script>
-        // State
-        let studentData = null;
-        let progressData = [];
-        let quizData = [];
+                // Check if student is logged in
+                if (!Auth.isStudent() || !Auth.currentStudent) {
+                    window.location.href = 'auth.html';
+                    return;
+                }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            SupabaseClient.init();
-            await Auth.init();
+                studentData = Auth.currentStudent;
 
-            // Check if student is logged in
-            if (!Auth.isStudent() || !Auth.currentStudent) {
-                window.location.href = 'auth.html';
-                return;
-            }
+                // Update UI
+                document.getElementById('welcomeName').textContent = studentData.displayName || 'Öğrenci';
+                document.getElementById('userName').textContent = studentData.displayName || 'Öğrenci';
 
-            studentData = Auth.currentStudent;
+                // Load data
+                await Promise.all([loadProgressData(), loadQuizData()]);
 
-            // Update UI
-            document.getElementById('welcomeName').textContent = studentData.displayName || 'Öğrenci';
-            document.getElementById('userName').textContent = studentData.displayName || 'Öğrenci';
+                renderStats();
+                renderCourseProgress();
+                renderRecentActivity();
+                renderQuizHistory();
+            });
 
-            // Load data
-            await Promise.all([
-                loadProgressData(),
-                loadQuizData()
-            ]);
+            async function loadProgressData() {
+                try {
+                    const { data, error } = await SupabaseClient.getClient()
+                        .from('student_progress')
+                        .select('*')
+                        .eq('student_id', studentData.studentId)
+                        .order('completed_at', { ascending: false });
 
-            renderStats();
-            renderCourseProgress();
-            renderRecentActivity();
-            renderQuizHistory();
-        });
-
-        async function loadProgressData() {
-            try {
-                const { data, error } = await SupabaseClient.getClient()
-                    .from('student_progress')
-                    .select('*')
-                    .eq('student_id', studentData.studentId)
-                    .order('completed_at', { ascending: false });
-
-                if (error) throw error;
-                progressData = data || [];
-            } catch (err) {
-                console.error('Error loading progress:', err);
-                progressData = [];
-            }
-        }
-
-        async function loadQuizData() {
-            try {
-                const { data, error } = await SupabaseClient.getClient()
-                    .from('student_progress')
-                    .select('*')
-                    .eq('student_id', studentData.studentId)
-                    .not('quiz_score', 'is', null)
-                    .order('completed_at', { ascending: false });
-
-                if (error) throw error;
-                quizData = data || [];
-            } catch (err) {
-                console.error('Error loading quiz data:', err);
-                quizData = [];
-            }
-        }
-
-        function renderStats() {
-            // Total completed lessons
-            document.getElementById('totalLessons').textContent = progressData.length;
-
-            // Average quiz score
-            const quizScores = quizData.filter(q => q.quiz_score !== null).map(q => q.quiz_score);
-            const avgScore = quizScores.length > 0
-                ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length)
-                : 0;
-            document.getElementById('avgScore').textContent = avgScore;
-
-            // Total quizzes
-            document.getElementById('totalQuizzes').textContent = quizData.length;
-
-            // Calculate streak (simplified - consecutive days)
-            const today = new Date().toDateString();
-            let streak = 0;
-            const uniqueDays = [...new Set(progressData.map(p => new Date(p.completed_at).toDateString()))];
-
-            // Sort days descending
-            uniqueDays.sort((a, b) => new Date(b) - new Date(a));
-
-            // Count consecutive days from today/yesterday
-            const todayDate = new Date();
-            for (let i = 0; i < uniqueDays.length; i++) {
-                const checkDate = new Date(todayDate);
-                checkDate.setDate(checkDate.getDate() - i);
-
-                if (uniqueDays.includes(checkDate.toDateString())) {
-                    streak++;
-                } else if (i > 0) {
-                    break;
+                    if (error) throw error;
+                    progressData = data || [];
+                } catch (err) {
+                    console.error('Error loading progress:', err);
+                    progressData = [];
                 }
             }
 
-            document.getElementById('streak').textContent = streak;
-        }
+            async function loadQuizData() {
+                try {
+                    const { data, error } = await SupabaseClient.getClient()
+                        .from('student_progress')
+                        .select('*')
+                        .eq('student_id', studentData.studentId)
+                        .not('quiz_score', 'is', null)
+                        .order('completed_at', { ascending: false });
 
-        function renderCourseProgress() {
-            const container = document.getElementById('courseProgress');
+                    if (error) throw error;
+                    quizData = data || [];
+                } catch (err) {
+                    console.error('Error loading quiz data:', err);
+                    quizData = [];
+                }
+            }
 
-            // Courses configuration
-            const courses = {
-                arduino: { title: 'Arduino Serüveni', icon: '🤖', color: '#00979C', total: 20 },
-                microbit: { title: 'Micro:bit Dünyası', icon: '💻', color: '#6C63FF', total: 10 },
-                scratch: { title: 'Scratch ile Oyun', icon: '🎮', color: '#FF6F00', total: 8 },
-                mblock: { title: 'mBlock ile Robotik', icon: '🦾', color: '#30B0C7', total: 10 }
-            };
+            function renderStats() {
+                // Total completed lessons
+                document.getElementById('totalLessons').textContent = progressData.length;
 
-            const courseStats = {};
+                // Average quiz score
+                const quizScores = quizData.filter((q) => q.quiz_score !== null).map((q) => q.quiz_score);
+                const avgScore =
+                    quizScores.length > 0 ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
+                document.getElementById('avgScore').textContent = avgScore;
 
-            // Calculate progress for each course
-            Object.keys(courses).forEach(key => {
-                const courseProgress = progressData.filter(p => p.course_id === key);
-                courseStats[key] = {
-                    completed: courseProgress.length,
-                    total: courses[key].total,
-                    percentage: Math.round((courseProgress.length / courses[key].total) * 100)
+                // Total quizzes
+                document.getElementById('totalQuizzes').textContent = quizData.length;
+
+                // Calculate streak (simplified - consecutive days)
+                const today = new Date().toDateString();
+                let streak = 0;
+                const uniqueDays = [...new Set(progressData.map((p) => new Date(p.completed_at).toDateString()))];
+
+                // Sort days descending
+                uniqueDays.sort((a, b) => new Date(b) - new Date(a));
+
+                // Count consecutive days from today/yesterday
+                const todayDate = new Date();
+                for (let i = 0; i < uniqueDays.length; i++) {
+                    const checkDate = new Date(todayDate);
+                    checkDate.setDate(checkDate.getDate() - i);
+
+                    if (uniqueDays.includes(checkDate.toDateString())) {
+                        streak++;
+                    } else if (i > 0) {
+                        break;
+                    }
+                }
+
+                document.getElementById('streak').textContent = streak;
+            }
+
+            function renderCourseProgress() {
+                const container = document.getElementById('courseProgress');
+
+                // Courses configuration
+                const courses = {
+                    arduino: { title: 'Arduino Serüveni', icon: '🤖', color: '#00979C', total: 20 },
+                    microbit: { title: 'Micro:bit Dünyası', icon: '💻', color: '#6C63FF', total: 10 },
+                    scratch: { title: 'Scratch ile Oyun', icon: '🎮', color: '#FF6F00', total: 8 },
+                    mblock: { title: 'mBlock ile Robotik', icon: '🦾', color: '#30B0C7', total: 10 },
                 };
-            });
 
-            container.innerHTML = Object.entries(courses).map(([key, course]) => {
-                const stats = courseStats[key];
-                const circumference = 2 * Math.PI * 40;
-                const offset = circumference - (stats.percentage / 100) * circumference;
+                const courseStats = {};
 
-                return `
+                // Calculate progress for each course
+                Object.keys(courses).forEach((key) => {
+                    const courseProgress = progressData.filter((p) => p.course_id === key);
+                    courseStats[key] = {
+                        completed: courseProgress.length,
+                        total: courses[key].total,
+                        percentage: Math.round((courseProgress.length / courses[key].total) * 100),
+                    };
+                });
+
+                container.innerHTML = Object.entries(courses)
+                    .map(([key, course]) => {
+                        const stats = courseStats[key];
+                        const circumference = 2 * Math.PI * 40;
+                        const offset = circumference - (stats.percentage / 100) * circumference;
+
+                        return `
                     <div class="course-progress-card bg-white rounded-2xl p-6 shadow-lg">
                         <div class="flex items-center gap-4">
                             <div class="relative">
@@ -352,46 +350,48 @@
                         </a>
                     </div>
                 `;
-            }).join('');
-        }
+                    })
+                    .join('');
+            }
 
-        function renderRecentActivity() {
-            const container = document.getElementById('recentActivity');
+            function renderRecentActivity() {
+                const container = document.getElementById('recentActivity');
 
-            if (progressData.length === 0) {
-                container.innerHTML = `
+                if (progressData.length === 0) {
+                    container.innerHTML = `
                     <div class="p-8 text-center text-gray-500">
                         <div class="text-4xl mb-2">📭</div>
                         <p>Henüz aktivite yok</p>
                         <p class="text-sm">Dersleri tamamladıkça burada görünecek</p>
                     </div>
                 `;
-                return;
-            }
+                    return;
+                }
 
-            // Show last 10 activities
-            const recent = progressData.slice(0, 10);
+                // Show last 10 activities
+                const recent = progressData.slice(0, 10);
 
-            container.innerHTML = recent.map(activity => {
-                const date = new Date(activity.completed_at);
-                const formattedDate = date.toLocaleDateString('tr-TR', {
-                    day: 'numeric',
-                    month: 'short',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                container.innerHTML = recent
+                    .map((activity) => {
+                        const date = new Date(activity.completed_at);
+                        const formattedDate = date.toLocaleDateString('tr-TR', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
 
-                const courseIcons = {
-                    arduino: '🤖',
-                    microbit: '💻',
-                    scratch: '🎮',
-                    mblock: '🦾'
-                };
+                        const courseIcons = {
+                            arduino: '🤖',
+                            microbit: '💻',
+                            scratch: '🎮',
+                            mblock: '🦾',
+                        };
 
-                const icon = courseIcons[activity.course_id] || '📚';
-                const hasQuiz = activity.quiz_score !== null;
+                        const icon = courseIcons[activity.course_id] || '📚';
+                        const hasQuiz = activity.quiz_score !== null;
 
-                return `
+                        return `
                     <div class="lesson-item completed px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="text-2xl">${icon}</span>
@@ -406,47 +406,49 @@
                         </div>
                     </div>
                 `;
-            }).join('');
-        }
+                    })
+                    .join('');
+            }
 
-        function renderQuizHistory() {
-            const container = document.getElementById('quizHistory');
+            function renderQuizHistory() {
+                const container = document.getElementById('quizHistory');
 
-            if (quizData.length === 0) {
-                container.innerHTML = `
+                if (quizData.length === 0) {
+                    container.innerHTML = `
                     <div class="p-8 text-center text-gray-500">
                         <div class="text-4xl mb-2">🎯</div>
                         <p>Henüz quiz tamamlanmadı</p>
                         <p class="text-sm">Ders sonlarındaki quizleri çöz</p>
                     </div>
                 `;
-                return;
-            }
-
-            container.innerHTML = quizData.map(quiz => {
-                const date = new Date(quiz.completed_at);
-                const formattedDate = date.toLocaleDateString('tr-TR', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                });
-
-                const score = quiz.quiz_score;
-                let scoreColor = 'text-red-500';
-                let scoreEmoji = '😢';
-
-                if (score >= 80) {
-                    scoreColor = 'text-green-500';
-                    scoreEmoji = '🎉';
-                } else if (score >= 60) {
-                    scoreColor = 'text-yellow-500';
-                    scoreEmoji = '👍';
-                } else if (score >= 40) {
-                    scoreColor = 'text-orange-500';
-                    scoreEmoji = '💪';
+                    return;
                 }
 
-                return `
+                container.innerHTML = quizData
+                    .map((quiz) => {
+                        const date = new Date(quiz.completed_at);
+                        const formattedDate = date.toLocaleDateString('tr-TR', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                        });
+
+                        const score = quiz.quiz_score;
+                        let scoreColor = 'text-red-500';
+                        let scoreEmoji = '😢';
+
+                        if (score >= 80) {
+                            scoreColor = 'text-green-500';
+                            scoreEmoji = '🎉';
+                        } else if (score >= 60) {
+                            scoreColor = 'text-yellow-500';
+                            scoreEmoji = '👍';
+                        } else if (score >= 40) {
+                            scoreColor = 'text-orange-500';
+                            scoreEmoji = '💪';
+                        }
+
+                        return `
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="text-2xl">${scoreEmoji}</span>
@@ -460,14 +462,14 @@
                         </div>
                     </div>
                 `;
-            }).join('');
-        }
+                    })
+                    .join('');
+            }
 
-        function logout() {
-            Auth.studentLogout();
-            window.location.href = 'auth.html';
-        }
-    </script>
-</body>
-
+            function logout() {
+                Auth.studentLogout();
+                window.location.href = 'auth.html';
+            }
+        </script>
+    </body>
 </html>

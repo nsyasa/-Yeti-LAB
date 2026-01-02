@@ -25,7 +25,7 @@ const admin = {
     triggerAutoSave: () => {
         const statusEl = document.getElementById('autosave-status');
         if (statusEl) {
-            statusEl.textContent = "Kaydediliyor...";
+            statusEl.textContent = 'Kaydediliyor...';
             statusEl.classList.remove('text-green-400', 'text-red-400', 'text-blue-400');
             statusEl.classList.add('text-yellow-400');
         }
@@ -38,7 +38,7 @@ const admin = {
         try {
             const dataToSave = {
                 timestamp: new Date().getTime(),
-                data: admin.allCourseData
+                data: admin.allCourseData,
             };
             localStorage.setItem(admin.autoSaveKey, JSON.stringify(dataToSave));
 
@@ -50,10 +50,10 @@ const admin = {
                 statusEl.classList.add('text-green-400');
             }
         } catch (e) {
-            console.error("AutoSave Error:", e);
+            console.error('AutoSave Error:', e);
             const statusEl = document.getElementById('autosave-status');
             if (statusEl) {
-                statusEl.textContent = "Otomatik kayıt hatası! (Depolama dolu olabilir)";
+                statusEl.textContent = 'Otomatik kayıt hatası! (Depolama dolu olabilir)';
                 statusEl.classList.remove('text-yellow-400', 'text-green-400', 'text-blue-400');
                 statusEl.classList.add('text-red-400');
             }
@@ -86,14 +86,14 @@ const admin = {
                 }, 500);
             }
         } catch (e) {
-            console.error("Restore Error:", e);
+            console.error('Restore Error:', e);
         }
     },
 
     clearLocalData: () => {
         localStorage.removeItem(admin.autoSaveKey);
         const statusEl = document.getElementById('autosave-status');
-        if (statusEl) statusEl.textContent = "";
+        if (statusEl) statusEl.textContent = '';
     },
 
     init: () => {
@@ -109,16 +109,18 @@ const admin = {
             if (window.applyTheme) window.applyTheme('arduino');
             admin.changeCourse('arduino'); // Başlangıçta Arduino yükle
         } else {
-            alert("data.js yüklenemedi!");
+            alert('data.js yüklenemedi!');
         }
 
         // Form dinleyicileri
-        document.querySelectorAll('#project-form input, #project-form textarea, #project-form select').forEach(i => {
+        document.querySelectorAll('#project-form input, #project-form textarea, #project-form select').forEach((i) => {
             // Checkboxlar için özel işlem (input event'i bazen yetersiz kalabilir)
-            if (i.type === "checkbox") i.addEventListener('change', admin.updateProject);
+            if (i.type === 'checkbox') i.addEventListener('change', admin.updateProject);
             else i.addEventListener('input', admin.updateProject);
         });
-        document.querySelectorAll('#component-form input, #component-form textarea, #component-form select').forEach(i => i.addEventListener('input', admin.updateComponent));
+        document
+            .querySelectorAll('#component-form input, #component-form textarea, #component-form select')
+            .forEach((i) => i.addEventListener('input', admin.updateComponent));
     },
 
     changeCourse: (key) => {
@@ -186,7 +188,7 @@ const admin = {
     showTab: (tabName) => {
         const tabs = ['projects', 'components', 'phases'];
 
-        tabs.forEach(t => {
+        tabs.forEach((t) => {
             const view = document.getElementById('view-' + t);
             const btn = document.getElementById('tab-' + t);
 
@@ -215,7 +217,7 @@ const admin = {
             microbit: '🎮',
             scratch: '🐱',
             mblock: '🤖',
-            appinventor: '📱'
+            appinventor: '📱',
         };
 
         const icon = course.icon || defaultIcons[admin.currentCourseKey] || '📚';
@@ -272,26 +274,32 @@ const admin = {
     // --- PROJECTS MANAGEMENT ---
     renderProjectList: () => {
         const list = document.getElementById('project-list');
-        list.innerHTML = "";
+        list.innerHTML = '';
         if (!admin.currentData.projects) admin.currentData.projects = [];
 
         try {
-            admin.currentData.projects.sort((a, b) => a.id - b.id).forEach(p => {
-                const activeClass = p.id === admin.currentProjectId ? "bg-blue-50 border-blue-500" : "hover:bg-gray-50 border-transparent";
-                const pIcon = p.icon || '📄';
-                // Handle localized title
-                const pTitle = typeof p.title === 'object' ? (p.title.tr || p.title.en || 'Untitled') : (p.title || 'Untitled');
-                list.innerHTML += `
+            admin.currentData.projects
+                .sort((a, b) => a.id - b.id)
+                .forEach((p) => {
+                    const activeClass =
+                        p.id === admin.currentProjectId
+                            ? 'bg-blue-50 border-blue-500'
+                            : 'hover:bg-gray-50 border-transparent';
+                    const pIcon = p.icon || '📄';
+                    // Handle localized title
+                    const pTitle =
+                        typeof p.title === 'object' ? p.title.tr || p.title.en || 'Untitled' : p.title || 'Untitled';
+                    list.innerHTML += `
                     <div onclick="admin.loadProject(${p.id})" data-project-id="${p.id}" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
                         <div class="flex justify-between items-center">
                             <span class="project-title font-bold text-sm text-gray-700">#${p.id} ${pTitle}</span>
                             <span class="project-icon text-xs text-gray-400">${pIcon}</span>
                         </div>
                     </div>`;
-            });
+                });
         } catch (e) {
-            console.error("Error rendering project list:", e);
-            list.innerHTML += `<div class="p-2 text-red-500 text-xs">Hata: Dersler listelenemedi.</div>`;
+            console.error('Error rendering project list:', e);
+            list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Dersler listelenemedi.</div>';
         }
     },
 
@@ -325,11 +333,11 @@ const admin = {
     },
 
     switchProjectTab: (tabName) => {
-        document.querySelectorAll('.project-tab-btn').forEach(b => {
+        document.querySelectorAll('.project-tab-btn').forEach((b) => {
             b.classList.remove('active', 'border-theme', 'text-theme');
             b.classList.add('border-transparent', 'text-gray-500');
         });
-        document.querySelectorAll('.project-tab-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.project-tab-content').forEach((c) => c.classList.add('hidden'));
 
         const btn = document.getElementById('ptab-' + tabName);
         if (btn) {
@@ -344,7 +352,7 @@ const admin = {
         admin.currentLang = lang;
 
         // Update button styles
-        document.querySelectorAll('.lang-btn').forEach(btn => {
+        document.querySelectorAll('.lang-btn').forEach((btn) => {
             btn.classList.remove('bg-theme', 'text-white');
             btn.classList.add('text-gray-500');
         });
@@ -355,10 +363,10 @@ const admin = {
         }
 
         // Toggle field visibility
-        document.querySelectorAll('.lang-field.lang-tr').forEach(el => {
+        document.querySelectorAll('.lang-field.lang-tr').forEach((el) => {
             el.classList.toggle('hidden', lang !== 'tr');
         });
-        document.querySelectorAll('.lang-field.lang-en').forEach(el => {
+        document.querySelectorAll('.lang-field.lang-en').forEach((el) => {
             el.classList.toggle('hidden', lang !== 'en');
         });
     },
@@ -386,7 +394,7 @@ const admin = {
 
     loadProject: (id) => {
         admin.currentProjectId = id;
-        const p = admin.currentData.projects.find(x => x.id === id);
+        const p = admin.currentData.projects.find((x) => x.id === id);
         document.getElementById('project-welcome').classList.add('hidden');
         document.getElementById('project-form').classList.remove('hidden');
 
@@ -395,7 +403,7 @@ const admin = {
 
         const setVal = (id, val) => {
             const el = document.getElementById(id);
-            if (el) el.value = (val !== undefined && val !== null) ? val : "";
+            if (el) el.value = val !== undefined && val !== null ? val : '';
         };
 
         setVal('p-id', p.id); // Read-only ID
@@ -433,7 +441,7 @@ const admin = {
         // Set Tab Visibility Checkboxes
         const tabIds = ['mission', 'materials', 'circuit', 'code', 'challenge', 'quiz'];
         const hiddenTabs = p.hiddenTabs || []; // Default to empty (all visible) if undefined
-        tabIds.forEach(id => {
+        tabIds.forEach((id) => {
             const chk = document.getElementById(`p-show-${id}`);
             if (chk) {
                 chk.checked = !hiddenTabs.includes(id);
@@ -459,7 +467,7 @@ const admin = {
             customInput.classList.remove('hidden');
         } else {
             customInput.classList.add('hidden');
-            customInput.value = "";
+            customInput.value = '';
         }
 
         // Code Mode Logic
@@ -476,10 +484,10 @@ const admin = {
             setVal('p-code-image-input', '');
         }
 
-        setVal('p-hasGraph', p.hasGraph ? "true" : "false");
+        setVal('p-hasGraph', p.hasGraph ? 'true' : 'false');
         setVal('p-challenge', p.challenge);
         setVal('p-circuitImage', p.circuitImage || `devre${p.id}.jpg`);
-        setVal('p-hotspots', p.hotspots ? JSON.stringify(p.hotspots) : "");
+        setVal('p-hotspots', p.hotspots ? JSON.stringify(p.hotspots) : '');
 
         // Hotspot checkboxes
         const enableHotspots = document.getElementById('p-enableHotspots');
@@ -506,16 +514,20 @@ const admin = {
         // Veri kaynağını belirle
         if (admin.currentData && admin.currentData.componentInfo) {
             components = admin.currentData.componentInfo;
-        } else if (window.courseData && window.courseData[admin.currentCourseKey] && window.courseData[admin.currentCourseKey].data) {
+        } else if (
+            window.courseData &&
+            window.courseData[admin.currentCourseKey] &&
+            window.courseData[admin.currentCourseKey].data
+        ) {
             components = window.courseData[admin.currentCourseKey].data.componentInfo || {};
         }
 
         const compKeys = Object.keys(components);
 
-        let htmlContent = "";
+        let htmlContent = '';
 
         if (compKeys.length > 0) {
-            compKeys.forEach(key => {
+            compKeys.forEach((key) => {
                 const comp = components[key];
                 if (!comp) return;
 
@@ -523,11 +535,11 @@ const admin = {
                 const icon = comp.icon || '📦';
 
                 const isChecked = p.materials && p.materials.includes(name);
-                const safeName = name.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+                const safeName = name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
                 htmlContent += `
                     <label class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer bg-white">
-                        <input type="checkbox" value="${safeName}" class="material-checkbox w-4 h-4 text-blue-600 rounded" ${isChecked ? "checked" : ""} onchange="admin.updateProject()">
+                        <input type="checkbox" value="${safeName}" class="material-checkbox w-4 h-4 text-blue-600 rounded" ${isChecked ? 'checked' : ''} onchange="admin.updateProject()">
                         <span class="text-lg">${icon}</span>
                         <span class="text-sm font-medium text-gray-700 select-none">${name}</span>
                     </label>`;
@@ -542,11 +554,13 @@ const admin = {
 
         // 2. Özel malzemeleri ayıkla
         try {
-            const knownNames = Object.values(components).map(c => c.name);
-            const customMats = p.materials ? p.materials.filter(m => !knownNames.includes(m)) : [];
+            const knownNames = Object.values(components).map((c) => c.name);
+            const customMats = p.materials ? p.materials.filter((m) => !knownNames.includes(m)) : [];
             const materialsInput = document.getElementById('p-materials-custom');
             if (materialsInput) materialsInput.value = customMats.join(', ');
-        } catch (e) { console.error("Error processing custom materials", e); }
+        } catch (e) {
+            console.error('Error processing custom materials', e);
+        }
 
         // QUIZ RENDERING
         if (admin.renderQuizEditor) admin.renderQuizEditor(p.id);
@@ -557,7 +571,7 @@ const admin = {
     // --- QUIZ MANAGEMENT ---
     renderQuizEditor: (projectId) => {
         // Find project in CURRENT data
-        const p = admin.currentData.projects.find(x => x.id === parseInt(projectId));
+        const p = admin.currentData.projects.find((x) => x.id === parseInt(projectId));
         if (!p) return;
 
         // Ensure quiz array exists
@@ -565,7 +579,7 @@ const admin = {
 
         const list = document.getElementById('quiz-editor-list');
         const emptyMsg = document.getElementById('quiz-empty-msg');
-        list.innerHTML = "";
+        list.innerHTML = '';
 
         const questions = p.quiz;
 
@@ -585,12 +599,16 @@ const admin = {
                     
                     <div class="space-y-2">
                         <label class="block text-xs font-bold text-gray-500 uppercase">Seçenekler</label>
-                        ${q.options.map((opt, oIndex) => `
+                        ${q.options
+                            .map(
+                                (opt, oIndex) => `
                             <div class="flex items-center space-x-2">
                                 <input type="radio" name="q${qIndex}_ans" value="${oIndex}" ${q.answer === oIndex ? 'checked' : ''} onchange="admin.updateQuestion(${qIndex}, 'answer', ${oIndex})">
                                 <input type="text" class="w-full border rounded p-1 text-sm bg-gray-50" value="${opt}" onchange="admin.updateQuestion(${qIndex}, 'option_${oIndex}', this.value)">
                             </div>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </div>
                     <div class="mt-2 text-xs text-green-600 font-bold">
                         * Doğru cevabın yanındaki kutucuğu işaretleyin.
@@ -602,15 +620,15 @@ const admin = {
 
     addQuestion: () => {
         const pid = admin.currentProjectId;
-        const p = admin.currentData.projects.find(x => x.id === pid);
+        const p = admin.currentData.projects.find((x) => x.id === pid);
         if (!p) return;
 
         if (!p.quiz) p.quiz = [];
 
         p.quiz.push({
-            q: "Yeni Soru?",
-            options: ["A Şıkkı", "B Şıkkı", "C Şıkkı", "D Şıkkı"],
-            answer: 0
+            q: 'Yeni Soru?',
+            options: ['A Şıkkı', 'B Şıkkı', 'C Şıkkı', 'D Şıkkı'],
+            answer: 0,
         });
         admin.renderQuizEditor(pid);
         admin.triggerAutoSave();
@@ -618,10 +636,10 @@ const admin = {
 
     removeQuestion: (index) => {
         const pid = admin.currentProjectId;
-        const p = admin.currentData.projects.find(x => x.id === pid);
+        const p = admin.currentData.projects.find((x) => x.id === pid);
         if (!p || !p.quiz) return;
 
-        if (!confirm("Bu soruyu silmek istediğinize emin misiniz?")) return;
+        if (!confirm('Bu soruyu silmek istediğinize emin misiniz?')) return;
 
         p.quiz.splice(index, 1);
         admin.renderQuizEditor(pid);
@@ -630,7 +648,7 @@ const admin = {
 
     updateQuestion: (qIndex, field, value) => {
         const pid = admin.currentProjectId;
-        const p = admin.currentData.projects.find(x => x.id === pid);
+        const p = admin.currentData.projects.find((x) => x.id === pid);
         if (!p || !p.quiz) return;
 
         const question = p.quiz[qIndex];
@@ -655,10 +673,10 @@ const admin = {
             let migratedCount = 0;
 
             // Tüm kursları gez
-            Object.keys(admin.allCourseData).forEach(courseKey => {
+            Object.keys(admin.allCourseData).forEach((courseKey) => {
                 const course = admin.allCourseData[courseKey];
                 if (course && course.data && course.data.projects) {
-                    course.data.projects.forEach(p => {
+                    course.data.projects.forEach((p) => {
                         // Eğer projenin quizi yoksa ve globalde varsa
                         if ((!p.quiz || p.quiz.length === 0) && window.quizData[p.id]) {
                             // Arduino öncelikli olduğu için sadece 'arduino' kursu veya ID çakışması riskini göze alarak
@@ -687,14 +705,14 @@ const admin = {
 
     updateProject: () => {
         if (admin.currentProjectId === null) return;
-        const p = admin.currentData.projects.find(x => x.id === admin.currentProjectId);
+        const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
         if (!p) {
-            console.error("Project not found:", admin.currentProjectId);
+            console.error('Project not found:', admin.currentProjectId);
             return;
         }
 
         const phaseEl = document.getElementById('p-phase');
-        p.phase = phaseEl ? parseInt(phaseEl.value) || 0 : (p.phase || 0);
+        p.phase = phaseEl ? parseInt(phaseEl.value) || 0 : p.phase || 0;
 
         // Handle localized fields (TR/EN)
         const getLocalizedField = (fieldName, currentValue) => {
@@ -723,10 +741,20 @@ const admin = {
         p.duration = document.getElementById('p-duration')?.value || '';
 
         const tagsVal = document.getElementById('p-tags')?.value || '';
-        p.tags = tagsVal ? tagsVal.split(',').map(t => t.trim()).filter(t => t) : [];
+        p.tags = tagsVal
+            ? tagsVal
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter((t) => t)
+            : [];
 
         const prereqVal = document.getElementById('p-prerequisites')?.value || '';
-        p.prerequisites = prereqVal ? prereqVal.split(',').map(t => parseInt(t.trim())).filter(n => !isNaN(n)) : [];
+        p.prerequisites = prereqVal
+            ? prereqVal
+                  .split(',')
+                  .map((t) => parseInt(t.trim()))
+                  .filter((n) => !isNaN(n))
+            : [];
 
         // Sim Type Logic
         const select = document.getElementById('p-simType');
@@ -736,7 +764,7 @@ const admin = {
             p.simType = select.value;
         }
 
-        p.hasGraph = document.getElementById('p-hasGraph').value === "true";
+        p.hasGraph = document.getElementById('p-hasGraph').value === 'true';
 
         // Code reading based on mode
         const mode = document.getElementById('p-code-mode').value;
@@ -758,8 +786,12 @@ const admin = {
         }
 
         // Malzemeleri Topla
-        const selected = Array.from(document.querySelectorAll('.material-checkbox:checked')).map(cb => cb.value);
-        const custom = document.getElementById('p-materials-custom').value.split(',').map(s => s.trim()).filter(s => s !== "");
+        const selected = Array.from(document.querySelectorAll('.material-checkbox:checked')).map((cb) => cb.value);
+        const custom = document
+            .getElementById('p-materials-custom')
+            .value.split(',')
+            .map((s) => s.trim())
+            .filter((s) => s !== '');
         p.materials = [...selected, ...custom];
 
         // Hotspot options
@@ -769,7 +801,7 @@ const admin = {
         // Tab Visibility
         const tabIds = ['mission', 'materials', 'circuit', 'code', 'challenge', 'quiz'];
         p.hiddenTabs = [];
-        tabIds.forEach(id => {
+        tabIds.forEach((id) => {
             const chk = document.getElementById(`p-show-${id}`);
             if (chk && !chk.checked) {
                 p.hiddenTabs.push(id);
@@ -801,7 +833,7 @@ const admin = {
     // Update just the text of current project in list (no re-render to keep focus)
     updateListItemText: (p) => {
         // Handle localized title
-        const pTitle = typeof p.title === 'object' ? (p.title.tr || p.title.en || 'Untitled') : (p.title || 'Untitled');
+        const pTitle = typeof p.title === 'object' ? p.title.tr || p.title.en || 'Untitled' : p.title || 'Untitled';
 
         // Find item by data attribute (more reliable)
         const item = document.querySelector(`[data-project-id="${p.id}"]`);
@@ -815,54 +847,68 @@ const admin = {
 
     addNewProject: () => {
         if (!admin.currentData.projects) admin.currentData.projects = [];
-        const newId = admin.currentData.projects.length > 0 ? Math.max(...admin.currentData.projects.map(p => p.id)) + 1 : 0;
+        const newId =
+            admin.currentData.projects.length > 0 ? Math.max(...admin.currentData.projects.map((p) => p.id)) + 1 : 0;
         const newProject = {
-            id: newId, phase: 0, title: "Yeni Ders", icon: "✨",
-            desc: "Açıklama...", mission: "Amaç...", theory: "",
-            materials: [], mainComponent: "", code: "// Kod...", challenge: "Görev...",
-            hasGraph: false, simType: "none", circuitImage: `devre${newId}.jpg`,
+            id: newId,
+            phase: 0,
+            title: 'Yeni Ders',
+            icon: '✨',
+            desc: 'Açıklama...',
+            mission: 'Amaç...',
+            theory: '',
+            materials: [],
+            mainComponent: '',
+            code: '// Kod...',
+            challenge: 'Görev...',
+            hasGraph: false,
+            simType: 'none',
+            circuitImage: `devre${newId}.jpg`,
             // Metadata fields
-            difficulty: "beginner", duration: "", tags: [], prerequisites: []
+            difficulty: 'beginner',
+            duration: '',
+            tags: [],
+            prerequisites: [],
         };
         admin.currentData.projects.push(newProject);
         admin.renderProjectList();
         admin.loadProject(newId);
-        setTimeout(() => document.getElementById('project-list').scrollTop = 9999, 100);
+        setTimeout(() => (document.getElementById('project-list').scrollTop = 9999), 100);
 
         admin.triggerAutoSave();
     },
 
     duplicateProject: () => {
         if (admin.currentProjectId === null) return;
-        const p = admin.currentData.projects.find(x => x.id === admin.currentProjectId);
-        const newId = Math.max(...admin.currentData.projects.map(x => x.id)) + 1;
+        const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
+        const newId = Math.max(...admin.currentData.projects.map((x) => x.id)) + 1;
 
         const copy = JSON.parse(JSON.stringify(p));
         copy.id = newId;
-        copy.title += " (Kopyası)";
+        copy.title += ' (Kopyası)';
         admin.currentData.projects.push(copy);
         admin.renderProjectList();
         admin.loadProject(newId);
-        alert("Ders kopyalandı!");
+        alert('Ders kopyalandı!');
 
         admin.triggerAutoSave();
     },
 
     deleteProject: () => {
-        if (!confirm("Bu dersi silmek istediğinize emin misiniz?")) return;
+        if (!confirm('Bu dersi silmek istediğinize emin misiniz?')) return;
 
         // Store in undo stack before deleting
-        const deletedProject = admin.currentData.projects.find(p => p.id === admin.currentProjectId);
+        const deletedProject = admin.currentData.projects.find((p) => p.id === admin.currentProjectId);
         if (deletedProject) {
             admin.undoStack.push({
                 type: 'project',
                 data: JSON.parse(JSON.stringify(deletedProject)),
-                courseKey: admin.currentCourseKey
+                courseKey: admin.currentCourseKey,
             });
             admin.updateUndoButton();
         }
 
-        admin.currentData.projects = admin.currentData.projects.filter(p => p.id !== admin.currentProjectId);
+        admin.currentData.projects = admin.currentData.projects.filter((p) => p.id !== admin.currentProjectId);
         admin.currentProjectId = null;
         document.getElementById('project-welcome').classList.remove('hidden');
         document.getElementById('project-form').classList.add('hidden');
@@ -878,12 +924,15 @@ const admin = {
         const list = document.getElementById('component-list');
         if (!list) return;
 
-        list.innerHTML = "";
+        list.innerHTML = '';
         if (!admin.currentData.componentInfo) admin.currentData.componentInfo = {};
 
         try {
             Object.entries(admin.currentData.componentInfo).forEach(([key, comp]) => {
-                const activeClass = key === admin.currentComponentKey ? "bg-purple-50 border-purple-500" : "hover:bg-gray-50 border-transparent";
+                const activeClass =
+                    key === admin.currentComponentKey
+                        ? 'bg-purple-50 border-purple-500'
+                        : 'hover:bg-gray-50 border-transparent';
                 list.innerHTML += `
                     <div onclick="admin.loadComponent('${key}')" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
                         <div class="flex items-center">
@@ -896,8 +945,8 @@ const admin = {
                     </div>`;
             });
         } catch (e) {
-            console.error("Error rendering component list:", e);
-            list.innerHTML += `<div class="p-2 text-red-500 text-xs">Hata: Elemanlar yüklenirken sorun oluştu.</div>`;
+            console.error('Error rendering component list:', e);
+            list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Elemanlar yüklenirken sorun oluştu.</div>';
         }
     },
 
@@ -928,18 +977,23 @@ const admin = {
     },
 
     addNewComponent: () => {
-        const key = prompt("Yeni malzeme için benzersiz bir ID girin (örn: Lazer):");
+        const key = prompt('Yeni malzeme için benzersiz bir ID girin (örn: Lazer):');
         if (!key) return;
         if (!admin.currentData.componentInfo) admin.currentData.componentInfo = {};
-        if (admin.currentData.componentInfo[key]) { alert("Bu ID zaten var!"); return; }
+        if (admin.currentData.componentInfo[key]) {
+            alert('Bu ID zaten var!');
+            return;
+        }
 
         admin.currentData.componentInfo[key] = {
-            name: "Yeni Malzeme", icon: "📦",
-            imgFileName: "resim.jpg", desc: "Açıklama giriniz."
+            name: 'Yeni Malzeme',
+            icon: '📦',
+            imgFileName: 'resim.jpg',
+            desc: 'Açıklama giriniz.',
         };
         admin.renderComponentList();
         admin.loadComponent(key);
-        setTimeout(() => document.getElementById('component-list').scrollTop = 9999, 100);
+        setTimeout(() => (document.getElementById('component-list').scrollTop = 9999), 100);
 
         admin.triggerAutoSave();
     },
@@ -973,20 +1027,22 @@ const admin = {
 
         const knownImages = new Set();
         // Collect images from all loaded course data to build a library
-        Object.values(window.courseData || {}).forEach(course => {
+        Object.values(window.courseData || {}).forEach((course) => {
             if (course && course.data) {
-                (course.data.projects || []).forEach(p => {
+                (course.data.projects || []).forEach((p) => {
                     if (p.circuitImage) knownImages.add(p.circuitImage);
                     if (p.code && p.code.match(/\.(png|jpg|jpeg|gif)$/i)) knownImages.add(p.code);
                 });
-                Object.values(course.data.componentInfo || {}).forEach(c => {
+                Object.values(course.data.componentInfo || {}).forEach((c) => {
                     if (c.imgFileName) knownImages.add(c.imgFileName);
                 });
             }
         });
 
         // Add some generic ones manually if not found
-        ['arduino_uno.jpg', 'breadboard.jpg', 'led_red.jpg', 'resistor.jpg', 'buzzer.jpg'].forEach(img => knownImages.add(img));
+        ['arduino_uno.jpg', 'breadboard.jpg', 'led_red.jpg', 'resistor.jpg', 'buzzer.jpg'].forEach((img) =>
+            knownImages.add(img)
+        );
 
         grid.innerHTML = '';
         if (knownImages.size === 0) {
@@ -994,18 +1050,21 @@ const admin = {
             return;
         }
 
-        Array.from(knownImages).sort().forEach(imgName => {
-            const div = document.createElement('div');
-            div.className = 'border rounded cursor-pointer hover:border-blue-500 hover:shadow-md transition p-1 bg-white flex flex-col items-center';
-            div.onclick = () => admin.selectImage(imgName);
-            div.innerHTML = `
+        Array.from(knownImages)
+            .sort()
+            .forEach((imgName) => {
+                const div = document.createElement('div');
+                div.className =
+                    'border rounded cursor-pointer hover:border-blue-500 hover:shadow-md transition p-1 bg-white flex flex-col items-center';
+                div.onclick = () => admin.selectImage(imgName);
+                div.innerHTML = `
                 <div class="w-full h-24 bg-gray-100 mb-1 flex items-center justify-center overflow-hidden">
                     <img src="img/${imgName}" class="max-w-full max-h-full object-contain" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNSIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg=='">
                 </div>
                 <span class="text-[10px] text-gray-600 truncate w-full text-center" title="${imgName}">${imgName}</span>
             `;
-            grid.appendChild(div);
-        });
+                grid.appendChild(div);
+            });
     },
 
     selectImage: (imgName) => {
@@ -1030,7 +1089,7 @@ const admin = {
     },
 
     deleteComponent: () => {
-        if (!confirm("Kullanımda olan bir malzemeyi silerseniz site bozulabilir. Yine de silinsin mi?")) return;
+        if (!confirm('Kullanımda olan bir malzemeyi silerseniz site bozulabilir. Yine de silinsin mi?')) return;
 
         // Store in undo stack
         const key = admin.currentComponentKey;
@@ -1040,7 +1099,7 @@ const admin = {
                 type: 'component',
                 key: key,
                 data: JSON.parse(JSON.stringify(deletedComponent)),
-                courseKey: admin.currentCourseKey
+                courseKey: admin.currentCourseKey,
             });
             admin.updateUndoButton();
         }
@@ -1061,21 +1120,28 @@ const admin = {
         const list = document.getElementById('phase-list');
         if (!list) return;
 
-        list.innerHTML = "";
+        list.innerHTML = '';
         if (!admin.currentData.phases) admin.currentData.phases = [];
 
         try {
             admin.currentData.phases.forEach((phase, index) => {
-                const activeClass = index === admin.currentPhaseIndex ? "bg-amber-50 border-amber-500" : "hover:bg-gray-50 border-transparent";
-                const fixedName = index === 0 ? "Başlangıç" : `Bölüm ${index}`;
+                const activeClass =
+                    index === admin.currentPhaseIndex
+                        ? 'bg-amber-50 border-amber-500'
+                        : 'hover:bg-gray-50 border-transparent';
+                const fixedName = index === 0 ? 'Başlangıç' : `Bölüm ${index}`;
 
                 // Fallback logic for display safe-guards
                 let icon = '❓';
                 let desc = '';
 
                 if (phase) {
-                    icon = phase.icon || (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '❓');
-                    desc = phase.description || (phase.title && typeof phase.title === 'string' ? phase.title.replace(icon, '').trim() : '');
+                    icon =
+                        phase.icon ||
+                        (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '❓');
+                    desc =
+                        phase.description ||
+                        (phase.title && typeof phase.title === 'string' ? phase.title.replace(icon, '').trim() : '');
                 }
 
                 list.innerHTML += `
@@ -1090,8 +1156,8 @@ const admin = {
                     </div>`;
             });
         } catch (e) {
-            console.error("Error rendering phase list:", e);
-            list.innerHTML += `<div class="p-2 text-red-500 text-xs">Hata: Fazlar yüklenirken sorun oluştu.</div>`;
+            console.error('Error rendering phase list:', e);
+            list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Fazlar yüklenirken sorun oluştu.</div>';
         }
     },
 
@@ -1102,7 +1168,7 @@ const admin = {
         document.getElementById('phase-form').classList.remove('hidden');
 
         // Fixed Name Logic
-        const fixedName = index === 0 ? "Başlangıç" : `Bölüm ${index}`;
+        const fixedName = index === 0 ? 'Başlangıç' : `Bölüm ${index}`;
         document.getElementById('ph-fixed-name').value = fixedName;
 
         // Data Migration / Fallback Logic
@@ -1132,7 +1198,7 @@ const admin = {
 
         // Backwards compatibility for data file readability, though app.js uses new system now
         // This keeps the 'title' field roughly in sync for older viewers
-        const fixedName = admin.currentPhaseIndex === 0 ? "Başlangıç" : `Bölüm ${admin.currentPhaseIndex}`;
+        const fixedName = admin.currentPhaseIndex === 0 ? 'Başlangıç' : `Bölüm ${admin.currentPhaseIndex}`;
         p.title = `${p.icon} ${fixedName}`;
 
         admin.renderPhaseList();
@@ -1144,10 +1210,10 @@ const admin = {
         if (!admin.currentData.phases) admin.currentData.phases = [];
         const newIndex = admin.currentData.phases.length;
         admin.currentData.phases.push({
-            icon: "✨",
-            description: "Yeni Konu",
-            title: "✨ Bölüm " + newIndex, // Temp
-            color: "blue"
+            icon: '✨',
+            description: 'Yeni Konu',
+            title: '✨ Bölüm ' + newIndex, // Temp
+            color: 'blue',
         });
         admin.renderPhaseList();
         admin.loadPhase(newIndex);
@@ -1158,12 +1224,17 @@ const admin = {
     deletePhase: () => {
         if (admin.currentPhaseIndex === null) return;
         const idx = admin.currentPhaseIndex;
-        const projectsInPhase = admin.currentData.projects.filter(p => p.phase === idx).length;
+        const projectsInPhase = admin.currentData.projects.filter((p) => p.phase === idx).length;
 
         if (projectsInPhase > 0) {
-            if (!confirm(`Bu fazda ${projectsInPhase} ders var! Silmek, bu derslerin görünmez olmasına neden olur. Devam?`)) return;
+            if (
+                !confirm(
+                    `Bu fazda ${projectsInPhase} ders var! Silmek, bu derslerin görünmez olmasına neden olur. Devam?`
+                )
+            )
+                return;
         } else {
-            if (!confirm("Bu fazı silmek istediğinize emin misiniz?")) return;
+            if (!confirm('Bu fazı silmek istediğinize emin misiniz?')) return;
         }
 
         admin.currentData.phases.splice(idx, 1);
@@ -1189,7 +1260,7 @@ const admin = {
             ids.add(p.id);
 
             // 2. Zorunlu Alanlar
-            if (!p.title || p.title.trim() === "") {
+            if (!p.title || p.title.trim() === '') {
                 errors.push(`UYARI: ID ${p.id} için başlık boş.`);
             }
 
@@ -1207,11 +1278,11 @@ const admin = {
             const fullData = {
                 timestamp: new Date().toISOString(),
                 courses: admin.allCourseData,
-                quizzes: window.quizData || {}
+                quizzes: window.quizData || {},
             };
 
             const jsonContent = JSON.stringify(fullData, null, 4);
-            const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8" });
+            const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
 
@@ -1223,15 +1294,15 @@ const admin = {
             // Trigger autosave to ensure consistency
             admin.triggerAutoSave();
         } catch (e) {
-            console.error("Backup failed:", e);
-            alert("Yedekleme sırasında bir hata oluştu: " + e.message);
+            console.error('Backup failed:', e);
+            alert('Yedekleme sırasında bir hata oluştu: ' + e.message);
         }
     },
 
     saveData: async () => {
         const errors = admin.validateProjectData();
         if (errors.length > 0) {
-            if (!confirm("Hatalar var (konsola bak). Yine de kaydetmek ister misin?")) return;
+            if (!confirm('Hatalar var (konsola bak). Yine de kaydetmek ister misin?')) return;
         }
 
         const key = admin.currentCourseKey;
@@ -1251,13 +1322,13 @@ const admin = {
         const jsContent = `window.courseData = window.courseData || {};
 window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
 
-        const blob = new Blob([jsContent], { type: "text/javascript;charset=utf-8" });
+        const blob = new Blob([jsContent], { type: 'text/javascript;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `${key}.js`;
         a.click();
 
-        alert("İndirme başlatıldı!\n" + key + ".js dosyasını data klasörüne kaydedin.");
+        alert('İndirme başlatıldı!\n' + key + '.js dosyasını data klasörüne kaydedin.');
     },
 
     // Save to Supabase
@@ -1284,7 +1355,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
                         title: courseData.title,
                         description: courseData.description || null,
                         meta: { icon: courseData.icon || null },
-                        is_published: false
+                        is_published: false,
                     })
                     .select('id')
                     .single();
@@ -1299,7 +1370,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             await SupabaseClient.updateCourse(courseId, {
                 title: courseData.title,
                 description: courseData.description,
-                meta: { icon: courseData.icon }
+                meta: { icon: courseData.icon },
             });
 
             // 3. Sync phases
@@ -1321,9 +1392,8 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             }
 
             alert("✅ Değişiklikler Supabase'e kaydedildi!");
-
         } catch (error) {
-            console.error("Supabase save error:", error);
+            console.error('Supabase save error:', error);
 
             if (statusEl) {
                 statusEl.textContent = `❌ Kaydetme hatası: ${error.message}`;
@@ -1359,7 +1429,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
                 await SupabaseClient.updatePhase(existing.id, {
                     description: phase.description,
                     position: i,
-                    meta: { color: phase.color, icon: phase.icon }
+                    meta: { color: phase.color, icon: phase.icon },
                 });
                 phaseIdMap[i] = existing.id;
             } else {
@@ -1369,7 +1439,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
                     name: name,
                     description: phase.description || null,
                     position: i,
-                    meta: { color: phase.color, icon: phase.icon }
+                    meta: { color: phase.color, icon: phase.icon },
                 });
                 phaseIdMap[i] = newPhase.id;
             }
@@ -1381,7 +1451,8 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
     // Sync projects to Supabase
     syncProjectsToSupabase: async (courseId, projects, phaseIdMap) => {
         for (const proj of projects) {
-            const slug = admin.slugify(typeof proj.title === 'object' ? proj.title.tr : proj.title) || `project-${proj.id}`;
+            const slug =
+                admin.slugify(typeof proj.title === 'object' ? proj.title.tr : proj.title) || `project-${proj.id}`;
             const phaseId = phaseIdMap[proj.phase] || Object.values(phaseIdMap)[0];
 
             if (!phaseId) {
@@ -1417,10 +1488,10 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
                     difficulty: proj.difficulty,
                     duration: proj.duration,
                     tags: proj.tags,
-                    prerequisites: proj.prerequisites
+                    prerequisites: proj.prerequisites,
                 },
                 is_published: false,
-                position: proj.id || 0
+                position: proj.id || 0,
             };
 
             // Upsert project
@@ -1440,7 +1511,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             await SupabaseClient.upsertComponent({
                 course_id: courseId,
                 key: key,
-                data: data
+                data: data,
             });
         }
     },
@@ -1464,7 +1535,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
     hotspotData: [],
 
     initHotspotEditor: () => {
-        const p = admin.currentData.projects.find(x => x.id === admin.currentProjectId);
+        const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
         if (!p) return;
 
         // Load existing hotspots
@@ -1488,7 +1559,8 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             // Show error message instead of image
             if (!editor.querySelector('.error-msg')) {
                 const msg = document.createElement('div');
-                msg.className = 'error-msg absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500 text-center p-4';
+                msg.className =
+                    'error-msg absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500 text-center p-4';
                 msg.innerHTML = `<div><div class="text-4xl mb-2">🖼️</div><div>Resim bulunamadı:<br><code class="text-xs">${imgPath}</code></div></div>`;
                 editor.appendChild(msg);
             }
@@ -1544,10 +1616,10 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         if (percentX < 0 || percentX > 100 || percentY < 0 || percentY > 100) return;
 
         // Prompt for hotspot name
-        const name = prompt("Bu noktanın adı ne olsun? (örn: USB Port)");
+        const name = prompt('Bu noktanın adı ne olsun? (örn: USB Port)');
         if (!name) return;
 
-        const desc = prompt("Açıklama girin (örn: Bilgisayara bağlanmak için kullanılır)") || "";
+        const desc = prompt('Açıklama girin (örn: Bilgisayara bağlanmak için kullanılır)') || '';
 
         // Add to data
         const newHotspot = {
@@ -1555,7 +1627,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             desc: desc,
             x: percentX,
             y: percentY,
-            r: 15 // Default radius
+            r: 15, // Default radius
         };
 
         admin.hotspotData.push(newHotspot);
@@ -1575,7 +1647,8 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
 
         admin.hotspotData.forEach((hs, index) => {
             const marker = document.createElement('div');
-            marker.className = 'absolute w-6 h-6 bg-orange-500 border-2 border-white rounded-full shadow-lg flex items-center justify-center text-xs text-white font-bold';
+            marker.className =
+                'absolute w-6 h-6 bg-orange-500 border-2 border-white rounded-full shadow-lg flex items-center justify-center text-xs text-white font-bold';
             marker.style.left = `calc(${hs.x}% - 12px)`;
             marker.style.top = `calc(${hs.y}% - 12px)`;
             marker.style.pointerEvents = 'auto';
@@ -1591,11 +1664,14 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         const list = document.getElementById('hotspot-list');
 
         if (admin.hotspotData.length === 0) {
-            list.innerHTML = '<div class="text-center text-gray-400 text-sm py-4">Henüz nokta eklenmedi. "Nokta Ekle Modu"nu açıp resme tıklayın.</div>';
+            list.innerHTML =
+                '<div class="text-center text-gray-400 text-sm py-4">Henüz nokta eklenmedi. "Nokta Ekle Modu"nu açıp resme tıklayın.</div>';
             return;
         }
 
-        list.innerHTML = admin.hotspotData.map((hs, i) => `
+        list.innerHTML = admin.hotspotData
+            .map(
+                (hs, i) => `
             <div class="flex items-center justify-between bg-white p-2 rounded border text-sm">
                 <div class="flex items-center gap-2">
                     <span class="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">${i + 1}</span>
@@ -1609,7 +1685,9 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
                     <button type="button" onclick="admin.deleteHotspot(${i})" class="text-red-500 hover:text-red-700 p-1">🗑️</button>
                 </div>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     },
 
     selectHotspot: (index) => {
@@ -1626,10 +1704,10 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
 
     editHotspot: (index) => {
         const hs = admin.hotspotData[index];
-        const newName = prompt("Yeni isim:", hs.name);
+        const newName = prompt('Yeni isim:', hs.name);
         if (newName === null) return;
 
-        const newDesc = prompt("Yeni açıklama:", hs.desc);
+        const newDesc = prompt('Yeni açıklama:', hs.desc);
         if (newDesc === null) return;
 
         hs.name = newName;
@@ -1651,7 +1729,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
 
     clearAllHotspots: () => {
         if (admin.hotspotData.length === 0) return;
-        if (!confirm("Tüm etkileşim noktalarını silmek istediğinize emin misiniz?")) return;
+        if (!confirm('Tüm etkileşim noktalarını silmek istediğinize emin misiniz?')) return;
 
         admin.hotspotData = [];
         admin.syncHotspots();
@@ -1661,7 +1739,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
 
     syncHotspots: () => {
         // Sync to hidden field and project data
-        const p = admin.currentData.projects.find(x => x.id === admin.currentProjectId);
+        const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
         if (p) {
             p.hotspots = admin.hotspotData.length > 0 ? admin.hotspotData : null;
         }
@@ -1677,7 +1755,8 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         if (!toast) {
             toast = document.createElement('div');
             toast.id = 'undo-toast';
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transition-all';
+            toast.className =
+                'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transition-all';
             document.body.appendChild(toast);
         }
 
@@ -1772,7 +1851,7 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         // Show loading state
         const statusEl = document.getElementById('autosave-status');
         if (statusEl) {
-            statusEl.textContent = "⬆️ Resim yükleniyor...";
+            statusEl.textContent = '⬆️ Resim yükleniyor...';
             statusEl.classList.add('text-yellow-400');
         }
 
@@ -1793,23 +1872,26 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             }
 
             if (statusEl) {
-                statusEl.textContent = "✅ Resim yüklendi!";
+                statusEl.textContent = '✅ Resim yüklendi!';
                 statusEl.classList.remove('text-yellow-400');
                 statusEl.classList.add('text-green-400');
             }
 
             admin.updateProject();
-
         } catch (error) {
             console.error('Image upload error:', error);
 
             if (statusEl) {
-                statusEl.textContent = "❌ Yükleme hatası!";
+                statusEl.textContent = '❌ Yükleme hatası!';
                 statusEl.classList.remove('text-yellow-400');
                 statusEl.classList.add('text-red-400');
             }
 
-            alert('Resim yüklenemedi: ' + error.message + '\n\nAlternatif: Dosya adını manuel girin veya harici URL kullanın.');
+            alert(
+                'Resim yüklenemedi: ' +
+                    error.message +
+                    '\n\nAlternatif: Dosya adını manuel girin veya harici URL kullanın.'
+            );
         }
 
         // Reset file input
@@ -1845,12 +1927,14 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         }
 
         // Show a helper message
-        alert('Resim ekleme seçenekleri:\n\n' +
-            '1. Dosya adı girin: led.jpg (img/ klasöründen)\n' +
-            '2. URL yapıştırın: https://example.com/img.png\n' +
-            '3. "Yükle" butonuyla Supabase\'e yükleyin\n\n' +
-            'GitHub Pages resimlerini img/ klasörüne ekleyip commit/push yapın.');
-    }
+        alert(
+            'Resim ekleme seçenekleri:\n\n' +
+                '1. Dosya adı girin: led.jpg (img/ klasöründen)\n' +
+                '2. URL yapıştırın: https://example.com/img.png\n' +
+                '3. "Yükle" butonuyla Supabase\'e yükleyin\n\n' +
+                'GitHub Pages resimlerini img/ klasörüne ekleyip commit/push yapın.'
+        );
+    },
 };
 
 // Export for global

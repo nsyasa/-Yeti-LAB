@@ -4,13 +4,13 @@
  */
 const Settings = {
     defaults: {
-        theme: 'light',      // light, dark, shield
-        lastCourse: null     // Last visited course key
+        theme: 'light', // light, dark, shield
+        lastCourse: null, // Last visited course key
     },
 
     /**
      * Get a setting value
-     * @param {string} key 
+     * @param {string} key
      * @returns {string} The saved value or default
      */
     get: (key) => {
@@ -20,8 +20,8 @@ const Settings = {
 
     /**
      * Save a setting value
-     * @param {string} key 
-     * @param {string} value 
+     * @param {string} key
+     * @param {string} value
      */
     set: (key, value) => {
         try {
@@ -36,7 +36,7 @@ const Settings = {
      */
     clear: () => {
         localStorage.clear();
-    }
+    },
 };
 
 window.Settings = Settings;

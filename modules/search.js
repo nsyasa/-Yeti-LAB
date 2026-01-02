@@ -1,7 +1,7 @@
 /**
  * Search Module
  * Handles global search across all courses.
- * 
+ *
  * Usage:
  *   Search.handle(query)                     - Filter and display results
  *   Search.navigate(courseKey, projectId)   - Navigate to a specific project
@@ -47,11 +47,11 @@ const Search = {
         const courseData = window.courseData || {};
         const results = [];
 
-        Object.keys(courseData).forEach(courseKey => {
+        Object.keys(courseData).forEach((courseKey) => {
             const course = courseData[courseKey];
             if (!course.data?.projects) return;
 
-            course.data.projects.forEach(project => {
+            course.data.projects.forEach((project) => {
                 const searchable = `${project.title} ${project.desc} ${project.mission || ''}`.toLowerCase();
                 if (searchable.includes(q)) {
                     results.push({
@@ -59,14 +59,17 @@ const Search = {
                         courseTitle: course.title,
                         id: project.id,
                         title: project.title,
-                        icon: project.icon
+                        icon: project.icon,
                     });
                 }
             });
         });
 
         if (results.length > 0) {
-            resultsContainer.innerHTML = results.slice(0, 8).map(r => `
+            resultsContainer.innerHTML = results
+                .slice(0, 8)
+                .map(
+                    (r) => `
                 <div onclick="Search.navigate('${r.courseKey}', ${r.id})" 
                      class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0 flex items-start">
                     <div class="text-2xl mr-3 bg-gray-100 p-2 rounded">${r.icon || '📝'}</div>
@@ -75,10 +78,12 @@ const Search = {
                         <div class="text-xs text-gray-500">${r.courseTitle}</div>
                     </div>
                 </div>
-            `).join('');
+            `
+                )
+                .join('');
             resultsContainer.classList.remove('hidden');
         } else {
-            resultsContainer.innerHTML = `<div class="p-4 text-sm text-gray-500 text-center">Sonuç bulunamadı.</div>`;
+            resultsContainer.innerHTML = '<div class="p-4 text-sm text-gray-500 text-center">Sonuç bulunamadı.</div>';
             resultsContainer.classList.remove('hidden');
         }
     },
@@ -88,7 +93,7 @@ const Search = {
         const resultsContainer = document.getElementById('searchResults');
         const input = document.getElementById('searchInput');
         if (resultsContainer) resultsContainer.classList.add('hidden');
-        if (input) input.value = "";
+        if (input) input.value = '';
 
         // Close mobile search if open
         const mobileOverlay = document.getElementById('mobile-search-overlay');
@@ -116,11 +121,11 @@ const Search = {
         const courseData = window.courseData || {};
         const results = [];
 
-        Object.keys(courseData).forEach(courseKey => {
+        Object.keys(courseData).forEach((courseKey) => {
             const course = courseData[courseKey];
             if (!course.data?.projects) return;
 
-            course.data.projects.forEach(project => {
+            course.data.projects.forEach((project) => {
                 const searchable = `${project.title} ${project.desc} ${project.mission || ''}`.toLowerCase();
                 if (searchable.includes(q)) {
                     results.push({
@@ -128,14 +133,17 @@ const Search = {
                         courseTitle: course.title,
                         id: project.id,
                         title: project.title,
-                        icon: project.icon
+                        icon: project.icon,
                     });
                 }
             });
         });
 
         if (results.length > 0) {
-            resultsContainer.innerHTML = results.slice(0, 10).map(r => `
+            resultsContainer.innerHTML = results
+                .slice(0, 10)
+                .map(
+                    (r) => `
                 <div onclick="Search.navigate('${r.courseKey}', ${r.id})" 
                      class="p-4 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center active:bg-gray-50 cursor-pointer">
                     <div class="text-3xl mr-4 bg-gray-100 p-3 rounded-lg">${r.icon || '📝'}</div>
@@ -144,11 +152,13 @@ const Search = {
                         <div class="text-sm text-gray-500">${r.courseTitle}</div>
                     </div>
                 </div>
-            `).join('');
+            `
+                )
+                .join('');
         } else {
-            resultsContainer.innerHTML = `<div class="text-center text-gray-500 py-8">🔍 Sonuç bulunamadı</div>`;
+            resultsContainer.innerHTML = '<div class="text-center text-gray-500 py-8">🔍 Sonuç bulunamadı</div>';
         }
-    }
+    },
 };
 
 // Export for global access

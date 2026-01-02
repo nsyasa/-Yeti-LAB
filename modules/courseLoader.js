@@ -1,7 +1,7 @@
 /**
  * Course Loader Module
  * Handles lazy loading of course data files.
- * 
+ *
  * Usage:
  *   CourseLoader.loadCourse('arduino')  → Loads arduino.js dynamically
  *   CourseLoader.isLoaded('arduino')    → Check if already loaded
@@ -15,40 +15,40 @@ const CourseLoader = {
     // Course manifest - metadata without full content
     manifest: {
         arduino: {
-            title: "Arduino Serüveni",
-            description: "20 Haftalık Arduino robotik eğitimi",
-            icon: "🤖",
-            color: "#00979C",
-            file: "data/arduino.js"
+            title: 'Arduino Serüveni',
+            description: '20 Haftalık Arduino robotik eğitimi',
+            icon: '🤖',
+            color: '#00979C',
+            file: 'data/arduino.js',
         },
         microbit: {
-            title: "Micro:bit Dünyası",
-            description: "BBC Micro:bit ile kodlama",
-            icon: "💻",
-            color: "#6C63FF",
-            file: "data/microbit.js"
+            title: 'Micro:bit Dünyası',
+            description: 'BBC Micro:bit ile kodlama',
+            icon: '💻',
+            color: '#6C63FF',
+            file: 'data/microbit.js',
         },
         scratch: {
-            title: "Scratch ile Oyun Yapımı",
-            description: "Blok tabanlı programlama",
-            icon: "🎮",
-            color: "#FF6F00",
-            file: "data/scratch.js"
+            title: 'Scratch ile Oyun Yapımı',
+            description: 'Blok tabanlı programlama',
+            icon: '🎮',
+            color: '#FF6F00',
+            file: 'data/scratch.js',
         },
         mblock: {
-            title: "mBlock ile Robotik",
-            description: "mBlock tabanlı Arduino programlama",
-            icon: "🦾",
-            color: "#30B0C7",
-            file: "data/mblock.js"
+            title: 'mBlock ile Robotik',
+            description: 'mBlock tabanlı Arduino programlama',
+            icon: '🦾',
+            color: '#30B0C7',
+            file: 'data/mblock.js',
         },
         appinventor: {
-            title: "App Inventor",
-            description: "Android uygulama geliştirme",
-            icon: "📱",
-            color: "#7CB342",
-            file: "data/appinventor.js"
-        }
+            title: 'App Inventor',
+            description: 'Android uygulama geliştirme',
+            icon: '📱',
+            color: '#7CB342',
+            file: 'data/appinventor.js',
+        },
     },
 
     /**
@@ -98,11 +98,14 @@ const CourseLoader = {
                     console.warn(`[CourseLoader] Retry ${retryCount + 1}/${MAX_RETRIES} for: ${key}`);
                     script.remove(); // Clean up failed script
 
-                    setTimeout(() => {
-                        CourseLoader.loadCourse(key, retryCount + 1)
-                            .then(resolve)
-                            .catch(reject);
-                    }, RETRY_DELAY * (retryCount + 1)); // Exponential backoff
+                    setTimeout(
+                        () => {
+                            CourseLoader.loadCourse(key, retryCount + 1)
+                                .then(resolve)
+                                .catch(reject);
+                        },
+                        RETRY_DELAY * (retryCount + 1)
+                    ); // Exponential backoff
                 } else {
                     reject(new Error(`Failed to load course after ${MAX_RETRIES} retries: ${key}`));
                 }
@@ -116,7 +119,7 @@ const CourseLoader = {
      * Load ALL courses (useful for Admin panel or pre-caching)
      */
     loadAll: () => {
-        const promises = Object.keys(CourseLoader.manifest).map(key => CourseLoader.loadCourse(key));
+        const promises = Object.keys(CourseLoader.manifest).map((key) => CourseLoader.loadCourse(key));
         return Promise.all(promises);
     },
 
@@ -126,14 +129,14 @@ const CourseLoader = {
     preloadEssentials: () => {
         // These are small files, load them upfront
         const essentials = ['data/tips.js', 'data/quiz.js'];
-        essentials.forEach(src => {
+        essentials.forEach((src) => {
             if (!document.querySelector(`script[src="${src}"]`)) {
                 const script = document.createElement('script');
                 script.src = src;
                 document.head.appendChild(script);
             }
         });
-    }
+    },
 };
 
 // Export for global access

@@ -41,14 +41,14 @@
 
 /* Primary Button */
 .btn-primary {
-    background-color: var(--theme-color, #00979C);
+    background-color: var(--theme-color, #00979c);
     color: #ffffff;
-    border-color: var(--theme-color, #00979C);
+    border-color: var(--theme-color, #00979c);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--theme-color, #00979C) 85%, black);
-    border-color: color-mix(in srgb, var(--theme-color, #00979C) 85%, black);
+    background-color: color-mix(in srgb, var(--theme-color, #00979c) 85%, black);
+    border-color: color-mix(in srgb, var(--theme-color, #00979c) 85%, black);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--theme-rgb, 0, 151, 156), 0.35);
 }
@@ -61,12 +61,12 @@
 /* Secondary Button (Outline) */
 .btn-secondary {
     background-color: transparent;
-    color: var(--theme-color, #00979C);
-    border-color: var(--theme-color, #00979C);
+    color: var(--theme-color, #00979c);
+    border-color: var(--theme-color, #00979c);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background-color: var(--theme-color, #00979C);
+    background-color: var(--theme-color, #00979c);
     color: #ffffff;
     transform: translateY(-1px);
 }
@@ -76,12 +76,12 @@
 }
 
 body.dark-mode .btn-secondary {
-    color: var(--theme-color, #00979C);
-    border-color: var(--theme-color, #00979C);
+    color: var(--theme-color, #00979c);
+    border-color: var(--theme-color, #00979c);
 }
 
 body.dark-mode .btn-secondary:hover:not(:disabled) {
-    background-color: var(--theme-color, #00979C);
+    background-color: var(--theme-color, #00979c);
     color: #ffffff;
 }
 
@@ -184,13 +184,13 @@ body.dark-mode .card {
 
 /* Elevated Card */
 .card-elevated {
-    box-shadow: 
+    box-shadow:
         0 4px 6px -1px rgba(0, 0, 0, 0.1),
         0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
 body.dark-mode .card-elevated {
-    box-shadow: 
+    box-shadow:
         0 4px 6px -1px rgba(0, 0, 0, 0.3),
         0 2px 4px -2px rgba(0, 0, 0, 0.2);
 }
@@ -201,9 +201,9 @@ body.dark-mode .card-elevated {
 }
 
 .card-interactive:hover {
-    border-color: var(--theme-color, #00979C);
+    border-color: var(--theme-color, #00979c);
     transform: translateY(-2px);
-    box-shadow: 
+    box-shadow:
         0 10px 25px -5px rgba(0, 0, 0, 0.1),
         0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
@@ -213,7 +213,7 @@ body.dark-mode .card-elevated {
 }
 
 body.dark-mode .card-interactive:hover {
-    box-shadow: 
+    box-shadow:
         0 10px 25px -5px rgba(0, 0, 0, 0.3),
         0 8px 10px -6px rgba(0, 0, 0, 0.2);
 }
@@ -301,7 +301,7 @@ body.dark-mode .form-label {
 
 .input:focus {
     outline: none;
-    border-color: var(--theme-color, #00979C);
+    border-color: var(--theme-color, #00979c);
     box-shadow: 0 0 0 3px rgba(var(--theme-rgb, 0, 151, 156), 0.15);
 }
 
@@ -369,7 +369,7 @@ body.dark-mode .input:disabled {
 
 .select:focus {
     outline: none;
-    border-color: var(--theme-color, #00979C);
+    border-color: var(--theme-color, #00979c);
     box-shadow: 0 0 0 3px rgba(var(--theme-rgb, 0, 151, 156), 0.15);
 }
 
@@ -406,7 +406,7 @@ body.dark-mode .select:disabled {
     height: 1.125rem;
     margin: 0;
     cursor: pointer;
-    accent-color: var(--theme-color, #00979C);
+    accent-color: var(--theme-color, #00979c);
 }
 
 .checkbox input:focus,
@@ -461,8 +461,8 @@ body.dark-mode .radio span {
 }
 
 .checkbox-custom input:checked + .checkmark {
-    background-color: var(--theme-color, #00979C);
-    border-color: var(--theme-color, #00979C);
+    background-color: var(--theme-color, #00979c);
+    border-color: var(--theme-color, #00979c);
 }
 
 .checkbox-custom input:checked + .checkmark::after {
@@ -564,12 +564,12 @@ body.dark-mode .badge-info {
 /* Theme Badge */
 .badge-theme {
     background-color: var(--theme-light, #e6fffa);
-    color: var(--theme-color, #00979C);
+    color: var(--theme-color, #00979c);
 }
 
 body.dark-mode .badge-theme {
     background-color: rgba(var(--theme-rgb, 0, 151, 156), 0.2);
-    color: var(--theme-color, #00979C);
+    color: var(--theme-color, #00979c);
 }
 
 /* Badge Sizes */
@@ -620,7 +620,7 @@ body.dark-mode .badge-theme {
     height: 2.5rem;
     border-radius: 50%;
     background-color: var(--theme-light, #e6fffa);
-    color: var(--theme-color, #00979C);
+    color: var(--theme-color, #00979c);
     font-weight: 600;
     font-size: 1rem;
     overflow: hidden;

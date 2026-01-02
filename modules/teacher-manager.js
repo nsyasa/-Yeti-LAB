@@ -1,4 +1,3 @@
-
 // ==========================================
 // YETI LAB - TEACHER PANEL MODULE
 // ==========================================
@@ -19,7 +18,6 @@ let projectsCache = {}; // Cache for projects by course: { courseId: [project1, 
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-
     try {
         // Initialize Supabase & Auth
         if (typeof SupabaseClient !== 'undefined') {
@@ -60,7 +58,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showSection('dashboard');
             }
         }
-
     } catch (e) {
         console.error('Initialization error:', e);
         showToast('Başlatma hatası: ' + e.message, 'error');
@@ -73,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function showSection(section) {
     // Hide all sections
-    document.querySelectorAll('[id$="Section"]').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('[id$="Section"]').forEach((el) => el.classList.add('hidden'));
 
     // Show selected section
     const sectionEl = document.getElementById(section + 'Section');
@@ -83,16 +80,16 @@ function showSection(section) {
 
     // Update title
     const titles = {
-        'dashboard': 'Dashboard',
-        'classrooms': 'Sınıflarım',
-        'students': 'Öğrenciler',
-        'progress': 'İlerleme Takibi'
+        dashboard: 'Dashboard',
+        classrooms: 'Sınıflarım',
+        students: 'Öğrenciler',
+        progress: 'İlerleme Takibi',
     };
     const titleEl = document.getElementById('sectionTitle');
     if (titleEl) titleEl.textContent = titles[section] || section;
 
     // Update nav
-    document.querySelectorAll('.nav-item').forEach(item => {
+    document.querySelectorAll('.nav-item').forEach((item) => {
         item.classList.remove('bg-theme/10', 'text-theme');
         if (item.dataset.section === section) {
             item.classList.add('bg-theme/10', 'text-theme');
@@ -176,7 +173,8 @@ function showToast(message, type = 'info') {
         if (toast) {
             const toastMessage = document.getElementById('toastMessage');
             toastMessage.textContent = message;
-            toast.className = 'fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 z-50';
+            toast.className =
+                'fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 z-50';
             if (type === 'success') toast.classList.add('bg-green-600', 'text-white');
             else if (type === 'error') toast.classList.add('bg-red-600', 'text-white');
             else toast.classList.add('bg-gray-900', 'text-white');
@@ -250,22 +248,21 @@ async function loadProjects() {
         // Build cache by course slug
         projectsCache = {};
 
-        courses.forEach(course => {
+        courses.forEach((course) => {
             const courseProjects = projects
-                .filter(p => p.course_id === course.id)
-                .map(p => ({
+                .filter((p) => p.course_id === course.id)
+                .map((p) => ({
                     id: p.slug,
                     dbId: p.id,
                     title: p.title,
                     course: course.title,
-                    courseSlug: course.slug
+                    courseSlug: course.slug,
                 }));
 
             projectsCache[course.slug] = courseProjects;
         });
 
         return projectsCache;
-
     } catch (error) {
         console.error('Error loading projects:', error);
         return {};
@@ -293,7 +290,7 @@ async function loadDashboardData() {
 
         // Get all students for this teacher's classrooms
         if (classrooms.length > 0) {
-            const classroomIds = classrooms.map(c => c.id);
+            const classroomIds = classrooms.map((c) => c.id);
 
             const { data: studentsData, error: studentsError } = await SupabaseClient.getClient()
                 .from('students')
@@ -307,7 +304,7 @@ async function loadDashboardData() {
                 // Calculate active today
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                activeToday = studentsData.filter(s => {
+                activeToday = studentsData.filter((s) => {
                     if (!s.last_active_at) return false;
                     const lastActive = new Date(s.last_active_at);
                     return lastActive >= today;
@@ -327,7 +324,6 @@ async function loadDashboardData() {
         if (elTotalStudents) elTotalStudents.textContent = totalStudents;
         if (elActiveToday) elActiveToday.textContent = activeToday;
         if (elCompletedLessons) elCompletedLessons.textContent = '0'; // Will be updated by loadProgress if needed
-
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         showToast('Veri yüklenirken hata oluştu', 'error');
@@ -354,10 +350,11 @@ async function loadClassrooms() {
         return;
     }
 
-    container.innerHTML = classrooms.map(classroom => {
-        const studentCount = classroom.students?.[0]?.count || 0;
-        const requiresPassword = classroom.requires_password ? '🔒' : '';
-        return `
+    container.innerHTML = classrooms
+        .map((classroom) => {
+            const studentCount = classroom.students?.[0]?.count || 0;
+            const requiresPassword = classroom.requires_password ? '🔒' : '';
+            return `
             <div class="glass-card rounded-2xl p-6">
                 <div class="flex justify-between items-start mb-4">
                     <div>
@@ -406,7 +403,8 @@ async function loadClassrooms() {
                 </div>
             </div>
         `;
-    }).join('');
+        })
+        .join('');
 }
 
 async function loadStudents() {
@@ -418,8 +416,9 @@ async function loadStudents() {
 
     // Update filter options
     if (filterSelect && filterSelect.options.length <= 1) {
-        filterSelect.innerHTML = '<option value="all">Tüm Sınıflar</option>' +
-            classrooms.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+        filterSelect.innerHTML =
+            '<option value="all">Tüm Sınıflar</option>' +
+            classrooms.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
         filterSelect.value = selectedClassroom;
         filterSelect.onchange = () => loadStudents();
     }
@@ -427,7 +426,7 @@ async function loadStudents() {
     // Filter students
     let filteredStudents = students;
     if (selectedClassroom !== 'all') {
-        filteredStudents = students.filter(s => s.classroom_id === selectedClassroom);
+        filteredStudents = students.filter((s) => s.classroom_id === selectedClassroom);
     }
 
     if (filteredStudents.length === 0) {
@@ -441,14 +440,20 @@ async function loadStudents() {
         return;
     }
 
-    container.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-50 dark:divide-gray-700">` +
-        filteredStudents.map(student => {
-            const classroom = classrooms.find(c => c.id === student.classroom_id);
-            const progressCount = student.student_progress?.length || 0;
-            const hasPassword = student.password ? '🔒' : '';
-            const hasArduino = student.student_progress?.some(p => p.course_id === 'arduino' || p.project_id?.includes('arduino')) ? '<span title="Arduino Modülüne Başlamış">🤖</span>' : '';
+    container.innerHTML =
+        '<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-50 dark:divide-gray-700">' +
+        filteredStudents
+            .map((student) => {
+                const classroom = classrooms.find((c) => c.id === student.classroom_id);
+                const progressCount = student.student_progress?.length || 0;
+                const hasPassword = student.password ? '🔒' : '';
+                const hasArduino = student.student_progress?.some(
+                    (p) => p.course_id === 'arduino' || p.project_id?.includes('arduino')
+                )
+                    ? '<span title="Arduino Modülüne Başlamış">🤖</span>'
+                    : '';
 
-            return `
+                return `
             <div class="group flex items-center justify-between p-2 hover:bg-theme/5 transition-colors cursor-pointer" 
                  onclick="openEditStudentModal('${student.id}')">
                 
@@ -477,7 +482,9 @@ async function loadStudents() {
                 </div>
             </div>
         `;
-        }).join('') + `</div>`;
+            })
+            .join('') +
+        '</div>';
 }
 
 async function loadProgress() {
@@ -504,7 +511,7 @@ async function loadProgress() {
             return;
         }
 
-        const studentIds = students.map(s => s.id);
+        const studentIds = students.map((s) => s.id);
 
         // Get all progress data
         const { data: progressData, error } = await SupabaseClient.getClient()
@@ -532,20 +539,20 @@ async function loadProgress() {
 
         // Group by course
         const courseProgress = {};
-        progressData.forEach(p => {
+        progressData.forEach((p) => {
             if (!courseProgress[p.course_id]) {
                 courseProgress[p.course_id] = {
                     courseKey: p.course_id,
                     students: {},
-                    totalCompleted: 0
+                    totalCompleted: 0,
                 };
             }
 
             if (!courseProgress[p.course_id].students[p.student_id]) {
-                const student = students.find(s => s.id === p.student_id);
+                const student = students.find((s) => s.id === p.student_id);
                 courseProgress[p.course_id].students[p.student_id] = {
                     name: student?.display_name || 'Bilinmeyen',
-                    completed: []
+                    completed: [],
                 };
             }
 
@@ -555,11 +562,11 @@ async function loadProgress() {
 
         // Course name mapping
         const courseNames = {
-            'arduino': '🔌 Arduino',
-            'microbit': '📟 Micro:bit',
-            'scratch': '🐱 Scratch',
-            'mblock': '🤖 mBlock',
-            'appinventor': '📱 App Inventor'
+            arduino: '🔌 Arduino',
+            microbit: '📟 Micro:bit',
+            scratch: '🐱 Scratch',
+            mblock: '🤖 mBlock',
+            appinventor: '📱 App Inventor',
         };
 
         // Render progress
@@ -576,9 +583,10 @@ async function loadProgress() {
                         <span class="text-sm text-gray-500">${data.totalCompleted} tamamlama</span>
                     </div>
                     <div class="space-y-3">
-                        ${studentList.map(([studentId, studentData]) => {
-                const completedCount = studentData.completed.length;
-                return `
+                        ${studentList
+                            .map(([studentId, studentData]) => {
+                                const completedCount = studentData.completed.length;
+                                return `
                                 <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                     <div class="w-10 h-10 rounded-full bg-theme/10 flex items-center justify-center text-xl">🎓</div>
                                     <div class="flex-grow">
@@ -586,24 +594,29 @@ async function loadProgress() {
                                         <p class="text-sm text-gray-500">${completedCount} ders tamamladı</p>
                                     </div>
                                     <div class="flex gap-1">
-                                        ${studentData.completed.slice(0, 5).map(() => '<span class="text-green-500">✓</span>').join('')}
+                                        ${studentData.completed
+                                            .slice(0, 5)
+                                            .map(() => '<span class="text-green-500">✓</span>')
+                                            .join('')}
                                         ${completedCount > 5 ? `<span class="text-gray-400 text-sm">+${completedCount - 5}</span>` : ''}
                                     </div>
                                 </div>
                             `;
-            }).join('')}
+                            })
+                            .join('')}
                     </div>
                 </div>
             `;
         });
 
-        container.innerHTML = html || `
+        container.innerHTML =
+            html ||
+            `
             <div class="empty-state">
                 <div class="icon">📊</div>
                 <p>İlerleme verisi henüz yok</p>
             </div>
         `;
-
     } catch (error) {
         console.error('Error loading progress:', error);
         container.innerHTML = `
@@ -648,7 +661,8 @@ async function createClassroom(event) {
     const originalBtnText = submitBtn?.innerHTML;
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Oluşturuluyor...';
+        submitBtn.innerHTML =
+            '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Oluşturuluyor...';
     }
 
     try {
@@ -657,7 +671,7 @@ async function createClassroom(event) {
             .insert({
                 teacher_id: currentUser.id,
                 name: name,
-                description: description || null
+                description: description || null,
             })
             .select()
             .single();
@@ -677,7 +691,6 @@ async function createClassroom(event) {
         // Refresh view
         await loadDashboardData();
         loadClassrooms();
-
     } catch (error) {
         console.error('Error creating classroom:', error);
         showToast('Sınıf oluşturulurken hata oluştu', 'error');
@@ -691,7 +704,7 @@ async function createClassroom(event) {
 }
 
 function viewClassroom(classroomId) {
-    currentClassroom = classrooms.find(c => c.id === classroomId);
+    currentClassroom = classrooms.find((c) => c.id === classroomId);
     if (!currentClassroom) return;
 
     document.getElementById('viewClassroomName').textContent = currentClassroom.name;
@@ -709,12 +722,11 @@ async function toggleClassroom(classroomId, isActive) {
         if (error) throw error;
 
         // Update local state
-        const classroom = classrooms.find(c => c.id === classroomId);
+        const classroom = classrooms.find((c) => c.id === classroomId);
         if (classroom) classroom.is_active = isActive;
 
         showToast(isActive ? 'Sınıf aktifleştirildi' : 'Sınıf duraklatıldı', 'success');
         loadClassrooms();
-
     } catch (error) {
         console.error('Error toggling classroom:', error);
         showToast('İşlem başarısız', 'error');
@@ -722,28 +734,28 @@ async function toggleClassroom(classroomId, isActive) {
 }
 
 async function deleteClassroom(classroomId) {
-    const classroom = classrooms.find(c => c.id === classroomId);
+    const classroom = classrooms.find((c) => c.id === classroomId);
     if (!classroom) return;
 
-    if (!confirm(`"${classroom.name}" sınıfını silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz ve tüm öğrenci verileri silinecektir.`)) {
+    if (
+        !confirm(
+            `"${classroom.name}" sınıfını silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz ve tüm öğrenci verileri silinecektir.`
+        )
+    ) {
         return;
     }
 
     try {
-        const { error } = await SupabaseClient.getClient()
-            .from('classrooms')
-            .delete()
-            .eq('id', classroomId);
+        const { error } = await SupabaseClient.getClient().from('classrooms').delete().eq('id', classroomId);
 
         if (error) throw error;
 
         // Update local state
-        classrooms = classrooms.filter(c => c.id !== classroomId);
+        classrooms = classrooms.filter((c) => c.id !== classroomId);
 
         showToast('Sınıf silindi', 'success');
         await loadDashboardData();
         loadClassrooms();
-
     } catch (error) {
         console.error('Error deleting classroom:', error);
         showToast('Sınıf silinirken hata oluştu', 'error');
@@ -752,11 +764,14 @@ async function deleteClassroom(classroomId) {
 
 function copyCode(element) {
     const code = element.textContent;
-    navigator.clipboard.writeText(code).then(() => {
-        showToast(`Kod kopyalandı: ${code}`, 'success');
-    }).catch(() => {
-        showToast('Kopyalama başarısız', 'error');
-    });
+    navigator.clipboard
+        .writeText(code)
+        .then(() => {
+            showToast(`Kod kopyalandı: ${code}`, 'success');
+        })
+        .catch(() => {
+            showToast('Kopyalama başarısız', 'error');
+        });
 }
 
 function shareClassroomCode() {
@@ -767,7 +782,7 @@ function shareClassroomCode() {
     if (navigator.share) {
         navigator.share({
             title: 'Yeti LAB Sınıf Daveti',
-            text: text
+            text: text,
         });
     } else {
         navigator.clipboard.writeText(text);
@@ -785,7 +800,7 @@ function selectAvatar(emoji) {
     if (input) input.value = emoji;
 
     // Update UI
-    document.querySelectorAll('.avatar-btn').forEach(btn => {
+    document.querySelectorAll('.avatar-btn').forEach((btn) => {
         btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
         btn.classList.add('border-gray-200');
     });
@@ -802,8 +817,14 @@ function generateRandomPassword() {
 
 function openAddStudentModal(classroomId = null) {
     const select = document.getElementById('studentClassroom');
-    select.innerHTML = '<option value="">Sınıf seçin...</option>' +
-        classrooms.map(c => `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+    select.innerHTML =
+        '<option value="">Sınıf seçin...</option>' +
+        classrooms
+            .map(
+                (c) =>
+                    `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
+            )
+            .join('');
 
     document.getElementById('addStudentForm').reset();
     document.getElementById('selectedAvatar').value = '🎓';
@@ -834,7 +855,8 @@ async function addStudent(event) {
 
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Ekleniyor...';
+    submitBtn.innerHTML =
+        '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Ekleniyor...';
 
     try {
         const studentData = {
@@ -842,18 +864,14 @@ async function addStudent(event) {
             display_name: displayName,
             avatar_emoji: avatar,
             added_by_teacher: true,
-            last_active_at: new Date().toISOString()
+            last_active_at: new Date().toISOString(),
         };
 
         if (password) {
             studentData.password = password;
         }
 
-        const { data, error } = await SupabaseClient.getClient()
-            .from('students')
-            .insert(studentData)
-            .select()
-            .single();
+        const { data, error } = await SupabaseClient.getClient().from('students').insert(studentData).select().single();
 
         if (error) throw error;
 
@@ -866,7 +884,6 @@ async function addStudent(event) {
 
         await loadDashboardData();
         loadStudents();
-
     } catch (error) {
         console.error('Error adding student:', error);
         showToast('Öğrenci eklenirken hata oluştu: ' + error.message, 'error');
@@ -877,7 +894,7 @@ async function addStudent(event) {
 }
 
 async function deleteStudent(studentId) {
-    const student = students.find(s => s.id === studentId);
+    const student = students.find((s) => s.id === studentId);
     if (!student) return;
 
     if (!confirm(`"${student.display_name}" öğrencisini silmek istediğinize emin misiniz?`)) {
@@ -885,19 +902,15 @@ async function deleteStudent(studentId) {
     }
 
     try {
-        const { error } = await SupabaseClient.getClient()
-            .from('students')
-            .delete()
-            .eq('id', studentId);
+        const { error } = await SupabaseClient.getClient().from('students').delete().eq('id', studentId);
 
         if (error) throw error;
 
-        students = students.filter(s => s.id !== studentId);
+        students = students.filter((s) => s.id !== studentId);
 
         showToast('Öğrenci silindi', 'success');
         await loadDashboardData();
         loadStudents();
-
     } catch (error) {
         console.error('Error deleting student:', error);
         showToast('Öğrenci silinemedi', 'error');
@@ -944,13 +957,17 @@ function printStudentList() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${students.map((s, index) => `
+                    ${students
+                        .map(
+                            (s, index) => `
                         <tr>
                             <td>${index + 1}</td>
                             <td>${s.display_name}</td>
                             <td>${s.password ? `<span class="password">${s.password}</span>` : '<span class="no-pass">Şifre Yok</span>'}</td>
                         </tr>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </tbody>
             </table>
             <div class="footer">
@@ -972,8 +989,14 @@ function printStudentList() {
 
 function openBulkAddModal(classroomId = null) {
     const select = document.getElementById('bulkStudentClassroom');
-    select.innerHTML = '<option value="">Sınıf seçin...</option>' +
-        classrooms.map(c => `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+    select.innerHTML =
+        '<option value="">Sınıf seçin...</option>' +
+        classrooms
+            .map(
+                (c) =>
+                    `<option value="${c.id}" ${c.id === classroomId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
+            )
+            .join('');
 
     if (classroomId) {
         select.value = classroomId;
@@ -998,14 +1021,14 @@ function previewBulkStudents() {
         return;
     }
 
-    const lines = listText.split('\n').filter(line => line.trim() !== '');
+    const lines = listText.split('\n').filter((line) => line.trim() !== '');
 
     if (lines.length === 0) {
         showToast('Geçerli isim bulunamadı', 'error');
         return;
     }
 
-    bulkStudentsData = lines.map(line => {
+    bulkStudentsData = lines.map((line) => {
         const name = line.trim();
         let password = null;
 
@@ -1016,19 +1039,23 @@ function previewBulkStudents() {
         return {
             name,
             password,
-            avatar: '🎓'
+            avatar: '🎓',
         };
     });
 
     document.getElementById('bulkCount').textContent = bulkStudentsData.length;
     const tbody = document.getElementById('bulkPreviewTable');
-    tbody.innerHTML = bulkStudentsData.map(s => `
+    tbody.innerHTML = bulkStudentsData
+        .map(
+            (s) => `
         <tr class="bg-white dark:bg-gray-800">
             <td class="py-2 pr-2 font-medium text-gray-900 dark:text-white">${escapeHtml(s.name)}</td>
             <td class="py-2 pr-2 font-mono text-gray-600 dark:text-gray-400">${s.password || '<span class="text-gray-300">-</span>'}</td>
             <td class="py-2 text-2xl">${s.avatar}</td>
         </tr>
-    `).join('');
+    `
+        )
+        .join('');
 
     document.getElementById('bulkStep1').classList.add('hidden');
     document.getElementById('bulkStep2').classList.remove('hidden');
@@ -1044,10 +1071,12 @@ function resetBulkForm() {
 function copyBulkList() {
     if (bulkStudentsData.length === 0) return;
 
-    const text = bulkStudentsData.map(s => {
-        if (s.password) return `${s.name}\t${s.password}`;
-        return s.name;
-    }).join('\n');
+    const text = bulkStudentsData
+        .map((s) => {
+            if (s.password) return `${s.name}\t${s.password}`;
+            return s.name;
+        })
+        .join('\n');
 
     navigator.clipboard.writeText(text).then(() => {
         showToast('Liste kopyalandı (İsim + Şifre)', 'success');
@@ -1065,19 +1094,16 @@ async function saveBulkStudents() {
     saveBtn.innerHTML = '<span class="spinner"></span> Kaydediliyor...';
 
     try {
-        const studentsToInsert = bulkStudentsData.map(s => ({
+        const studentsToInsert = bulkStudentsData.map((s) => ({
             classroom_id: classroomId,
             display_name: s.name,
             password: s.password,
             avatar_emoji: s.avatar,
             added_by_teacher: true,
-            last_active_at: new Date().toISOString()
+            last_active_at: new Date().toISOString(),
         }));
 
-        const { data, error } = await SupabaseClient.getClient()
-            .from('students')
-            .insert(studentsToInsert)
-            .select();
+        const { data, error } = await SupabaseClient.getClient().from('students').insert(studentsToInsert).select();
 
         if (error) throw error;
 
@@ -1090,7 +1116,6 @@ async function saveBulkStudents() {
 
         await loadDashboardData();
         loadStudents();
-
     } catch (error) {
         console.error('Bulk save error:', error);
         showToast('Kaydetme başarısız: ' + error.message, 'error');
@@ -1109,7 +1134,7 @@ function selectEditAvatar(emoji) {
     const input = document.getElementById('editSelectedAvatar');
     if (input) input.value = emoji;
 
-    document.querySelectorAll('.edit-avatar-btn').forEach(btn => {
+    document.querySelectorAll('.edit-avatar-btn').forEach((btn) => {
         btn.classList.remove('selected', 'border-theme', 'bg-theme/10');
         btn.classList.add('border-gray-200');
     });
@@ -1121,7 +1146,7 @@ function selectEditAvatar(emoji) {
 }
 
 function openEditStudentModal(studentId) {
-    const student = students.find(s => s.id === studentId);
+    const student = students.find((s) => s.id === studentId);
     if (!student) return;
 
     document.getElementById('editStudentId').value = studentId;
@@ -1165,12 +1190,13 @@ async function saveStudentEdit(event) {
 
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Kaydediliyor...';
+    submitBtn.innerHTML =
+        '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:8px;"></span> Kaydediliyor...';
 
     try {
         const updateData = {
             display_name: displayName,
-            avatar_emoji: avatar
+            avatar_emoji: avatar,
         };
 
         if (removePassword) {
@@ -1179,14 +1205,11 @@ async function saveStudentEdit(event) {
             updateData.password = newPassword;
         }
 
-        const { error } = await SupabaseClient.getClient()
-            .from('students')
-            .update(updateData)
-            .eq('id', studentId);
+        const { error } = await SupabaseClient.getClient().from('students').update(updateData).eq('id', studentId);
 
         if (error) throw error;
 
-        const studentIndex = students.findIndex(s => s.id === studentId);
+        const studentIndex = students.findIndex((s) => s.id === studentId);
         if (studentIndex !== -1) {
             students[studentIndex] = { ...students[studentIndex], ...updateData };
         }
@@ -1194,7 +1217,6 @@ async function saveStudentEdit(event) {
         closeModal('editStudentModal');
         showToast('Öğrenci güncellendi', 'success');
         loadStudents();
-
     } catch (error) {
         console.error('Error updating student:', error);
         showToast('Öğrenci güncellenemedi: ' + error.message, 'error');
@@ -1209,7 +1231,7 @@ async function saveStudentEdit(event) {
 // ==========================================
 
 async function openStudentDetailModal(studentId) {
-    const student = students.find(s => s.id === studentId);
+    const student = students.find((s) => s.id === studentId);
     if (!student) return;
 
     currentDetailStudentId = studentId;
@@ -1217,13 +1239,16 @@ async function openStudentDetailModal(studentId) {
     document.getElementById('detailStudentAvatar').textContent = student.avatar_emoji || '🎓';
     document.getElementById('detailStudentName').textContent = student.display_name;
 
-    const classroom = classrooms.find(c => c.id === student.classroom_id);
+    const classroom = classrooms.find((c) => c.id === student.classroom_id);
     document.getElementById('detailStudentClass').textContent = classroom?.name || 'Bilinmeyen sınıf';
 
-    document.getElementById('detailLastActive').textContent = formatRelativeTime(student.last_active_at).split(' ')[0] || '-';
+    document.getElementById('detailLastActive').textContent =
+        formatRelativeTime(student.last_active_at).split(' ')[0] || '-';
 
-    document.getElementById('detailCourseProgress').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
-    document.getElementById('detailRecentLessons').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+    document.getElementById('detailCourseProgress').innerHTML =
+        '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+    document.getElementById('detailRecentLessons').innerHTML =
+        '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
 
     document.getElementById('studentDetailModal').classList.add('open');
 
@@ -1241,21 +1266,20 @@ async function openStudentDetailModal(studentId) {
         // Removed separate calls since renderStudentProjectList handles updating both containers if needed
         // renderStudentCourseProgress(progressData || []);
         // renderStudentRecentLessons(progressData || []);
-
     } catch (error) {
         console.error('Error loading student progress:', error);
-        document.getElementById('detailCourseProgress').innerHTML = '<p class="text-red-500 text-center">Yüklenemedi</p>';
-        document.getElementById('detailRecentLessons').innerHTML = '<p class="text-red-500 text-center">Yüklenemedi</p>';
+        document.getElementById('detailCourseProgress').innerHTML =
+            '<p class="text-red-500 text-center">Yüklenemedi</p>';
+        document.getElementById('detailRecentLessons').innerHTML =
+            '<p class="text-red-500 text-center">Yüklenemedi</p>';
     }
 }
 
 function renderStudentDetailStats(progressData) {
     document.getElementById('detailCompletedCount').textContent = progressData.length;
 
-    const quizScores = progressData.filter(p => p.quiz_score !== null).map(p => p.quiz_score);
-    const avgScore = quizScores.length > 0
-        ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length)
-        : 0;
+    const quizScores = progressData.filter((p) => p.quiz_score !== null).map((p) => p.quiz_score);
+    const avgScore = quizScores.length > 0 ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
     document.getElementById('detailAvgScore').textContent = avgScore + '%';
 }
 
@@ -1266,7 +1290,7 @@ function renderStudentProjectList(progressData) {
 
     // Use cached projects from database instead of hardcoded list
     // Note: project_id in student_progress is a UUID, so we compare with dbId
-    const completedProjectIds = progressData.map(p => p.project_id);
+    const completedProjectIds = progressData.map((p) => p.project_id);
 
     const formatId = (id) => {
         if (!id) return 'Bilinmeyen';
@@ -1275,16 +1299,19 @@ function renderStudentProjectList(progressData) {
         if (id.includes('-') && id.length > 30) {
             return 'Proje ' + id.slice(0, 8); // Truncate UUID for display
         }
-        return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        return id
+            .split('-')
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ');
     };
 
     // Course display names
     const courseDisplayNames = {
-        'arduino': 'Arduino',
-        'microbit': 'Micro:bit',
-        'scratch': 'Scratch',
-        'mblock': 'mBlock',
-        'appinventor': 'App Inventor'
+        arduino: 'Arduino',
+        microbit: 'Micro:bit',
+        scratch: 'Scratch',
+        mblock: 'mBlock',
+        appinventor: 'App Inventor',
     };
 
     let html = '<div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">';
@@ -1302,7 +1329,7 @@ function renderStudentProjectList(progressData) {
             const courseName = courseDisplayNames[courseSlug] || courseSlug;
 
             // Check if student has any activity in this course (compare with dbId - UUID)
-            const courseCompletedCount = projects.filter(p => completedProjectIds.includes(p.dbId)).length;
+            const courseCompletedCount = projects.filter((p) => completedProjectIds.includes(p.dbId)).length;
 
             // Only show courses that have projects
             if (projects.length === 0) return;
@@ -1317,10 +1344,12 @@ function renderStudentProjectList(progressData) {
             `;
 
             // Render projects from cache (compare with dbId - UUID)
-            projects.forEach(proj => {
+            projects.forEach((proj) => {
                 const isCompleted = completedProjectIds.includes(proj.dbId);
                 const statusIcon = isCompleted ? '✅' : '⬜';
-                const textClass = isCompleted ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500';
+                const textClass = isCompleted
+                    ? 'text-gray-900 dark:text-white font-medium'
+                    : 'text-gray-400 dark:text-gray-500';
 
                 html += `
                     <div class="flex items-center justify-between p-1.5 rounded hover:bg-white dark:hover:bg-gray-600 transition-colors">
@@ -1330,7 +1359,7 @@ function renderStudentProjectList(progressData) {
                 `;
             });
 
-            html += `</div></div>`;
+            html += '</div></div>';
         });
     }
 
@@ -1347,7 +1376,7 @@ function renderStudentProjectList(progressData) {
             // Find project titles from cache (compare with dbId - UUID)
             const getProjectTitle = (projectId) => {
                 for (const courseProjects of Object.values(projectsCache)) {
-                    const found = courseProjects.find(p => p.dbId === projectId);
+                    const found = courseProjects.find((p) => p.dbId === projectId);
                     if (found) return found.title;
                 }
                 return formatId(projectId);
@@ -1355,12 +1384,17 @@ function renderStudentProjectList(progressData) {
 
             recentContainer.innerHTML = `
                 <div class="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3 max-h-[150px] overflow-y-auto custom-scrollbar">
-                    ${progressData.sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at)).map(p => `
+                    ${progressData
+                        .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
+                        .map(
+                            (p) => `
                         <div class="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-600 last:border-0 text-xs">
                              <span class="text-gray-600 dark:text-gray-300 truncate pr-2">${getProjectTitle(p.project_id)}</span>
                              <span class="text-gray-400 whitespace-nowrap">${formatRelativeTime(p.completed_at)}</span>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
              `;
         }
@@ -1368,8 +1402,10 @@ function renderStudentProjectList(progressData) {
 }
 
 // Aliases for compatibility
-function renderStudentCourseProgress(data) { renderStudentProjectList(data); }
-function renderStudentRecentLessons(data) { }
+function renderStudentCourseProgress(data) {
+    renderStudentProjectList(data);
+}
+function renderStudentRecentLessons(data) {}
 
 function openEditStudentFromDetail() {
     if (currentDetailStudentId) {
@@ -1379,7 +1415,7 @@ function openEditStudentFromDetail() {
 }
 
 function openClassroomSettings(classroomId) {
-    const classroom = classrooms.find(c => c.id === classroomId);
+    const classroom = classrooms.find((c) => c.id === classroomId);
     if (!classroom) return;
 
     document.getElementById('settingsClassroomId').value = classroomId;
@@ -1409,13 +1445,13 @@ async function saveClassroomSettings(event) {
             .update({
                 name,
                 description: description || null,
-                requires_password: requiresPassword
+                requires_password: requiresPassword,
             })
             .eq('id', classroomId);
 
         if (error) throw error;
 
-        const classroom = classrooms.find(c => c.id === classroomId);
+        const classroom = classrooms.find((c) => c.id === classroomId);
         if (classroom) {
             classroom.name = name;
             classroom.description = description;
@@ -1425,7 +1461,6 @@ async function saveClassroomSettings(event) {
         closeModal('classroomSettingsModal');
         showToast('Sınıf ayarları güncellendi', 'success');
         loadClassrooms();
-
     } catch (error) {
         console.error('Error updating classroom:', error);
         showToast('Ayarlar kaydedilemedi', 'error');

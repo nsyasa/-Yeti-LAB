@@ -49,7 +49,7 @@ const EL = {
             SHOW_IN_LAB: 'p-showInLab',
 
             // Tab Visibility Checkboxes Prefix
-            SHOW_TAB_PREFIX: 'p-show-' // e.g. p-show-mission
+            SHOW_TAB_PREFIX: 'p-show-', // e.g. p-show-mission
         },
 
         // Component Form Fields
@@ -58,7 +58,7 @@ const EL = {
             NAME: 'c-name',
             ICON: 'c-icon',
             IMG: 'c-imgFileName',
-            DESC: 'c-desc'
+            DESC: 'c-desc',
         },
 
         // Phase Form Fields
@@ -66,7 +66,7 @@ const EL = {
             FIXED_NAME: 'ph-fixed-name',
             ICON: 'ph-icon',
             DESC: 'ph-desc',
-            COLOR: 'ph-color'
+            COLOR: 'ph-color',
         },
 
         // Course Settings
@@ -78,8 +78,8 @@ const EL = {
             PREVIEW_TITLE: 'course-title-preview',
             PREVIEW_DESC: 'course-desc-preview',
             FORM: 'course-settings-form',
-            TOGGLE: 'course-settings-toggle'
-        }
+            TOGGLE: 'course-settings-toggle',
+        },
     },
 
     // --- MAIN APP (Placeholder for now) ---
@@ -87,7 +87,7 @@ const EL = {
         CONTENT: 'content',
         SIDEBAR: 'sidebar',
         // Add more as we migrate app.js
-    }
+    },
 };
 
 // Global erişim için window'a ata (Module import sistemi olmadığı için)

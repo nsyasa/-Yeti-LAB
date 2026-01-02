@@ -15,88 +15,100 @@ const Assistant = {
         {
             keywords: ['merhaba', 'selam', 'naber', 'hey'],
             response: () => `Merhaba! 👋 Ben Yeti Asistan. ${Assistant.getContextGreeting()}`,
-            priority: 1
+            priority: 1,
         },
         {
             keywords: ['yardım', 'help', 'ne yapabilirim'],
             response: () => Assistant.getHelpMessage(),
-            priority: 1
+            priority: 1,
         },
         {
             keywords: ['bu ders', 'şu an', 'hangi ders', 'neredeyim'],
             response: () => Assistant.getCurrentLessonInfo(),
-            priority: 2
+            priority: 2,
         },
         {
             keywords: ['ipucu', 'hint', 'takıldım', 'anlamadım'],
             response: () => Assistant.getContextualTip(),
-            priority: 2
+            priority: 2,
         },
         {
             keywords: ['kod', 'açıkla', 'nasıl çalışıyor'],
             response: () => Assistant.explainCurrentCode(),
-            priority: 2
+            priority: 2,
         },
         {
             keywords: ['malzeme', 'devre', 'bileşen', 'ne lazım'],
             response: () => Assistant.getMaterialsInfo(),
-            priority: 2
+            priority: 2,
         },
         {
             keywords: ['adım adım', 'rehber', 'başla', 'yönlendir'],
-            response: () => { Assistant.startGuidedMode(); return null; },
-            priority: 3
+            response: () => {
+                Assistant.startGuidedMode();
+                return null;
+            },
+            priority: 3,
         },
         {
             keywords: ['led', 'lamba', 'ışık'],
-            response: () => "LED yakmak için <code>digitalWrite(pin, HIGH);</code> komutunu kullanmalısın. Ayrıca <code>pinMode(pin, OUTPUT);</code> ile pini çıkış yapmayı unutma!",
-            priority: 0
+            response: () =>
+                'LED yakmak için <code>digitalWrite(pin, HIGH);</code> komutunu kullanmalısın. Ayrıca <code>pinMode(pin, OUTPUT);</code> ile pini çıkış yapmayı unutma!',
+            priority: 0,
         },
         {
             keywords: ['döngü', 'loop', 'for', 'while', 'tekrar'],
-            response: () => "Döngüler bir işlemi tekrar ettirmek için kullanılır. Arduino'da <code>void loop()</code> ana döngüdür ve sürekli çalışır. <code>for</code> döngüsü belirli sayıda tekrar için kullanılır.",
-            priority: 0
+            response: () =>
+                "Döngüler bir işlemi tekrar ettirmek için kullanılır. Arduino'da <code>void loop()</code> ana döngüdür ve sürekli çalışır. <code>for</code> döngüsü belirli sayıda tekrar için kullanılır.",
+            priority: 0,
         },
         {
             keywords: ['hata', 'error', 'çalışmıyor', 'bozuk', 'sorun'],
-            response: () => "Kodunda bir sorun mu var? 🐞 Kodu buraya yapıştırırsan senin için kontrol edebilirim!<br><br>Yaygın hatalar:<br>• Noktalı virgül (;) unutulmuş<br>• Parantez kapatılmamış<br>• Değişken tanımlanmamış",
-            priority: 0
+            response: () =>
+                'Kodunda bir sorun mu var? 🐞 Kodu buraya yapıştırırsan senin için kontrol edebilirim!<br><br>Yaygın hatalar:<br>• Noktalı virgül (;) unutulmuş<br>• Parantez kapatılmamış<br>• Değişken tanımlanmamış',
+            priority: 0,
         },
         {
             keywords: ['arduino', 'uno', 'nano', 'mega'],
-            response: () => "Arduino, elektronik projeleri yapmamızı sağlayan bir mikrodenetleyici kartıdır. Sensörleri okuyabilir, motorları kontrol edebilir. En popüler model Arduino Uno'dur.",
-            priority: 0
+            response: () =>
+                "Arduino, elektronik projeleri yapmamızı sağlayan bir mikrodenetleyici kartıdır. Sensörleri okuyabilir, motorları kontrol edebilir. En popüler model Arduino Uno'dur.",
+            priority: 0,
         },
         {
             keywords: ['micro:bit', 'microbit', 'bbc'],
-            response: () => "Micro:bit, üzerinde LED ekran, butonlar ve sensörler barındıran küçük bir bilgisayardır. MakeCode ile blok tabanlı kodlanır.",
-            priority: 0
+            response: () =>
+                'Micro:bit, üzerinde LED ekran, butonlar ve sensörler barındıran küçük bir bilgisayardır. MakeCode ile blok tabanlı kodlanır.',
+            priority: 0,
         },
         {
             keywords: ['scratch', 'kukla', 'sprite'],
-            response: () => "Scratch ile kendi oyunlarını ve animasyonlarını yapabilirsin. Kuklalar (sprite) sahnede hareket eder.",
-            priority: 0
+            response: () =>
+                'Scratch ile kendi oyunlarını ve animasyonlarını yapabilirsin. Kuklalar (sprite) sahnede hareket eder.',
+            priority: 0,
         },
         {
             keywords: ['mblock', 'panda'],
-            response: () => "mBlock, Scratch tabanlı bir programdır. Blokları sürükle-bırak yaparak Arduino'yu kodlayabilirsin!",
-            priority: 0
+            response: () =>
+                "mBlock, Scratch tabanlı bir programdır. Blokları sürükle-bırak yaparak Arduino'yu kodlayabilirsin!",
+            priority: 0,
         },
         {
             keywords: ['sensör', 'mesafe', 'sıcaklık', 'hc-sr04', 'dht11'],
-            response: () => "Sensörler çevreyi algılar:<br>• <strong>HC-SR04:</strong> Mesafe ölçer<br>• <strong>DHT11:</strong> Sıcaklık ve Nem ölçer<br>• <strong>LDR:</strong> Işık seviyesi ölçer",
-            priority: 0
+            response: () =>
+                'Sensörler çevreyi algılar:<br>• <strong>HC-SR04:</strong> Mesafe ölçer<br>• <strong>DHT11:</strong> Sıcaklık ve Nem ölçer<br>• <strong>LDR:</strong> Işık seviyesi ölçer',
+            priority: 0,
         },
         {
             keywords: ['servo', 'motor'],
-            response: () => "Servo motorlar belirli bir açıya (0-180 derece) dönebilen motorlardır. Robot kol veya bariyer yapımında kullanılır.",
-            priority: 0
+            response: () =>
+                'Servo motorlar belirli bir açıya (0-180 derece) dönebilen motorlardır. Robot kol veya bariyer yapımında kullanılır.',
+            priority: 0,
         },
         {
             keywords: ['teşekkür', 'sağol', 'eyvallah'],
-            response: () => "Rica ederim! 😊 Başka sorun olursa yardımcı olmaktan mutluluk duyarım. 🏔️",
-            priority: 1
-        }
+            response: () => 'Rica ederim! 😊 Başka sorun olursa yardımcı olmaktan mutluluk duyarım. 🏔️',
+            priority: 1,
+        },
     ],
 
     // ============================================
@@ -104,13 +116,31 @@ const Assistant = {
     // ============================================
     guidedSteps: {
         default: [
-            { message: "Hoş geldin! 🏔️ Seni bu derste adım adım yönlendireceğim. Hazır mısın?", options: ["Evet, başlayalım!", "Dersi anlat"] },
-            { message: "İlk adım: <strong>Görevi oku</strong>. Bu derste ne yapacağımızı anlamalıyız.", options: ["Okudum, devam", "Görevi göster"] },
-            { message: "İkinci adım: <strong>Malzemeleri hazırla</strong>. Gerekli parçalar masanda mı?", options: ["Hazır!", "Malzemeleri göster"] },
-            { message: "Üçüncü adım: <strong>Devreyi kur</strong>. Bağlantı şemasına göre kabloları bağla.", options: ["Kurdum", "Şemayı göster"] },
-            { message: "Dördüncü adım: <strong>Kodu yükle</strong>. Kodu Arduino'ya yükle ve test et.", options: ["Çalıştı! 🎉", "Hata aldım"] },
-            { message: "Harika! 🎉 Dersi tamamladın! Şimdi meydan okumayı dene veya teste geç.", options: ["Testi çöz", "Meydan okumayı göster"] }
-        ]
+            {
+                message: 'Hoş geldin! 🏔️ Seni bu derste adım adım yönlendireceğim. Hazır mısın?',
+                options: ['Evet, başlayalım!', 'Dersi anlat'],
+            },
+            {
+                message: 'İlk adım: <strong>Görevi oku</strong>. Bu derste ne yapacağımızı anlamalıyız.',
+                options: ['Okudum, devam', 'Görevi göster'],
+            },
+            {
+                message: 'İkinci adım: <strong>Malzemeleri hazırla</strong>. Gerekli parçalar masanda mı?',
+                options: ['Hazır!', 'Malzemeleri göster'],
+            },
+            {
+                message: 'Üçüncü adım: <strong>Devreyi kur</strong>. Bağlantı şemasına göre kabloları bağla.',
+                options: ['Kurdum', 'Şemayı göster'],
+            },
+            {
+                message: "Dördüncü adım: <strong>Kodu yükle</strong>. Kodu Arduino'ya yükle ve test et.",
+                options: ['Çalıştı! 🎉', 'Hata aldım'],
+            },
+            {
+                message: 'Harika! 🎉 Dersi tamamladın! Şimdi meydan okumayı dene veya teste geç.',
+                options: ['Testi çöz', 'Meydan okumayı göster'],
+            },
+        ],
     },
 
     // ============================================
@@ -232,7 +262,13 @@ const Assistant = {
             statusText.textContent = `${project.title} dersinde yardımcıyım`;
         } else if (courseKey) {
             contextBar.classList.remove('hidden');
-            const courseNames = { arduino: 'Arduino', microbit: 'Micro:bit', scratch: 'Scratch', mblock: 'mBlock', appinventor: 'App Inventor' };
+            const courseNames = {
+                arduino: 'Arduino',
+                microbit: 'Micro:bit',
+                scratch: 'Scratch',
+                mblock: 'mBlock',
+                appinventor: 'App Inventor',
+            };
             contextText.innerHTML = `📚 ${courseNames[courseKey] || courseKey} Kursu`;
             statusText.textContent = 'Ders seçmeni bekliyorum';
         } else {
@@ -255,28 +291,35 @@ const Assistant = {
                 { label: '💡 İpucu', action: "Assistant.setUserInput('İpucu ver')" },
                 { label: '🔧 Kodu Açıkla', action: "Assistant.setUserInput('Kodu açıkla')" },
                 { label: '📦 Malzemeler', action: "Assistant.setUserInput('Malzemeler neler?')" },
-                { label: '🎯 Rehber Başlat', action: "Assistant.startGuidedMode()" }
+                { label: '🎯 Rehber Başlat', action: 'Assistant.startGuidedMode()' },
             ];
         } else {
             actions = [
                 { label: '👋 Merhaba', action: "Assistant.setUserInput('Merhaba')" },
                 { label: '❓ Yardım', action: "Assistant.setUserInput('Yardım')" },
-                { label: '⚡ Arduino Nedir?', action: "Assistant.setUserInput('Arduino nedir?')" }
+                { label: '⚡ Arduino Nedir?', action: "Assistant.setUserInput('Arduino nedir?')" },
             ];
         }
 
-        container.innerHTML = actions.map(a =>
-            `<button onclick="${a.action}" class="bg-white border border-teal-300 text-teal-700 px-3 py-1 rounded-full text-xs hover:bg-teal-500 hover:text-white transition">${a.label}</button>`
-        ).join('');
+        container.innerHTML = actions
+            .map(
+                (a) =>
+                    `<button onclick="${a.action}" class="bg-white border border-teal-300 text-teal-700 px-3 py-1 rounded-full text-xs hover:bg-teal-500 hover:text-white transition">${a.label}</button>`
+            )
+            .join('');
     },
 
     showWelcome: () => {
         const project = window.app?.currentProject;
 
         if (project) {
-            Assistant.addMessage(`Merhaba! 👋 <strong>${project.title}</strong> dersinde sana yardımcı olacağım.<br><br>Aşağıdaki butonları kullanabilir veya soru sorabilirsin!`);
+            Assistant.addMessage(
+                `Merhaba! 👋 <strong>${project.title}</strong> dersinde sana yardımcı olacağım.<br><br>Aşağıdaki butonları kullanabilir veya soru sorabilirsin!`
+            );
         } else {
-            Assistant.addMessage(`Merhaba! 👋 Ben <strong>Yeti Asistan</strong>. Kodlama ve robotik konularında sana yardımcı olabilirim.<br><br>Bir ders seçtiğinde sana özel ipuçları verebilirim!`);
+            Assistant.addMessage(
+                'Merhaba! 👋 Ben <strong>Yeti Asistan</strong>. Kodlama ve robotik konularında sana yardımcı olabilirim.<br><br>Bir ders seçtiğinde sana özel ipuçları verebilirim!'
+            );
         }
     },
 
@@ -288,17 +331,17 @@ const Assistant = {
         if (project) {
             return `<strong>${project.title}</strong> dersinde sana yardımcı olabilirim. Ne sormak istersin?`;
         }
-        return "Sana nasıl yardımcı olabilirim?";
+        return 'Sana nasıl yardımcı olabilirim?';
     },
 
     getHelpMessage: () => {
         const project = window.app?.currentProject;
         let help = "İşte yapabileceklerim:<br><ul class='list-disc pl-4 mt-2'>";
-        help += "<li>Dersleri adım adım anlatmak</li>";
-        help += "<li>Kodunu kontrol etmek</li>";
-        help += "<li>İpucu ve öneriler vermek</li>";
-        help += "<li>Hataları açıklamak</li>";
-        help += "</ul>";
+        help += '<li>Dersleri adım adım anlatmak</li>';
+        help += '<li>Kodunu kontrol etmek</li>';
+        help += '<li>İpucu ve öneriler vermek</li>';
+        help += '<li>Hataları açıklamak</li>';
+        help += '</ul>';
 
         if (project) {
             help += `<br>Şu an <strong>${project.title}</strong> dersinde olduğunu görüyorum. Özel yardım için 'ipucu' veya 'rehber başlat' yazabilirsin!`;
@@ -309,7 +352,7 @@ const Assistant = {
     getCurrentLessonInfo: () => {
         const project = window.app?.currentProject;
         if (!project) {
-            return "Henüz bir ders seçmedin. Ana sayfadan bir kurs ve ders seç, sonra sana yardımcı olabilirim!";
+            return 'Henüz bir ders seçmedin. Ana sayfadan bir kurs ve ders seç, sonra sana yardımcı olabilirim!';
         }
 
         return `
@@ -322,41 +365,41 @@ const Assistant = {
     getContextualTip: () => {
         const project = window.app?.currentProject;
         if (!project) {
-            return "Bir ders seçersen sana özel ipuçları verebilirim! 💡";
+            return 'Bir ders seçersen sana özel ipuçları verebilirim! 💡';
         }
 
         // Course-specific tips
         const tips = {
             arduino: [
                 "💡 Kodu yüklemeden önce 'Doğrula' butonuna bas, hataları önceden yakala!",
-                "💡 LED yanmıyorsa, uzun bacağın (+) pinde olduğundan emin ol.",
+                '💡 LED yanmıyorsa, uzun bacağın (+) pinde olduğundan emin ol.',
                 "💡 Seri Port Ekranı'nı aç (Ctrl+Shift+M) ve sensör değerlerini izle.",
-                "💡 delay() yerine millis() kullanarak çoklu görev yapabilirsin."
+                '💡 delay() yerine millis() kullanarak çoklu görev yapabilirsin.',
             ],
             microbit: [
                 "💡 LED'ler aynı zamanda ışık sensörü olarak çalışır!",
-                "💡 A+B butonlarına aynı anda basmayı dene.",
-                "💡 Radyo ile arkadaşınla mesajlaşabilirsin!",
-                "💡 Pusula kullanmadan önce kart kalibre edilmeli."
+                '💡 A+B butonlarına aynı anda basmayı dene.',
+                '💡 Radyo ile arkadaşınla mesajlaşabilirsin!',
+                '💡 Pusula kullanmadan önce kart kalibre edilmeli.',
             ],
             scratch: [
-                "💡 Kuklayı klonlayarak çok sayıda karakter oluşturabilirsin.",
+                '💡 Kuklayı klonlayarak çok sayıda karakter oluşturabilirsin.',
                 "💡 'Haber sal' bloğu ile kuklalar birbiriyle haberleşebilir.",
-                "💡 Animasyon için kostümleri hızlıca değiştir.",
-                "💡 Değişkenleri 'Sadece bu kukla için' yaparak bağımsız kontrol sağla."
+                '💡 Animasyon için kostümleri hızlıca değiştir.',
+                "💡 Değişkenleri 'Sadece bu kukla için' yaparak bağımsız kontrol sağla.",
             ],
             mblock: [
                 "💡 mBlock'ta hem sahnedeki Panda'yı hem Arduino'yu kodlayabilirsin.",
-                "💡 Uzantılar bölümünden ek sensör blokları ekleyebilirsin.",
+                '💡 Uzantılar bölümünden ek sensör blokları ekleyebilirsin.',
                 "💡 'Canlı Mod'da kodu yüklemeden test edebilirsin.",
-                "💡 Sayısal pin okuma 0 veya 1 döner, analog 0-1023 arası."
+                '💡 Sayısal pin okuma 0 veya 1 döner, analog 0-1023 arası.',
             ],
             appinventor: [
-                "💡 TinyDB ile verileri kalıcı olarak kaydedebilirsin.",
-                "💡 Canvas üzerinde Ball ve ImageSprite ile oyun yapabilirsin.",
-                "💡 Telefonu salla algılamak için AccelerometerSensor kullan.",
-                "💡 Blok editöründe sağ tık ile kodu kopyalayabilirsin."
-            ]
+                '💡 TinyDB ile verileri kalıcı olarak kaydedebilirsin.',
+                '💡 Canvas üzerinde Ball ve ImageSprite ile oyun yapabilirsin.',
+                '💡 Telefonu salla algılamak için AccelerometerSensor kullan.',
+                '💡 Blok editöründe sağ tık ile kodu kopyalayabilirsin.',
+            ],
         };
 
         const courseKey = window.app?.currentCourseKey || 'arduino';
@@ -375,44 +418,44 @@ const Assistant = {
     explainCurrentCode: () => {
         const project = window.app?.currentProject;
         if (!project || !project.code) {
-            return "Şu anki derste gösterilecek kod yok. Kod içeren bir ders seç!";
+            return 'Şu anki derste gösterilecek kod yok. Kod içeren bir ders seç!';
         }
 
         // Check if code is an image
         if (project.code.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-            return "Bu derste blok tabanlı kod kullanılıyor. Resmi inceleyerek blokların ne yaptığını anlayabilirsin!";
+            return 'Bu derste blok tabanlı kod kullanılıyor. Resmi inceleyerek blokların ne yaptığını anlayabilirsin!';
         }
 
         const code = project.code;
-        let explanation = "<strong>🔧 Kod Açıklaması:</strong><br><br>";
+        let explanation = '<strong>🔧 Kod Açıklaması:</strong><br><br>';
 
         // Simple code pattern explanations
         if (code.includes('pinMode')) {
-            explanation += "• <code>pinMode(pin, OUTPUT/INPUT)</code>: Pini giriş veya çıkış olarak ayarlar.<br>";
+            explanation += '• <code>pinMode(pin, OUTPUT/INPUT)</code>: Pini giriş veya çıkış olarak ayarlar.<br>';
         }
         if (code.includes('digitalWrite')) {
-            explanation += "• <code>digitalWrite(pin, HIGH/LOW)</code>: Pine elektrik verir veya keser.<br>";
+            explanation += '• <code>digitalWrite(pin, HIGH/LOW)</code>: Pine elektrik verir veya keser.<br>';
         }
         if (code.includes('digitalRead')) {
-            explanation += "• <code>digitalRead(pin)</code>: Pinin durumunu okur (1 veya 0).<br>";
+            explanation += '• <code>digitalRead(pin)</code>: Pinin durumunu okur (1 veya 0).<br>';
         }
         if (code.includes('analogRead')) {
-            explanation += "• <code>analogRead(pin)</code>: Analog değer okur (0-1023).<br>";
+            explanation += '• <code>analogRead(pin)</code>: Analog değer okur (0-1023).<br>';
         }
         if (code.includes('analogWrite')) {
-            explanation += "• <code>analogWrite(pin, değer)</code>: PWM ile parlaklık/hız ayarlar (0-255).<br>";
+            explanation += '• <code>analogWrite(pin, değer)</code>: PWM ile parlaklık/hız ayarlar (0-255).<br>';
         }
         if (code.includes('delay')) {
-            explanation += "• <code>delay(ms)</code>: Belirtilen milisaniye kadar bekler.<br>";
+            explanation += '• <code>delay(ms)</code>: Belirtilen milisaniye kadar bekler.<br>';
         }
         if (code.includes('Serial')) {
-            explanation += "• <code>Serial.begin/print</code>: Bilgisayarla haberleşme için.<br>";
+            explanation += '• <code>Serial.begin/print</code>: Bilgisayarla haberleşme için.<br>';
         }
         if (code.includes('Servo')) {
-            explanation += "• <code>Servo</code>: Servo motorları kontrol etmek için kütüphane.<br>";
+            explanation += '• <code>Servo</code>: Servo motorları kontrol etmek için kütüphane.<br>';
         }
 
-        explanation += `<br><em>Tam kodu görmek için 'Kod' sekmesine geç!</em>`;
+        explanation += "<br><em>Tam kodu görmek için 'Kod' sekmesine geç!</em>";
 
         return explanation;
     },
@@ -420,15 +463,15 @@ const Assistant = {
     getMaterialsInfo: () => {
         const project = window.app?.currentProject;
         if (!project || !project.materials || project.materials.length === 0) {
-            return "Bu derste özel malzeme listesi yok.";
+            return 'Bu derste özel malzeme listesi yok.';
         }
 
         let response = `<strong>📦 ${project.title} için gereken malzemeler:</strong><br><br>`;
         response += "<ul class='list-disc pl-4'>";
-        project.materials.forEach(m => {
+        project.materials.forEach((m) => {
             response += `<li>${m}</li>`;
         });
-        response += "</ul>";
+        response += '</ul>';
 
         if (project.circuit_desc) {
             response += `<br><strong>Bağlantı:</strong> ${project.circuit_desc}`;
@@ -443,14 +486,16 @@ const Assistant = {
     startGuidedMode: () => {
         const project = window.app?.currentProject;
         if (!project) {
-            Assistant.addMessage("Rehber modu için önce bir ders seçmelisin! Ana sayfadan bir ders seç.");
+            Assistant.addMessage('Rehber modu için önce bir ders seçmelisin! Ana sayfadan bir ders seç.');
             return;
         }
 
         Assistant.guidedMode = true;
         Assistant.currentStep = 0;
 
-        Assistant.addMessage("🎯 <strong>Rehber Modu Başladı!</strong><br><br>Seni bu derste adım adım yönlendireceğim.");
+        Assistant.addMessage(
+            '🎯 <strong>Rehber Modu Başladı!</strong><br><br>Seni bu derste adım adım yönlendireceğim.'
+        );
 
         setTimeout(() => Assistant.showGuidedStep(), 500);
     },
@@ -461,7 +506,9 @@ const Assistant = {
 
         if (!step) {
             Assistant.guidedMode = false;
-            Assistant.addMessage("🎉 <strong>Tebrikler!</strong> Rehberi tamamladın. Başka sorun varsa yardımcı olmaya hazırım!");
+            Assistant.addMessage(
+                '🎉 <strong>Tebrikler!</strong> Rehberi tamamladın. Başka sorun varsa yardımcı olmaya hazırım!'
+            );
             return;
         }
 
@@ -474,9 +521,12 @@ const Assistant = {
                 <div class="text-teal-600 text-xs font-bold mb-1">ADIM ${Assistant.currentStep + 1}/${Assistant.guidedSteps.default.length}</div>
                 ${step.message}
                 <div class="flex flex-wrap gap-2 mt-3">
-                    ${step.options.map((opt, i) =>
-            `<button onclick="Assistant.handleGuidedOption(${i}, '${opt}')" class="bg-teal-500 text-white px-3 py-1 rounded-full text-xs hover:bg-teal-600 transition">${opt}</button>`
-        ).join('')}
+                    ${step.options
+                        .map(
+                            (opt, i) =>
+                                `<button onclick="Assistant.handleGuidedOption(${i}, '${opt}')" class="bg-teal-500 text-white px-3 py-1 rounded-full text-xs hover:bg-teal-600 transition">${opt}</button>`
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
@@ -496,12 +546,12 @@ const Assistant = {
         } else if (optionText.includes('Malzemeleri göster') && project) {
             Assistant.addMessage(Assistant.getMaterialsInfo());
         } else if (optionText.includes('Şemayı göster')) {
-            Assistant.addMessage("Devre şemasını görmek için <strong>Devre</strong> sekmesine tıkla!");
+            Assistant.addMessage('Devre şemasını görmek için <strong>Devre</strong> sekmesine tıkla!');
         } else if (optionText.includes('Hata aldım')) {
-            Assistant.addMessage("Hata mesajını buraya yapıştır, birlikte çözelim! 🐞");
+            Assistant.addMessage('Hata mesajını buraya yapıştır, birlikte çözelim! 🐞');
             return; // Don't advance step
         } else if (optionText.includes('Testi çöz')) {
-            Assistant.addMessage("Test için <strong>Test</strong> sekmesine geç. Başarılar! 📝");
+            Assistant.addMessage('Test için <strong>Test</strong> sekmesine geç. Başarılar! 📝');
         } else if (optionText.includes('Meydan okumayı göster') && project?.challenge) {
             Assistant.addMessage(`🏆 <strong>Meydan Okuma:</strong><br><br>${project.challenge}`);
         }
@@ -522,9 +572,10 @@ const Assistant = {
         div.className = `flex ${type === 'user' ? 'justify-end' : 'items-start'}`;
 
         const bubble = document.createElement('div');
-        bubble.className = type === 'user'
-            ? 'bg-teal-500 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%]'
-            : 'bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 max-w-[85%]';
+        bubble.className =
+            type === 'user'
+                ? 'bg-teal-500 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%]'
+                : 'bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 max-w-[85%]';
 
         bubble.innerHTML = text;
         div.appendChild(bubble);
@@ -546,7 +597,7 @@ const Assistant = {
 
         // User Message
         Assistant.addMessage(text, 'user');
-        input.value = "";
+        input.value = '';
 
         // Exit guided mode if user types something else
         if (Assistant.guidedMode && !text.toLowerCase().includes('devam')) {
@@ -575,20 +626,31 @@ const Assistant = {
     },
 
     isCode: (text) => {
-        return (text.includes(';') && text.includes('(')) ||
+        return (
+            (text.includes(';') && text.includes('(')) ||
             text.includes('{') ||
             text.includes('void ') ||
             text.includes('int ') ||
-            text.includes('#include');
+            text.includes('#include')
+        );
     },
 
     analyzeCode: (code) => {
-        let issues = [];
+        const issues = [];
 
         const lines = code.split('\n');
         lines.forEach((line, i) => {
             const l = line.trim();
-            if (l && !l.startsWith('//') && !l.startsWith('#') && !l.endsWith('{') && !l.endsWith('}') && !l.endsWith(';') && l.length > 3 && !l.startsWith('*')) {
+            if (
+                l &&
+                !l.startsWith('//') &&
+                !l.startsWith('#') &&
+                !l.endsWith('{') &&
+                !l.endsWith('}') &&
+                !l.endsWith(';') &&
+                l.length > 3 &&
+                !l.startsWith('*')
+            ) {
                 issues.push(`Satır ${i + 1}: Noktalı virgül (;) eksik olabilir.`);
             }
         });
@@ -606,9 +668,9 @@ const Assistant = {
         }
 
         if (issues.length > 0) {
-            return `<strong>🐞 Bulduğum sorunlar:</strong><br><ul class='list-disc pl-4 mt-2'>${issues.map(i => `<li>${i}</li>`).join('')}</ul><br>Bunları kontrol et ve tekrar dene!`;
+            return `<strong>🐞 Bulduğum sorunlar:</strong><br><ul class='list-disc pl-4 mt-2'>${issues.map((i) => `<li>${i}</li>`).join('')}</ul><br>Bunları kontrol et ve tekrar dene!`;
         } else {
-            return "✅ Kodun yapısal olarak düzgün görünüyor! Mantık hatası olup olmadığını görmek için çalıştırıp test etmelisin.";
+            return '✅ Kodun yapısal olarak düzgün görünüyor! Mantık hatası olup olmadığını görmek için çalıştırıp test etmelisin.';
         }
     },
 
@@ -618,15 +680,14 @@ const Assistant = {
         // Sort by priority (higher = more specific)
         const sortedRules = [...Assistant.rules].sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-        const match = sortedRules.find(r => r.keywords.some(k => lower.includes(k)));
+        const match = sortedRules.find((r) => r.keywords.some((k) => lower.includes(k)));
 
         if (match) {
             return typeof match.response === 'function' ? match.response() : match.response;
         }
 
         return "Bunu tam anlayamadım 😕 Şunları deneyebilirsin:<br>• 'İpucu ver'<br>• 'Kodu açıkla'<br>• 'Rehber başlat'<br>• Veya hatalı kodunu yapıştır.";
-    }
+    },
 };
 
 window.Assistant = Assistant;
-

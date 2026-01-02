@@ -10,7 +10,7 @@ const API = {
         maxRetries: 3,
         retryDelay: 1000, // ms
         retryBackoff: 2, // exponential backoff multiplier
-        timeout: 30000 // 30 seconds
+        timeout: 30000, // 30 seconds
     },
 
     // Track online status
@@ -44,7 +44,7 @@ const API = {
             retryDelay = this.defaults.retryDelay,
             retryBackoff = this.defaults.retryBackoff,
             onRetry = null, // callback(attempt, error)
-            context = 'Veri yükleme'
+            context = 'Veri yükleme',
         } = options;
 
         let lastError = null;
@@ -65,7 +65,6 @@ const API = {
                 }
 
                 return result;
-
             } catch (error) {
                 lastError = error;
                 console.warn(`[API] Attempt ${attempt}/${maxRetries} failed:`, error.message);
@@ -110,18 +109,14 @@ const API = {
             '401', // Unauthorized
             '403', // Forbidden
             '404', // Not found
-            '422'  // Validation error
+            '422', // Validation error
         ];
 
         const message = error?.message?.toLowerCase() || '';
         const code = error?.code?.toString() || '';
         const status = error?.status?.toString() || '';
 
-        return nonRetryable.some(e =>
-            message.includes(e.toLowerCase()) ||
-            code.includes(e) ||
-            status.includes(e)
-        );
+        return nonRetryable.some((e) => message.includes(e.toLowerCase()) || code.includes(e) || status.includes(e));
     },
 
     /**
@@ -129,7 +124,7 @@ const API = {
      * @param {number} ms - Milliseconds to sleep
      */
     sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     },
 
     /**
@@ -138,11 +133,7 @@ const API = {
      * @param {object} options - Fetch options + retry options
      */
     async fetch(url, options = {}) {
-        const {
-            timeout = this.defaults.timeout,
-            maxRetries = this.defaults.maxRetries,
-            ...fetchOptions
-        } = options;
+        const { timeout = this.defaults.timeout, maxRetries = this.defaults.maxRetries, ...fetchOptions } = options;
 
         const fetchWithTimeout = async () => {
             const controller = new AbortController();
@@ -151,7 +142,7 @@ const API = {
             try {
                 const response = await fetch(url, {
                     ...fetchOptions,
-                    signal: controller.signal
+                    signal: controller.signal,
                 });
 
                 clearTimeout(timeoutId);
@@ -189,7 +180,7 @@ const API = {
             showToast = true,
             showLoading = false,
             loadingMessage = 'Yükleniyor...',
-            maxRetries = this.defaults.maxRetries
+            maxRetries = this.defaults.maxRetries,
         } = options;
 
         let loadingToastId = null;
@@ -204,7 +195,7 @@ const API = {
                 context,
                 onRetry: (attempt, error) => {
                     // Retry silently
-                }
+                },
             });
 
             if (loadingToastId) {
@@ -212,7 +203,6 @@ const API = {
             }
 
             return result;
-
         } catch (error) {
             if (loadingToastId) {
                 Toast.dismiss(loadingToastId);
@@ -240,10 +230,7 @@ const API = {
                 return false;
             }
 
-            const { error } = await SupabaseClient.getClient()
-                .from('courses')
-                .select('id')
-                .limit(1);
+            const { error } = await SupabaseClient.getClient().from('courses').select('id').limit(1);
 
             return !error;
         } catch {
@@ -262,7 +249,7 @@ const API = {
         }
 
         return isConnected;
-    }
+    },
 };
 
 // Auto-init when loaded

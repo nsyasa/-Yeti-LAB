@@ -13,13 +13,13 @@ const TabConfig = {
                 { id: 'code', label: 'Kod 💾' },
                 { id: 'challenge', label: 'Görev 🚀' },
                 { id: 'tip', label: 'İpucu 💡' },
-                { id: 'quiz', label: 'Test 📝' }
+                { id: 'quiz', label: 'Test 📝' },
             ],
             headers: {
-                materials: "Gerekli Donanım",
-                circuit: "Blok Diyagramı",
-                code: "MakeCode / Python"
-            }
+                materials: 'Gerekli Donanım',
+                circuit: 'Blok Diyagramı',
+                code: 'MakeCode / Python',
+            },
         },
         scratch: {
             tabs: [
@@ -29,12 +29,12 @@ const TabConfig = {
                 { id: 'code', label: '💻 Kod' },
                 { id: 'challenge', label: '🏆 Görev' },
                 { id: 'tip', label: '💡 İpucu' },
-                { id: 'quiz', label: '📝 Test' }
+                { id: 'quiz', label: '📝 Test' },
             ],
             headers: {
-                materials: "Kuklalar",
-                circuit: "Blok Dizilimi"
-            }
+                materials: 'Kuklalar',
+                circuit: 'Blok Dizilimi',
+            },
         },
         mblock: {
             tabs: [
@@ -44,12 +44,12 @@ const TabConfig = {
                 { id: 'code', label: 'Kodlar 💻' },
                 { id: 'challenge', label: 'Görevler 🏆' },
                 { id: 'tip', label: 'İpucu 💡' },
-                { id: 'quiz', label: 'Test 📝' }
+                { id: 'quiz', label: 'Test 📝' },
             ],
             headers: {
-                materials: "Aygıtlar ve Uzantılar",
-                circuit: "Blok Yapısı"
-            }
+                materials: 'Aygıtlar ve Uzantılar',
+                circuit: 'Blok Yapısı',
+            },
         },
         appinventor: {
             tabs: [
@@ -58,17 +58,17 @@ const TabConfig = {
                 { id: 'blocks', label: 'Bloklar 🧩' },
                 { id: 'challenge', label: 'Görev 🏆' },
                 { id: 'tip', label: 'İpucu 💡' },
-                { id: 'quiz', label: 'Test 📝' }
+                { id: 'quiz', label: 'Test 📝' },
             ],
             headers: {
-                materials: "Gerekli Malzemeler",
-                circuit: "Arayüz Tasarımı" // 'design' tabı aslında 'circuit' içeriğini kullanacak
+                materials: 'Gerekli Malzemeler',
+                circuit: 'Arayüz Tasarımı', // 'design' tabı aslında 'circuit' içeriğini kullanacak
             },
             // Özel ID eşleştirmeleri (Standart içerik anahtarlarını sekme ID'lerine yönlendirir)
             mapping: {
-                'design': 'circuit', // design sekmesi -> circuit içeriğini gösterir
-                'blocks': 'code'     // blocks sekmesi -> code içeriğini gösterir
-            }
+                design: 'circuit', // design sekmesi -> circuit içeriğini gösterir
+                blocks: 'code', // blocks sekmesi -> code içeriğini gösterir
+            },
         },
         default: {
             tabs: [
@@ -78,19 +78,19 @@ const TabConfig = {
                 { id: 'code', label: '💻 Kod' },
                 { id: 'challenge', label: '🏆 Görev' },
                 { id: 'tip', label: '💡 İpucu' },
-                { id: 'quiz', label: '📝 Test' }
+                { id: 'quiz', label: '📝 Test' },
             ],
             headers: {
-                materials: "Devre Elemanları",
-                circuit: "Bağlantı Şeması",
-                code: "Proje Kodu"
-            }
-        }
+                materials: 'Devre Elemanları',
+                circuit: 'Bağlantı Şeması',
+                code: 'Proje Kodu',
+            },
+        },
     },
 
     getConfig: (courseKey) => {
         return TabConfig.courses[courseKey] || TabConfig.courses.default;
-    }
+    },
 };
 
 window.TabConfig = TabConfig;

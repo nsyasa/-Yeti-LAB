@@ -9,7 +9,8 @@
 const SupabaseClient = {
     // Supabase credentials (public - anon key)
     SUPABASE_URL: 'https://zuezvfojutlefdvqrica.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8',
+    SUPABASE_ANON_KEY:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8',
 
     client: null,
     currentUser: null,
@@ -48,7 +49,7 @@ const SupabaseClient = {
     async signIn(email, password) {
         const { data, error } = await this.getClient().auth.signInWithPassword({
             email,
-            password
+            password,
         });
 
         if (error) throw error;
@@ -74,7 +75,9 @@ const SupabaseClient = {
      * Get current session
      */
     async getSession() {
-        const { data: { session } } = await this.getClient().auth.getSession();
+        const {
+            data: { session },
+        } = await this.getClient().auth.getSession();
         if (session) {
             this.currentUser = session.user;
             await this.checkAdminStatus();
@@ -119,10 +122,7 @@ const SupabaseClient = {
      * Get all courses
      */
     async getCourses(publishedOnly = false) {
-        let query = this.getClient()
-            .from('courses')
-            .select('*')
-            .order('created_at', { ascending: true });
+        let query = this.getClient().from('courses').select('*').order('created_at', { ascending: true });
 
         if (publishedOnly) {
             query = query.eq('is_published', true);
@@ -137,11 +137,7 @@ const SupabaseClient = {
      * Get course by slug
      */
     async getCourseBySlug(slug) {
-        const { data, error } = await this.getClient()
-            .from('courses')
-            .select('*')
-            .eq('slug', slug)
-            .maybeSingle();
+        const { data, error } = await this.getClient().from('courses').select('*').eq('slug', slug).maybeSingle();
 
         if (error) throw error;
         return data;
@@ -226,11 +222,7 @@ const SupabaseClient = {
      * Create phase
      */
     async createPhase(phase) {
-        const { data, error } = await this.getClient()
-            .from('phases')
-            .insert(phase)
-            .select()
-            .single();
+        const { data, error } = await this.getClient().from('phases').insert(phase).select().single();
 
         if (error) throw error;
         return data;
@@ -255,10 +247,7 @@ const SupabaseClient = {
      * Delete phase
      */
     async deletePhase(phaseId) {
-        const { error } = await this.getClient()
-            .from('phases')
-            .delete()
-            .eq('id', phaseId);
+        const { error } = await this.getClient().from('phases').delete().eq('id', phaseId);
 
         if (error) throw error;
     },
@@ -285,11 +274,7 @@ const SupabaseClient = {
      * Create project
      */
     async createProject(project) {
-        const { data, error } = await this.getClient()
-            .from('projects')
-            .insert(project)
-            .select()
-            .single();
+        const { data, error } = await this.getClient().from('projects').insert(project).select().single();
 
         if (error) throw error;
         return data;
@@ -314,10 +299,7 @@ const SupabaseClient = {
      * Delete project
      */
     async deleteProject(projectId) {
-        const { error } = await this.getClient()
-            .from('projects')
-            .delete()
-            .eq('id', projectId);
+        const { error } = await this.getClient().from('projects').delete().eq('id', projectId);
 
         if (error) throw error;
     },
@@ -330,10 +312,7 @@ const SupabaseClient = {
      * Get components for course
      */
     async getComponents(courseId) {
-        const { data, error } = await this.getClient()
-            .from('course_components')
-            .select('*')
-            .eq('course_id', courseId);
+        const { data, error } = await this.getClient().from('course_components').select('*').eq('course_id', courseId);
 
         if (error) throw error;
         return data;
@@ -383,20 +362,16 @@ const SupabaseClient = {
         const fileName = `${folder}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
 
         const { data, error } = await this.getClient()
-            .storage
-            .from('images')  // bucket name
+            .storage.from('images') // bucket name
             .upload(fileName, file, {
                 cacheControl: '3600',
-                upsert: false
+                upsert: false,
             });
 
         if (error) throw error;
 
         // Get public URL
-        const { data: urlData } = this.getClient()
-            .storage
-            .from('images')
-            .getPublicUrl(data.path);
+        const { data: urlData } = this.getClient().storage.from('images').getPublicUrl(data.path);
 
         return urlData.publicUrl;
     },
@@ -406,10 +381,7 @@ const SupabaseClient = {
      * @param {string} path - The file path to delete
      */
     async deleteImage(path) {
-        const { error } = await this.getClient()
-            .storage
-            .from('images')
-            .remove([path]);
+        const { error } = await this.getClient().storage.from('images').remove([path]);
 
         if (error) throw error;
     },
@@ -431,10 +403,7 @@ const SupabaseClient = {
         // Supabase storage path (starts with 'supabase:' or contains supabase domain)
         if (imagePath.startsWith('supabase:')) {
             const path = imagePath.replace('supabase:', '');
-            const { data } = this.getClient()
-                .storage
-                .from('images')
-                .getPublicUrl(path);
+            const { data } = this.getClient().storage.from('images').getPublicUrl(path);
             return data.publicUrl;
         }
 
@@ -465,7 +434,7 @@ const SupabaseClient = {
 
         // Convert components to object format
         const componentInfo = {};
-        components.forEach(comp => {
+        components.forEach((comp) => {
             componentInfo[comp.key] = comp.data;
         });
 
@@ -473,7 +442,7 @@ const SupabaseClient = {
         const phasesArray = phases.map((phase, idx) => ({
             color: phase.meta?.color || 'blue',
             title: phase.name,
-            description: phase.description || ''
+            description: phase.description || '',
         }));
 
         // Create phase ID to index mapping
@@ -483,7 +452,7 @@ const SupabaseClient = {
         });
 
         // Convert projects to legacy format
-        const projectsArray = projects.map(proj => ({
+        const projectsArray = projects.map((proj) => ({
             id: proj.position,
             phase: phaseIdToIndex[proj.phase_id] || 0,
             title: proj.title,
@@ -501,7 +470,7 @@ const SupabaseClient = {
             challenge: proj.challenge,
             circuitImage: proj.circuit,
             hotspots: proj.component_info?.hotspots || null,
-            quiz: proj.component_info?.quiz || []
+            quiz: proj.component_info?.quiz || [],
         }));
 
         return {
@@ -511,8 +480,8 @@ const SupabaseClient = {
             data: {
                 componentInfo,
                 phases: phasesArray,
-                projects: projectsArray
-            }
+                projects: projectsArray,
+            },
         };
     },
 
@@ -523,7 +492,7 @@ const SupabaseClient = {
         // This will be used when saving from admin panel
         // Implementation depends on specific needs
         return legacyData;
-    }
+    },
 };
 
 // Make available globally

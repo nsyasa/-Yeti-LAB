@@ -9,6 +9,7 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 ## [1.0.0] - 2025-01-01
 
 ### 🚀 Eklenen
+
 - **5 Farklı Kurs**: Arduino, Micro:bit, Scratch, mBlock, App Inventor
 - **65 İnteraktif Ders**: Her kurs için aşamalı eğitim içeriği
 - **20+ Simülasyon**: Gerçek zamanlı devre simülasyonları
@@ -19,11 +20,13 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 - **Karanlık Mod**: Göz dostu tema seçeneği
 
 ### 🔒 Güvenlik
+
 - Server-side şifre doğrulama (RPC fonksiyonları)
 - Row Level Security (RLS) ile veri izolasyonu
 - Environment variable ile credential yönetimi
 
 ### 🛠️ Teknik
+
 - Supabase entegrasyonu (Auth, Database, Storage)
 - Modüler JavaScript mimarisi
 - Tailwind CSS ile responsive tasarım
@@ -34,10 +37,11 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 ## [0.9.0] - 2024-12-28
 
 ### Eklenen
+
 - Başlangıç beta sürümü
 - Arduino ve Micro:bit kursları
 - Temel simülasyonlar
 
 ---
 
-*Bu proje aktif geliştirme aşamasındadır.*
+_Bu proje aktif geliştirme aşamasındadır._

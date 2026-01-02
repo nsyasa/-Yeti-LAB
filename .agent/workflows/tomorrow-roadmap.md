@@ -3,18 +3,19 @@ description: Yarınki geliştirme planı - 1 Ocak 2025
 ---
 
 # 🗺️ YETİ LAB GELİŞTİRME ROADMAP
+
 ## Tarih: 2 Ocak 2026 (Yarından itibaren)
 
 ---
 
 ## ✅ BUGÜN TAMAMLANANLAR (1 Ocak 2026)
 
-| Görev | Durum |
-|-------|-------|
-| Profile "Kaydet" buton genişliği | ✅ Tamamlandı |
-| Emoji Avatar 404 fix | ✅ Tamamlandı |
-| Copyright 2025 → 2026 | ✅ Tamamlandı |
-| Toast modülü profile.html | ✅ Tamamlandı |
+| Görev                               | Durum         |
+| ----------------------------------- | ------------- |
+| Profile "Kaydet" buton genişliği    | ✅ Tamamlandı |
+| Emoji Avatar 404 fix                | ✅ Tamamlandı |
+| Copyright 2025 → 2026               | ✅ Tamamlandı |
+| Toast modülü profile.html           | ✅ Tamamlandı |
 | Toast modülü student-dashboard.html | ✅ Tamamlandı |
 
 ---
@@ -24,12 +25,14 @@ description: Yarınki geliştirme planı - 1 Ocak 2025
 ### 🔴 P0 - GÜVENLİK DÜZELTMELERİ
 
 #### SEC-001: LocalStorage XSS Koruması
+
 **Dosya:** `app.js`
 **Satır:** 260-280
 
 **PROMPT:**
+
 ```
-app.js dosyasındaki restoreFromLocalStorage() fonksiyonunu incele. 
+app.js dosyasındaki restoreFromLocalStorage() fonksiyonunu incele.
 localStorage'dan okunan veri doğrudan courseData'ya atanıyor, bu XSS riski oluşturur.
 
 Şu düzeltmeleri yap:
@@ -53,10 +56,12 @@ Object.keys(parsed.data).forEach(key => {
 ---
 
 #### SEC-002: Profile Redirect Loop Fix
+
 **Dosya:** `app.js`
 **Satır:** 100-104
 
 **PROMPT:**
+
 ```
 app.js dosyasındaki initAuth() fonksiyonunda profile redirect döngüsü riski var.
 
@@ -91,9 +96,11 @@ sessionStorage.removeItem('profile_redirect_count');
 ### 🟡 P1 - TASARIM SİSTEMİ
 
 #### DES-001: Design Tokens Oluştur
+
 **Dosya:** `styles/tokens.css` (YENİ)
 
 **PROMPT:**
+
 ```
 styles/tokens.css adında yeni bir dosya oluştur.
 
@@ -125,9 +132,11 @@ Hem light mode hem dark mode değişkenleri olsun.
 ---
 
 #### DES-002: Component Classes Oluştur
+
 **Dosya:** `styles/components.css` (YENİ)
 
 **PROMPT:**
+
 ```
 styles/components.css adında yeni bir dosya oluştur.
 
@@ -162,9 +171,11 @@ Dark mode uyumlu olsun.
 ---
 
 #### DES-003: Tutarlı Footer Component
+
 **Dosya:** Tüm HTML sayfaları
 
 **PROMPT:**
+
 ```
 Projedeki tüm HTML sayfalarında footer tutarsızlığı var:
 - index.html: Dark footer (bg-gray-800)
@@ -199,9 +210,11 @@ Projedeki tüm HTML sayfalarında footer tutarsızlığı var:
 ### 🟢 P2 - SEO VE META TAGS
 
 #### SEO-001: Meta Description Ekle
+
 **Dosyalar:** Tüm HTML sayfaları
 
 **PROMPT:**
+
 ```
 Tüm HTML sayfalara uygun meta description ve Open Graph tagları ekle.
 
@@ -227,40 +240,46 @@ teacher.html için:
 ## 📅 HAFTALIK PLAN
 
 ### HAFTA 1 (2-7 Ocak) - TEMİZLİK
-| Gün | Görevler |
-|-----|----------|
-| 2 Ocak | SEC-001, SEC-002 (Güvenlik) |
-| 3 Ocak | DES-001 (Design Tokens) |
-| 4 Ocak | DES-002 (Component Classes) |
-| 5 Ocak | DES-003 (Footer tutarlılığı) |
-| 6-7 Ocak | SEO-001, Test & Debug |
+
+| Gün      | Görevler                     |
+| -------- | ---------------------------- |
+| 2 Ocak   | SEC-001, SEC-002 (Güvenlik)  |
+| 3 Ocak   | DES-001 (Design Tokens)      |
+| 4 Ocak   | DES-002 (Component Classes)  |
+| 5 Ocak   | DES-003 (Footer tutarlılığı) |
+| 6-7 Ocak | SEO-001, Test & Debug        |
 
 ### HAFTA 2 (8-14 Ocak) - PROFESYONELLİK
-| Gün | Görevler |
-|-----|----------|
-| 8-9 Ocak | Form validation & UX |
+
+| Gün        | Görevler                                |
+| ---------- | --------------------------------------- |
+| 8-9 Ocak   | Form validation & UX                    |
 | 10-11 Ocak | Responsive polish, mobil iyileştirmeler |
-| 12-14 Ocak | Cross-browser testing |
+| 12-14 Ocak | Cross-browser testing                   |
 
 ### HAFTA 3 (15-21 Ocak) - ALTYAPI
-| Gün | Görevler |
-|-----|----------|
+
+| Gün        | Görevler                                                   |
+| ---------- | ---------------------------------------------------------- |
 | 15-17 Ocak | Veritabanı genişletmeleri (badges, certificates tabloları) |
-| 18-21 Ocak | Modül altyapıları (gamification.js, certificates.js) |
+| 18-21 Ocak | Modül altyapıları (gamification.js, certificates.js)       |
 
 ### HAFTA 4 (22-31 Ocak) - ÖZELLİKLER
-| Gün | Görevler |
-|-----|----------|
+
+| Gün        | Görevler                     |
+| ---------- | ---------------------------- |
 | 22-25 Ocak | Rozet sistemi (Gamification) |
-| 26-28 Ocak | AI Asistan güçlendirme |
-| 29-31 Ocak | Sertifika sistemi temeli |
+| 26-28 Ocak | AI Asistan güçlendirme       |
+| 29-31 Ocak | Sertifika sistemi temeli     |
 
 ---
 
 ## 🗄️ VERİTABANI GENİŞLETMELERİ (Supabase)
 
 ### DB-001: Badges Tablosu
+
 **PROMPT:**
+
 ```
 Supabase'de badges tablosu oluştur:
 
@@ -294,7 +313,9 @@ CREATE POLICY "Badges are viewable by everyone" ON badges FOR SELECT USING (true
 ---
 
 ### DB-002: User Badges Tablosu
+
 **PROMPT:**
+
 ```
 Supabase'de kullanıcı rozet ilişkisi tablosu oluştur:
 
@@ -304,13 +325,13 @@ CREATE TABLE public.user_badges (
     student_id UUID REFERENCES public.students(id) ON DELETE CASCADE,
     badge_id UUID REFERENCES public.badges(id) ON DELETE CASCADE,
     earned_at TIMESTAMPTZ DEFAULT NOW(),
-    
+
     -- Ya user_id ya da student_id dolu olmalı
     CONSTRAINT user_or_student CHECK (
         (user_id IS NOT NULL AND student_id IS NULL) OR
         (user_id IS NULL AND student_id IS NOT NULL)
     ),
-    
+
     -- Aynı rozet bir kullanıcıya iki kez verilemez
     UNIQUE(user_id, badge_id),
     UNIQUE(student_id, badge_id)
@@ -333,7 +354,9 @@ CREATE POLICY "Students can view their own badges" ON user_badges
 ---
 
 ### DB-003: Certificates Tablosu
+
 **PROMPT:**
+
 ```
 Supabase'de sertifika tablosu oluştur:
 
@@ -348,7 +371,7 @@ CREATE TABLE public.certificates (
     completion_date DATE DEFAULT CURRENT_DATE,
     issued_at TIMESTAMPTZ DEFAULT NOW(),
     pdf_url TEXT,
-    
+
     CONSTRAINT user_or_student_cert CHECK (
         user_id IS NOT NULL OR student_id IS NOT NULL
     )
@@ -364,7 +387,7 @@ ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their certificates" ON certificates
     FOR SELECT USING (auth.uid() = user_id);
-    
+
 CREATE POLICY "Certificate verification is public" ON certificates
     FOR SELECT USING (true);
 ```
@@ -374,9 +397,11 @@ CREATE POLICY "Certificate verification is public" ON certificates
 ## 🔧 MODÜL YAPILARI
 
 ### MOD-001: Gamification Module
+
 **Dosya:** `modules/gamification.js` (YENİ)
 
 **PROMPT:**
+
 ```
 modules/gamification.js dosyası oluştur.
 
@@ -384,28 +409,28 @@ Temel yapı:
 const Gamification = {
     // Badge tanımları (DB'den de yüklenebilir)
     localBadges: { ... },
-    
+
     // Kullanıcının kazandığı rozetler
     earnedBadges: [],
-    
+
     // Rozet kontrolü
     async checkBadges(userId, studentId) {
         // Progress verilerine göre rozet kontrolü yap
         // Yeni rozet kazanıldıysa notification göster
     },
-    
+
     // Rozet kazanma
     async awardBadge(badgeId, userId, studentId) {
         // Supabase'e kaydet
         // UI notification göster
         // Animasyon tetikle
     },
-    
+
     // Rozet listesi render
     renderBadges(container, badges) {
         // Rozet kartlarını render et
     },
-    
+
     // Kazanılmamış rozetleri göster (locked state)
     renderLockedBadges(container, allBadges, earnedBadges) {
         // Gri/locked rozet kartları
@@ -418,9 +443,11 @@ window.Gamification = Gamification;
 ---
 
 ### MOD-002: Certificates Module
+
 **Dosya:** `modules/certificates.js` (YENİ)
 
 **PROMPT:**
+
 ```
 modules/certificates.js dosyası oluştur.
 
@@ -429,7 +456,7 @@ jsPDF veya html2pdf kullanarak PDF sertifika oluşturma:
 const Certificates = {
     // Sertifika template
     template: { ... },
-    
+
     // Sertifika oluştur
     async generate(courseId, userName) {
         // 1. Supabase'de sertifika kaydı oluştur
@@ -437,18 +464,18 @@ const Certificates = {
         // 3. PDF'i Supabase Storage'a yükle
         // 4. URL'i döndür
     },
-    
+
     // Sertifika doğrulama
     async verify(certificateNumber) {
         // Supabase'den sertifikayı kontrol et
         // Geçerli/geçersiz durumunu döndür
     },
-    
+
     // Sertifikayı indir
     download(pdfUrl) {
         // PDF dosyasını indir
     },
-    
+
     // Sertifika paylaş
     share(certificateNumber) {
         // Sosyal medya paylaşım linki
@@ -463,6 +490,7 @@ window.Certificates = Certificates;
 ## 📝 KULLANIM NOTLARI
 
 ### Yeni Oturuma Başlarken:
+
 ```
 Bu Yeti LAB projesinin geliştirme roadmap'idir.
 Lütfen .agent/workflows/tomorrow-roadmap.md dosyasını oku.
@@ -470,6 +498,7 @@ Bugün yapılacak görevleri kontrol et ve sırayla uygula.
 ```
 
 ### Hata Ayıklama İçin:
+
 ```
 Projedeki şu sorunu debug et: [SORUN AÇIKLAMASI]
 
@@ -481,6 +510,7 @@ Lütfen:
 ```
 
 ### Yeni Özellik Eklerken:
+
 ```
 [ÖZELLİK] özelliğini eklemek istiyorum.
 
@@ -495,12 +525,12 @@ Lütfen:
 
 ## 📊 İLERLEME TAKİBİ
 
-| Hafta | Hedef | Durum |
-|-------|-------|-------|
-| 1 | Temizlik & Güvenlik | ⏳ Devam |
-| 2 | Profesyonellik | 📅 Planlı |
-| 3 | Altyapı | 📅 Planlı |
-| 4 | Özellikler | 📅 Planlı |
+| Hafta | Hedef               | Durum     |
+| ----- | ------------------- | --------- |
+| 1     | Temizlik & Güvenlik | ⏳ Devam  |
+| 2     | Profesyonellik      | 📅 Planlı |
+| 3     | Altyapı             | 📅 Planlı |
+| 4     | Özellikler          | 📅 Planlı |
 
 ---
 

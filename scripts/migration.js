@@ -1,11 +1,11 @@
 /**
  * Yeti LAB - Modüler Multi-Kurs Migration Scripti
- * 
+ *
  * Kullanım:
  *   node scripts/migration.js                    # Tüm kursları aktar
  *   node scripts/migration.js arduino            # Sadece Arduino
  *   node scripts/migration.js arduino,microbit   # Seçili kurslar
- * 
+ *
  * Gereksinimler:
  *   .env dosyasında SUPABASE_URL ve SUPABASE_ANON_KEY tanımlanmalı
  */
@@ -91,8 +91,8 @@ function extractCourseData(filePath) {
         const jsonStr = match[1];
         // Trailing comma ve JS syntax temizliği
         const cleanJson = jsonStr
-            .replace(/,(\s*[}\]])/g, '$1')  // Trailing comma
-            .replace(/\\n/g, '\\n');        // Newline escape
+            .replace(/,(\s*[}\]])/g, '$1') // Trailing comma
+            .replace(/\\n/g, '\\n'); // Newline escape
 
         return JSON.parse(cleanJson);
     } catch (e) {
@@ -136,11 +136,7 @@ async function migrateCourse(courseKey) {
 
     // 2. Kursu oluştur veya bul
     console.log('📦 Kurs kontrol ediliyor...');
-    let { data: existingCourse } = await supabase
-        .from('courses')
-        .select('id')
-        .eq('slug', config.slug)
-        .maybeSingle();
+    const { data: existingCourse } = await supabase.from('courses').select('id').eq('slug', config.slug).maybeSingle();
 
     let courseId;
 
@@ -156,14 +152,14 @@ async function migrateCourse(courseKey) {
                 description: config.description,
                 theme_color: config.theme_color,
                 meta: { icon: config.icon },
-                is_published: false
+                is_published: false,
             })
             .select()
             .single();
 
         if (error) {
             console.error(`   ❌ Kurs oluşturulamadı: ${error.message}`);
-            console.log(`   💡 RLS hatası ise Supabase Dashboard'dan ekleyin.`);
+            console.log("   💡 RLS hatası ise Supabase Dashboard'dan ekleyin.");
             return false;
         }
 
@@ -180,7 +176,7 @@ async function migrateCourse(courseKey) {
         const phase = phases[i];
         const phaseName = phase.title || `Faz ${i + 1}`;
 
-        let { data: existingPhase } = await supabase
+        const { data: existingPhase } = await supabase
             .from('phases')
             .select('id')
             .eq('course_id', courseId)
@@ -197,7 +193,7 @@ async function migrateCourse(courseKey) {
                     name: phaseName,
                     description: phase.description || '',
                     position: i,
-                    meta: { color: phase.color, weeks: phase.weeks }
+                    meta: { color: phase.color, weeks: phase.weeks },
                 })
                 .select()
                 .single();
@@ -217,13 +213,14 @@ async function migrateCourse(courseKey) {
     if (Object.keys(componentInfo).length > 0) {
         console.log('🔧 Bileşenler aktarılıyor...');
         for (const [key, compData] of Object.entries(componentInfo)) {
-            const { error } = await supabase
-                .from('course_components')
-                .upsert({
+            const { error } = await supabase.from('course_components').upsert(
+                {
                     course_id: courseId,
                     key: key,
-                    data: compData
-                }, { onConflict: 'course_id,key' });
+                    data: compData,
+                },
+                { onConflict: 'course_id,key' }
+            );
 
             if (!error) {
                 console.log(`   ✓ ${key}`);
@@ -234,7 +231,7 @@ async function migrateCourse(courseKey) {
     // 5. Projeleri aktar
     console.log('📚 Projeler aktarılıyor...');
     const projects = data.projects || [];
-    let stats = { success: 0, skip: 0, error: 0 };
+    const stats = { success: 0, skip: 0, error: 0 };
 
     for (const project of projects) {
         const phaseId = phaseIdMap[project.phase];
@@ -248,7 +245,7 @@ async function migrateCourse(courseKey) {
         const projectSlug = `project-${project.id}`;
 
         // Mevcut kontrol
-        let { data: existing } = await supabase
+        const { data: existing } = await supabase
             .from('projects')
             .select('id')
             .eq('course_id', courseId)
@@ -260,33 +257,31 @@ async function migrateCourse(courseKey) {
             continue;
         }
 
-        const { error } = await supabase
-            .from('projects')
-            .insert({
-                course_id: courseId,
-                phase_id: phaseId,
-                slug: projectSlug,
-                title: project.title,
-                description: project.desc,
-                materials: project.materials || [],
-                circuit: project.circuit_desc,
-                code: project.code,
-                simulation: project.simType || null,
-                challenge: project.challenge,
-                position: project.id,
-                is_published: true,
-                component_info: {
-                    icon: project.icon,
-                    hasGraph: project.hasGraph,
-                    hasSim: project.hasSim,
-                    mission: project.mission,
-                    theory: project.theory,
-                    mainComponent: project.mainComponent || null,
-                    hotspots: project.hotspots || null,
-                    circuitImage: project.circuitImage || null,
-                    quiz: project.quiz || []
-                }
-            });
+        const { error } = await supabase.from('projects').insert({
+            course_id: courseId,
+            phase_id: phaseId,
+            slug: projectSlug,
+            title: project.title,
+            description: project.desc,
+            materials: project.materials || [],
+            circuit: project.circuit_desc,
+            code: project.code,
+            simulation: project.simType || null,
+            challenge: project.challenge,
+            position: project.id,
+            is_published: true,
+            component_info: {
+                icon: project.icon,
+                hasGraph: project.hasGraph,
+                hasSim: project.hasSim,
+                mission: project.mission,
+                theory: project.theory,
+                mainComponent: project.mainComponent || null,
+                hotspots: project.hotspots || null,
+                circuitImage: project.circuitImage || null,
+                quiz: project.quiz || [],
+            },
+        });
 
         if (error) {
             console.error(`   ❌ ${project.title}: ${error.message}`);
@@ -300,10 +295,7 @@ async function migrateCourse(courseKey) {
 
     // 6. Kursu yayınla
     console.log('🌐 Kurs yayınlanıyor...');
-    await supabase
-        .from('courses')
-        .update({ is_published: true })
-        .eq('id', courseId);
+    await supabase.from('courses').update({ is_published: true }).eq('id', courseId);
 
     console.log(`✅ ${config.title} tamamlandı!`);
     return true;
@@ -326,7 +318,7 @@ async function main() {
         console.log('📋 Tüm kurslar aktarılacak...');
     } else {
         // Seçili kurslar
-        coursesToMigrate = args[0].split(',').map(s => s.trim().toLowerCase());
+        coursesToMigrate = args[0].split(',').map((s) => s.trim().toLowerCase());
     }
 
     console.log(`   Kurslar: ${coursesToMigrate.join(', ')}`);

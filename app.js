@@ -4,7 +4,7 @@ const app = {
         currentCourseKey: null,
         componentInfo: {},
         phases: [],
-        projects: []
+        projects: [],
     },
 
     currentProject: null,
@@ -28,12 +28,14 @@ const app = {
 
     // --- Progress Tracking (delegated to module) ---
     progress: {
-        get data() { return window.Progress?.data || {}; },
+        get data() {
+            return window.Progress?.data || {};
+        },
         load: () => window.Progress?.load(),
         save: () => window.Progress?.save(),
         toggle: (projectId) => window.Progress?.toggle(projectId),
         isComplete: (projectId) => window.Progress?.isComplete(projectId) || false,
-        getCompletionRate: (key) => window.Progress?.getRate(key) || 0
+        getCompletionRate: (key) => window.Progress?.getRate(key) || 0,
     },
 
     init: () => {
@@ -51,10 +53,10 @@ const app = {
                     const btn = document.getElementById('btn-complete-project');
                     if (btn) {
                         const isComplete = app.progress.isComplete(projectId);
-                        btn.innerHTML = isComplete ? "✅ Tamamlandı" : "Dersi Tamamla";
-                        btn.className = isComplete ?
-                            "mt-8 w-full py-4 bg-green-500 text-white rounded-xl shadow-lg font-bold text-xl hover:bg-green-600 transition transform hover:scale-105 active:scale-95" :
-                            "mt-8 w-full py-4 bg-gray-200 text-gray-600 rounded-xl shadow-lg font-bold text-xl hover:bg-green-500 hover:text-white transition transform hover:scale-105 active:scale-95";
+                        btn.innerHTML = isComplete ? '✅ Tamamlandı' : 'Dersi Tamamla';
+                        btn.className = isComplete
+                            ? 'mt-8 w-full py-4 bg-green-500 text-white rounded-xl shadow-lg font-bold text-xl hover:bg-green-600 transition transform hover:scale-105 active:scale-95'
+                            : 'mt-8 w-full py-4 bg-gray-200 text-gray-600 rounded-xl shadow-lg font-bold text-xl hover:bg-green-500 hover:text-white transition transform hover:scale-105 active:scale-95';
                     }
                 };
             }
@@ -65,23 +67,27 @@ const app = {
             // Load ALL courses first to ensure metadata is available
             if (window.CourseLoader?.loadAll) {
                 UI.renderSkeletonCards('course-list', 4);
-                CourseLoader.loadAll().then(() => {
-                    console.log('[App] All courses loaded:', Object.keys(window.courseData));
+                CourseLoader.loadAll()
+                    .then(() => {
+                        console.log('[App] All courses loaded:', Object.keys(window.courseData));
 
-                    // Restore admin changes from localStorage if available
-                    app.restoreFromLocalStorage();
+                        // Restore admin changes from localStorage if available
+                        app.restoreFromLocalStorage();
 
-                    app.renderCourseSelection();
-                }).catch(err => {
-                    console.error('[App] Course loading error:', err);
-                    Toast?.errorWithRetry('Kurslar yüklenemedi. İnternet bağlantınızı kontrol edin.', () => window.location.reload());
-                    app.renderCourseSelection(); // Fallback to manifest
-                });
+                        app.renderCourseSelection();
+                    })
+                    .catch((err) => {
+                        console.error('[App] Course loading error:', err);
+                        Toast?.errorWithRetry('Kurslar yüklenemedi. İnternet bağlantınızı kontrol edin.', () =>
+                            window.location.reload()
+                        );
+                        app.renderCourseSelection(); // Fallback to manifest
+                    });
             } else {
                 app.renderCourseSelection();
             }
         } else {
-            UI.showError('course-list', 'Veri Yüklenemedi', "window.location.reload()");
+            UI.showError('course-list', 'Veri Yüklenemedi', 'window.location.reload()');
         }
     },
 
@@ -104,7 +110,9 @@ const app = {
             const MAX_REDIRECTS = 3;
 
             if (Auth.needsProfileCompletion() && !isProfilePage && redirectCount < MAX_REDIRECTS) {
-                console.log(`[App] Profile incomplete, redirecting to profile.html (attempt ${redirectCount + 1}/${MAX_REDIRECTS})`);
+                console.log(
+                    `[App] Profile incomplete, redirecting to profile.html (attempt ${redirectCount + 1}/${MAX_REDIRECTS})`
+                );
                 sessionStorage.setItem('profile_redirect_count', String(redirectCount + 1));
                 window.location.href = 'profile.html';
                 return;
@@ -117,7 +125,9 @@ const app = {
 
             // Max redirect'e ulaşıldıysa uyar
             if (redirectCount >= MAX_REDIRECTS && Auth.needsProfileCompletion()) {
-                console.error('[App] Max profile redirects reached, possible loop detected. Please check profile completion logic.');
+                console.error(
+                    '[App] Max profile redirects reached, possible loop detected. Please check profile completion logic.'
+                );
                 Toast?.error('Profil yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.');
             }
 
@@ -137,7 +147,11 @@ const app = {
                     const currentIsProfilePage = window.location.pathname.includes('profile.html');
                     const currentRedirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');
 
-                    if (Auth.needsProfileCompletion() && !currentIsProfilePage && currentRedirectCount < MAX_REDIRECTS) {
+                    if (
+                        Auth.needsProfileCompletion() &&
+                        !currentIsProfilePage &&
+                        currentRedirectCount < MAX_REDIRECTS
+                    ) {
                         sessionStorage.setItem('profile_redirect_count', String(currentRedirectCount + 1));
                         window.location.href = 'profile.html';
                     } else if (!Auth.needsProfileCompletion()) {
@@ -175,9 +189,9 @@ const app = {
             if (userAvatar) {
                 if (userInfo.avatarUrl) {
                     // Emoji kontrolü - emoji karakterleri URL değil, doğrudan gösterilmeli
-                    const isEmoji = /^[\p{Emoji}\u200d]+$/u.test(userInfo.avatarUrl) ||
-                        userInfo.avatarUrl.length <= 4;
-                    const isUrl = userInfo.avatarUrl.startsWith('http') ||
+                    const isEmoji = /^[\p{Emoji}\u200d]+$/u.test(userInfo.avatarUrl) || userInfo.avatarUrl.length <= 4;
+                    const isUrl =
+                        userInfo.avatarUrl.startsWith('http') ||
                         userInfo.avatarUrl.startsWith('/') ||
                         userInfo.avatarUrl.includes('.');
 
@@ -252,7 +266,7 @@ const app = {
     // --- Scroll Behavior: Hide header/bottom nav on scroll down, show on scroll up ---
     scrollState: {
         lastScrollY: 0,
-        ticking: false
+        ticking: false,
     },
 
     initScrollBehavior: () => {
@@ -291,7 +305,6 @@ const app = {
         }
     },
 
-
     // --- Security Helpers ---
     // HTML escape function to prevent XSS
     escapeHtml: (str) => {
@@ -306,7 +319,7 @@ const app = {
         if (obj === null || obj === undefined) return obj;
         if (typeof obj === 'string') return app.escapeHtml(obj);
         if (typeof obj === 'number' || typeof obj === 'boolean') return obj;
-        if (Array.isArray(obj)) return obj.map(item => app.sanitizeObject(item));
+        if (Array.isArray(obj)) return obj.map((item) => app.sanitizeObject(item));
         if (typeof obj === 'object') {
             const sanitized = {};
             for (const key of Object.keys(obj)) {
@@ -374,14 +387,17 @@ const app = {
             }
 
             // Validate timestamp
-            if (parsed.timestamp && (typeof parsed.timestamp !== 'number' || parsed.timestamp > Date.now() + 86400000)) {
+            if (
+                parsed.timestamp &&
+                (typeof parsed.timestamp !== 'number' || parsed.timestamp > Date.now() + 86400000)
+            ) {
                 console.warn('[App] Invalid autosave timestamp, ignoring');
                 return;
             }
 
             // Process only allowed courses with validation and sanitization
             let restoredCount = 0;
-            Object.keys(parsed.data).forEach(key => {
+            Object.keys(parsed.data).forEach((key) => {
                 // Only accept whitelisted course keys
                 if (!allowedCourses.includes(key)) {
                     console.warn(`[App] Unknown course key rejected: ${key}`);
@@ -426,7 +442,7 @@ const app = {
 
     // --- Theme Management (System Preference Based) ---
     theme: {
-        current: 'light'
+        current: 'light',
     },
 
     initTheme: () => {
@@ -441,7 +457,6 @@ const app = {
             app.theme.current = mode;
         }
     },
-
 
     toggleLanguage: () => {
         const current = Settings.get('language') || 'tr';
@@ -508,7 +523,6 @@ const app = {
             app.renderDashboard();
             app.renderSidebar();
             app.renderProgressBar();
-
         } catch (error) {
             console.error('[App] Failed to load course:', error);
             Toast?.errorWithRetry('Kurs yüklenemedi!', () => app.selectCourse(key));
@@ -541,11 +555,11 @@ const app = {
         UI.setActionLoading(actionId, true);
 
         const { projects } = app.state;
-        const p = projects.find(prj => prj.id === id);
+        const p = projects.find((prj) => prj.id === id);
 
         if (!p) {
             console.error(`Project not found: ${id}`);
-            alert("Ders bulunamadı!");
+            alert('Ders bulunamadı!');
             app.renderDashboard();
             UI.setActionLoading(actionId, false);
             return;
@@ -554,14 +568,16 @@ const app = {
         app.currentProject = p;
         document.getElementById('dashboard-view').classList.add('hidden');
         document.getElementById('project-view').classList.remove('hidden');
-        document.getElementById('project-tag').innerText = p.phase === 0 ? "Hazırlık" : `Ders ${p.id}`;
+        document.getElementById('project-tag').innerText = p.phase === 0 ? 'Hazırlık' : `Ders ${p.id}`;
         document.getElementById('project-title').innerText = p.title;
         document.getElementById('project-desc').innerText = p.desc;
         document.getElementById('project-icon').innerText = p.icon;
 
         // Reset UI
-        ['simCanvas', 'interactive-area', 'interactive-info', 'chart-card'].forEach(id => document.getElementById(id).classList.add('hidden'));
-        document.getElementById('simControls').innerHTML = "";
+        ['simCanvas', 'interactive-area', 'interactive-info', 'chart-card'].forEach((id) =>
+            document.getElementById(id).classList.add('hidden')
+        );
+        document.getElementById('simControls').innerHTML = '';
 
         // Artık Explorer da bir simülasyon (Canvas tabanlı)
         document.getElementById('sim-container').classList.remove('hidden');
@@ -615,20 +631,20 @@ const app = {
 
     showHotspotInfo: (name, desc) => UI.showInfo(desc, name),
 
-    hideHotspotInfo: () => UI.showInfo("Numaralı noktaların üzerine gelerek açıklamaları görün.", "🔍 Keşfet"),
+    hideHotspotInfo: () => UI.showInfo('Numaralı noktaların üzerine gelerek açıklamaları görün.', '🔍 Keşfet'),
 
     getPracticalTip: (project) => {
         const tips = window.tipsData || {};
-        if (!tips.General) return { title: "İpucu", text: "Bol bol pratik yap!", icon: "✨" };
+        if (!tips.General) return { title: 'İpucu', text: 'Bol bol pratik yap!', icon: '✨' };
 
         let match = null;
 
         // 1. Materyallere göre ara
         if (project.materials) {
-            for (let m of project.materials) {
+            for (const m of project.materials) {
                 // Materyal ismi içinde anahtar kelime var mı? (Örn: "Kırmızı LED" -> "LED")
-                for (let key in tips) {
-                    if (key !== "General" && m.includes(key)) {
+                for (const key in tips) {
+                    if (key !== 'General' && m.includes(key)) {
                         match = tips[key];
                         break;
                     }
@@ -655,7 +671,7 @@ const app = {
         const buttons = parent.querySelectorAll('button');
 
         // Disable all buttons in this question
-        buttons.forEach(b => {
+        buttons.forEach((b) => {
             b.onclick = null;
             b.classList.add('cursor-default', 'opacity-70');
             b.classList.remove('hover:bg-gray-100');
@@ -667,7 +683,7 @@ const app = {
             // Correct
             btn.classList.add('bg-green-100', 'border-green-300');
             btn.querySelector('span').classList.add('bg-green-500', 'text-white', 'border-green-500');
-            feedback.innerHTML = "🎉 Doğru Cevap! Harikasın.";
+            feedback.innerHTML = '🎉 Doğru Cevap! Harikasın.';
             feedback.classList.add('bg-green-100', 'text-green-700');
             // Confetti effect can be added here
         } else {
@@ -679,7 +695,7 @@ const app = {
             const correctBtn = buttons[trueIndex];
             correctBtn.classList.add('ring-2', 'ring-green-400', 'bg-green-50');
 
-            feedback.innerHTML = "😔 Yanlış Cevap. Doğru cevap işaretlendi.";
+            feedback.innerHTML = '😔 Yanlış Cevap. Doğru cevap işaretlendi.';
             feedback.classList.add('bg-red-100', 'text-red-700');
         }
     },
@@ -691,23 +707,35 @@ const app = {
     setupSimulation: (type) => {
         const cvs = document.getElementById('simCanvas');
         const ctx = cvs.getContext('2d');
-        cvs.width = 500; cvs.height = 350;
+        cvs.width = 500;
+        cvs.height = 350;
 
         // Get Current Theme Color from CSS
-        const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim() || '#00979C';
+        const themeColor =
+            getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim() || '#00979C';
         app.simState.themeColor = themeColor;
 
         const chartCtx = document.getElementById('dataChart').getContext('2d');
         if (app.chartInstance) app.chartInstance.destroy();
         if (app.currentProject.hasGraph) {
             app.chartInstance = new Chart(chartCtx, {
-                type: 'line', data: { labels: Array(20).fill(''), datasets: [{ data: Array(20).fill(0), borderColor: themeColor, tension: 0.3 }] },
-                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { display: true } } }
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{ data: Array(20).fill(0), borderColor: themeColor, tension: 0.3 }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { display: true } },
+                },
             });
         }
 
         // Helper functions for Simulations
-        app.setControls = (html) => document.getElementById('simControls').innerHTML = html;
+        app.setControls = (html) => (document.getElementById('simControls').innerHTML = html);
 
         // Modüler Yapı Çağrısı
         if (window.Simulations && window.Simulations[type] && window.Simulations[type].setup) {
@@ -740,7 +768,8 @@ const app = {
 
         if (app.currentProject && app.currentProject.hasGraph && app.chartInstance && val !== undefined) {
             const d = app.chartInstance.data.datasets[0].data;
-            d.shift(); d.push(val);
+            d.shift();
+            d.push(val);
             app.chartInstance.update('none');
         }
         app.simLoop = requestAnimationFrame(() => app.runSimLoop(ctx, type));

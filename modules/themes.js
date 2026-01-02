@@ -5,34 +5,34 @@
 window.CourseThemes = {
     arduino: {
         name: 'Arduino',
-        color: '#00979C',    // Ana tema rengi
-        light: '#E6FFFA',    // Açık arka plan rengi
-        icon: '⚡'
+        color: '#00979C', // Ana tema rengi
+        light: '#E6FFFA', // Açık arka plan rengi
+        icon: '⚡',
     },
     microbit: {
         name: 'Micro:bit',
-        color: '#E31C79',    // Pembe
+        color: '#E31C79', // Pembe
         light: '#FDE8F1',
-        icon: '📟'
+        icon: '📟',
     },
     scratch: {
         name: 'Scratch',
-        color: '#4C97FF',    // Mavi
+        color: '#4C97FF', // Mavi
         light: '#E6F0FF',
-        icon: '🐱'
+        icon: '🐱',
     },
     mblock: {
         name: 'mBlock',
-        color: '#00979C',    // Arduino ile aynı (teal)
+        color: '#00979C', // Arduino ile aynı (teal)
         light: '#E6FFFA',
-        icon: '🐼'
+        icon: '🐼',
     },
     appinventor: {
         name: 'App Inventor',
-        color: '#88C542',    // Yeşil
+        color: '#88C542', // Yeşil
         light: '#F0F9E8',
-        icon: '📱'
-    }
+        icon: '📱',
+    },
 };
 
 // Tema uygulama yardımcı fonksiyonu

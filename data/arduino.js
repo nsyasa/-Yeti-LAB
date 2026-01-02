@@ -1,737 +1,652 @@
 window.courseData = window.courseData || {};
 window.courseData.arduino = {
-    "title": "Arduino Eğitimi",
-    "description": " Kapsamlı Ardiuno Eğitimi",
-    "data": {
-        "componentInfo": {
-            "Arduino": {
-                "name": "Arduino Uno",
-                "imgFileName": "arduino_tanitim.jpg",
-                "desc": "Projemizin beyni. Kodları içinde saklar ve çalıştırır. Bilgisayardan aldığı emirleri fiziksel dünyaya aktaran bir mikrodenetleyici kartıdır.",
-                "icon": "🧠"
+    title: 'Arduino Eğitimi',
+    description: ' Kapsamlı Ardiuno Eğitimi',
+    data: {
+        componentInfo: {
+            Arduino: {
+                name: 'Arduino Uno',
+                imgFileName: 'arduino_tanitim.jpg',
+                desc: 'Projemizin beyni. Kodları içinde saklar ve çalıştırır. Bilgisayardan aldığı emirleri fiziksel dünyaya aktaran bir mikrodenetleyici kartıdır.',
+                icon: '🧠',
             },
-            "LED": {
-                "name": "LED (Işık Yayan Diyot)",
-                "imgFileName": "kırmızıled.jpg",
-                "desc": "Elektrik enerjisini ışığa çeviren devre elemanıdır. Bir bacağı (+) Uzun/Anot, diğer bacağı (-) Kısa/Katot'tur. Ters bağlanırsa çalışmaz.",
-                "icon": "💡"
+            LED: {
+                name: 'LED (Işık Yayan Diyot)',
+                imgFileName: 'kırmızıled.jpg',
+                desc: "Elektrik enerjisini ışığa çeviren devre elemanıdır. Bir bacağı (+) Uzun/Anot, diğer bacağı (-) Kısa/Katot'tur. Ters bağlanırsa çalışmaz.",
+                icon: '💡',
             },
-            "HC-SR04": {
-                "name": "Ultrasonik Mesafe Sensörü",
-                "imgFileName": "ultrasonik.jpg",
-                "desc": "Yarasalar gibi ses dalgaları yayarak önündeki engelin mesafesini ölçer. 4 bacağı vardır: VCC, Trig (Ses Yolla), Echo (Sesi Dinle), GND.",
-                "icon": "🦇"
+            'HC-SR04': {
+                name: 'Ultrasonik Mesafe Sensörü',
+                imgFileName: 'ultrasonik.jpg',
+                desc: 'Yarasalar gibi ses dalgaları yayarak önündeki engelin mesafesini ölçer. 4 bacağı vardır: VCC, Trig (Ses Yolla), Echo (Sesi Dinle), GND.',
+                icon: '🦇',
             },
-            "DHT11": {
-                "name": "DHT11 Sıcaklık ve Nem",
-                "imgFileName": "dht11.jpg",
-                "desc": "Havadaki sıcaklığı ve nem oranını dijital sinyal olarak ölçen mavi renkli sensör.",
-                "icon": "🌡️"
+            DHT11: {
+                name: 'DHT11 Sıcaklık ve Nem',
+                imgFileName: 'dht11.jpg',
+                desc: 'Havadaki sıcaklığı ve nem oranını dijital sinyal olarak ölçen mavi renkli sensör.',
+                icon: '🌡️',
             },
-            "LDR": {
-                "name": "LDR (Işık Direnci)",
-                "imgFileName": "ldr.jpg",
-                "desc": "Üzerine düşen ışık miktarına göre direnci değişen sensör. Karanlıkta direnci artar, aydınlıkta azalır.",
-                "icon": "☀️"
+            LDR: {
+                name: 'LDR (Işık Direnci)',
+                imgFileName: 'ldr.jpg',
+                desc: 'Üzerine düşen ışık miktarına göre direnci değişen sensör. Karanlıkta direnci artar, aydınlıkta azalır.',
+                icon: '☀️',
             },
-            "IR Sensör": {
-                "name": "Kızılötesi Engel Sensörü",
-                "imgFileName": "kızılötesiengelsensörü.jpg",
-                "desc": "Üzerindeki verici led ışık yayar, engel varsa ışık geri yansır. Engel algılayınca ışık yakar ve LOW sinyali verir.",
-                "icon": "🕵️"
+            'IR Sensör': {
+                name: 'Kızılötesi Engel Sensörü',
+                imgFileName: 'kızılötesiengelsensörü.jpg',
+                desc: 'Üzerindeki verici led ışık yayar, engel varsa ışık geri yansır. Engel algılayınca ışık yakar ve LOW sinyali verir.',
+                icon: '🕵️',
             },
-            "Servo": {
-                "name": "Servo Motor (SG90)",
-                "imgFileName": "servosg90.jpg",
-                "desc": "Sadece dönmekle kalmaz, 0 ile 180 derece arasında istediğimiz açıya gidip orada durabilir. Robot kollarda kullanılır.",
-                "icon": "🦾"
+            Servo: {
+                name: 'Servo Motor (SG90)',
+                imgFileName: 'servosg90.jpg',
+                desc: 'Sadece dönmekle kalmaz, 0 ile 180 derece arasında istediğimiz açıya gidip orada durabilir. Robot kollarda kullanılır.',
+                icon: '🦾',
             },
-            "Su Sensörü": {
-                "name": "Su Seviyesi Sensörü",
-                "imgFileName": "suseviye.jpeg",
-                "desc": "Üzerindeki iletken çizgilere su temas edince direnç değişir. Suyun ne kadar yükseldiğini ölçmemizi sağlar.",
-                "icon": "💧"
+            'Su Sensörü': {
+                name: 'Su Seviyesi Sensörü',
+                imgFileName: 'suseviye.jpeg',
+                desc: 'Üzerindeki iletken çizgilere su temas edince direnç değişir. Suyun ne kadar yükseldiğini ölçmemizi sağlar.',
+                icon: '💧',
             },
-            "Toprak Sensörü": {
-                "name": "Toprak Nem Sensörü",
-                "imgFileName": "topraknemsensoru.jpg",
-                "desc": "İki çatalı toprağa batırılır. Toprak ıslaksa elektriği iletir, kuruysa iletmez. Bitkilerin susadığını anlar.",
-                "icon": "🌱"
+            'Toprak Sensörü': {
+                name: 'Toprak Nem Sensörü',
+                imgFileName: 'topraknemsensoru.jpg',
+                desc: 'İki çatalı toprağa batırılır. Toprak ıslaksa elektriği iletir, kuruysa iletmez. Bitkilerin susadığını anlar.',
+                icon: '🌱',
             },
-            "Tilt Sensörü": {
-                "name": "Tilt (Eğim) Sensörü",
-                "imgFileName": "tiltsensörü.jpg",
-                "desc": "İçinde küçük bir metal bilye vardır. Sensör eğildiğinde bilye hareket eder ve devreyi tamamlar.",
-                "icon": "⚖️"
+            'Tilt Sensörü': {
+                name: 'Tilt (Eğim) Sensörü',
+                imgFileName: 'tiltsensörü.jpg',
+                desc: 'İçinde küçük bir metal bilye vardır. Sensör eğildiğinde bilye hareket eder ve devreyi tamamlar.',
+                icon: '⚖️',
             },
-            "Ses Sensörü": {
-                "name": "Mikrofon Modülü",
-                "imgFileName": "ses-sensoru-karti-mikrofon-modulu.jpg",
-                "desc": "Ortamdaki ses dalgalarını elektrik sinyaline çevirir. Alkış gibi yüksek sesleri algılamak için kullanılır.",
-                "icon": "🎤"
+            'Ses Sensörü': {
+                name: 'Mikrofon Modülü',
+                imgFileName: 'ses-sensoru-karti-mikrofon-modulu.jpg',
+                desc: 'Ortamdaki ses dalgalarını elektrik sinyaline çevirir. Alkış gibi yüksek sesleri algılamak için kullanılır.',
+                icon: '🎤',
             },
-            "NTC": {
-                "name": "NTC Termistör",
-                "imgFileName": "ntc-termisatör.jpg",
-                "desc": "Sıcaklık arttıkça direnci düşen, mercimeğe benzeyen bir devre elemanıdır. Hassas analog ısı ölçümü yapar.",
-                "icon": "🔥"
+            NTC: {
+                name: 'NTC Termistör',
+                imgFileName: 'ntc-termisatör.jpg',
+                desc: 'Sıcaklık arttıkça direnci düşen, mercimeğe benzeyen bir devre elemanıdır. Hassas analog ısı ölçümü yapar.',
+                icon: '🔥',
             },
-            "7 Segment": {
-                "name": "7 Segment Ekran",
-                "imgFileName": "7segmentekran.jpg",
-                "desc": "8 rakamını oluşturan 7 adet LED çubuğundan (segment) oluşur. Rakamları göstermek için kullanılır.",
-                "icon": "Display"
+            '7 Segment': {
+                name: '7 Segment Ekran',
+                imgFileName: '7segmentekran.jpg',
+                desc: '8 rakamını oluşturan 7 adet LED çubuğundan (segment) oluşur. Rakamları göstermek için kullanılır.',
+                icon: 'Display',
             },
-            "Potansiyometre": {
-                "name": "Potansiyometre",
-                "imgFileName": "potansiyometre.jpg",
-                "desc": "Ayarlanabilir direnç. Düğmesini çevirerek direnç değerini değiştirebiliriz.",
-                "icon": "🎛️"
+            Potansiyometre: {
+                name: 'Potansiyometre',
+                imgFileName: 'potansiyometre.jpg',
+                desc: 'Ayarlanabilir direnç. Düğmesini çevirerek direnç değerini değiştirebiliriz.',
+                icon: '🎛️',
             },
-            "Buton": {
-                "name": "Buton",
-                "imgFileName": "4ay-buton.jpg",
-                "desc": "Basıldığında devreyi tamamlayan anahtar.",
-                "icon": "🔘"
+            Buton: {
+                name: 'Buton',
+                imgFileName: '4ay-buton.jpg',
+                desc: 'Basıldığında devreyi tamamlayan anahtar.',
+                icon: '🔘',
             },
-            "RGB LED": {
-                "name": "RGB LED",
-                "imgFileName": "rgbled.jpg",
-                "desc": "Kırmızı, Yeşil ve Mavi renkleri tek bir pakette birleştiren LED.",
-                "icon": "🎨"
+            'RGB LED': {
+                name: 'RGB LED',
+                imgFileName: 'rgbled.jpg',
+                desc: 'Kırmızı, Yeşil ve Mavi renkleri tek bir pakette birleştiren LED.',
+                icon: '🎨',
             },
-            "Breadboard": {
-                "name": "Breadboard",
-                "imgFileName": "",
-                "desc": "Lehim yapmadan devre kurmamızı sağlayan devre tahtası.",
-                "icon": "🍞"
+            Breadboard: {
+                name: 'Breadboard',
+                imgFileName: '',
+                desc: 'Lehim yapmadan devre kurmamızı sağlayan devre tahtası.',
+                icon: '🍞',
             },
-            "Jumper Kablo": {
-                "name": "Jumper Kablo",
-                "imgFileName": "",
-                "desc": "Devre elemanlarını birbirine bağlayan kablolar.",
-                "icon": "〰️"
+            'Jumper Kablo': {
+                name: 'Jumper Kablo',
+                imgFileName: '',
+                desc: 'Devre elemanlarını birbirine bağlayan kablolar.',
+                icon: '〰️',
             },
-            "Direnç": {
-                "name": "Direnç",
-                "imgFileName": "",
-                "desc": "Akımı sınırlayan devre elemanı.",
-                "icon": "🛑"
-            }
+            Direnç: {
+                name: 'Direnç',
+                imgFileName: '',
+                desc: 'Akımı sınırlayan devre elemanı.',
+                icon: '🛑',
+            },
         },
-        "phases": [
+        phases: [
             {
-                "color": "blue",
-                "title": "🚀 Başlangıç",
-                "description": "Arduino dünyasına ilk adım."
+                color: 'blue',
+                title: '🚀 Başlangıç',
+                description: 'Arduino dünyasına ilk adım.',
             },
             {
-                "color": "green",
-                "title": "⚡ Bölüm 1",
-                "description": "Temel elektronik devre elemanlarını tanıyoruz."
+                color: 'green',
+                title: '⚡ Bölüm 1',
+                description: 'Temel elektronik devre elemanlarını tanıyoruz.',
             },
             {
-                "color": "purple",
-                "title": "📟 Bölüm 2",
-                "description": "Sensörleri ve dış dünyayı algılamayı öğreniyoruz."
+                color: 'purple',
+                title: '📟 Bölüm 2',
+                description: 'Sensörleri ve dış dünyayı algılamayı öğreniyoruz.',
             },
             {
-                "color": "orange",
-                "title": "🚦 Bölüm 3",
-                "description": "Motorlar, ekranlar ve daha fazlası."
+                color: 'orange',
+                title: '🚦 Bölüm 3',
+                description: 'Motorlar, ekranlar ve daha fazlası.',
             },
             {
-                "color": "red",
-                "title": "🎮 Bölüm 4",
-                "description": "Gelişmiş kontrol yapıları ve oyunlar."
+                color: 'red',
+                title: '🎮 Bölüm 4',
+                description: 'Gelişmiş kontrol yapıları ve oyunlar.',
             },
             {
-                "color": "teal",
-                "title": "🤖 Bölüm 5",
-                "description": "Karmaşık robotik sistemler."
-            }
+                color: 'teal',
+                title: '🤖 Bölüm 5',
+                description: 'Karmaşık robotik sistemler.',
+            },
         ],
-        "projects": [
+        projects: [
             {
-                "id": 0,
-                "phase": 0,
-                "title": "Donanımı Tanıyalım",
-                "icon": "🔍",
-                "desc": "Arduino kartının üzerindeki parçaları keşfet.",
-                "hasGraph": false,
-                "hasSim": false,
-                "simType": "explorer_board",
-                "mission": "Robot yapmaya başlamadan önce, kullanacağımız beyni (Arduino Uno) yakından tanımalıyız. Soldaki resim üzerinde fareni gezdirerek parçaların görevlerini öğren.<br><br><strong>Kısa Tanım:</strong> Arduino, bilgisayardan aldığı emirleri uygulayan elektronik bir beyindir.",
-                "theory": "Arduino Uno, ATmega328P mikrodenetleyicisi üzerine kuruludur. Giriş pinlerinden veri alır (Sensörler), bu veriyi işler ve çıkış pinleri ile tepki verir (Motor, LED).",
-                "materials": [
-                    "Arduino Uno"
+                id: 0,
+                phase: 0,
+                title: 'Donanımı Tanıyalım',
+                icon: '🔍',
+                desc: 'Arduino kartının üzerindeki parçaları keşfet.',
+                hasGraph: false,
+                hasSim: false,
+                simType: 'explorer_board',
+                mission:
+                    'Robot yapmaya başlamadan önce, kullanacağımız beyni (Arduino Uno) yakından tanımalıyız. Soldaki resim üzerinde fareni gezdirerek parçaların görevlerini öğren.<br><br><strong>Kısa Tanım:</strong> Arduino, bilgisayardan aldığı emirleri uygulayan elektronik bir beyindir.',
+                theory: 'Arduino Uno, ATmega328P mikrodenetleyicisi üzerine kuruludur. Giriş pinlerinden veri alır (Sensörler), bu veriyi işler ve çıkış pinleri ile tepki verir (Motor, LED).',
+                materials: ['Arduino Uno'],
+                mainComponent: 'Arduino',
+                circuit_desc: 'Bu derste sadece kartın yapısını inceliyoruz.',
+                code: '// Kod yok, keşif zamanı!',
+                challenge: "Kartın üzerindeki 'Reset' tuşunu bul. Sence ne işe yarıyor olabilir?",
+                circuitImage: 'arduino_tanitim.jpg',
+                hotspots: [
+                    {
+                        name: 'USB Portu',
+                        desc: 'Bilgisayar bağlantısı kurmak ve kartın içine kod yüklemek için kullanılır.',
+                        x: 95,
+                        y: 110,
+                        r: 55,
+                    },
+                    {
+                        name: 'Harici Güç Girişi',
+                        desc: 'Bilgisayar bağlı değilken, pil veya adaptör (7-12V) ile çalıştırmak içindir.',
+                        x: 95,
+                        y: 270,
+                        r: 45,
+                    },
+                    {
+                        name: 'Dijital Pinler (0-13)',
+                        desc: 'LED yakmak gibi dijital giriş/çıkış işlemleri için kullanılır. ~ işaretliler PWM destekler.',
+                        x: 360,
+                        y: 50,
+                        r: 110,
+                    },
+                    {
+                        name: 'Analog Pinler (A0-A5)',
+                        desc: 'Sensörlerden (ısı, ışık vb.) gelen analog değerleri okumak için kullanılır.',
+                        x: 420,
+                        y: 310,
+                        r: 60,
+                    },
+                    {
+                        name: 'Güç Pinleri (Power)',
+                        desc: 'Devrenize 5V, 3.3V elektrik ve GND (Toprak/Eksi) bağlantısı sağlar.',
+                        x: 270,
+                        y: 310,
+                        r: 50,
+                    },
+                    {
+                        name: 'Mikrodenetleyici',
+                        desc: 'Kartın beynidir (ATmega328P). Yazdığınız kodlar burada işlenir.',
+                        x: 350,
+                        y: 200,
+                        r: 45,
+                    },
+                    {
+                        name: 'Reset Butonu',
+                        desc: 'Karta yüklenen programı en baştan başlatır.',
+                        x: 45,
+                        y: 45,
+                        r: 25,
+                    },
                 ],
-                "mainComponent": "Arduino",
-                "circuit_desc": "Bu derste sadece kartın yapısını inceliyoruz.",
-                "code": "// Kod yok, keşif zamanı!",
-                "challenge": "Kartın üzerindeki 'Reset' tuşunu bul. Sence ne işe yarıyor olabilir?",
-                "circuitImage": "arduino_tanitim.jpg",
-                "hotspots": [
+                quiz: [
                     {
-                        "name": "USB Portu",
-                        "desc": "Bilgisayar bağlantısı kurmak ve kartın içine kod yüklemek için kullanılır.",
-                        "x": 95,
-                        "y": 110,
-                        "r": 55
+                        q: "Arduino Uno kartının 'beyni' olan mikrodenetleyici hangisidir?",
+                        options: ['Intel i7', 'ATmega328P', 'Snapdragon 888', 'Arduino Core'],
+                        answer: 1,
                     },
                     {
-                        "name": "Harici Güç Girişi",
-                        "desc": "Bilgisayar bağlı değilken, pil veya adaptör (7-12V) ile çalıştırmak içindir.",
-                        "x": 95,
-                        "y": 270,
-                        "r": 45
+                        q: 'Kod yüklemek için hangi portu kullanırız?',
+                        options: ['Güç Girişi', 'HDMI Portu', 'USB Portu', 'Kulaklık Girişi'],
+                        answer: 2,
                     },
                     {
-                        "name": "Dijital Pinler (0-13)",
-                        "desc": "LED yakmak gibi dijital giriş/çıkış işlemleri için kullanılır. ~ işaretliler PWM destekler.",
-                        "x": 360,
-                        "y": 50,
-                        "r": 110
+                        q: 'Reset butonu ne işe yarar?',
+                        options: ['Kartı kapatır', 'Kodu siler', 'Kodu baştan başlatır', 'Bilgisayarı kapatır'],
+                        answer: 2,
                     },
-                    {
-                        "name": "Analog Pinler (A0-A5)",
-                        "desc": "Sensörlerden (ısı, ışık vb.) gelen analog değerleri okumak için kullanılır.",
-                        "x": 420,
-                        "y": 310,
-                        "r": 60
-                    },
-                    {
-                        "name": "Güç Pinleri (Power)",
-                        "desc": "Devrenize 5V, 3.3V elektrik ve GND (Toprak/Eksi) bağlantısı sağlar.",
-                        "x": 270,
-                        "y": 310,
-                        "r": 50
-                    },
-                    {
-                        "name": "Mikrodenetleyici",
-                        "desc": "Kartın beynidir (ATmega328P). Yazdığınız kodlar burada işlenir.",
-                        "x": 350,
-                        "y": 200,
-                        "r": 45
-                    },
-                    {
-                        "name": "Reset Butonu",
-                        "desc": "Karta yüklenen programı en baştan başlatır.",
-                        "x": 45,
-                        "y": 45,
-                        "r": 25
-                    }
                 ],
-                "quiz": [
+            },
+            {
+                id: 1,
+                phase: 0,
+                title: 'Yazılımı Tanıyalım',
+                icon: '💻',
+                desc: 'Arduino IDE programlama arayüzünü keşfet.',
+                hasGraph: false,
+                hasSim: false,
+                simType: 'explorer_ide',
+                mission:
+                    "Kodlarımızı yazıp karta yüklemek için 'Arduino IDE' programını kullanacağız. Hangi buton ne işe yarar?<br><br><strong>Kısa Tanım:</strong> Arduino IDE, kodlarımızı yazıp karta yüklememizi sağlayan bilgisayar programıdır.",
+                theory: 'IDE (Integrated Development Environment), kod yazma, derleme (hataları bulma) ve yükleme işlemlerini tek bir yerde yapmamızı sağlar.',
+                materials: ['Bilgisayar', 'Arduino IDE'],
+                circuit_desc: 'Bilgisayar ekranına bakıyoruz.',
+                code: '// Kod yok, arayüzü inceliyoruz.',
+                challenge: "'Seri Port Ekranı' butonunu bul (Büyüteç simgesi).",
+                circuitImage: 'devre1.jpg',
+                hotspots: null,
+                enableHotspots: false,
+                showHotspotsInLab: false,
+                hiddenTabs: [],
+                quiz: [
                     {
-                        "q": "Arduino Uno kartının 'beyni' olan mikrodenetleyici hangisidir?",
-                        "options": [
-                            "Intel i7",
-                            "ATmega328P",
-                            "Snapdragon 888",
-                            "Arduino Core"
+                        q: 'Arduino IDE nedir?',
+                        options: [
+                            'Bir oyun motorudur',
+                            'Kod yazma ve yükleme programıdır',
+                            '3D çizim programıdır',
+                            'Virüs temizleme programıdır',
                         ],
-                        "answer": 1
+                        answer: 1,
                     },
                     {
-                        "q": "Kod yüklemek için hangi portu kullanırız?",
-                        "options": [
-                            "Güç Girişi",
-                            "HDMI Portu",
-                            "USB Portu",
-                            "Kulaklık Girişi"
-                        ],
-                        "answer": 2
+                        q: 'Yazdığımız kodda hata olup olmadığını kontrol etmek için hangi butona basarız?',
+                        options: ['Kontrol Et (Tik İşareti)', 'Yükle (Ok İşareti)', 'Yeni Dosya', 'Kaydet'],
+                        answer: 0,
                     },
                     {
-                        "q": "Reset butonu ne işe yarar?",
-                        "options": [
-                            "Kartı kapatır",
-                            "Kodu siler",
-                            "Kodu baştan başlatır",
-                            "Bilgisayarı kapatır"
-                        ],
-                        "answer": 2
-                    }
-                ]
-            },
-            {
-                "id": 1,
-                "phase": 0,
-                "title": "Yazılımı Tanıyalım",
-                "icon": "💻",
-                "desc": "Arduino IDE programlama arayüzünü keşfet.",
-                "hasGraph": false,
-                "hasSim": false,
-                "simType": "explorer_ide",
-                "mission": "Kodlarımızı yazıp karta yüklemek için 'Arduino IDE' programını kullanacağız. Hangi buton ne işe yarar?<br><br><strong>Kısa Tanım:</strong> Arduino IDE, kodlarımızı yazıp karta yüklememizi sağlayan bilgisayar programıdır.",
-                "theory": "IDE (Integrated Development Environment), kod yazma, derleme (hataları bulma) ve yükleme işlemlerini tek bir yerde yapmamızı sağlar.",
-                "materials": [
-                    "Bilgisayar",
-                    "Arduino IDE"
-                ],
-                "circuit_desc": "Bilgisayar ekranına bakıyoruz.",
-                "code": "// Kod yok, arayüzü inceliyoruz.",
-                "challenge": "'Seri Port Ekranı' butonunu bul (Büyüteç simgesi).",
-                "circuitImage": "devre1.jpg",
-                "hotspots": null,
-                "enableHotspots": false,
-                "showHotspotsInLab": false,
-                "hiddenTabs": [],
-                "quiz": [
-                    {
-                        "q": "Arduino IDE nedir?",
-                        "options": [
-                            "Bir oyun motorudur",
-                            "Kod yazma ve yükleme programıdır",
-                            "3D çizim programıdır",
-                            "Virüs temizleme programıdır"
-                        ],
-                        "answer": 1
+                        q: "Arduino'dan gelen mesajları okuduğumuz pencerenin adı nedir?",
+                        options: ['Mesaj Kutusu', 'Seri Port Ekranı', 'Terminal', 'Chat Ekranı'],
+                        answer: 1,
                     },
                     {
-                        "q": "Yazdığımız kodda hata olup olmadığını kontrol etmek için hangi butona basarız?",
-                        "options": [
-                            "Kontrol Et (Tik İşareti)",
-                            "Yükle (Ok İşareti)",
-                            "Yeni Dosya",
-                            "Kaydet"
-                        ],
-                        "answer": 0
+                        q: 'Yeni Soru?asa',
+                        options: ['A Şıkkıasa', 'B Şıkkısa', 'C Şıkkıasa', 'D Şıkkıasa'],
+                        answer: 3,
+                    },
+                ],
+            },
+            {
+                id: 2,
+                phase: 1,
+                title: 'Blink (LED Yakma)',
+                icon: '💡',
+                desc: 'İlk kodumuz: Işık yak!',
+                hasGraph: false,
+                hasSim: true,
+                simType: 'blink',
+                mission:
+                    "Programcılığın 'Merhaba Dünya'sı! Kart üzerindeki LED'i yakıp söndüreceğiz.<br><br><strong>Algoritma:</strong><br>1. LED'i Yak (Güç Ver)<br>2. 1 Saniye Bekle<br>3. LED'i Söndür (Gücü Kes)<br>4. 1 Saniye Bekle<br>5. Başa Dön",
+                theory: "Dijital dünyada 1 (HIGH/5V) açık, 0 (LOW/0V) kapalı demektir. LED'in uzun bacağı (+) anottur, kısa bacağı (-) katottur.",
+                materials: ['LED', 'Direnç'],
+                mainComponent: 'LED',
+                circuit_desc: "LED Uzun bacak Pin 13'e, kısa bacak GND'ye.",
+                code: 'void setup() { \n  pinMode(13, OUTPUT); // 13. Pini çıkış (Lamba) olarak ayarla\n}\nvoid loop() { \n  digitalWrite(13, HIGH); // Işığı YAK\n  delay(1000);            // 1000 ms bekle\n  digitalWrite(13, LOW);  // Işığı SÖNDÜR\n  delay(1000);            // 1000 ms bekle\n}',
+                challenge: 'Daha hızlı yak söndür (delay süresini kısalt).',
+                quiz: [
+                    {
+                        q: "Dijital dünyada 'HIGH' komutu ne anlama gelir?",
+                        options: ['0 Volt (Kapalı)', '2.5 Volt (Yarım)', '5 Volt (Açık)', '100 Volt (Tehlikeli)'],
+                        answer: 2,
                     },
                     {
-                        "q": "Arduino'dan gelen mesajları okuduğumuz pencerenin adı nedir?",
-                        "options": [
-                            "Mesaj Kutusu",
-                            "Seri Port Ekranı",
-                            "Terminal",
-                            "Chat Ekranı"
-                        ],
-                        "answer": 1
+                        q: '1 saniye beklemek için hangi komut kullanılır?',
+                        options: ['wait(1)', 'sleep(1000)', 'delay(1000)', 'stop(1)'],
+                        answer: 2,
                     },
                     {
-                        "q": "Yeni Soru?asa",
-                        "options": [
-                            "A Şıkkıasa",
-                            "B Şıkkısa",
-                            "C Şıkkıasa",
-                            "D Şıkkıasa"
-                        ],
-                        "answer": 3
-                    }
-                ]
-            },
-            {
-                "id": 2,
-                "phase": 1,
-                "title": "Blink (LED Yakma)",
-                "icon": "💡",
-                "desc": "İlk kodumuz: Işık yak!",
-                "hasGraph": false,
-                "hasSim": true,
-                "simType": "blink",
-                "mission": "Programcılığın 'Merhaba Dünya'sı! Kart üzerindeki LED'i yakıp söndüreceğiz.<br><br><strong>Algoritma:</strong><br>1. LED'i Yak (Güç Ver)<br>2. 1 Saniye Bekle<br>3. LED'i Söndür (Gücü Kes)<br>4. 1 Saniye Bekle<br>5. Başa Dön",
-                "theory": "Dijital dünyada 1 (HIGH/5V) açık, 0 (LOW/0V) kapalı demektir. LED'in uzun bacağı (+) anottur, kısa bacağı (-) katottur.",
-                "materials": [
-                    "LED",
-                    "Direnç"
-                ],
-                "mainComponent": "LED",
-                "circuit_desc": "LED Uzun bacak Pin 13'e, kısa bacak GND'ye.",
-                "code": "void setup() { \n  pinMode(13, OUTPUT); // 13. Pini çıkış (Lamba) olarak ayarla\n}\nvoid loop() { \n  digitalWrite(13, HIGH); // Işığı YAK\n  delay(1000);            // 1000 ms bekle\n  digitalWrite(13, LOW);  // Işığı SÖNDÜR\n  delay(1000);            // 1000 ms bekle\n}",
-                "challenge": "Daha hızlı yak söndür (delay süresini kısalt).",
-                "quiz": [
-                    {
-                        "q": "Dijital dünyada 'HIGH' komutu ne anlama gelir?",
-                        "options": [
-                            "0 Volt (Kapalı)",
-                            "2.5 Volt (Yarım)",
-                            "5 Volt (Açık)",
-                            "100 Volt (Tehlikeli)"
-                        ],
-                        "answer": 2
+                        q: "LED'in uzun bacağı hangisidir?",
+                        options: ['Anot (+)', 'Katot (-)', 'Nötr', 'Toprak'],
+                        answer: 0,
                     },
-                    {
-                        "q": "1 saniye beklemek için hangi komut kullanılır?",
-                        "options": [
-                            "wait(1)",
-                            "sleep(1000)",
-                            "delay(1000)",
-                            "stop(1)"
-                        ],
-                        "answer": 2
-                    },
-                    {
-                        "q": "LED'in uzun bacağı hangisidir?",
-                        "options": [
-                            "Anot (+)",
-                            "Katot (-)",
-                            "Nötr",
-                            "Toprak"
-                        ],
-                        "answer": 0
-                    }
-                ]
+                ],
             },
             {
-                "id": 3,
-                "phase": 1,
-                "title": "Trafik Lambası",
-                "icon": "🚦",
-                "desc": "Sıralı LED kontrolü.",
-                "hasGraph": false,
-                "hasSim": true,
-                "simType": "traffic",
-                "mission": "Kırmızı, Sarı ve Yeşil LED'leri sırayla yakarak trafik akışını yöneteceğiz.<br><br><strong>Algoritma:</strong><br>1. Kırmızı Yan (3sn)<br>2. Sarı Yan (1sn)<br>3. Yeşil Yan (3sn)<br>4. Tekrarla",
-                "theory": "Programlar yukarıdan aşağıya doğru satır satır işlenir. Bir komut bitmeden diğeri başlamaz.",
-                "materials": [
-                    "3 LED (Kırmızı, Sarı, Yeşil)",
-                    "3x 220 Ohm Direnç"
-                ],
-                "circuit_desc": "LED'leri sırasıyla Pin 8, 9, 10'a bağla. Eksi uçlarına direnç takıp GND'ye bağla.",
-                "code": "void setup() { \n  pinMode(8, OUTPUT); pinMode(9, OUTPUT); pinMode(10, OUTPUT); \n}\nvoid loop() { \n  digitalWrite(8, HIGH); delay(3000); digitalWrite(8, LOW); // Kırmızı\n  digitalWrite(9, HIGH); delay(1000); digitalWrite(9, LOW); // Sarı\n  digitalWrite(10, HIGH); delay(3000); digitalWrite(10, LOW); // Yeşil\n}",
-                "challenge": "Gerçek trafik lambalarında olduğu gibi kırmızıdan yeşile geçerken Sarı ve Kırmızı aynı anda yansın."
+                id: 3,
+                phase: 1,
+                title: 'Trafik Lambası',
+                icon: '🚦',
+                desc: 'Sıralı LED kontrolü.',
+                hasGraph: false,
+                hasSim: true,
+                simType: 'traffic',
+                mission:
+                    "Kırmızı, Sarı ve Yeşil LED'leri sırayla yakarak trafik akışını yöneteceğiz.<br><br><strong>Algoritma:</strong><br>1. Kırmızı Yan (3sn)<br>2. Sarı Yan (1sn)<br>3. Yeşil Yan (3sn)<br>4. Tekrarla",
+                theory: 'Programlar yukarıdan aşağıya doğru satır satır işlenir. Bir komut bitmeden diğeri başlamaz.',
+                materials: ['3 LED (Kırmızı, Sarı, Yeşil)', '3x 220 Ohm Direnç'],
+                circuit_desc: "LED'leri sırasıyla Pin 8, 9, 10'a bağla. Eksi uçlarına direnç takıp GND'ye bağla.",
+                code: 'void setup() { \n  pinMode(8, OUTPUT); pinMode(9, OUTPUT); pinMode(10, OUTPUT); \n}\nvoid loop() { \n  digitalWrite(8, HIGH); delay(3000); digitalWrite(8, LOW); // Kırmızı\n  digitalWrite(9, HIGH); delay(1000); digitalWrite(9, LOW); // Sarı\n  digitalWrite(10, HIGH); delay(3000); digitalWrite(10, LOW); // Yeşil\n}',
+                challenge:
+                    'Gerçek trafik lambalarında olduğu gibi kırmızıdan yeşile geçerken Sarı ve Kırmızı aynı anda yansın.',
             },
             {
-                "id": 4,
-                "phase": 1,
-                "title": "Buton Okuma",
-                "icon": "🔘",
-                "desc": "Dijital Giriş.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "button",
-                "mission": "Butona basınca LED'i yakacağız.<br><br><strong>Algoritma:</strong><br>1. Butona basıldı mı?<br>2. EVET ise -> Işığı Yak<br>3. HAYIR ise -> Işığı Söndür",
-                "theory": "Arduino sadece dışarıya elektrik vermez (Output), dışarıdan gelen elektriği de okur (Input). Butona basınca devre tamamlanır ve pine 5V gider.",
-                "materials": [
-                    "Buton",
-                    "LED",
-                    "10k Direnç"
-                ],
-                "circuit_desc": "Buton bir bacak 5V, diğer bacak Pin 2. Pin 2'ye ayrıca 10k direnç ile GND bağla (Pull-down).",
-                "code": "void setup() { \n  pinMode(2, INPUT); \n  pinMode(8, OUTPUT); \n}\nvoid loop() { \n  if(digitalRead(2) == HIGH) { // Basıldıysa\n    digitalWrite(8, HIGH); \n  } else { \n    digitalWrite(8, LOW); \n  }\n}",
-                "challenge": "Butonu anahtar gibi kullan: Bir kere basınca yansın, tekrar basınca sönsün."
+                id: 4,
+                phase: 1,
+                title: 'Buton Okuma',
+                icon: '🔘',
+                desc: 'Dijital Giriş.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'button',
+                mission:
+                    "Butona basınca LED'i yakacağız.<br><br><strong>Algoritma:</strong><br>1. Butona basıldı mı?<br>2. EVET ise -> Işığı Yak<br>3. HAYIR ise -> Işığı Söndür",
+                theory: 'Arduino sadece dışarıya elektrik vermez (Output), dışarıdan gelen elektriği de okur (Input). Butona basınca devre tamamlanır ve pine 5V gider.',
+                materials: ['Buton', 'LED', '10k Direnç'],
+                circuit_desc:
+                    "Buton bir bacak 5V, diğer bacak Pin 2. Pin 2'ye ayrıca 10k direnç ile GND bağla (Pull-down).",
+                code: 'void setup() { \n  pinMode(2, INPUT); \n  pinMode(8, OUTPUT); \n}\nvoid loop() { \n  if(digitalRead(2) == HIGH) { // Basıldıysa\n    digitalWrite(8, HIGH); \n  } else { \n    digitalWrite(8, LOW); \n  }\n}',
+                challenge: 'Butonu anahtar gibi kullan: Bir kere basınca yansın, tekrar basınca sönsün.',
             },
             {
-                "id": 5,
-                "phase": 2,
-                "title": "Dimmer (Pot)",
-                "icon": "🎛️",
-                "desc": "Analog Giriş.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "pot",
-                "mission": "Düğmeyi çevirerek LED'in parlaklığını ayarlayacağız.<br><br><strong>Algoritma:</strong><br>1. Düğme konumunu oku (0-1023)<br>2. Değeri LED parlaklığına çevir (0-255)<br>3. LED'e uygula",
-                "theory": "Analog sinyaller 0 ve 1 gibi keskin değildir, arada binlerce değer alabilir. ADC (Analog Dijital Çevirici) bu voltajı sayıya döker.",
-                "materials": [
-                    "Potansiyometre",
-                    "LED"
-                ],
-                "circuit_desc": "Potansiyometre kenar bacakları 5V ve GND, orta bacak A0.",
-                "code": "void setup() { pinMode(9, OUTPUT); }\nvoid loop() { \n  int val = analogRead(A0); // 0-1023 arası oku\n  analogWrite(9, val/4);    // 0-255 arası yaz (4'e böl)\n}",
-                "challenge": "Potansiyometreyi ters çalıştır: Sağa çevirdikçe ışık azalsın."
+                id: 5,
+                phase: 2,
+                title: 'Dimmer (Pot)',
+                icon: '🎛️',
+                desc: 'Analog Giriş.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'pot',
+                mission:
+                    "Düğmeyi çevirerek LED'in parlaklığını ayarlayacağız.<br><br><strong>Algoritma:</strong><br>1. Düğme konumunu oku (0-1023)<br>2. Değeri LED parlaklığına çevir (0-255)<br>3. LED'e uygula",
+                theory: 'Analog sinyaller 0 ve 1 gibi keskin değildir, arada binlerce değer alabilir. ADC (Analog Dijital Çevirici) bu voltajı sayıya döker.',
+                materials: ['Potansiyometre', 'LED'],
+                circuit_desc: 'Potansiyometre kenar bacakları 5V ve GND, orta bacak A0.',
+                code: "void setup() { pinMode(9, OUTPUT); }\nvoid loop() { \n  int val = analogRead(A0); // 0-1023 arası oku\n  analogWrite(9, val/4);    // 0-255 arası yaz (4'e böl)\n}",
+                challenge: 'Potansiyometreyi ters çalıştır: Sağa çevirdikçe ışık azalsın.',
             },
             {
-                "id": 6,
-                "phase": 2,
-                "title": "RGB LED",
-                "icon": "🎨",
-                "desc": "Renk Karışımı.",
-                "hasGraph": false,
-                "hasSim": true,
-                "simType": "rgb",
-                "mission": "Kırmızı, Yeşil ve Mavi renkleri karıştırarak ara renkler (Mor, Turkuaz, Sarı) üreteceğiz.<br><br><strong>Algoritma:</strong><br>1. Kırmızı ve Maviyi Yak -> Mor<br>2. Bekle<br>3. Yeşili ve Maviyi Yak -> Turkuaz",
-                "theory": "RGB LED içinde 3 küçük LED vardır. PWM (AnalogWrite) ile her rengin parlaklığını değiştirerek milyonlarca renk elde ederiz.",
-                "materials": [
-                    "RGB LED",
-                    "3x 220 Ohm Direnç"
-                ],
-                "circuit_desc": "En uzun bacak GND. Diğerleri sırayla 9, 10, 11.",
-                "code": "int r=9, g=10, b=11;\nvoid setup() { pinMode(r,OUTPUT); pinMode(g,OUTPUT); pinMode(b,OUTPUT); }\nvoid loop() { \n  analogWrite(r, 255); analogWrite(b, 255); analogWrite(g, 0); // Mor\n  delay(1000);\n  analogWrite(r, 0); analogWrite(b, 255); analogWrite(g, 255); // Turkuaz\n  delay(1000);\n}",
-                "challenge": "Gökkuşağı renklerini sırayla, yumuşak geçişle yak."
+                id: 6,
+                phase: 2,
+                title: 'RGB LED',
+                icon: '🎨',
+                desc: 'Renk Karışımı.',
+                hasGraph: false,
+                hasSim: true,
+                simType: 'rgb',
+                mission:
+                    'Kırmızı, Yeşil ve Mavi renkleri karıştırarak ara renkler (Mor, Turkuaz, Sarı) üreteceğiz.<br><br><strong>Algoritma:</strong><br>1. Kırmızı ve Maviyi Yak -> Mor<br>2. Bekle<br>3. Yeşili ve Maviyi Yak -> Turkuaz',
+                theory: 'RGB LED içinde 3 küçük LED vardır. PWM (AnalogWrite) ile her rengin parlaklığını değiştirerek milyonlarca renk elde ederiz.',
+                materials: ['RGB LED', '3x 220 Ohm Direnç'],
+                circuit_desc: 'En uzun bacak GND. Diğerleri sırayla 9, 10, 11.',
+                code: 'int r=9, g=10, b=11;\nvoid setup() { pinMode(r,OUTPUT); pinMode(g,OUTPUT); pinMode(b,OUTPUT); }\nvoid loop() { \n  analogWrite(r, 255); analogWrite(b, 255); analogWrite(g, 0); // Mor\n  delay(1000);\n  analogWrite(r, 0); analogWrite(b, 255); analogWrite(g, 255); // Turkuaz\n  delay(1000);\n}',
+                challenge: 'Gökkuşağı renklerini sırayla, yumuşak geçişle yak.',
             },
             {
-                "id": 7,
-                "phase": 2,
-                "title": "Termometre",
-                "icon": "🌡️",
-                "desc": "DHT11 Sensörü.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "dht",
-                "mission": "Odanın sıcaklığını ve nemini ölçüp bilgisayar ekranına yazdıracağız.<br><br><strong>Algoritma:</strong><br>1. Sensörü Oku<br>2. Sıcaklık verisini al<br>3. Ekrana Yazdır<br>4. 2 saniye bekle",
-                "theory": "DHT11 dijital bir sensördür ancak veriyi özel bir formatta yollar. Bu yüzden 'DHT Kütüphanesi'ni kullanarak onunla konuşuruz.",
-                "materials": [
-                    "DHT11 Sensör"
-                ],
-                "mainComponent": "DHT11",
-                "circuit_desc": "Sinyal bacağı Pin 2'ye, VCC 5V'a, GND GND'ye.",
-                "code": "#include <DHT.h>\nDHT dht(2, DHT11); // Pin 2, Model DHT11\nvoid setup() { Serial.begin(9600); dht.begin(); }\nvoid loop() { \n  float t = dht.readTemperature();\n  Serial.print(\"Sicaklik: \"); Serial.println(t);\n  delay(2000); \n}",
-                "challenge": "Sıcaklık 30 dereceyi geçerse Kırmızı LED yakan bir 'Sıcaklık Uyarısı' sistemi ekle."
+                id: 7,
+                phase: 2,
+                title: 'Termometre',
+                icon: '🌡️',
+                desc: 'DHT11 Sensörü.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'dht',
+                mission:
+                    'Odanın sıcaklığını ve nemini ölçüp bilgisayar ekranına yazdıracağız.<br><br><strong>Algoritma:</strong><br>1. Sensörü Oku<br>2. Sıcaklık verisini al<br>3. Ekrana Yazdır<br>4. 2 saniye bekle',
+                theory: "DHT11 dijital bir sensördür ancak veriyi özel bir formatta yollar. Bu yüzden 'DHT Kütüphanesi'ni kullanarak onunla konuşuruz.",
+                materials: ['DHT11 Sensör'],
+                mainComponent: 'DHT11',
+                circuit_desc: "Sinyal bacağı Pin 2'ye, VCC 5V'a, GND GND'ye.",
+                code: '#include <DHT.h>\nDHT dht(2, DHT11); // Pin 2, Model DHT11\nvoid setup() { Serial.begin(9600); dht.begin(); }\nvoid loop() { \n  float t = dht.readTemperature();\n  Serial.print("Sicaklik: "); Serial.println(t);\n  delay(2000); \n}',
+                challenge: "Sıcaklık 30 dereceyi geçerse Kırmızı LED yakan bir 'Sıcaklık Uyarısı' sistemi ekle.",
             },
             {
-                "id": 8,
-                "phase": 2,
-                "title": "Mesafe Ölçer",
-                "icon": "🦇",
-                "desc": "HC-SR04.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "ultrasonic",
-                "mission": "Ses dalgaları ile önümüzdeki engelin mesafesini ölçeceğiz.<br><br><strong>Algoritma:</strong><br>1. Ses gönder (Trig)<br>2. Yankıyı bekle (Echo)<br>3. Geçen süreyi ölç<br>4. Mesafeyi hesapla (Yol = Hız x Zaman)",
-                "theory": "Ultrasonik sensörler, insan kulağının duyamayacağı yüksek frekanslı ses yollar. Sesin engele çarpıp geri dönme süresinden mesafe bulunur.",
-                "materials": [
-                    "Ultrasonik Mesafe Sensörü",
-                    "HC-SR04"
-                ],
-                "mainComponent": "HC-SR04",
-                "circuit_desc": "Trig Pin 9, Echo Pin 10.",
-                "code": "int trig=9, echo=10;\nvoid setup() { pinMode(trig, OUTPUT); pinMode(echo, INPUT); Serial.begin(9600); }\nvoid loop() { \n  digitalWrite(trig,0); delayMicroseconds(2); \n  digitalWrite(trig,1); delayMicroseconds(10); digitalWrite(trig,0);\n  long sure = pulseIn(echo,1); \n  int mesafe = sure*0.034/2; \n  Serial.println(mesafe); delay(100); \n}",
-                "challenge": "Mesafe 10cm'den azsa Buzzer ile uyarı ver (Park Sensörü).",
-                "circuitImage": "devre8.jpg",
-                "hotspots": null
+                id: 8,
+                phase: 2,
+                title: 'Mesafe Ölçer',
+                icon: '🦇',
+                desc: 'HC-SR04.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'ultrasonic',
+                mission:
+                    'Ses dalgaları ile önümüzdeki engelin mesafesini ölçeceğiz.<br><br><strong>Algoritma:</strong><br>1. Ses gönder (Trig)<br>2. Yankıyı bekle (Echo)<br>3. Geçen süreyi ölç<br>4. Mesafeyi hesapla (Yol = Hız x Zaman)',
+                theory: 'Ultrasonik sensörler, insan kulağının duyamayacağı yüksek frekanslı ses yollar. Sesin engele çarpıp geri dönme süresinden mesafe bulunur.',
+                materials: ['Ultrasonik Mesafe Sensörü', 'HC-SR04'],
+                mainComponent: 'HC-SR04',
+                circuit_desc: 'Trig Pin 9, Echo Pin 10.',
+                code: 'int trig=9, echo=10;\nvoid setup() { pinMode(trig, OUTPUT); pinMode(echo, INPUT); Serial.begin(9600); }\nvoid loop() { \n  digitalWrite(trig,0); delayMicroseconds(2); \n  digitalWrite(trig,1); delayMicroseconds(10); digitalWrite(trig,0);\n  long sure = pulseIn(echo,1); \n  int mesafe = sure*0.034/2; \n  Serial.println(mesafe); delay(100); \n}',
+                challenge: "Mesafe 10cm'den azsa Buzzer ile uyarı ver (Park Sensörü).",
+                circuitImage: 'devre8.jpg',
+                hotspots: null,
             },
             {
-                "id": 9,
-                "phase": 3,
-                "title": "Servo Motor",
-                "icon": "🦾",
-                "desc": "Motor Kontrolü.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "servo",
-                "mission": "Motoru istediğimiz açıya döndüreceğiz. Robot kollarda kullanılır.<br><br><strong>Algoritma:</strong><br>1. 0 Dereceye git<br>2. Bekle<br>3. 180 Dereceye git",
-                "theory": "Servo motorlar, içindeki potansiyometre sayesinde hangi açıda durduklarını bilirler. Servo kütüphanesi ile açı değerini (0-180) doğrudan göndeririz.",
-                "materials": [
-                    "Servo Motor"
-                ],
-                "mainComponent": "Servo",
-                "circuit_desc": "Turuncu (Sinyal) kablosu Pin 9'a.",
-                "code": "#include <Servo.h>\nServo m;\nvoid setup() { m.attach(9); }\nvoid loop() { \n  m.write(0); delay(1000); \n  m.write(180); delay(1000); \n}",
-                "challenge": "Potansiyometre ile servoyu kontrol et (Düğmeyi çevirdikçe motor dönsün)."
+                id: 9,
+                phase: 3,
+                title: 'Servo Motor',
+                icon: '🦾',
+                desc: 'Motor Kontrolü.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'servo',
+                mission:
+                    'Motoru istediğimiz açıya döndüreceğiz. Robot kollarda kullanılır.<br><br><strong>Algoritma:</strong><br>1. 0 Dereceye git<br>2. Bekle<br>3. 180 Dereceye git',
+                theory: 'Servo motorlar, içindeki potansiyometre sayesinde hangi açıda durduklarını bilirler. Servo kütüphanesi ile açı değerini (0-180) doğrudan göndeririz.',
+                materials: ['Servo Motor'],
+                mainComponent: 'Servo',
+                circuit_desc: "Turuncu (Sinyal) kablosu Pin 9'a.",
+                code: '#include <Servo.h>\nServo m;\nvoid setup() { m.attach(9); }\nvoid loop() { \n  m.write(0); delay(1000); \n  m.write(180); delay(1000); \n}',
+                challenge: 'Potansiyometre ile servoyu kontrol et (Düğmeyi çevirdikçe motor dönsün).',
             },
             {
-                "id": 10,
-                "phase": 3,
-                "title": "Müzik Kutusu",
-                "icon": "🎹",
-                "desc": "Buzzer.",
-                "hasGraph": false,
-                "hasSim": true,
-                "simType": "melody",
-                "mission": "Butonlara basarak notalar çalacağız.<br><br><strong>Algoritma:</strong><br>1. Buton 1 basıldı mı? -> DO çal<br>2. Buton 2 basıldı mı? -> RE çal<br>3. Hiçbiri değilse -> Sus",
-                "theory": "Ses, havadaki titreşimdir. Buzzer'a farklı frekanslarda elektrik vererek (Örn: 262Hz) notalar oluştururuz.",
-                "materials": [
-                    "Pasif Buzzer",
-                    "Buton"
-                ],
-                "circuit_desc": "Buzzer + ucu Pin 8, Buton Pin 2.",
-                "code": "void setup() { pinMode(2, INPUT); pinMode(8, OUTPUT); }\nvoid loop() { \n  if(digitalRead(2)) tone(8, 262); // DO Notası\n  else noTone(8); \n}",
-                "challenge": "Daha fazla buton ekleyerek basit bir şarkı çal."
+                id: 10,
+                phase: 3,
+                title: 'Müzik Kutusu',
+                icon: '🎹',
+                desc: 'Buzzer.',
+                hasGraph: false,
+                hasSim: true,
+                simType: 'melody',
+                mission:
+                    'Butonlara basarak notalar çalacağız.<br><br><strong>Algoritma:</strong><br>1. Buton 1 basıldı mı? -> DO çal<br>2. Buton 2 basıldı mı? -> RE çal<br>3. Hiçbiri değilse -> Sus',
+                theory: "Ses, havadaki titreşimdir. Buzzer'a farklı frekanslarda elektrik vererek (Örn: 262Hz) notalar oluştururuz.",
+                materials: ['Pasif Buzzer', 'Buton'],
+                circuit_desc: 'Buzzer + ucu Pin 8, Buton Pin 2.',
+                code: 'void setup() { pinMode(2, INPUT); pinMode(8, OUTPUT); }\nvoid loop() { \n  if(digitalRead(2)) tone(8, 262); // DO Notası\n  else noTone(8); \n}',
+                challenge: 'Daha fazla buton ekleyerek basit bir şarkı çal.',
             },
             {
-                "id": 11,
-                "phase": 3,
-                "title": "Akıllı Saksı",
-                "icon": "🌱",
-                "desc": "Nem Sensörü.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "moisture",
-                "mission": "Toprak kuruyunca uyarı veren sistem.<br><br><strong>Algoritma:</strong><br>1. Nemi ölç<br>2. Değer yüksekse (Kuru) -> Kırmızı Yak<br>3. Değer düşükse (Islak) -> Yeşil Yak",
-                "theory": "Toprak nem sensörü, toprağın iletkenliğini ölçer. Islak toprak elektriği iyi iletir (Direnç düşer), kuru toprak iletmez.",
-                "materials": [
-                    "Toprak Sensörü",
-                    "RGB LED"
-                ],
-                "mainComponent": "Toprak Sensörü",
-                "circuit_desc": "Sensör A0 pinine.",
-                "code": "void setup() { pinMode(13, OUTPUT); }\nvoid loop() { \n  if(analogRead(A0) > 800) digitalWrite(13, HIGH); // Kuru\n  else digitalWrite(13, LOW); // Islak\n}",
-                "challenge": "Bitki susadığında sesli uyarı (Buzzer) ekle."
+                id: 11,
+                phase: 3,
+                title: 'Akıllı Saksı',
+                icon: '🌱',
+                desc: 'Nem Sensörü.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'moisture',
+                mission:
+                    'Toprak kuruyunca uyarı veren sistem.<br><br><strong>Algoritma:</strong><br>1. Nemi ölç<br>2. Değer yüksekse (Kuru) -> Kırmızı Yak<br>3. Değer düşükse (Islak) -> Yeşil Yak',
+                theory: 'Toprak nem sensörü, toprağın iletkenliğini ölçer. Islak toprak elektriği iyi iletir (Direnç düşer), kuru toprak iletmez.',
+                materials: ['Toprak Sensörü', 'RGB LED'],
+                mainComponent: 'Toprak Sensörü',
+                circuit_desc: 'Sensör A0 pinine.',
+                code: 'void setup() { pinMode(13, OUTPUT); }\nvoid loop() { \n  if(analogRead(A0) > 800) digitalWrite(13, HIGH); // Kuru\n  else digitalWrite(13, LOW); // Islak\n}',
+                challenge: 'Bitki susadığında sesli uyarı (Buzzer) ekle.',
             },
             {
-                "id": 12,
-                "phase": 3,
-                "title": "Hırsız Alarmı",
-                "icon": "🕵️‍♂️",
-                "desc": "IR Sensör.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "motion",
-                "mission": "Hareket algılayınca alarm çalan güvenlik sistemi.<br><br><strong>Algoritma:</strong><br>1. Sensörde hareket var mı?<br>2. EVET ise -> Siren Çal",
-                "theory": "IR sensörler kızılötesi ışık yollar. Eğer önünde bir engel varsa ışık geri yansır ve sensör bunu algılar.",
-                "materials": [
-                    "IR Sensör",
-                    "Buzzer"
-                ],
-                "mainComponent": "IR Sensör",
-                "circuit_desc": "Sensör Çıkışı Pin 2, Buzzer Pin 8.",
-                "code": "void setup() { pinMode(2, INPUT); pinMode(8, OUTPUT); }\nvoid loop() { \n  if(digitalRead(2) == LOW) tone(8, 1000); // Engel var (LOW verir)\n  else noTone(8); \n}",
-                "challenge": "Alarm bir kere çalmaya başlayınca, reset atılana kadar susmasın (Kilitlenen Alarm)."
+                id: 12,
+                phase: 3,
+                title: 'Hırsız Alarmı',
+                icon: '🕵️‍♂️',
+                desc: 'IR Sensör.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'motion',
+                mission:
+                    'Hareket algılayınca alarm çalan güvenlik sistemi.<br><br><strong>Algoritma:</strong><br>1. Sensörde hareket var mı?<br>2. EVET ise -> Siren Çal',
+                theory: 'IR sensörler kızılötesi ışık yollar. Eğer önünde bir engel varsa ışık geri yansır ve sensör bunu algılar.',
+                materials: ['IR Sensör', 'Buzzer'],
+                mainComponent: 'IR Sensör',
+                circuit_desc: 'Sensör Çıkışı Pin 2, Buzzer Pin 8.',
+                code: 'void setup() { pinMode(2, INPUT); pinMode(8, OUTPUT); }\nvoid loop() { \n  if(digitalRead(2) == LOW) tone(8, 1000); // Engel var (LOW verir)\n  else noTone(8); \n}',
+                challenge: 'Alarm bir kere çalmaya başlayınca, reset atılana kadar susmasın (Kilitlenen Alarm).',
             },
             {
-                "id": 13,
-                "phase": 4,
-                "title": "Otoban Işığı",
-                "icon": "🛣️",
-                "desc": "LDR Sensör.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "streetLight",
-                "mission": "Hava kararınca otomatik yanan sokak lambası.<br><br><strong>Algoritma:</strong><br>1. Işık seviyesini ölç (LDR)<br>2. Ayar seviyesini ölç (Pot)<br>3. Işık < Ayar ise -> Lambaları Yak",
-                "theory": "LDR (Light Dependent Resistor), ışığa duyarlı bir dirençtir. Karanlıkta direnci çok artar, aydınlıkta azalır.",
-                "materials": [
-                    "LDR",
-                    "Potansiyometre",
-                    "LED"
-                ],
-                "mainComponent": "LDR",
-                "circuit_desc": "LDR A0, Potansiyometre A1.",
-                "code": "void loop() { \n  if(analogRead(A0) < analogRead(A1)) digitalWrite(5, HIGH); \n  else digitalWrite(5, LOW); \n}",
-                "challenge": "Işıkların aniden değil, yavaş yavaş yanmasını sağla (AnalogWrite kullan)."
+                id: 13,
+                phase: 4,
+                title: 'Otoban Işığı',
+                icon: '🛣️',
+                desc: 'LDR Sensör.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'streetLight',
+                mission:
+                    'Hava kararınca otomatik yanan sokak lambası.<br><br><strong>Algoritma:</strong><br>1. Işık seviyesini ölç (LDR)<br>2. Ayar seviyesini ölç (Pot)<br>3. Işık < Ayar ise -> Lambaları Yak',
+                theory: 'LDR (Light Dependent Resistor), ışığa duyarlı bir dirençtir. Karanlıkta direnci çok artar, aydınlıkta azalır.',
+                materials: ['LDR', 'Potansiyometre', 'LED'],
+                mainComponent: 'LDR',
+                circuit_desc: 'LDR A0, Potansiyometre A1.',
+                code: 'void loop() { \n  if(analogRead(A0) < analogRead(A1)) digitalWrite(5, HIGH); \n  else digitalWrite(5, LOW); \n}',
+                challenge: 'Işıkların aniden değil, yavaş yavaş yanmasını sağla (AnalogWrite kullan).',
             },
             {
-                "id": 14,
-                "phase": 4,
-                "title": "Bomba İmha",
-                "icon": "💣",
-                "desc": "7 Segment.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "countdown",
-                "mission": "Geri sayım sayacı. 0 olunca patlama sesi!<br><br><strong>Algoritma:</strong><br>1. 9 yaz, bekle<br>2. 8 yaz, bekle...<br>3. 0 olunca -> BOOM!",
-                "theory": "7 Segment Display aslında 8 paketlenmiş LED'dir. Rakamları oluşturmak için doğru LED kombinasyonlarını yakmalıyız (Diziler kullanılır).",
-                "materials": [
-                    "7 Segment Display",
-                    "Buton"
-                ],
-                "mainComponent": "7 Segment",
-                "circuit_desc": "Pin 2-8 arası display bacaklarına.",
-                "code": "// Basitleştirilmiş Kütüphane Mantığı\nvoid loop() { \n  for(int i=9; i>=0; i--) { \n    display(i); \n    delay(1000); \n  } \n}",
-                "challenge": "Geri sayımı butonla başlatacak şekilde güncelle."
+                id: 14,
+                phase: 4,
+                title: 'Bomba İmha',
+                icon: '💣',
+                desc: '7 Segment.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'countdown',
+                mission:
+                    'Geri sayım sayacı. 0 olunca patlama sesi!<br><br><strong>Algoritma:</strong><br>1. 9 yaz, bekle<br>2. 8 yaz, bekle...<br>3. 0 olunca -> BOOM!',
+                theory: "7 Segment Display aslında 8 paketlenmiş LED'dir. Rakamları oluşturmak için doğru LED kombinasyonlarını yakmalıyız (Diziler kullanılır).",
+                materials: ['7 Segment Display', 'Buton'],
+                mainComponent: '7 Segment',
+                circuit_desc: 'Pin 2-8 arası display bacaklarına.',
+                code: '// Basitleştirilmiş Kütüphane Mantığı\nvoid loop() { \n  for(int i=9; i>=0; i--) { \n    display(i); \n    delay(1000); \n  } \n}',
+                challenge: 'Geri sayımı butonla başlatacak şekilde güncelle.',
             },
             {
-                "id": 15,
-                "phase": 4,
-                "title": "Su Baskını",
-                "icon": "💧",
-                "desc": "Su Sensörü.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "flood",
-                "mission": "Su seviyesi yükselince alarm ver.<br><br><strong>Algoritma:</strong><br>1. Su seviyesini ölç<br>2. Seviye > Eşik ise -> Alarm Çal",
-                "theory": "Su (içindeki minerallerle) elektriği iletir. Sensör suya girdikçe direnci düşer ve Arduino daha yüksek voltaj okur.",
-                "materials": [
-                    "Su Sensörü",
-                    "Buzzer"
-                ],
-                "mainComponent": "Su Sensörü",
-                "circuit_desc": "Sinyal ucu A5.",
-                "code": "void loop() { \n  if(analogRead(A5) > 200) tone(8, 1000); \n  else noTone(8); \n}",
-                "challenge": "Su seviyesini 3 LED (Yeşil, Sarı, Kırmızı) ile göster."
+                id: 15,
+                phase: 4,
+                title: 'Su Baskını',
+                icon: '💧',
+                desc: 'Su Sensörü.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'flood',
+                mission:
+                    'Su seviyesi yükselince alarm ver.<br><br><strong>Algoritma:</strong><br>1. Su seviyesini ölç<br>2. Seviye > Eşik ise -> Alarm Çal',
+                theory: 'Su (içindeki minerallerle) elektriği iletir. Sensör suya girdikçe direnci düşer ve Arduino daha yüksek voltaj okur.',
+                materials: ['Su Sensörü', 'Buzzer'],
+                mainComponent: 'Su Sensörü',
+                circuit_desc: 'Sinyal ucu A5.',
+                code: 'void loop() { \n  if(analogRead(A5) > 200) tone(8, 1000); \n  else noTone(8); \n}',
+                challenge: 'Su seviyesini 3 LED (Yeşil, Sarı, Kırmızı) ile göster.',
             },
             {
-                "id": 16,
-                "phase": 4,
-                "title": "Alkış Anahtarı",
-                "icon": "👏",
-                "desc": "Ses Sensörü.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "clap",
-                "mission": "Alkış sesiyle ışığı açıp kapat.<br><br><strong>Algoritma:</strong><br>1. Ses şiddetini ölç<br>2. Eşiği geçerse -> Durumu tersine çevir (Açsa kapa, kapalıysa aç)",
-                "theory": "Mikrofon ses dalgalarını elektrik sinyaline çevirir. Ani voltaj sıçramalarını 'Alkış' olarak algılarız.",
-                "materials": [
-                    "Ses Sensörü",
-                    "LED"
-                ],
-                "mainComponent": "Ses Sensörü",
-                "circuit_desc": "Sensör A0, LED 13.",
-                "code": "void loop() { \n  if(analogRead(A0) > 500) { \n    digitalWrite(13, !digitalRead(13)); // Durumu tersle\n    delay(500); \n  } \n}",
-                "challenge": "Hatalı algılamaları önlemek için 'Çift Alkış' mantığı geliştir."
+                id: 16,
+                phase: 4,
+                title: 'Alkış Anahtarı',
+                icon: '👏',
+                desc: 'Ses Sensörü.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'clap',
+                mission:
+                    'Alkış sesiyle ışığı açıp kapat.<br><br><strong>Algoritma:</strong><br>1. Ses şiddetini ölç<br>2. Eşiği geçerse -> Durumu tersine çevir (Açsa kapa, kapalıysa aç)',
+                theory: "Mikrofon ses dalgalarını elektrik sinyaline çevirir. Ani voltaj sıçramalarını 'Alkış' olarak algılarız.",
+                materials: ['Ses Sensörü', 'LED'],
+                mainComponent: 'Ses Sensörü',
+                circuit_desc: 'Sensör A0, LED 13.',
+                code: 'void loop() { \n  if(analogRead(A0) > 500) { \n    digitalWrite(13, !digitalRead(13)); // Durumu tersle\n    delay(500); \n  } \n}',
+                challenge: "Hatalı algılamaları önlemek için 'Çift Alkış' mantığı geliştir.",
             },
             {
-                "id": 17,
-                "phase": 5,
-                "title": "Yangın Alarmı",
-                "icon": "🔥",
-                "desc": "NTC Termistör.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "fire",
-                "mission": "Sıcaklık tehlikeli seviyeye gelince siren çal.<br><br><strong>Algoritma:</strong><br>1. Termistörü oku<br>2. Değer > Sınır ise -> Siren Modu",
-                "theory": "Termistör (NTC), sıcaklık arttıkça direnci düşen özel bir dirençtir. Analog girişten okunur.",
-                "materials": [
-                    "NTC Termistör",
-                    "Buzzer",
-                    "10k Direnç"
-                ],
-                "mainComponent": "NTC",
-                "circuit_desc": "NTC ve 10k direnç ile gerilim bölücü kur, A0'a bağla.",
-                "code": "void loop() { \n  if(analogRead(A0) > 600) tone(8, 1000); \n  else noTone(8); \n}",
-                "challenge": "Sıcaklık arttıkça sirenin çalma hızını artır (Geiger sayacı gibi)."
+                id: 17,
+                phase: 5,
+                title: 'Yangın Alarmı',
+                icon: '🔥',
+                desc: 'NTC Termistör.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'fire',
+                mission:
+                    'Sıcaklık tehlikeli seviyeye gelince siren çal.<br><br><strong>Algoritma:</strong><br>1. Termistörü oku<br>2. Değer > Sınır ise -> Siren Modu',
+                theory: 'Termistör (NTC), sıcaklık arttıkça direnci düşen özel bir dirençtir. Analog girişten okunur.',
+                materials: ['NTC Termistör', 'Buzzer', '10k Direnç'],
+                mainComponent: 'NTC',
+                circuit_desc: "NTC ve 10k direnç ile gerilim bölücü kur, A0'a bağla.",
+                code: 'void loop() { \n  if(analogRead(A0) > 600) tone(8, 1000); \n  else noTone(8); \n}',
+                challenge: 'Sıcaklık arttıkça sirenin çalma hızını artır (Geiger sayacı gibi).',
             },
             {
-                "id": 18,
-                "phase": 5,
-                "title": "Theremin",
-                "icon": "🎻",
-                "desc": "Işık Enstrümanı.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "theremin",
-                "mission": "Elimizi sensöre yaklaştırarak müzik çalacağız.<br><br><strong>Algoritma:</strong><br>1. Işık değerini oku<br>2. Bu değeri ses frekansına dönüştür (Map)<br>3. Çal",
-                "theory": "Theremin, dokunmadan çalınan bir enstrümandır. Biz burada ışık miktarını (0-1023) ses frekansına (100-1000Hz) 'map' fonksiyonu ile çevireceğiz.",
-                "materials": [
-                    "LDR",
-                    "Buzzer"
-                ],
-                "mainComponent": "LDR",
-                "circuit_desc": "LDR A0, Buzzer 8.",
-                "code": "void loop() { \n  int val = analogRead(A0); \n  int frekans = map(val, 0, 1023, 100, 1000);\n  tone(8, frekans); \n}",
-                "challenge": "İkinci bir sensör ile ses yüksekliğini kontrol et."
+                id: 18,
+                phase: 5,
+                title: 'Theremin',
+                icon: '🎻',
+                desc: 'Işık Enstrümanı.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'theremin',
+                mission:
+                    'Elimizi sensöre yaklaştırarak müzik çalacağız.<br><br><strong>Algoritma:</strong><br>1. Işık değerini oku<br>2. Bu değeri ses frekansına dönüştür (Map)<br>3. Çal',
+                theory: "Theremin, dokunmadan çalınan bir enstrümandır. Biz burada ışık miktarını (0-1023) ses frekansına (100-1000Hz) 'map' fonksiyonu ile çevireceğiz.",
+                materials: ['LDR', 'Buzzer'],
+                mainComponent: 'LDR',
+                circuit_desc: 'LDR A0, Buzzer 8.',
+                code: 'void loop() { \n  int val = analogRead(A0); \n  int frekans = map(val, 0, 1023, 100, 1000);\n  tone(8, frekans); \n}',
+                challenge: 'İkinci bir sensör ile ses yüksekliğini kontrol et.',
             },
             {
-                "id": 19,
-                "phase": 5,
-                "title": "Kum Saati",
-                "icon": "⏳",
-                "desc": "Tilt Sensörü.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "hourglass",
-                "mission": "Kartı ters çevirince LED'lerin akmasını sağla.<br><br><strong>Algoritma:</strong><br>1. Eğim var mı?<br>2. EVET ise -> LED'leri sırayla yak (Akış efekti)",
-                "theory": "Tilt sensörü içinde metal bir bilye vardır. Sensör baş aşağı gelince bilye kontaklara değer ve devreyi tamamlar.",
-                "materials": [
-                    "Tilt Sensörü",
-                    "6 LED"
-                ],
-                "mainComponent": "Tilt Sensörü",
-                "circuit_desc": "Sensör Pin 2, LEDler 3-8.",
-                "code": "void loop() { \n  if(digitalRead(2)) flowLEDs(); // Akış fonksiyonu\n}",
-                "challenge": "Bu sensörü kullanarak bir 'Adımsayar' yap."
+                id: 19,
+                phase: 5,
+                title: 'Kum Saati',
+                icon: '⏳',
+                desc: 'Tilt Sensörü.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'hourglass',
+                mission:
+                    "Kartı ters çevirince LED'lerin akmasını sağla.<br><br><strong>Algoritma:</strong><br>1. Eğim var mı?<br>2. EVET ise -> LED'leri sırayla yak (Akış efekti)",
+                theory: 'Tilt sensörü içinde metal bir bilye vardır. Sensör baş aşağı gelince bilye kontaklara değer ve devreyi tamamlar.',
+                materials: ['Tilt Sensörü', '6 LED'],
+                mainComponent: 'Tilt Sensörü',
+                circuit_desc: 'Sensör Pin 2, LEDler 3-8.',
+                code: 'void loop() { \n  if(digitalRead(2)) flowLEDs(); // Akış fonksiyonu\n}',
+                challenge: "Bu sensörü kullanarak bir 'Adımsayar' yap.",
             },
             {
-                "id": 20,
-                "phase": 5,
-                "title": "Radar",
-                "icon": "📡",
-                "desc": "Servo+HC-SR04.",
-                "hasGraph": true,
-                "hasSim": true,
-                "simType": "radar",
-                "mission": "Etrafı tarayan ve ekranda gösteren radar sistemi.<br><br><strong>Algoritma:</strong><br>1. Motoru 1 derece çevir<br>2. Mesafeyi ölç<br>3. Veriyi bilgisayara yolla<br>4. Tekrarla",
-                "theory": "Bu proje mekanik (Servo), sensör (Ultrasonik) ve yazılımın birleştiği tam bir mühendislik çalışmasıdır.",
-                "materials": [
-                    "Servo",
-                    "HC-SR04"
-                ],
-                "mainComponent": "HC-SR04",
-                "circuit_desc": "Servo 9, HC-SR04 10/11.",
-                "code": "void loop() { \n  for(int i=0; i<180; i++) { \n    servo.write(i); \n    mesafeOlc(); \n    delay(30); \n  } \n}",
-                "challenge": "Belli bir mesafede cisim görünce taramayı durdurup kilitlen."
-            }
-        ]
+                id: 20,
+                phase: 5,
+                title: 'Radar',
+                icon: '📡',
+                desc: 'Servo+HC-SR04.',
+                hasGraph: true,
+                hasSim: true,
+                simType: 'radar',
+                mission:
+                    'Etrafı tarayan ve ekranda gösteren radar sistemi.<br><br><strong>Algoritma:</strong><br>1. Motoru 1 derece çevir<br>2. Mesafeyi ölç<br>3. Veriyi bilgisayara yolla<br>4. Tekrarla',
+                theory: 'Bu proje mekanik (Servo), sensör (Ultrasonik) ve yazılımın birleştiği tam bir mühendislik çalışmasıdır.',
+                materials: ['Servo', 'HC-SR04'],
+                mainComponent: 'HC-SR04',
+                circuit_desc: 'Servo 9, HC-SR04 10/11.',
+                code: 'void loop() { \n  for(int i=0; i<180; i++) { \n    servo.write(i); \n    mesafeOlc(); \n    delay(30); \n  } \n}',
+                challenge: 'Belli bir mesafede cisim görünce taramayı durdurup kilitlen.',
+            },
+        ],
     },
-    "icon": "⚡"
+    icon: '⚡',
 };
