@@ -132,6 +132,102 @@
                 box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
             }
         }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .password-strength .bar {
+            height: 4px;
+            flex: 1;
+            border-radius: 2px;
+            background: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength[data-strength="1"] .bar:nth-child(1) {
+            background: #ef4444;
+        }
+
+        .password-strength[data-strength="2"] .bar:nth-child(1),
+        .password-strength[data-strength="2"] .bar:nth-child(2) {
+            background: #f59e0b;
+        }
+
+        .password-strength[data-strength="3"] .bar:nth-child(1),
+        .password-strength[data-strength="3"] .bar:nth-child(2),
+        .password-strength[data-strength="3"] .bar:nth-child(3) {
+            background: #10b981;
+        }
+
+        .strength-text {
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .strength-text.weak {
+            color: #ef4444;
+        }
+
+        .strength-text.medium {
+            color: #f59e0b;
+        }
+
+        .strength-text.strong {
+            color: #10b981;
+        }
+
+        /* Input validation states */
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        .input-success {
+            border-color: #10b981 !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        .form-message {
+            font-size: 12px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-message.error {
+            color: #ef4444;
+        }
+
+        .form-message.success {
+            color: #10b981;
+        }
+
+        /* Button loading state */
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -351,14 +447,22 @@
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-1">Şifre</label>
                                     <input type="password" id="regPassword" placeholder="En az 6 karakter" required
-                                        minlength="6"
+                                        minlength="6" oninput="updatePasswordStrength(this.value)"
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
+                                    <!-- Password Strength Indicator -->
+                                    <div id="passwordStrength" class="password-strength hidden" data-strength="0">
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                    <p id="strengthText" class="strength-text hidden"></p>
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-1">Şifre Tekrar</label>
                                     <input type="password" id="regPasswordConfirm" placeholder="Şifrenizi tekrar girin"
-                                        required minlength="6"
+                                        required minlength="6" oninput="checkPasswordMatch()"
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none">
+                                    <p id="passwordMatchMsg" class="form-message hidden"></p>
                                 </div>
                                 <button type="submit" id="regBtn"
                                     class="w-full bg-theme text-white py-3.5 rounded-xl font-bold hover:brightness-110 shadow-lg mt-4">
@@ -392,6 +496,102 @@
     <script src="modules/supabaseClient.js"></script>
     <script src="modules/auth.js"></script>
     <script>
+        // ========================================
+        // FORM VALIDATION FUNCTIONS
+        // ========================================
+
+        // Password strength calculator
+        function updatePasswordStrength(password) {
+            const strengthBar = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('strengthText');
+
+            if (!password || password.length === 0) {
+                strengthBar.classList.add('hidden');
+                strengthText.classList.add('hidden');
+                return;
+            }
+
+            strengthBar.classList.remove('hidden');
+            strengthText.classList.remove('hidden');
+
+            let strength = 0;
+
+            // Length check
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+
+            // Character variety check
+            if (/[A-Z]/.test(password) && /[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            // Calculate final strength (1-3)
+            let finalStrength = 1;
+            if (strength >= 3) finalStrength = 2;
+            if (strength >= 4) finalStrength = 3;
+
+            strengthBar.setAttribute('data-strength', finalStrength);
+
+            // Update text
+            strengthText.classList.remove('weak', 'medium', 'strong');
+            if (finalStrength === 1) {
+                strengthText.textContent = '🔴 Zayıf şifre';
+                strengthText.classList.add('weak');
+            } else if (finalStrength === 2) {
+                strengthText.textContent = '🟡 Orta güçlükte';
+                strengthText.classList.add('medium');
+            } else {
+                strengthText.textContent = '🟢 Güçlü şifre';
+                strengthText.classList.add('strong');
+            }
+        }
+
+        // Password match checker
+        function checkPasswordMatch() {
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regPasswordConfirm').value;
+            const matchMsg = document.getElementById('passwordMatchMsg');
+            const confirmInput = document.getElementById('regPasswordConfirm');
+
+            if (!confirm || confirm.length === 0) {
+                matchMsg.classList.add('hidden');
+                confirmInput.classList.remove('input-error', 'input-success');
+                return;
+            }
+
+            matchMsg.classList.remove('hidden');
+
+            if (password === confirm) {
+                matchMsg.textContent = '✓ Şifreler eşleşiyor';
+                matchMsg.classList.remove('error');
+                matchMsg.classList.add('success');
+                confirmInput.classList.remove('input-error');
+                confirmInput.classList.add('input-success');
+            } else {
+                matchMsg.textContent = '✕ Şifreler eşleşmiyor';
+                matchMsg.classList.remove('success');
+                matchMsg.classList.add('error');
+                confirmInput.classList.remove('input-success');
+                confirmInput.classList.add('input-error');
+            }
+        }
+
+        // Set button loading state
+        function setButtonLoading(btn, loading) {
+            if (loading) {
+                btn.classList.add('btn-loading');
+                btn.dataset.originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="spinner"></div><span>Lütfen bekleyin...</span>';
+            } else {
+                btn.classList.remove('btn-loading');
+                btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+            }
+        }
+
+        // ========================================
+        // MAIN INITIALIZATION
+        // ========================================
+
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
             // Initialize Supabase
