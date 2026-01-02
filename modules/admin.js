@@ -112,12 +112,19 @@ const admin = {
             alert('data.js yüklenemedi!');
         }
 
-        // Form dinleyicileri
-        document.querySelectorAll('#project-form input, #project-form textarea, #project-form select').forEach((i) => {
-            // Checkboxlar için özel işlem (input event'i bazen yetersiz kalabilir)
-            if (i.type === 'checkbox') i.addEventListener('change', admin.updateProject);
-            else i.addEventListener('input', admin.updateProject);
-        });
+        // Initialize Project Manager
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.init({
+                onUpdate: admin.triggerAutoSave,
+                onProjectSelect: (id) => admin.loadProject(id),
+                getProjects: () => admin.currentData.projects,
+                getComponentInfo: () => admin.currentData.componentInfo,
+                getCourseKey: () => admin.currentCourseKey,
+            });
+        }
+
+        // Legacy listener cleanup (ProjectManager handles its own listeners now)
+        // But Component listeners remain here
         document
             .querySelectorAll('#component-form input, #component-form textarea, #component-form select')
             .forEach((i) => i.addEventListener('input', admin.updateComponent));
@@ -184,7 +191,11 @@ const admin = {
             });
         }
 
-        admin.renderProjectList();
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.renderList(admin.currentProjectId);
+        } else {
+            admin.renderProjectList();
+        }
         admin.renderComponentList();
         admin.renderPhaseList();
         admin.loadCourseSettings();
@@ -281,81 +292,18 @@ const admin = {
         }
     },
 
-    // --- PROJECTS MANAGEMENT ---
+    // --- PROJECTS MANAGEMENT (Delegated to modules/admin/projects.js) ---
     renderProjectList: () => {
-        const list = document.getElementById('project-list');
-        list.innerHTML = '';
-        if (!admin.currentData.projects) admin.currentData.projects = [];
-
-        try {
-            admin.currentData.projects
-                .sort((a, b) => a.id - b.id)
-                .forEach((p) => {
-                    const activeClass =
-                        p.id === admin.currentProjectId
-                            ? 'bg-blue-50 border-blue-500'
-                            : 'hover:bg-gray-50 border-transparent';
-                    const pIcon = p.icon || '📄';
-                    // Handle localized title
-                    const pTitle =
-                        typeof p.title === 'object' ? p.title.tr || p.title.en || 'Untitled' : p.title || 'Untitled';
-                    list.innerHTML += `
-                    <div onclick="admin.loadProject(${p.id})" data-project-id="${p.id}" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
-                        <div class="flex justify-between items-center">
-                            <span class="project-title font-bold text-sm text-gray-700">#${p.id} ${pTitle}</span>
-                            <span class="project-icon text-xs text-gray-400">${pIcon}</span>
-                        </div>
-                    </div>`;
-                });
-        } catch (e) {
-            console.error('Error rendering project list:', e);
-            list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Dersler listelenemedi.</div>';
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.renderList(admin.currentProjectId);
         }
     },
 
-    toggleCustomSimType: () => {
-        const select = document.getElementById('p-simType');
-        const customInput = document.getElementById('p-simType-custom');
+    toggleCustomSimType: () => ProjectManager.toggleCustomSimType(),
 
-        // Custom Input Toggle
-        if (select.value === 'custom') {
-            customInput.classList.remove('hidden');
-            customInput.focus();
-        } else {
-            customInput.classList.add('hidden');
-        }
-    },
+    toggleCodeMode: () => ProjectManager.toggleCodeMode(),
 
-    toggleCodeMode: () => {
-        const mode = document.getElementById('p-code-mode');
-        if (!mode) return;
-
-        const codeText = document.getElementById('code-text-area');
-        const codeImg = document.getElementById('code-image-area');
-
-        if (mode.value === 'text') {
-            if (codeText) codeText.classList.remove('hidden');
-            if (codeImg) codeImg.classList.add('hidden');
-        } else {
-            if (codeText) codeText.classList.add('hidden');
-            if (codeImg) codeImg.classList.remove('hidden');
-        }
-    },
-
-    switchProjectTab: (tabName) => {
-        document.querySelectorAll('.project-tab-btn').forEach((b) => {
-            b.classList.remove('active', 'border-theme', 'text-theme');
-            b.classList.add('border-transparent', 'text-gray-500');
-        });
-        document.querySelectorAll('.project-tab-content').forEach((c) => c.classList.add('hidden'));
-
-        const btn = document.getElementById('ptab-' + tabName);
-        if (btn) {
-            btn.classList.add('active', 'border-theme', 'text-theme');
-            btn.classList.remove('border-transparent', 'text-gray-500');
-        }
-        document.getElementById('pcontent-' + tabName).classList.remove('hidden');
-    },
+    switchProjectTab: (tabName) => ProjectManager.switchTab(tabName),
 
     // --- LANGUAGE SWITCHING ---
     switchLang: (lang) => {
@@ -404,178 +352,9 @@ const admin = {
 
     loadProject: (id) => {
         admin.currentProjectId = id;
-        const p = admin.currentData.projects.find((x) => x.id === id);
-        document.getElementById('project-welcome').classList.add('hidden');
-        document.getElementById('project-form').classList.remove('hidden');
-
-        // Reset Tab to 'Genel'
-        admin.switchProjectTab('genel');
-
-        const setVal = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.value = val !== undefined && val !== null ? val : '';
-        };
-
-        setVal('p-id', p.id); // Read-only ID
-
-        // Handle localized fields (TR/EN)
-        const setLocalizedField = (fieldName, value) => {
-            const trEl = document.getElementById(`p-${fieldName}-tr`);
-            const enEl = document.getElementById(`p-${fieldName}-en`);
-            if (typeof value === 'object' && value !== null) {
-                if (trEl) trEl.value = value.tr || '';
-                if (enEl) enEl.value = value.en || '';
-            } else {
-                // Backward compatibility: string value goes to TR
-                if (trEl) trEl.value = value || '';
-                if (enEl) enEl.value = '';
-            }
-        };
-
-        setLocalizedField('title', p.title);
-        setLocalizedField('desc', p.desc);
-        setLocalizedField('mission', p.mission);
-        setLocalizedField('theory', p.theory);
-        setLocalizedField('challenge', p.challenge);
-
-        setVal('p-icon', p.icon);
-        setVal('p-phase', p.phase);
-        setVal('p-week', p.week); // Optional week support
-
-        // New metadata fields
-        setVal('p-difficulty', p.difficulty || 'beginner');
-        setVal('p-duration', p.duration || '');
-        setVal('p-tags', p.tags ? p.tags.join(', ') : '');
-        setVal('p-prerequisites', p.prerequisites ? p.prerequisites.join(', ') : '');
-
-        // Set Tab Visibility Checkboxes
-        const tabIds = ['mission', 'materials', 'circuit', 'code', 'challenge', 'quiz'];
-        const hiddenTabs = p.hiddenTabs || []; // Default to empty (all visible) if undefined
-        tabIds.forEach((id) => {
-            const chk = document.getElementById(`p-show-${id}`);
-            if (chk) {
-                chk.checked = !hiddenTabs.includes(id);
-            }
-        });
-
-        // Sim Type Logic
-        const select = document.getElementById('p-simType');
-        const customInput = document.getElementById('p-simType-custom');
-
-        // Eğer mevcut değer listede varsa seç, yoksa 'custom' yap ve inputa yaz
-        let found = false;
-        for (let i = 0; i < select.options.length; i++) {
-            if (select.options[i].value === p.simType) {
-                select.value = p.simType;
-                found = true;
-                break;
-            }
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.load(id);
         }
-        if (!found && p.simType) {
-            select.value = 'custom';
-            customInput.value = p.simType;
-            customInput.classList.remove('hidden');
-        } else {
-            customInput.classList.add('hidden');
-            customInput.value = '';
-        }
-
-        // Code Mode Logic
-        const codeVal = p.code || '';
-        const isImg = codeVal.match(/\.(jpeg|jpg|gif|png)$/) != null;
-        document.getElementById('p-code-mode').value = isImg ? 'image' : 'text';
-        admin.toggleCodeMode();
-
-        if (isImg) {
-            setVal('p-code', codeVal); // Set textarea too for sync
-            setVal('p-code-image-input', codeVal);
-        } else {
-            setVal('p-code', codeVal);
-            setVal('p-code-image-input', '');
-        }
-
-        setVal('p-hasGraph', p.hasGraph ? 'true' : 'false');
-        setVal('p-challenge', p.challenge);
-        setVal('p-circuitImage', p.circuitImage || `devre${p.id}.jpg`);
-        setVal('p-hotspots', p.hotspots ? JSON.stringify(p.hotspots) : '');
-
-        // Hotspot checkboxes
-        const enableHotspots = document.getElementById('p-enableHotspots');
-        const showInLab = document.getElementById('p-showInLab');
-        const editorContent = document.getElementById('hotspot-editor-content');
-
-        // Check if project has hotspots enabled (either has hotspots data or explicit flag)
-        const hasHotspots = (p.hotspots && p.hotspots.length > 0) || p.enableHotspots;
-        enableHotspots.checked = hasHotspots;
-        showInLab.checked = p.showHotspotsInLab || false;
-
-        // Show/hide editor content based on checkbox
-        if (hasHotspots) {
-            editorContent.classList.remove('hidden');
-            setTimeout(() => admin.initHotspotEditor(), 100);
-        } else {
-            editorContent.classList.add('hidden');
-        }
-
-        // Malzeme Seçiciyi Doldur (Güvenli Yöntem v2)
-        const matList = document.getElementById('p-materials-list');
-
-        let components = {};
-        // Veri kaynağını belirle
-        if (admin.currentData && admin.currentData.componentInfo) {
-            components = admin.currentData.componentInfo;
-        } else if (
-            window.courseData &&
-            window.courseData[admin.currentCourseKey] &&
-            window.courseData[admin.currentCourseKey].data
-        ) {
-            components = window.courseData[admin.currentCourseKey].data.componentInfo || {};
-        }
-
-        const compKeys = Object.keys(components);
-
-        let htmlContent = '';
-
-        if (compKeys.length > 0) {
-            compKeys.forEach((key) => {
-                const comp = components[key];
-                if (!comp) return;
-
-                const name = comp.name || key;
-                const icon = comp.icon || '📦';
-
-                const isChecked = p.materials && p.materials.includes(name);
-                const safeName = name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-                htmlContent += `
-                    <label class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer bg-white">
-                        <input type="checkbox" value="${safeName}" class="material-checkbox w-4 h-4 text-blue-600 rounded" ${isChecked ? 'checked' : ''} onchange="admin.updateProject()">
-                        <span class="text-lg">${icon}</span>
-                        <span class="text-sm font-medium text-gray-700 select-none">${name}</span>
-                    </label>`;
-            });
-            matList.innerHTML = htmlContent;
-        } else {
-            matList.innerHTML = `<div class="col-span-full p-4 text-center text-gray-400 text-sm border-2 border-dashed rounded bg-gray-50">
-                <p>Henüz kayıtlı malzeme yok.</p>
-                <div class="mt-2 text-xs">Sol menüdeki <b>Devre Elemanları</b> kısmından malzeme ekleyebilirsiniz.</div>
-             </div>`;
-        }
-
-        // 2. Özel malzemeleri ayıkla
-        try {
-            const knownNames = Object.values(components).map((c) => c.name);
-            const customMats = p.materials ? p.materials.filter((m) => !knownNames.includes(m)) : [];
-            const materialsInput = document.getElementById('p-materials-custom');
-            if (materialsInput) materialsInput.value = customMats.join(', ');
-        } catch (e) {
-            console.error('Error processing custom materials', e);
-        }
-
-        // QUIZ RENDERING
-        if (admin.renderQuizEditor) admin.renderQuizEditor(p.id);
-
-        admin.renderProjectList();
     },
 
     // --- QUIZ MANAGEMENT (Delegated to modules/admin/quizzes.js) ---
@@ -642,131 +421,12 @@ const admin = {
     },
 
     updateProject: () => {
-        if (admin.currentProjectId === null) return;
-        const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
-        if (!p) {
-            console.error('Project not found:', admin.currentProjectId);
-            return;
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.update();
         }
-
-        const phaseEl = document.getElementById('p-phase');
-        p.phase = phaseEl ? parseInt(phaseEl.value) || 0 : p.phase || 0;
-
-        // Handle localized fields (TR/EN)
-        const getLocalizedField = (fieldName, currentValue) => {
-            const trEl = document.getElementById(`p-${fieldName}-tr`);
-            const enEl = document.getElementById(`p-${fieldName}-en`);
-            const trVal = trEl ? trEl.value : '';
-            const enVal = enEl ? enEl.value : '';
-
-            // If EN has content, store as object. Otherwise keep TR as string for backward compat
-            if (enVal && enVal.trim()) {
-                return { tr: trVal, en: enVal };
-            }
-            return trVal; // Backward compatibility: just string if no EN
-        };
-
-        p.title = getLocalizedField('title', p.title);
-        p.desc = getLocalizedField('desc', p.desc);
-        p.mission = getLocalizedField('mission', p.mission);
-        p.theory = getLocalizedField('theory', p.theory);
-        p.challenge = getLocalizedField('challenge', p.challenge);
-
-        p.icon = document.getElementById('p-icon').value;
-
-        // New metadata fields
-        p.difficulty = document.getElementById('p-difficulty')?.value || 'beginner';
-        p.duration = document.getElementById('p-duration')?.value || '';
-
-        const tagsVal = document.getElementById('p-tags')?.value || '';
-        p.tags = tagsVal
-            ? tagsVal
-                  .split(',')
-                  .map((t) => t.trim())
-                  .filter((t) => t)
-            : [];
-
-        const prereqVal = document.getElementById('p-prerequisites')?.value || '';
-        p.prerequisites = prereqVal
-            ? prereqVal
-                  .split(',')
-                  .map((t) => parseInt(t.trim()))
-                  .filter((n) => !isNaN(n))
-            : [];
-
-        // Sim Type Logic
-        const select = document.getElementById('p-simType');
-        if (select.value === 'custom') {
-            p.simType = document.getElementById('p-simType-custom').value;
-        } else {
-            p.simType = select.value;
-        }
-
-        p.hasGraph = document.getElementById('p-hasGraph').value === 'true';
-
-        // Code reading based on mode
-        const mode = document.getElementById('p-code-mode').value;
-        if (mode === 'text') {
-            p.code = document.getElementById('p-code').value;
-        } else {
-            // New ID for image input
-            const imgInput = document.getElementById('p-code-image-input');
-            p.code = imgInput ? imgInput.value : '';
-        }
-
-        p.circuitImage = document.getElementById('p-circuitImage').value;
-
-        try {
-            const hs = document.getElementById('p-hotspots').value;
-            p.hotspots = hs ? JSON.parse(hs) : null;
-        } catch (e) {
-            // alert("Hotspots JSON formatı hatalı! Kaydedilmedi.");
-        }
-
-        // Malzemeleri Topla
-        const selected = Array.from(document.querySelectorAll('.material-checkbox:checked')).map((cb) => cb.value);
-        const custom = document
-            .getElementById('p-materials-custom')
-            .value.split(',')
-            .map((s) => s.trim())
-            .filter((s) => s !== '');
-        p.materials = [...selected, ...custom];
-
-        // Hotspot options
-        p.enableHotspots = document.getElementById('p-enableHotspots').checked;
-        p.showHotspotsInLab = document.getElementById('p-showInLab').checked;
-
-        // Tab Visibility
-        const tabIds = ['mission', 'materials', 'circuit', 'code', 'challenge', 'quiz'];
-        p.hiddenTabs = [];
-        tabIds.forEach((id) => {
-            const chk = document.getElementById(`p-show-${id}`);
-            if (chk && !chk.checked) {
-                p.hiddenTabs.push(id);
-            }
-        });
-
-        // Update list item text in real-time (for title/icon)
-        admin.updateListItemText(p);
-
-        admin.triggerAutoSave();
     },
 
-    // Toggle hotspot editor visibility
-    toggleHotspotEnabled: () => {
-        const enabled = document.getElementById('p-enableHotspots').checked;
-        const editorContent = document.getElementById('hotspot-editor-content');
-
-        if (enabled) {
-            editorContent.classList.remove('hidden');
-            admin.initHotspotEditor();
-        } else {
-            editorContent.classList.add('hidden');
-        }
-
-        // Trigger updateProject to save the state
-        admin.updateProject();
-    },
+    toggleHotspotEnabled: () => ProjectManager.toggleHotspotEnabled(),
 
     // Update just the text of current project in list (no re-render to keep focus)
     updateListItemText: (p) => {
@@ -784,77 +444,32 @@ const admin = {
     },
 
     addNewProject: () => {
-        if (!admin.currentData.projects) admin.currentData.projects = [];
-        const newId =
-            admin.currentData.projects.length > 0 ? Math.max(...admin.currentData.projects.map((p) => p.id)) + 1 : 0;
-        const newProject = {
-            id: newId,
-            phase: 0,
-            title: 'Yeni Ders',
-            icon: '✨',
-            desc: 'Açıklama...',
-            mission: 'Amaç...',
-            theory: '',
-            materials: [],
-            mainComponent: '',
-            code: '// Kod...',
-            challenge: 'Görev...',
-            hasGraph: false,
-            simType: 'none',
-            circuitImage: `devre${newId}.jpg`,
-            // Metadata fields
-            difficulty: 'beginner',
-            duration: '',
-            tags: [],
-            prerequisites: [],
-        };
-        admin.currentData.projects.push(newProject);
-        admin.renderProjectList();
-        admin.loadProject(newId);
-        setTimeout(() => (document.getElementById('project-list').scrollTop = 9999), 100);
-
-        admin.triggerAutoSave();
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.add();
+        }
     },
 
     duplicateProject: () => {
-        if (admin.currentProjectId === null) return;
-        const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
-        const newId = Math.max(...admin.currentData.projects.map((x) => x.id)) + 1;
-
-        const copy = JSON.parse(JSON.stringify(p));
-        copy.id = newId;
-        copy.title += ' (Kopyası)';
-        admin.currentData.projects.push(copy);
-        admin.renderProjectList();
-        admin.loadProject(newId);
-        alert('Ders kopyalandı!');
-
-        admin.triggerAutoSave();
+        if (typeof ProjectManager !== 'undefined') {
+            ProjectManager.duplicate();
+        }
     },
 
     deleteProject: () => {
-        if (!confirm('Bu dersi silmek istediğinize emin misiniz?')) return;
-
-        // Store in undo stack before deleting
-        const deletedProject = admin.currentData.projects.find((p) => p.id === admin.currentProjectId);
-        if (deletedProject) {
-            admin.undoStack.push({
-                type: 'project',
-                data: JSON.parse(JSON.stringify(deletedProject)),
-                courseKey: admin.currentCourseKey,
-            });
-            admin.updateUndoButton();
+        if (typeof ProjectManager !== 'undefined') {
+            const deleted = ProjectManager.delete();
+            if (deleted) {
+                // Handle Undo here if needed
+                admin.undoStack.push({
+                    type: 'project',
+                    data: JSON.parse(JSON.stringify(deleted)),
+                    courseKey: admin.currentCourseKey,
+                });
+                admin.updateUndoButton();
+                admin.showUndoToast(`"${deleted.title}" silindi.`);
+                admin.triggerAutoSave();
+            }
         }
-
-        admin.currentData.projects = admin.currentData.projects.filter((p) => p.id !== admin.currentProjectId);
-        admin.currentProjectId = null;
-        document.getElementById('project-welcome').classList.remove('hidden');
-        document.getElementById('project-form').classList.add('hidden');
-        admin.renderProjectList();
-
-        admin.showUndoToast(`"${deletedProject.title}" silindi.`);
-
-        admin.triggerAutoSave();
     },
 
     // --- COMPONENTS MANAGEMENT (Delegated to modules/admin/components.js) ---

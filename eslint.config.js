@@ -39,6 +39,7 @@ export default [
                 HotspotEditor: 'readonly',
                 QuizEditor: 'readonly',
                 ComponentManager: 'readonly',
+                ProjectManager: 'readonly',
                 ClassroomManager: 'readonly',
                 StudentManager: 'readonly',
                 TeacherAnalytics: 'readonly', // Added Teacher Analytics
