@@ -827,20 +827,7 @@
             // Also check DB for reliability? For now trust metadata for speed
 
             if (meta.profile_completed) {
-                // Check if this is an OAuth callback and redirect to correct page
-                // This happens when user signs in via Google/GitHub and lands here
-                const urlParams = new URLSearchParams(window.location.search);
-                const isOAuthCallback = window.location.hash.includes('access_token') ||
-                    urlParams.has('code') ||
-                    document.referrer.includes('supabase');
-
-                if (isOAuthCallback) {
-                    // Profile is complete, redirect based on role
-                    const redirectUrl = meta.role === 'teacher' ? 'teacher.html' : 'index.html';
-                    window.location.href = redirectUrl;
-                    return;
-                }
-
+                // Show settings view for users visiting profile page directly
                 Settings.init();
             } else {
                 Wizard.init();
@@ -956,9 +943,8 @@
                     if (typeof Toast !== 'undefined') Toast.show('Profil oluşturuldu! Yönlendiriliyorsunuz...', 'success');
                     else alert('Profil oluşturuldu!');
 
-                    // Redirect based on role
-                    const redirectUrl = role === 'teacher' ? 'teacher.html' : 'index.html';
-                    setTimeout(() => window.location.href = redirectUrl, 1000);
+                    // Always redirect to index.html - teachers can access panel from there
+                    setTimeout(() => window.location.href = 'index.html', 1000);
                 });
             }
         };
@@ -1050,7 +1036,8 @@
             currentAvatar: null,
 
             async loadStats() {
-                if (window.Progress && typeof Auth !== 'undefined' && Auth.isStudent()) {
+                // Load stats for any logged in user (both students and teachers can track progress)
+                if (window.Progress && typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
                     await Progress.loadFromServer();
                     const stats = Progress.getStats();
 

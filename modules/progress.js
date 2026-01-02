@@ -235,7 +235,7 @@ const Progress = {
      */
     getRate: (key) => {
         // If not logged in, return 0
-        if (typeof Auth !== 'undefined' && !Auth.isStudent()) {
+        if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) {
             return 0;
         }
 
@@ -246,10 +246,10 @@ const Progress = {
     },
 
     /**
-     * Get overall statistics for the student
+     * Get overall statistics for the user
      */
     getStats: () => {
-        if (typeof Auth !== 'undefined' && !Auth.isStudent()) {
+        if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) {
             return { totalLessons: 0, badges: 0, streak: 0, quizAvg: 0 };
         }
 

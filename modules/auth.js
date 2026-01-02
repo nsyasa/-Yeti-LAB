@@ -41,9 +41,9 @@ const Auth = {
      * Sign in with Google
      */
     async signInWithGoogle() {
-        // Redirect to profile.html after OAuth (to check role and redirect appropriately)
+        // Always redirect to index.html after OAuth - role doesn't matter
         const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-        const redirectUrl = baseUrl + '/profile.html';
+        const redirectUrl = baseUrl + '/index.html';
 
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'google',
@@ -60,9 +60,9 @@ const Auth = {
      * Sign in with GitHub
      */
     async signInWithGitHub() {
-        // Redirect to profile.html after OAuth (to check role and redirect appropriately)
+        // Always redirect to index.html after OAuth - role doesn't matter
         const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-        const redirectUrl = baseUrl + '/profile.html';
+        const redirectUrl = baseUrl + '/index.html';
 
         const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
             provider: 'github',
