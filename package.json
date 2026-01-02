@@ -9,6 +9,9 @@
         "convert": "node --experimental-vm-modules scripts/convert-js-to-json.js",
         "import": "node scripts/import-to-supabase.js",
         "migrate": "npm run convert && npm run import",
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
         "test": "vitest run",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
@@ -44,6 +47,7 @@
         "lint-staged": "^16.2.7",
         "prettier": "^3.7.4",
         "tailwindcss": "^4.1.18",
+        "vite": "^5.4.21",
         "vitest": "^2.1.0"
     },
     "dependencies": {
