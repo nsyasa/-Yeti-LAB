@@ -1530,212 +1530,37 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
             .replace(/^-+|-+$/g, '');
     },
 
-    // --- HOTSPOT VISUAL EDITOR ---
-    hotspotAddMode: false,
+    // --- HOTSPOT VISUAL EDITOR (Delegated to modules/admin/hotspots.js) ---
+    hotspotAddMode: false, // Legacy fallback
     hotspotData: [],
 
     initHotspotEditor: () => {
         const p = admin.currentData.projects.find((x) => x.id === admin.currentProjectId);
         if (!p) return;
 
-        // Load existing hotspots
+        // Sync local legacy data just in case
         admin.hotspotData = p.hotspots || [];
 
-        // Set image source
-        const img = document.getElementById('hotspot-image');
         const circuitImg = p.circuitImage || 'devre' + p.id + '.jpg';
-        // Handle both "img/file.jpg" and "file.jpg" formats
-        const imgPath = circuitImg.startsWith('img/') ? circuitImg : `img/${circuitImg}`;
 
-        // Reset onerror before setting new src to prevent loops
-        img.onerror = null;
-        img.src = imgPath;
-
-        // Set error handler once
-        img.onerror = function () {
-            this.onerror = null; // Prevent infinite loop
-            this.style.display = 'none';
-            const editor = document.getElementById('hotspot-editor');
-            // Show error message instead of image
-            if (!editor.querySelector('.error-msg')) {
-                const msg = document.createElement('div');
-                msg.className =
-                    'error-msg absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500 text-center p-4';
-                msg.innerHTML = `<div><div class="text-4xl mb-2">🖼️</div><div>Resim bulunamadı:<br><code class="text-xs">${imgPath}</code></div></div>`;
-                editor.appendChild(msg);
-            }
-        };
-
-        // Remove old error message if image loads
-        img.onload = function () {
-            this.style.display = 'block';
-            const oldMsg = document.getElementById('hotspot-editor').querySelector('.error-msg');
-            if (oldMsg) oldMsg.remove();
-        };
-
-        // Render existing hotspots
-        admin.renderHotspotMarkers();
-        admin.renderHotspotList();
-    },
-
-    toggleHotspotMode: () => {
-        admin.hotspotAddMode = !admin.hotspotAddMode;
-        const btn = document.getElementById('btn-hotspot-mode');
-        const layer = document.getElementById('hotspot-click-layer');
-
-        if (admin.hotspotAddMode) {
-            btn.textContent = '✋ İptal (Ekleme Modu Açık)';
-            btn.classList.remove('bg-orange-600');
-            btn.classList.add('bg-green-600');
-            layer.style.cursor = 'crosshair';
+        if (typeof HotspotEditor !== 'undefined') {
+            HotspotEditor.init(p.hotspots, circuitImg, (newData) => {
+                admin.hotspotData = newData; // Sync local state
+                admin.syncHotspots();
+            });
         } else {
-            btn.textContent = '🎯 Nokta Ekle Modu';
-            btn.classList.remove('bg-green-600');
-            btn.classList.add('bg-orange-600');
-            layer.style.cursor = 'default';
+            console.error('HotspotEditor module not loaded!');
         }
     },
 
-    handleEditorClick: (e) => {
-        if (!admin.hotspotAddMode) return;
-
-        const editor = document.getElementById('hotspot-editor');
-        const img = document.getElementById('hotspot-image');
-        const rect = editor.getBoundingClientRect();
-        const imgRect = img.getBoundingClientRect();
-
-        // Calculate click position relative to image
-        const clickX = e.clientX - imgRect.left;
-        const clickY = e.clientY - imgRect.top;
-
-        // Normalize to image dimensions (0-100%)
-        const percentX = Math.round((clickX / imgRect.width) * 100);
-        const percentY = Math.round((clickY / imgRect.height) * 100);
-
-        // Check bounds
-        if (percentX < 0 || percentX > 100 || percentY < 0 || percentY > 100) return;
-
-        // Prompt for hotspot name
-        const name = prompt('Bu noktanın adı ne olsun? (örn: USB Port)');
-        if (!name) return;
-
-        const desc = prompt('Açıklama girin (örn: Bilgisayara bağlanmak için kullanılır)') || '';
-
-        // Add to data
-        const newHotspot = {
-            name: name,
-            desc: desc,
-            x: percentX,
-            y: percentY,
-            r: 15, // Default radius
-        };
-
-        admin.hotspotData.push(newHotspot);
-        admin.syncHotspots();
-        admin.renderHotspotMarkers();
-        admin.renderHotspotList();
-
-        // Auto-disable add mode after adding
-        admin.toggleHotspotMode();
-    },
-
-    renderHotspotMarkers: () => {
-        const container = document.getElementById('hotspot-markers');
-        const img = document.getElementById('hotspot-image');
-
-        container.innerHTML = '';
-
-        admin.hotspotData.forEach((hs, index) => {
-            const marker = document.createElement('div');
-            marker.className =
-                'absolute w-6 h-6 bg-orange-500 border-2 border-white rounded-full shadow-lg flex items-center justify-center text-xs text-white font-bold';
-            marker.style.left = `calc(${hs.x}% - 12px)`;
-            marker.style.top = `calc(${hs.y}% - 12px)`;
-            marker.style.pointerEvents = 'auto';
-            marker.style.cursor = 'pointer';
-            marker.textContent = index + 1;
-            marker.title = hs.name;
-            marker.onclick = () => admin.selectHotspot(index);
-            container.appendChild(marker);
-        });
-    },
-
-    renderHotspotList: () => {
-        const list = document.getElementById('hotspot-list');
-
-        if (admin.hotspotData.length === 0) {
-            list.innerHTML =
-                '<div class="text-center text-gray-400 text-sm py-4">Henüz nokta eklenmedi. "Nokta Ekle Modu"nu açıp resme tıklayın.</div>';
-            return;
-        }
-
-        list.innerHTML = admin.hotspotData
-            .map(
-                (hs, i) => `
-            <div class="flex items-center justify-between bg-white p-2 rounded border text-sm">
-                <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">${i + 1}</span>
-                    <div>
-                        <div class="font-bold text-gray-700">${hs.name}</div>
-                        <div class="text-xs text-gray-400">${hs.desc || 'Açıklama yok'}</div>
-                    </div>
-                </div>
-                <div class="flex gap-1">
-                    <button type="button" onclick="admin.editHotspot(${i})" class="text-blue-500 hover:text-blue-700 p-1">✏️</button>
-                    <button type="button" onclick="admin.deleteHotspot(${i})" class="text-red-500 hover:text-red-700 p-1">🗑️</button>
-                </div>
-            </div>
-        `
-            )
-            .join('');
-    },
-
-    selectHotspot: (index) => {
-        // Highlight selected marker (future enhancement: show edit form)
-        const markers = document.querySelectorAll('#hotspot-markers > div');
-        markers.forEach((m, i) => {
-            if (i === index) {
-                m.classList.add('ring-2', 'ring-yellow-400');
-            } else {
-                m.classList.remove('ring-2', 'ring-yellow-400');
-            }
-        });
-    },
-
-    editHotspot: (index) => {
-        const hs = admin.hotspotData[index];
-        const newName = prompt('Yeni isim:', hs.name);
-        if (newName === null) return;
-
-        const newDesc = prompt('Yeni açıklama:', hs.desc);
-        if (newDesc === null) return;
-
-        hs.name = newName;
-        hs.desc = newDesc;
-
-        admin.syncHotspots();
-        admin.renderHotspotMarkers();
-        admin.renderHotspotList();
-    },
-
-    deleteHotspot: (index) => {
-        if (!confirm(`"${admin.hotspotData[index].name}" noktasını silmek istediğinize emin misiniz?`)) return;
-
-        admin.hotspotData.splice(index, 1);
-        admin.syncHotspots();
-        admin.renderHotspotMarkers();
-        admin.renderHotspotList();
-    },
-
-    clearAllHotspots: () => {
-        if (admin.hotspotData.length === 0) return;
-        if (!confirm('Tüm etkileşim noktalarını silmek istediğinize emin misiniz?')) return;
-
-        admin.hotspotData = [];
-        admin.syncHotspots();
-        admin.renderHotspotMarkers();
-        admin.renderHotspotList();
-    },
+    toggleHotspotMode: () => HotspotEditor.toggleMode(),
+    handleEditorClick: (e) => HotspotEditor.handleClick(e),
+    renderHotspotMarkers: () => HotspotEditor.renderMarkers(),
+    renderHotspotList: () => HotspotEditor.renderList(),
+    selectHotspot: (index) => HotspotEditor.select(index),
+    editHotspot: (index) => HotspotEditor.edit(index),
+    deleteHotspot: (index) => HotspotEditor.delete(index),
+    clearAllHotspots: () => HotspotEditor.clearAll(),
 
     syncHotspots: () => {
         // Sync to hidden field and project data
