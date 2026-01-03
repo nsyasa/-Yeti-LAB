@@ -43,6 +43,7 @@ export default [
                 PhaseManager: 'readonly',
                 CourseSettings: 'readonly',
                 StorageManager: 'readonly',
+                ImageManager: 'readonly',
                 ClassroomManager: 'readonly',
                 StudentManager: 'readonly',
                 TeacherAnalytics: 'readonly', // Added Teacher Analytics
