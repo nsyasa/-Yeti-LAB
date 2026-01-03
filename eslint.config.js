@@ -62,7 +62,14 @@ export default [
         },
         rules: {
             // Hata önleme
-            'no-unused-vars': 'off', // Geçici olarak kapalı - Faz 2'de düzeltilecek
+            'no-unused-vars': [
+                'warn',
+                {
+                    varsIgnorePattern: '^_',
+                    argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
             'no-undef': 'error',
 
             // Kod kalitesi

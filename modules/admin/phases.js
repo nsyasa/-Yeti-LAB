@@ -21,10 +21,12 @@ const PhaseManager = {
 
     bindEvents() {
         // Form inputs - bind on load since form is static
+        const titleEl = document.getElementById('ph-title');
         const iconEl = document.getElementById('ph-icon');
         const descEl = document.getElementById('ph-desc');
         const colorEl = document.getElementById('ph-color');
 
+        if (titleEl) titleEl.oninput = () => this.update();
         if (iconEl) iconEl.oninput = () => this.update();
         if (descEl) descEl.oninput = () => this.update();
         if (colorEl) colorEl.onchange = () => this.update();
@@ -45,27 +47,18 @@ const PhaseManager = {
                     index === this.currentPhaseIndex
                         ? 'bg-amber-50 border-amber-500'
                         : 'hover:bg-gray-50 border-transparent';
-                const fixedName = index === 0 ? 'Başlangıç' : `Bölüm ${index}`;
 
-                // Fallback logic for display safe-guards
-                let icon = '❓';
-                let desc = '';
-
-                if (phase) {
-                    icon =
-                        phase.icon ||
-                        (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '❓');
-                    desc =
-                        phase.description ||
-                        (phase.title && typeof phase.title === 'string' ? phase.title.replace(icon, '').trim() : '');
-                }
+                // Get display values with fallbacks
+                const icon = phase?.icon || '📁';
+                const title = phase?.title || `Bölüm ${index}`;
+                const desc = phase?.description || '';
 
                 list.innerHTML += `
                     <div onclick="PhaseManager.load(${index})" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
                         <div class="flex items-center">
                             <span class="w-3 h-3 rounded-full bg-${phase?.color || 'gray'}-500 mr-3"></span>
                             <div>
-                                <div class="font-bold text-sm text-gray-700">${icon} ${fixedName}</div>
+                                <div class="font-bold text-sm text-gray-700">${icon} ${title}</div>
                                 <div class="text-xs text-gray-400">${desc}</div>
                             </div>
                         </div>
@@ -88,17 +81,10 @@ const PhaseManager = {
         document.getElementById('phase-welcome').classList.add('hidden');
         document.getElementById('phase-form').classList.remove('hidden');
 
-        // Fixed Name Logic
-        const fixedName = index === 0 ? 'Başlangıç' : `Bölüm ${index}`;
-        document.getElementById('ph-fixed-name').value = fixedName;
-
-        // Data Migration / Fallback Logic
-        const icon = p.icon || (p.title ? p.title.split(' ')[0] : '🚀');
-        // If description is missing, use title minus icon.
-        const desc = p.description || (p.title ? p.title.replace(icon, '').trim() : '');
-
-        document.getElementById('ph-icon').value = icon;
-        document.getElementById('ph-desc').value = desc;
+        // Load phase data with fallbacks
+        document.getElementById('ph-title').value = p.title || `Bölüm ${index}`;
+        document.getElementById('ph-icon').value = p.icon || '📁';
+        document.getElementById('ph-desc').value = p.description || '';
         document.getElementById('ph-color').value = p.color || 'gray';
 
         this.renderList();
@@ -112,13 +98,10 @@ const PhaseManager = {
 
         const p = phases[this.currentPhaseIndex];
 
+        p.title = document.getElementById('ph-title').value;
         p.icon = document.getElementById('ph-icon').value;
         p.description = document.getElementById('ph-desc').value;
         p.color = document.getElementById('ph-color').value;
-
-        // Backwards compatibility for data file readability
-        const fixedName = this.currentPhaseIndex === 0 ? 'Başlangıç' : `Bölüm ${this.currentPhaseIndex}`;
-        p.title = `${p.icon} ${fixedName}`;
 
         this.renderList();
 
@@ -132,9 +115,9 @@ const PhaseManager = {
 
         const newIndex = phases.length;
         phases.push({
+            title: `Bölüm ${newIndex}`,
             icon: '✨',
-            description: 'Yeni Konu',
-            title: '✨ Bölüm ' + newIndex,
+            description: 'Yeni bölüm açıklaması',
             color: 'blue',
         });
         this.renderList();

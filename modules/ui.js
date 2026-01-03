@@ -548,13 +548,26 @@ const UI = {
             tabs = tabs.filter((t) => !project.hiddenTabs.includes(t.id));
         }
 
+        // Get custom tab names from course data (if any)
+        const courseData = window.courseData?.[currentCourseKey];
+        const customTabNames = courseData?.customTabNames || {};
+
         // Render Buttons
         btnContainer.innerHTML = tabs
             .map((t) => {
-                // Translate internal tab names if we have keys for them.
-                // This logic assumes tab ids (mission, materials) match dictionary keys (tab_mission, tab_materials)
-                const labelKey = 'tab_' + t.id;
-                const label = I18n.translations['tr'][labelKey] ? I18n.t(labelKey) : t.label;
+                // Priority: customTabNames > I18n translation > default label
+                let label = t.label;
+
+                // Check for custom tab name first
+                if (customTabNames[t.id]) {
+                    label = customTabNames[t.id];
+                } else {
+                    // Fall back to I18n translation
+                    const labelKey = 'tab_' + t.id;
+                    if (I18n.translations['tr'][labelKey]) {
+                        label = I18n.t(labelKey);
+                    }
+                }
 
                 return `<button class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap" data-tab="${t.id}">${label}</button>`;
             })

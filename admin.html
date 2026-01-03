@@ -13,6 +13,7 @@
         <script src="modules/courseLoader.js"></script>
         <script src="data/quiz.js"></script>
         <script src="modules/themes.js"></script>
+        <script src="config/tabs.js"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link
             href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap"
@@ -218,6 +219,24 @@
                                 />
                             </div>
                         </div>
+
+                        <!-- Sekme İsim Editörü -->
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="text-xs font-bold text-gray-500 uppercase">Ders Sekme İsimleri</label>
+                                <button
+                                    type="button"
+                                    onclick="admin.resetTabNames()"
+                                    class="text-xs text-gray-400 hover:text-gray-600"
+                                >
+                                    ↺ Varsayılana Dön
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2" id="tab-names-editor">
+                                <!-- Dinamik olarak doldurulacak -->
+                            </div>
+                        </div>
+
                         <p class="text-xs text-gray-400 mt-3">
                             💡 Bu bilgiler ana sayfada kurs seçim kartlarında görünür.
                         </p>
@@ -1007,13 +1026,13 @@
                             </div>
 
                             <div class="grid grid-cols-12 gap-4">
-                                <div class="col-span-12 md:col-span-2">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase">Faz Adı</label>
+                                <div class="col-span-12 md:col-span-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase">Bölüm Adı</label>
                                     <input
                                         type="text"
-                                        id="ph-fixed-name"
-                                        class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-600"
-                                        readonly
+                                        id="ph-title"
+                                        class="w-full border rounded p-2 font-bold"
+                                        placeholder="Başlangıç veya Bölüm 1..."
                                     />
                                 </div>
                                 <div class="col-span-12 md:col-span-2">

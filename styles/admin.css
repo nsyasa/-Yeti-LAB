@@ -37,3 +37,101 @@ h6 {
     background-color: var(--theme-color);
     color: white;
 }
+
+/* =====================================================
+   MINIMALIST DESIGN IMPROVEMENTS
+   ===================================================== */
+
+/* Softer Shadows */
+.shadow,
+.shadow-md,
+.shadow-lg {
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Card Improvements */
+#view-projects > div,
+#view-phases > div,
+#view-components > div {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+/* Input Improvements */
+input[type='text'],
+input[type='number'],
+textarea,
+select {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: all 0.2s ease;
+}
+
+input[type='text']:focus,
+input[type='number']:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--theme-color);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+    outline: none;
+}
+
+/* Better Labels */
+label.block {
+    margin-bottom: 6px;
+}
+
+/* Project List Items */
+#project-list > div,
+#phase-list > div,
+#component-list > div {
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+#project-list > div:hover,
+#phase-list > div:hover,
+#component-list > div:hover {
+    background-color: #f8fafc;
+}
+
+/* Project Tab Buttons */
+.project-tab-btn {
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s ease;
+}
+
+.project-tab-btn:hover:not(.active) {
+    background-color: #f1f5f9;
+}
+
+/* Form Section Spacing */
+.project-tab-content > div {
+    margin-bottom: 1rem;
+}
+
+/* Collapsible Course Settings */
+#course-settings-form {
+    border-radius: 0 0 12px 12px;
+}
+
+/* Button Improvements */
+button {
+    transition: all 0.15s ease;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Welcome State */
+#project-welcome,
+#phase-welcome,
+#component-welcome {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 2px dashed #e2e8f0;
+}

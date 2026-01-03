@@ -236,6 +236,8 @@ const admin = {
     loadCourseSettings: () => {
         if (typeof CourseSettings !== 'undefined') {
             CourseSettings.load();
+            // Apply custom tab names when course is loaded
+            CourseSettings.applyCustomTabNames();
         }
     },
 
@@ -248,6 +250,14 @@ const admin = {
     toggleCourseSettings: () => {
         if (typeof CourseSettings !== 'undefined') {
             CourseSettings.toggle();
+            // Render tab editor when opening
+            CourseSettings.renderTabEditor();
+        }
+    },
+
+    resetTabNames: () => {
+        if (typeof CourseSettings !== 'undefined') {
+            CourseSettings.resetTabNames();
         }
     },
 

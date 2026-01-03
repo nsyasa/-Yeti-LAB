@@ -101,6 +101,109 @@ const CourseSettings = {
         if (previewTitle) previewTitle.textContent = title || courseKey;
         if (previewDesc) previewDesc.textContent = desc || 'Açıklama yok';
     },
+
+    // --- TAB NAME EDITOR ---
+    renderTabEditor() {
+        const container = document.getElementById('tab-names-editor');
+        if (!container) return;
+
+        const courseKey = this.config.getCourseKey();
+        const course = this.config.getCourseData();
+
+        // Get current tab config (custom or default)
+        const defaultConfig = window.TabConfig?.courses?.default?.tabs || [];
+        const courseConfig = window.TabConfig?.courses?.[courseKey]?.tabs || defaultConfig;
+
+        // Get custom names from course data (if any)
+        const customTabNames = course?.customTabNames || {};
+
+        container.innerHTML = '';
+
+        courseConfig.forEach((tab, index) => {
+            // Get current label (custom or default)
+            const currentLabel = customTabNames[tab.id] || tab.label;
+
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-1';
+            div.innerHTML = `
+                <input 
+                    type="text" 
+                    id="tab-name-${tab.id}"
+                    value="${currentLabel}"
+                    placeholder="${tab.label}"
+                    class="flex-1 border rounded px-2 py-1 text-sm"
+                    oninput="CourseSettings.updateTabName('${tab.id}', this.value)"
+                />
+            `;
+            container.appendChild(div);
+        });
+    },
+
+    updateTabName(tabId, newLabel) {
+        const course = this.config.getCourseData();
+        if (!course) return;
+
+        // Initialize customTabNames if not exists
+        if (!course.customTabNames) {
+            course.customTabNames = {};
+        }
+
+        // Update custom tab name
+        course.customTabNames[tabId] = newLabel;
+
+        // Apply to project tabs immediately
+        this.applyCustomTabNames();
+
+        if (this.config.onUpdate) this.config.onUpdate();
+    },
+
+    resetTabNames() {
+        const course = this.config.getCourseData();
+        if (!course) return;
+
+        if (!confirm('Sekme isimlerini varsayılana döndürmek istiyor musunuz?')) return;
+
+        // Clear custom names
+        course.customTabNames = {};
+
+        // Re-render editor
+        this.renderTabEditor();
+
+        // Apply to project tabs
+        this.applyCustomTabNames();
+
+        if (this.config.onUpdate) this.config.onUpdate();
+    },
+
+    // Apply custom tab names to the project form tabs
+    applyCustomTabNames() {
+        const course = this.config.getCourseData();
+        if (!course) return;
+
+        const customTabNames = course.customTabNames || {};
+
+        // Mapping between TabConfig IDs and admin HTML tab IDs
+        const tabMapping = {
+            mission: 'ptab-amac',
+            materials: 'ptab-donanim',
+            circuit: 'ptab-devre',
+            code: 'ptab-kod',
+            challenge: 'ptab-gorev',
+            quiz: 'ptab-test',
+            tip: 'ptab-ipucu',
+        };
+
+        // Apply custom names to tab buttons
+        Object.keys(customTabNames).forEach((tabId) => {
+            const btnId = tabMapping[tabId];
+            if (btnId) {
+                const btn = document.getElementById(btnId);
+                if (btn && customTabNames[tabId]) {
+                    btn.textContent = customTabNames[tabId];
+                }
+            }
+        });
+    },
 };
 
 window.CourseSettings = CourseSettings;

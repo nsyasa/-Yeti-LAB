@@ -775,10 +775,10 @@ function renderStudentProjectList(progressData) {
 }
 
 // Aliases for compatibility
-function renderStudentCourseProgress(data) {
-    renderStudentProjectList(data);
+function renderStudentCourseProgress(_data) {
+    renderStudentProjectList(_data);
 }
-function renderStudentRecentLessons(data) {
+function renderStudentRecentLessons(_data) {
     // Handled in renderStudentProjectList
 }
 
