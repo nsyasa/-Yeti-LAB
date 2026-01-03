@@ -44,6 +44,7 @@ export default [
                 CourseSettings: 'readonly',
                 StorageManager: 'readonly',
                 ImageManager: 'readonly',
+                SupabaseSync: 'readonly',
                 ClassroomManager: 'readonly',
                 StudentManager: 'readonly',
                 TeacherAnalytics: 'readonly', // Added Teacher Analytics

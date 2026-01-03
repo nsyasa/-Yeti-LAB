@@ -121,6 +121,13 @@ const admin = {
             });
         }
 
+        // Initialize Supabase Sync
+        if (typeof SupabaseSync !== 'undefined') {
+            SupabaseSync.init({
+                downloadFallback: admin.downloadCourseAsFile,
+            });
+        }
+
         // Legacy listener cleanup (ProjectManager handles its own listeners now)
         // But Component listeners remain here
         document
@@ -605,203 +612,38 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         alert('İndirme başlatıldı!\n' + key + '.js dosyasını data klasörüne kaydedin.');
     },
 
-    // Save to Supabase
+    // --- SUPABASE SYNC (Delegated to modules/admin/supabase-sync.js) ---
     saveToSupabase: async (courseKey, courseData) => {
-        const statusEl = document.getElementById('autosave-status');
-
-        try {
-            if (statusEl) {
-                statusEl.textContent = "☁️ Supabase'e kaydediliyor...";
-                statusEl.classList.remove('text-green-400', 'text-red-400', 'text-blue-400');
-                statusEl.classList.add('text-yellow-400');
-            }
-
-            // 1. Get or create course
-            const slug = admin.slugify(courseData.title || courseKey);
-            let course = await SupabaseClient.getCourseBySlug(slug);
-
-            if (!course) {
-                // Create new course
-                const { data, error } = await SupabaseClient.getClient()
-                    .from('courses')
-                    .insert({
-                        slug: slug,
-                        title: courseData.title,
-                        description: courseData.description || null,
-                        meta: { icon: courseData.icon || null },
-                        is_published: false,
-                    })
-                    .select('id')
-                    .single();
-
-                if (error) throw error;
-                course = { id: data.id };
-            }
-
-            const courseId = course.id;
-
-            // 2. Update course metadata
-            await SupabaseClient.updateCourse(courseId, {
-                title: courseData.title,
-                description: courseData.description,
-                meta: { icon: courseData.icon },
-            });
-
-            // 3. Sync phases
-            const phases = courseData.data?.phases || [];
-            const phaseIdMap = await admin.syncPhasesToSupabase(courseId, phases);
-
-            // 4. Sync projects
-            const projects = courseData.data?.projects || [];
-            await admin.syncProjectsToSupabase(courseId, projects, phaseIdMap);
-
-            // 5. Sync components
-            const componentInfo = courseData.data?.componentInfo || {};
-            await admin.syncComponentsToSupabase(courseId, componentInfo);
-
-            if (statusEl) {
-                statusEl.textContent = `☁️ Supabase'e kaydedildi: ${new Date().toLocaleTimeString()}`;
-                statusEl.classList.remove('text-yellow-400', 'text-red-400', 'text-blue-400');
-                statusEl.classList.add('text-green-400');
-            }
-
-            alert("✅ Değişiklikler Supabase'e kaydedildi!");
-        } catch (error) {
-            console.error('Supabase save error:', error);
-
-            if (statusEl) {
-                statusEl.textContent = `❌ Kaydetme hatası: ${error.message}`;
-                statusEl.classList.remove('text-yellow-400', 'text-green-400', 'text-blue-400');
-                statusEl.classList.add('text-red-400');
-            }
-
-            // Offer fallback download
-            if (confirm(`Supabase'e kaydedilemedi: ${error.message}\n\nYerel dosya olarak indirmek ister misiniz?`)) {
-                admin.downloadCourseAsFile(courseKey, courseData);
-            }
+        if (typeof SupabaseSync !== 'undefined') {
+            return await SupabaseSync.saveToSupabase(courseKey, courseData);
         }
     },
 
-    // Sync phases to Supabase
     syncPhasesToSupabase: async (courseId, phases) => {
-        const phaseIdMap = {}; // index -> uuid
-
-        for (let i = 0; i < phases.length; i++) {
-            const phase = phases[i];
-            const name = phase.title || `Bölüm ${i}`;
-
-            // Try to find existing phase
-            const { data: existing } = await SupabaseClient.getClient()
-                .from('phases')
-                .select('id')
-                .eq('course_id', courseId)
-                .eq('name', name)
-                .maybeSingle();
-
-            if (existing) {
-                // Update existing
-                await SupabaseClient.updatePhase(existing.id, {
-                    description: phase.description,
-                    position: i,
-                    meta: { color: phase.color, icon: phase.icon },
-                });
-                phaseIdMap[i] = existing.id;
-            } else {
-                // Create new
-                const newPhase = await SupabaseClient.createPhase({
-                    course_id: courseId,
-                    name: name,
-                    description: phase.description || null,
-                    position: i,
-                    meta: { color: phase.color, icon: phase.icon },
-                });
-                phaseIdMap[i] = newPhase.id;
-            }
+        if (typeof SupabaseSync !== 'undefined') {
+            return await SupabaseSync.syncPhases(courseId, phases);
         }
-
-        return phaseIdMap;
     },
 
-    // Sync projects to Supabase
     syncProjectsToSupabase: async (courseId, projects, phaseIdMap) => {
-        for (const proj of projects) {
-            const slug =
-                admin.slugify(typeof proj.title === 'object' ? proj.title.tr : proj.title) || `project-${proj.id}`;
-            const phaseId = phaseIdMap[proj.phase] || Object.values(phaseIdMap)[0];
-
-            if (!phaseId) {
-                console.warn(`Phase not found for project ${proj.title}, skipping...`);
-                continue;
-            }
-
-            const projectData = {
-                course_id: courseId,
-                phase_id: phaseId,
-                slug: slug,
-                title: typeof proj.title === 'object' ? proj.title.tr : proj.title,
-                description: typeof proj.desc === 'object' ? proj.desc.tr : proj.desc,
-                materials: proj.materials || [],
-                circuit: proj.circuitImage || proj.circuit_desc || null,
-                code: proj.code || null,
-                simulation: proj.simType || null,
-                challenge: typeof proj.challenge === 'object' ? proj.challenge.tr : proj.challenge,
-                component_info: {
-                    id: proj.id,
-                    icon: proj.icon,
-                    phase: proj.phase,
-                    mainComponent: proj.mainComponent,
-                    hotspots: proj.hotspots,
-                    hasGraph: proj.hasGraph,
-                    hasSim: proj.hasSim,
-                    mission: proj.mission,
-                    theory: proj.theory,
-                    quiz: proj.quiz,
-                    hiddenTabs: proj.hiddenTabs,
-                    enableHotspots: proj.enableHotspots,
-                    showHotspotsInLab: proj.showHotspotsInLab,
-                    difficulty: proj.difficulty,
-                    duration: proj.duration,
-                    tags: proj.tags,
-                    prerequisites: proj.prerequisites,
-                },
-                is_published: false,
-                position: proj.id || 0,
-            };
-
-            // Upsert project
-            const { error } = await SupabaseClient.getClient()
-                .from('projects')
-                .upsert(projectData, { onConflict: 'course_id,slug' });
-
-            if (error) {
-                console.error(`Error saving project ${proj.title}:`, error);
-            }
+        if (typeof SupabaseSync !== 'undefined') {
+            return await SupabaseSync.syncProjects(courseId, projects, phaseIdMap);
         }
     },
 
-    // Sync components to Supabase
     syncComponentsToSupabase: async (courseId, componentInfo) => {
-        for (const [key, data] of Object.entries(componentInfo)) {
-            await SupabaseClient.upsertComponent({
-                course_id: courseId,
-                key: key,
-                data: data,
-            });
+        if (typeof SupabaseSync !== 'undefined') {
+            return await SupabaseSync.syncComponents(courseId, componentInfo);
         }
     },
 
-    // Helper: Create URL-friendly slug
     slugify: (text) => {
+        if (typeof SupabaseSync !== 'undefined') {
+            return SupabaseSync.slugify(text);
+        }
+        // Fallback
         if (!text) return '';
-        return text
-            .toString()
-            .normalize('NFKD')
-            .replace(/[\u0300-\u036F]/g, '')
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+        return text.toString().toLowerCase().trim().replace(/\s+/g, '-');
     },
 
     // --- HOTSPOT VISUAL EDITOR (Delegated to modules/admin/hotspots.js) ---
