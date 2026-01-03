@@ -40,6 +40,8 @@ export default [
                 QuizEditor: 'readonly',
                 ComponentManager: 'readonly',
                 ProjectManager: 'readonly',
+                PhaseManager: 'readonly',
+                CourseSettings: 'readonly',
                 ClassroomManager: 'readonly',
                 StudentManager: 'readonly',
                 TeacherAnalytics: 'readonly', // Added Teacher Analytics

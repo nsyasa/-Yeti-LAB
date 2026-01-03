@@ -1,6 +1,20 @@
 /**
- * Admin Panel Module
- * Manages course content, projects, phases, and components.
+ * Admin Panel Coordinator Module
+ *
+ * This module acts as the central orchestrator for the admin panel.
+ * It coordinates between specialized sub-modules:
+ *   - HotspotEditor: Interactive hotspot editing
+ *   - QuizEditor: Quiz question management
+ *   - ComponentManager: Hardware component CRUD
+ *   - ProjectManager: Lesson/project CRUD
+ *   - PhaseManager: Course phase/section management
+ *   - CourseSettings: Course metadata editing
+ *
+ * Responsibilities:
+ *   - Initialize and configure all sub-modules
+ *   - Maintain shared state (currentData, currentCourseKey)
+ *   - Handle cross-module operations (autosave, undo, data sync)
+ *   - Provide delegate methods for HTML event handlers
  */
 
 const admin = {
@@ -123,6 +137,24 @@ const admin = {
             });
         }
 
+        // Initialize Phase Manager
+        if (typeof PhaseManager !== 'undefined') {
+            PhaseManager.init({
+                onUpdate: admin.triggerAutoSave,
+                getPhases: () => admin.currentData?.phases || [],
+                getProjects: () => admin.currentData?.projects || [],
+            });
+        }
+
+        // Initialize Course Settings
+        if (typeof CourseSettings !== 'undefined') {
+            CourseSettings.init({
+                onUpdate: admin.triggerAutoSave,
+                getCourseData: () => admin.allCourseData[admin.currentCourseKey],
+                getCourseKey: () => admin.currentCourseKey,
+            });
+        }
+
         // Legacy listener cleanup (ProjectManager handles its own listeners now)
         // But Component listeners remain here
         document
@@ -227,68 +259,22 @@ const admin = {
         });
     },
 
-    // --- COURSE SETTINGS MANAGEMENT ---
+    // --- COURSE SETTINGS MANAGEMENT (Delegated to modules/admin/settings.js) ---
     loadCourseSettings: () => {
-        const course = admin.allCourseData[admin.currentCourseKey];
-        if (!course) return;
-
-        // Default icon based on course type
-        const defaultIcons = {
-            arduino: '🔌',
-            microbit: '🎮',
-            scratch: '🐱',
-            mblock: '🤖',
-            appinventor: '📱',
-        };
-
-        const icon = course.icon || defaultIcons[admin.currentCourseKey] || '📚';
-        const title = course.title || admin.currentCourseKey;
-        const desc = course.description || '';
-
-        // Update form fields
-        document.getElementById(EL.ADMIN.COURSE.ICON).value = icon;
-        document.getElementById(EL.ADMIN.COURSE.TITLE).value = title;
-        document.getElementById(EL.ADMIN.COURSE.DESC).value = desc;
-
-        // Update preview
-        document.getElementById(EL.ADMIN.COURSE.PREVIEW_ICON).textContent = icon;
-        document.getElementById(EL.ADMIN.COURSE.PREVIEW_TITLE).textContent = title;
-        document.getElementById(EL.ADMIN.COURSE.PREVIEW_DESC).textContent = desc || 'Açıklama eklemek için tıklayın';
+        if (typeof CourseSettings !== 'undefined') {
+            CourseSettings.load();
+        }
     },
 
     updateCourseSettings: () => {
-        const course = admin.allCourseData[admin.currentCourseKey];
-        if (!course) return;
-
-        const icon = document.getElementById(EL.ADMIN.COURSE.ICON).value;
-        const title = document.getElementById(EL.ADMIN.COURSE.TITLE).value;
-        const desc = document.getElementById(EL.ADMIN.COURSE.DESC).value;
-
-        // Update course data
-        course.icon = icon;
-        course.title = title;
-        course.description = desc;
-
-        // Update preview in real-time
-        document.getElementById(EL.ADMIN.COURSE.PREVIEW_ICON).textContent = icon || '📚';
-        document.getElementById(EL.ADMIN.COURSE.PREVIEW_TITLE).textContent = title || admin.currentCourseKey;
-        document.getElementById(EL.ADMIN.COURSE.PREVIEW_DESC).textContent = desc || 'Açıklama yok';
-
-        admin.triggerAutoSave();
+        if (typeof CourseSettings !== 'undefined') {
+            CourseSettings.update();
+        }
     },
 
     toggleCourseSettings: () => {
-        const form = document.getElementById(EL.ADMIN.COURSE.FORM);
-        const toggle = document.getElementById(EL.ADMIN.COURSE.TOGGLE);
-
-        if (form.classList.contains('hidden')) {
-            form.classList.remove('hidden');
-            toggle.textContent = '▲';
-            toggle.style.transform = 'rotate(180deg)';
-        } else {
-            form.classList.add('hidden');
-            toggle.textContent = '▼';
-            toggle.style.transform = 'rotate(0deg)';
+        if (typeof CourseSettings !== 'undefined') {
+            CourseSettings.toggle();
         }
     },
 
@@ -481,8 +467,6 @@ const admin = {
 
     addNewComponent: () => ComponentManager.add(),
 
-    deleteComponent: () => ComponentManager.delete(), // Assuming it existed or we add it now
-
     // --- IMAGE SELECTOR ---
     targetInputId: null,
     targetInputId2: null, // Optional secondary input (e.g. for syncing two fields)
@@ -600,135 +584,39 @@ const admin = {
         admin.triggerAutoSave();
     },
 
-    // --- PHASES MANAGEMENT ---
+    // --- PHASES MANAGEMENT (Delegated to modules/admin/phases.js) ---
     renderPhaseList: () => {
-        const list = document.getElementById('phase-list');
-        if (!list) return;
-
-        list.innerHTML = '';
-        if (!admin.currentData.phases) admin.currentData.phases = [];
-
-        try {
-            admin.currentData.phases.forEach((phase, index) => {
-                const activeClass =
-                    index === admin.currentPhaseIndex
-                        ? 'bg-amber-50 border-amber-500'
-                        : 'hover:bg-gray-50 border-transparent';
-                const fixedName = index === 0 ? 'Başlangıç' : `Bölüm ${index}`;
-
-                // Fallback logic for display safe-guards
-                let icon = '❓';
-                let desc = '';
-
-                if (phase) {
-                    icon =
-                        phase.icon ||
-                        (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '❓');
-                    desc =
-                        phase.description ||
-                        (phase.title && typeof phase.title === 'string' ? phase.title.replace(icon, '').trim() : '');
-                }
-
-                list.innerHTML += `
-                    <div onclick="admin.loadPhase(${index})" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
-                        <div class="flex items-center">
-                            <span class="w-3 h-3 rounded-full bg-${phase.color || 'gray'}-500 mr-3"></span>
-                            <div>
-                                <div class="font-bold text-sm text-gray-700">${icon} ${fixedName}</div>
-                                <div class="text-xs text-gray-400">${desc}</div>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        } catch (e) {
-            console.error('Error rendering phase list:', e);
-            list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Fazlar yüklenirken sorun oluştu.</div>';
+        if (typeof PhaseManager !== 'undefined') {
+            // Ensure phases array exists
+            if (!admin.currentData.phases) admin.currentData.phases = [];
+            PhaseManager.renderList();
         }
     },
 
     loadPhase: (index) => {
-        admin.currentPhaseIndex = index;
-        const p = admin.currentData.phases[index];
-        document.getElementById('phase-welcome').classList.add('hidden');
-        document.getElementById('phase-form').classList.remove('hidden');
-
-        // Fixed Name Logic
-        const fixedName = index === 0 ? 'Başlangıç' : `Bölüm ${index}`;
-        document.getElementById('ph-fixed-name').value = fixedName;
-
-        // Data Migration / Fallback Logic
-        const icon = p.icon || (p.title ? p.title.split(' ')[0] : '🚀');
-        // If description is missing, use title minus icon.
-        const desc = p.description || (p.title ? p.title.replace(icon, '').trim() : '');
-
-        document.getElementById('ph-icon').value = icon;
-        document.getElementById('ph-desc').value = desc;
-        document.getElementById('ph-color').value = p.color;
-
-        // Auto-save on change
-        document.getElementById('ph-icon').oninput = admin.updatePhase;
-        document.getElementById('ph-desc').oninput = admin.updatePhase;
-        document.getElementById('ph-color').onchange = admin.updatePhase;
-
-        admin.renderPhaseList();
+        if (typeof PhaseManager !== 'undefined') {
+            PhaseManager.load(index);
+        }
     },
 
     updatePhase: () => {
-        if (admin.currentPhaseIndex === null) return;
-        const p = admin.currentData.phases[admin.currentPhaseIndex];
-
-        p.icon = document.getElementById('ph-icon').value;
-        p.description = document.getElementById('ph-desc').value;
-        p.color = document.getElementById('ph-color').value;
-
-        // Backwards compatibility for data file readability, though app.js uses new system now
-        // This keeps the 'title' field roughly in sync for older viewers
-        const fixedName = admin.currentPhaseIndex === 0 ? 'Başlangıç' : `Bölüm ${admin.currentPhaseIndex}`;
-        p.title = `${p.icon} ${fixedName}`;
-
-        admin.renderPhaseList();
-
-        admin.triggerAutoSave();
+        if (typeof PhaseManager !== 'undefined') {
+            PhaseManager.update();
+        }
     },
 
     addNewPhase: () => {
-        if (!admin.currentData.phases) admin.currentData.phases = [];
-        const newIndex = admin.currentData.phases.length;
-        admin.currentData.phases.push({
-            icon: '✨',
-            description: 'Yeni Konu',
-            title: '✨ Bölüm ' + newIndex, // Temp
-            color: 'blue',
-        });
-        admin.renderPhaseList();
-        admin.loadPhase(newIndex);
-
-        admin.triggerAutoSave();
+        if (typeof PhaseManager !== 'undefined') {
+            // Ensure phases array exists
+            if (!admin.currentData.phases) admin.currentData.phases = [];
+            PhaseManager.add();
+        }
     },
 
     deletePhase: () => {
-        if (admin.currentPhaseIndex === null) return;
-        const idx = admin.currentPhaseIndex;
-        const projectsInPhase = admin.currentData.projects.filter((p) => p.phase === idx).length;
-
-        if (projectsInPhase > 0) {
-            if (
-                !confirm(
-                    `Bu fazda ${projectsInPhase} ders var! Silmek, bu derslerin görünmez olmasına neden olur. Devam?`
-                )
-            )
-                return;
-        } else {
-            if (!confirm('Bu fazı silmek istediğinize emin misiniz?')) return;
+        if (typeof PhaseManager !== 'undefined') {
+            PhaseManager.delete();
         }
-
-        admin.currentData.phases.splice(idx, 1);
-        admin.currentPhaseIndex = null;
-        document.getElementById('phase-welcome').classList.remove('hidden');
-        document.getElementById('phase-form').classList.add('hidden');
-        admin.renderPhaseList();
-
-        admin.triggerAutoSave();
     },
 
     validateProjectData: () => {
@@ -1222,28 +1110,6 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
 
         // Local file - use relative path
         return imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;
-    },
-
-    /**
-     * Open image selector modal (existing images in img/ folder)
-     */
-    openImageSelector: (targetInputId) => {
-        // This could be enhanced to show a gallery of existing images
-        // For now, just focus the input
-        const input = document.getElementById(targetInputId);
-        if (input) {
-            input.focus();
-            input.select();
-        }
-
-        // Show a helper message
-        alert(
-            'Resim ekleme seçenekleri:\n\n' +
-                '1. Dosya adı girin: led.jpg (img/ klasöründen)\n' +
-                '2. URL yapıştırın: https://example.com/img.png\n' +
-                '3. "Yükle" butonuyla Supabase\'e yükleyin\n\n' +
-                'GitHub Pages resimlerini img/ klasörüne ekleyip commit/push yapın.'
-        );
     },
 };
 
