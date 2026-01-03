@@ -32,82 +32,29 @@ const admin = {
     // Undo system
     undoStack: [], // {type: 'project'|'component'|'phase', data: {...}, courseKey: 'arduino'}
 
-    // --- AUTOSAVE SYSTEM ---
-    autoSaveKey: 'mucit_atolyesi_autosave',
-    autoSaveTimer: null,
-
+    // --- AUTOSAVE SYSTEM (Delegated to modules/admin/storage.js) ---
     triggerAutoSave: () => {
-        const statusEl = document.getElementById('autosave-status');
-        if (statusEl) {
-            statusEl.textContent = 'Kaydediliyor...';
-            statusEl.classList.remove('text-green-400', 'text-red-400', 'text-blue-400');
-            statusEl.classList.add('text-yellow-400');
+        if (typeof StorageManager !== 'undefined') {
+            StorageManager.triggerAutoSave();
         }
-
-        if (admin.autoSaveTimer) clearTimeout(admin.autoSaveTimer);
-        admin.autoSaveTimer = setTimeout(admin.saveToLocal, 2000); // 2 seconds debounce
     },
 
     saveToLocal: () => {
-        try {
-            const dataToSave = {
-                timestamp: new Date().getTime(),
-                data: admin.allCourseData,
-            };
-            localStorage.setItem(admin.autoSaveKey, JSON.stringify(dataToSave));
-
-            const timeStr = new Date().toLocaleTimeString();
-            const statusEl = document.getElementById('autosave-status');
-            if (statusEl) {
-                statusEl.textContent = `Son otomatik kayıt: ${timeStr}`;
-                statusEl.classList.remove('text-yellow-400', 'text-red-400', 'text-blue-400');
-                statusEl.classList.add('text-green-400');
-            }
-        } catch (e) {
-            console.error('AutoSave Error:', e);
-            const statusEl = document.getElementById('autosave-status');
-            if (statusEl) {
-                statusEl.textContent = 'Otomatik kayıt hatası! (Depolama dolu olabilir)';
-                statusEl.classList.remove('text-yellow-400', 'text-green-400', 'text-blue-400');
-                statusEl.classList.add('text-red-400');
-            }
+        if (typeof StorageManager !== 'undefined') {
+            StorageManager.saveToLocal();
         }
     },
 
     restoreFromLocal: () => {
-        try {
-            const saved = localStorage.getItem(admin.autoSaveKey);
-            if (!saved) return;
-
-            const parsed = JSON.parse(saved);
-
-            if (parsed.data) {
-                // Check if local data is vastly different or empty
-                if (Object.keys(parsed.data).length === 0) return;
-
-                admin.allCourseData = parsed.data;
-                const date = new Date(parsed.timestamp).toLocaleString();
-                // Data restored silently
-
-                // UI update delayed to ensure element exists
-                setTimeout(() => {
-                    const statusEl = document.getElementById('autosave-status');
-                    if (statusEl) {
-                        statusEl.textContent = `Yüklendi: ${date}`;
-                        statusEl.classList.remove('text-yellow-400', 'text-green-400', 'text-red-400');
-                        statusEl.classList.add('text-blue-400');
-                    }
-                }, 500);
-            }
-        } catch (e) {
-            console.error('Restore Error:', e);
+        if (typeof StorageManager !== 'undefined') {
+            StorageManager.restoreFromLocal();
         }
     },
 
     clearLocalData: () => {
-        localStorage.removeItem(admin.autoSaveKey);
-        const statusEl = document.getElementById('autosave-status');
-        if (statusEl) statusEl.textContent = '';
+        if (typeof StorageManager !== 'undefined') {
+            StorageManager.clear();
+        }
     },
 
     init: () => {
@@ -152,6 +99,17 @@ const admin = {
                 onUpdate: admin.triggerAutoSave,
                 getCourseData: () => admin.allCourseData[admin.currentCourseKey],
                 getCourseKey: () => admin.currentCourseKey,
+            });
+        }
+
+        // Initialize Storage Manager
+        if (typeof StorageManager !== 'undefined') {
+            StorageManager.init({
+                storageKey: 'mucit_atolyesi_autosave',
+                getData: () => admin.allCourseData,
+                setData: (data) => {
+                    admin.allCourseData = data;
+                },
             });
         }
 
