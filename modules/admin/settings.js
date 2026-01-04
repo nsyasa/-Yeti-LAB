@@ -1,3 +1,4 @@
+/* global admin */
 /**
  * Course Settings Module for Admin Panel
  * Handles course metadata (icon, title, description) editing and preview.
@@ -175,33 +176,54 @@ const CourseSettings = {
         if (this.config.onUpdate) this.config.onUpdate();
     },
 
-    // Apply custom tab names to the project form tabs
+    // Apply custom tab names to the project form labels and visibility checkboxes
     applyCustomTabNames() {
         const course = this.config.getCourseData();
         if (!course) return;
 
         const customTabNames = course.customTabNames || {};
 
-        // Mapping between TabConfig IDs and admin HTML tab IDs
+        // Mapping between TabConfig IDs and target HTML Element IDs (Array of IDs)
         const tabMapping = {
-            mission: 'ptab-amac',
-            materials: 'ptab-donanim',
-            circuit: 'ptab-devre',
-            code: 'ptab-kod',
-            challenge: 'ptab-gorev',
-            quiz: 'ptab-test',
-            tip: 'ptab-ipucu',
+            mission: ['lbl-mission', 'lbl-chk-mission'],
+            materials: ['lbl-materials', 'lbl-chk-materials'],
+            circuit: ['lbl-circuit', 'lbl-chk-circuit'],
+            code: ['lbl-code', 'lbl-chk-code'],
+            quiz: ['lbl-quiz', 'lbl-chk-quiz'],
+            challenge: ['lbl-challenge', 'lbl-chk-challenge']
         };
 
-        // Apply custom names to tab buttons
-        Object.keys(customTabNames).forEach((tabId) => {
-            const btnId = tabMapping[tabId];
-            if (btnId) {
-                const btn = document.getElementById(btnId);
-                if (btn && customTabNames[tabId]) {
-                    btn.textContent = customTabNames[tabId];
+        // Default Labels (to restore if custom name is deleted)
+        const defaultLabels = {
+            mission: '🎯 Amaç',
+            materials: '🧩 Donanım',
+            circuit: '⚡ Simülasyon',
+            code: '💻 Kod',
+            quiz: '📝 Test',
+            challenge: '🏆 Görev'
+        };
+
+        // Apply custom names to targets
+        Object.keys(tabMapping).forEach((tabId) => {
+            const targetIds = tabMapping[tabId];
+
+            targetIds.forEach(targetId => {
+                const element = document.getElementById(targetId);
+                if (element) {
+                    // Use custom name or fall back to default
+                    if (customTabNames[tabId]) {
+                        // Try to preserve default emoji if user didn't provide one
+                        const defaultEmoji = defaultLabels[tabId]?.split(' ')[0] || '';
+                        if (!customTabNames[tabId].includes(defaultEmoji) && defaultEmoji) {
+                            element.textContent = `${defaultEmoji} ${customTabNames[tabId]}`;
+                        } else {
+                            element.textContent = customTabNames[tabId];
+                        }
+                    } else if (defaultLabels[tabId]) {
+                        element.textContent = defaultLabels[tabId];
+                    }
                 }
-            }
+            });
         });
     },
 };

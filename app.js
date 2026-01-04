@@ -64,24 +64,27 @@ const app = {
             window.Search?.init(app.selectCourse, app.loadProject);
             window.Assistant?.init();
 
-            // Load ALL courses first to ensure metadata is available
-            if (window.CourseLoader?.loadAll) {
-                UI.renderSkeletonCards('course-list', 4);
-                CourseLoader.loadAll()
+            // Performans İyileştirmesi: Full veriyi (loadAll) yüklemek yerine
+            // Sadece kurs listesini (metadata) alıp listeliyoruz.
+            // Detaylı veriler kurs seçilince (selectCourse) yüklenecek.
+            if (window.CourseLoader?.init) {
+                // Optimistic Rendering: Show static manifest immediately to prevent waiting
+                console.log('[App] Rendering optimistic course list');
+                app.renderCourseSelection();
+
+                CourseLoader.init()
                     .then(() => {
-                        console.log('[App] All courses loaded:', Object.keys(window.courseData));
+                        console.log('[App] Course list synced with Supabase');
 
                         // Restore admin changes from localStorage if available
                         app.restoreFromLocalStorage();
 
+                        // Re-render with dynamic data (e.g. updated counts or titles)
                         app.renderCourseSelection();
                     })
                     .catch((err) => {
-                        console.error('[App] Course loading error:', err);
-                        Toast?.errorWithRetry('Kurslar yüklenemedi. İnternet bağlantınızı kontrol edin.', () =>
-                            window.location.reload()
-                        );
-                        app.renderCourseSelection(); // Fallback to manifest
+                        console.warn('[App] Course init warning (using static manifest):', err);
+                        // No need to re-render, static manifest is already visible
                     });
             } else {
                 app.renderCourseSelection();
@@ -360,9 +363,25 @@ const app = {
     // Restore course data from localStorage (syncs with admin panel autosave)
     // Security: Validates and sanitizes data to prevent XSS attacks
     restoreFromLocalStorage: () => {
-        const allowedCourses = ['arduino', 'microbit', 'scratch', 'mblock', 'appinventor'];
+        // Allow all courses defined in manifest + defaults
+        const defaultAllowed = ['arduino', 'microbit', 'scratch', 'mblock', 'appinventor'];
+        const manifestKeys = window.CourseLoader && window.CourseLoader.manifest ? Object.keys(window.CourseLoader.manifest) : [];
+        const allowedCourses = [...new Set([...defaultAllowed, ...manifestKeys])];
 
         try {
+            // In Supabase-First architecture, the main app should only read from the database.
+            // localStorage contains admin autosaves which might be stale, duplicate, or draft.
+            // We only want to restore from localStorage if we are in the Admin Panel.
+            const isAdminPanel = window.location.pathname.includes('admin.html') || window.location.pathname.includes('admin');
+
+            if (!isAdminPanel) {
+                // Check if we have connectivity/Supabase loaded? 
+                // Actually, regardless, main app shouldn't read admin drafts.
+                // Exception: Maybe offline mode? But current issue is duplicates.
+                console.log('[App] Skipping restoreFromLocalStorage on main site (Supabase-First)');
+                return;
+            }
+
             const saved = localStorage.getItem('mucit_atolyesi_autosave');
             if (!saved) return;
 
@@ -406,6 +425,12 @@ const app = {
 
                 // Only merge if course exists in window.courseData
                 if (!window.courseData[key]) {
+                    return;
+                }
+
+                // Skip if course data is sourced from Supabase (Official Source)
+                if (window.courseData[key]._supabaseId) {
+                    console.log(`[App] Skipping localStorage restore for ${key} (Supabase source)`);
                     return;
                 }
 

@@ -1,3 +1,4 @@
+/* global supabase */
 /**
  * Supabase Client Module
  * Merkezi Supabase bağlantı yönetimi
@@ -122,7 +123,7 @@ const SupabaseClient = {
      * Get all courses
      */
     async getCourses(publishedOnly = false) {
-        let query = this.getClient().from('courses').select('*').order('created_at', { ascending: true });
+        let query = this.getClient().from('courses').select('*').order('position', { ascending: true });
 
         if (publishedOnly) {
             query = query.eq('is_published', true);
@@ -147,42 +148,28 @@ const SupabaseClient = {
      * Get full course data (with phases, projects, components)
      */
     async getFullCourseData(courseId) {
-        // Get course
-        const { data: course, error: courseError } = await this.getClient()
-            .from('courses')
-            .select('*')
-            .eq('id', courseId)
-            .single();
+        const client = this.getClient();
 
-        if (courseError) throw courseError;
+        // Execute all queries in parallel
+        const [courseResult, phasesResult, projectsResult, componentsResult] = await Promise.all([
+            client.from('courses').select('*').eq('id', courseId).single(),
+            client.from('phases').select('*').eq('course_id', courseId).order('position'),
+            client.from('projects').select('*').eq('course_id', courseId).order('position'),
+            client.from('course_components').select('*').eq('course_id', courseId)
+        ]);
 
-        // Get phases
-        const { data: phases, error: phasesError } = await this.getClient()
-            .from('phases')
-            .select('*')
-            .eq('course_id', courseId)
-            .order('position');
+        // Check for errors
+        if (courseResult.error) throw courseResult.error;
+        if (phasesResult.error) throw phasesResult.error;
+        if (projectsResult.error) throw projectsResult.error;
+        if (componentsResult.error) throw componentsResult.error;
 
-        if (phasesError) throw phasesError;
-
-        // Get projects
-        const { data: projects, error: projectsError } = await this.getClient()
-            .from('projects')
-            .select('*')
-            .eq('course_id', courseId)
-            .order('position');
-
-        if (projectsError) throw projectsError;
-
-        // Get components
-        const { data: components, error: componentsError } = await this.getClient()
-            .from('course_components')
-            .select('*')
-            .eq('course_id', courseId);
-
-        if (componentsError) throw componentsError;
-
-        return { course, phases, projects, components };
+        return {
+            course: courseResult.data,
+            phases: phasesResult.data,
+            projects: projectsResult.data,
+            components: componentsResult.data
+        };
     },
 
     /**
@@ -198,6 +185,16 @@ const SupabaseClient = {
 
         if (error) throw error;
         return data;
+    },
+
+    /**
+     * Update course by slug
+     */
+    async updateCourseBySlug(slug, updates) {
+        return await this.client
+            .from('courses')
+            .update(updates)
+            .eq('slug', slug);
     },
 
     // ==========================================
@@ -474,9 +471,11 @@ const SupabaseClient = {
         }));
 
         return {
+            _supabaseId: course.id,
             title: course.title,
             description: course.description,
             icon: course.meta?.icon || '📚',
+            customTabNames: course.meta?.customTabNames || {},
             data: {
                 componentInfo,
                 phases: phasesArray,

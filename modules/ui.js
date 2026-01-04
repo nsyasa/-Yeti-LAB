@@ -28,7 +28,7 @@ const UI = {
             let progressHtml = '';
             if (isStudent) {
                 const completed = progressData[key] ? progressData[key].length : 0;
-                const total = loadedCourse?.data?.projects?.length || 10;
+                const total = loadedCourse?.data?.projects?.length || manifestCourse.projectCount || 10;
                 const percentage = Math.round((completed / total) * 100);
 
                 if (completed > 0) {
@@ -257,8 +257,8 @@ const UI = {
                     phase.color === 'green'
                         ? 'border-green-400'
                         : phase.color === 'blue'
-                          ? 'border-blue-400'
-                          : 'border-purple-400';
+                            ? 'border-blue-400'
+                            : 'border-purple-400';
 
                 sectionHTML += `
                     <div onclick="app.loadProject(${p.id})" 
@@ -489,16 +489,16 @@ const UI = {
                             <p class="font-bold text-gray-800 mb-3">${idx + 1}. ${q.q}</p>
                             <div class="space-y-2">
                                 ${q.options
-                                    .map(
-                                        (opt, optIdx) => `
+                            .map(
+                                (opt, optIdx) => `
                                     <button onclick="app.checkAnswer(${idx}, ${optIdx}, ${q.answer}, this)" 
                                             class="w-full text-left p-3 rounded bg-white border border-gray-200 hover:bg-gray-100 transition flex items-center group">
                                         <span class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center mr-3 text-xs font-bold bg-gray-50 group-hover:bg-theme group-hover:text-white transition-colors">${['A', 'B', 'C', 'D'][optIdx]}</span>
                                         ${opt}
                                     </button>
                                 `
-                                    )
-                                    .join('')}
+                            )
+                            .join('')}
                             </div>
                             <div class="quiz-feedback hidden mt-3 p-3 rounded font-bold text-sm"></div>
                         </div>`;
@@ -549,8 +549,25 @@ const UI = {
         }
 
         // Get custom tab names from course data (if any)
-        const courseData = window.courseData?.[currentCourseKey];
-        const customTabNames = courseData?.customTabNames || {};
+        // Priority: localStorage autosave > static courseData
+        let customTabNames = {};
+
+        // Try localStorage first (admin autosave data)
+        try {
+            const savedData = localStorage.getItem('mucit_atolyesi_autosave');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                customTabNames = parsed.data?.[currentCourseKey]?.customTabNames || {};
+            }
+        } catch (e) {
+            // Silently fail, will use static data
+        }
+
+        // Fallback to static course data
+        if (Object.keys(customTabNames).length === 0) {
+            const courseData = window.courseData?.[currentCourseKey];
+            customTabNames = courseData?.customTabNames || {};
+        }
 
         // Render Buttons
         btnContainer.innerHTML = tabs
@@ -577,8 +594,8 @@ const UI = {
         const clickHandler = (b) => {
             btns.forEach(
                 (t) =>
-                    (t.className =
-                        'tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent')
+                (t.className =
+                    'tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent')
             );
             b.className = 'tab-btn px-4 py-3 text-sm font-bold text-theme border-b-2 border-theme';
             area.innerHTML = content[b.dataset.tab] || I18n.t('no_content');

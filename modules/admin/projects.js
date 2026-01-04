@@ -9,9 +9,16 @@ const ProjectManager = {
         onUpdate: null, // Callback for autosave
         onProjectSelect: null, // Callback when project is clicked
         getProjects: () => [], // Function to get current projects array
+        getPhases: () => [], // Function to get current phases array
         getComponentInfo: () => ({}), // Function to get component data
         getCourseKey: () => 'arduino', // Function to get current course key
+        // NEW: Supabase IDs for real-time sync
+        getCourseId: () => null, // Function to get Supabase course UUID
+        getPhaseIdMap: () => ({}), // Function to get phase index to UUID map
     },
+
+    // Save timer for debounced Supabase sync
+    saveTimer: null,
 
     // State
     currentProjectId: null,
@@ -36,35 +43,55 @@ const ProjectManager = {
 
         list.innerHTML = '';
         const projects = this.config.getProjects() || [];
+
         this.currentProjectId = activeId;
 
         try {
-            projects
-                .sort((a, b) => a.id - b.id)
-                .forEach((p) => {
-                    const activeClass =
-                        p.id === activeId ? 'bg-blue-50 border-blue-500' : 'hover:bg-gray-50 border-transparent';
-                    const pIcon = p.icon || '📄';
-                    const pTitle =
-                        typeof p.title === 'object' ? p.title.tr || p.title.en || 'Untitled' : p.title || 'Untitled';
+            if (projects.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Ders bulunamadı.</div>';
+                return;
+            }
 
-                    const div = document.createElement('div');
-                    div.className = `p-3 border-l-4 cursor-pointer transition ${activeClass}`;
-                    div.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <span class="project-title font-bold text-sm text-gray-700">#${p.id} ${pTitle}</span>
-                            <span class="project-icon text-xs text-gray-400">${pIcon}</span>
-                        </div>`;
-                    div.onclick = () => {
-                        if (this.config.onProjectSelect) this.config.onProjectSelect(p.id);
-                        else this.load(p.id);
-                    };
+            // Sort by id (position)
+            const sortedProjects = [...projects].sort((a, b) => a.id - b.id);
 
-                    // Add data attribute for easier selection/update
-                    div.setAttribute('data-project-id', p.id);
+            sortedProjects.forEach((p, index) => {
+                const activeClass =
+                    p.id === activeId ? 'bg-blue-50 border-blue-500' : 'hover:bg-gray-50 border-transparent';
+                const pIcon = p.icon || '📄';
+                const pTitle =
+                    typeof p.title === 'object' ? p.title.tr || p.title.en || 'Untitled' : p.title || 'Untitled';
 
-                    list.appendChild(div);
-                });
+                const isFirst = index === 0;
+                const isLast = index === sortedProjects.length - 1;
+
+                const div = document.createElement('div');
+                div.className = `p-3 border-l-4 cursor-pointer transition ${activeClass} group`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="project-title font-bold text-sm text-gray-700 flex-1">#${p.id} ${pTitle}</span>
+                        <div class="flex items-center gap-1">
+                            <span class="project-icon text-xs text-gray-400 mr-2">${pIcon}</span>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                <button onclick="event.stopPropagation(); ProjectManager.moveUp(${p.id})" 
+                                    class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 text-xs ${isFirst ? 'invisible' : ''}" 
+                                    title="Yukarı Taşı">↑</button>
+                                <button onclick="event.stopPropagation(); ProjectManager.moveDown(${p.id})" 
+                                    class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 text-xs ${isLast ? 'invisible' : ''}" 
+                                    title="Aşağı Taşı">↓</button>
+                            </div>
+                        </div>
+                    </div>`;
+                div.onclick = () => {
+                    if (this.config.onProjectSelect) this.config.onProjectSelect(p.id);
+                    else this.load(p.id);
+                };
+
+                // Add data attribute for easier selection/update
+                div.setAttribute('data-project-id', p.id);
+
+                list.appendChild(div);
+            });
         } catch (e) {
             console.error('Error rendering project list:', e);
             list.innerHTML += '<div class="p-2 text-red-500 text-xs">Hata: Dersler listelenemedi.</div>';
@@ -82,8 +109,8 @@ const ProjectManager = {
         document.getElementById('project-welcome').classList.add('hidden');
         document.getElementById('project-form').classList.remove('hidden');
 
-        // Reset Tab to 'Genel'
-        this.switchTab('genel');
+        // Reset Tab to 'Genel' - No longer needed in single page form
+        // this.switchTab('genel');
 
         const setVal = (elmId, val) => {
             const el = document.getElementById(elmId);
@@ -112,7 +139,10 @@ const ProjectManager = {
         setLocalizedField('challenge', p.challenge);
 
         setVal('p-icon', p.icon);
-        setVal('p-phase', p.phase);
+
+        // Populate phase dropdown with available phases
+        this.populatePhaseDropdown(p.phase);
+
         setVal('p-week', p.week);
 
         // Metadata
@@ -121,13 +151,15 @@ const ProjectManager = {
         setVal('p-tags', p.tags ? p.tags.join(', ') : '');
         setVal('p-prerequisites', p.prerequisites ? p.prerequisites.join(', ') : '');
 
-        // Tab Visibility Checkboxes
+        // Tab Visibility Checkboxes - Apply initial state
         const tabIds = ['mission', 'materials', 'circuit', 'code', 'challenge', 'quiz'];
         const hiddenTabs = p.hiddenTabs || [];
         tabIds.forEach((tabId) => {
             const chk = document.getElementById(`p-show-${tabId}`);
             if (chk) {
                 chk.checked = !hiddenTabs.includes(tabId);
+                // Apply visibility immediately without triggering update
+                this.toggleSection(tabId, true);
             }
         });
 
@@ -236,17 +268,17 @@ const ProjectManager = {
         const tagsVal = document.getElementById('p-tags')?.value || '';
         p.tags = tagsVal
             ? tagsVal
-                  .split(',')
-                  .map((t) => t.trim())
-                  .filter((t) => t)
+                .split(',')
+                .map((t) => t.trim())
+                .filter((t) => t)
             : [];
 
         const prereqVal = document.getElementById('p-prerequisites')?.value || '';
         p.prerequisites = prereqVal
             ? prereqVal
-                  .split(',')
-                  .map((t) => parseInt(t.trim()))
-                  .filter((n) => !isNaN(n))
+                .split(',')
+                .map((t) => parseInt(t.trim()))
+                .filter((n) => !isNaN(n))
             : [];
 
         // Sim Type
@@ -303,15 +335,70 @@ const ProjectManager = {
         // Update list item text only
         this.updateListItemText(p);
 
+        // Trigger local autosave
         if (this.config.onUpdate) this.config.onUpdate();
+
+        // Debounced Supabase sync
+        this.scheduleSaveToSupabase(p);
+    },
+
+    /**
+     * Schedule a debounced save to Supabase (500ms delay)
+     */
+    scheduleSaveToSupabase(project) {
+        if (this.saveTimer) clearTimeout(this.saveTimer);
+        this.saveTimer = setTimeout(() => this.saveProjectToSupabase(project), 500);
+    },
+
+    /**
+     * Save single project to Supabase
+     */
+    async saveProjectToSupabase(project) {
+        const courseId = this.config.getCourseId?.();
+        const phaseIdMap = this.config.getPhaseIdMap?.();
+
+        if (!courseId || !phaseIdMap) {
+            console.warn('[ProjectManager] Cannot save to Supabase: missing courseId or phaseIdMap');
+            return;
+        }
+
+        if (typeof SupabaseSync !== 'undefined') {
+            const saved = await SupabaseSync.saveProjectToSupabase(courseId, project, phaseIdMap);
+            if (saved) {
+
+            }
+        }
     },
 
     // --- ADD PROJECT ---
-    add() {
+    async add() {
         const projects = this.config.getProjects();
         if (!projects) return;
 
-        const newId = projects.length > 0 ? Math.max(...projects.map((p) => p.id)) + 1 : 0;
+        // Calculate new ID from local projects
+        let newId = projects.length > 0 ? Math.max(...projects.map((p) => p.id)) + 1 : 0;
+
+        // Also check Supabase for max position to avoid slug conflicts
+        const courseId = this.config.getCourseId?.();
+        if (courseId && typeof SupabaseClient !== 'undefined') {
+            try {
+                const { data } = await SupabaseClient.getClient()
+                    .from('projects')
+                    .select('position')
+                    .eq('course_id', courseId)
+                    .order('position', { ascending: false })
+                    .limit(1);
+
+                if (data && data.length > 0) {
+                    const maxSupabasePosition = data[0].position;
+                    // Use the higher of local or Supabase max
+                    newId = Math.max(newId, maxSupabasePosition + 1);
+                }
+            } catch (e) {
+                console.warn('[ProjectManager] Could not check Supabase max position:', e);
+            }
+        }
+
         const newProject = {
             id: newId,
             phase: 0,
@@ -333,6 +420,7 @@ const ProjectManager = {
             prerequisites: [],
         };
 
+        // Add to local array
         projects.push(newProject);
         this.renderList(newId);
 
@@ -342,11 +430,14 @@ const ProjectManager = {
         setTimeout(() => (document.getElementById('project-list').scrollTop = 9999), 100);
         if (this.config.onUpdate) this.config.onUpdate();
 
+        // Save to Supabase
+        await this.saveProjectToSupabase(newProject);
+
         return newProject;
     },
 
     // --- DUPLICATE PROJECT ---
-    duplicate() {
+    async duplicate() {
         if (this.currentProjectId === null) return;
         const projects = this.config.getProjects();
         const p = projects.find((x) => x.id === this.currentProjectId);
@@ -364,28 +455,39 @@ const ProjectManager = {
             copy.title += ' (Kopyası)';
         }
 
+        // Add to local array
         projects.push(copy);
         this.renderList(newId);
 
         if (this.config.onProjectSelect) this.config.onProjectSelect(newId);
         else this.load(newId);
 
-        alert('Ders kopyalandı!');
         if (this.config.onUpdate) this.config.onUpdate();
+
+        // Save to Supabase
+        await this.saveProjectToSupabase(copy);
+        alert('Ders kopyalandı!');
     },
 
     // --- DELETE PROJECT ---
-    delete() {
-        if (!confirm('Bu dersi silmek istediğinize emin misiniz?')) return;
+    async delete() {
+        if (!confirm('Bu dersi silmek istediğinize emin misiniz?')) return null;
 
         const projects = this.config.getProjects();
-        // Undo logic logic should ideally be handled by admin.js undoStack,
-        // passing callback or returning deleted object
-
         const deletedProject = projects.find((p) => p.id === this.currentProjectId);
         const index = projects.findIndex((p) => p.id === this.currentProjectId);
 
         if (index > -1) {
+            // Delete from Supabase first
+            const courseId = this.config.getCourseId?.();
+            if (courseId && typeof SupabaseSync !== 'undefined') {
+                const deleted = await SupabaseSync.deleteProjectByPosition(courseId, deletedProject.id);
+                if (!deleted) {
+                    console.warn('[ProjectManager] Failed to delete from Supabase, continuing with local delete');
+                }
+            }
+
+            // Delete from local array
             projects.splice(index, 1);
             this.currentProjectId = null;
 
@@ -400,7 +502,94 @@ const ProjectManager = {
         return null;
     },
 
+    // --- REORDERING ---
+
+    /**
+     * Move a project up in the list (swap with previous)
+     */
+    async moveUp(projectId) {
+        const projects = this.config.getProjects();
+        const sortedProjects = [...projects].sort((a, b) => a.id - b.id);
+        const index = sortedProjects.findIndex(p => p.id === projectId);
+
+        if (index <= 0) return; // Already at top
+
+        await this.swapProjects(sortedProjects[index], sortedProjects[index - 1]);
+    },
+
+    /**
+     * Move a project down in the list (swap with next)
+     */
+    async moveDown(projectId) {
+        const projects = this.config.getProjects();
+        const sortedProjects = [...projects].sort((a, b) => a.id - b.id);
+        const index = sortedProjects.findIndex(p => p.id === projectId);
+
+        if (index >= sortedProjects.length - 1) return; // Already at bottom
+
+        await this.swapProjects(sortedProjects[index], sortedProjects[index + 1]);
+    },
+
+    /**
+     * Swap two projects' positions
+     */
+    async swapProjects(projectA, projectB) {
+        // Swap IDs (which are used as position)
+        const tempId = projectA.id;
+        projectA.id = projectB.id;
+        projectB.id = tempId;
+
+        // Re-render list
+        this.renderList(this.currentProjectId);
+
+        // Trigger autosave
+        if (this.config.onUpdate) this.config.onUpdate();
+
+        // Save both to Supabase
+        const courseId = this.config.getCourseId?.();
+        const phaseIdMap = this.config.getPhaseIdMap?.();
+
+        if (courseId && phaseIdMap && typeof SupabaseSync !== 'undefined') {
+
+
+            // Save both projects with swapped positions
+            await Promise.all([
+                SupabaseSync.saveProjectToSupabase(courseId, projectA, phaseIdMap),
+                SupabaseSync.saveProjectToSupabase(courseId, projectB, phaseIdMap)
+            ]);
+
+
+        }
+    },
+
     // --- HELPERS ---
+
+    /**
+     * Populate phase dropdown with available phases
+     */
+    populatePhaseDropdown(selectedPhase = 0) {
+        const select = document.getElementById('p-phase');
+        if (!select) return;
+
+        const phases = this.config.getPhases() || [];
+
+        select.innerHTML = '';
+
+        if (phases.length === 0) {
+            select.innerHTML = '<option value="0">Faz bulunamadı</option>';
+            return;
+        }
+
+        phases.forEach((phase, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${index}: ${phase.title || 'Faz ' + (index + 1)}`;
+            if (index === selectedPhase) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    },
 
     renderMaterialsList(p) {
         const matList = document.getElementById('p-materials-list');
@@ -488,20 +677,39 @@ const ProjectManager = {
         this.update();
     },
 
-    switchTab(tabName) {
-        document.querySelectorAll('.project-tab-btn').forEach((b) => {
-            b.classList.remove('active', 'border-theme', 'text-theme');
-            b.classList.add('border-transparent', 'text-gray-500');
-        });
-        document.querySelectorAll('.project-tab-content').forEach((c) => c.classList.add('hidden'));
+    toggleSection(tabId, skipUpdate = false) {
+        const checkbox = document.getElementById(`p-show-${tabId}`);
+        const isVisible = checkbox ? checkbox.checked : true;
 
-        const btn = document.getElementById('ptab-' + tabName);
-        if (btn) {
-            btn.classList.add('active', 'border-theme', 'text-theme');
-            btn.classList.remove('border-transparent', 'text-gray-500');
+        if (tabId === 'mission') {
+            const el = document.getElementById('p-mission-tr');
+            if (el) {
+                // The textarea is inside .lang-field, which is inside the main container div
+                const container = el.closest('.lang-field')?.parentElement;
+                if (container) container.style.display = isVisible ? 'block' : 'none';
+            }
+        } else if (tabId === 'challenge') {
+            const el = document.getElementById('p-challenge-tr');
+            if (el) {
+                const container = el.closest('.lang-field')?.parentElement;
+                if (container) container.style.display = isVisible ? 'block' : 'none';
+            }
+        } else {
+            const map = {
+                materials: 'pcontent-donanim',
+                circuit: 'pcontent-devre',
+                code: 'pcontent-kod',
+                quiz: 'pcontent-test'
+            };
+            const contentId = map[tabId];
+            const content = document.getElementById(contentId);
+            if (content) {
+                if (isVisible) content.classList.remove('hidden');
+                else content.classList.add('hidden');
+            }
         }
-        const content = document.getElementById('pcontent-' + tabName);
-        if (content) content.classList.remove('hidden');
+
+        if (!skipUpdate) this.update();
     },
 
     // Helper for updating list item text without full re-render

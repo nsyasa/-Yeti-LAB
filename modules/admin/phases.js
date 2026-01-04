@@ -9,7 +9,14 @@ const PhaseManager = {
         onUpdate: null, // Callback for autosave
         getPhases: () => [], // Function to get current phases array
         getProjects: () => [], // Function to get projects (for delete validation)
+        // NEW: Supabase IDs for real-time sync
+        getCourseId: () => null, // Function to get Supabase course UUID
+        getPhaseIdMap: () => ({}), // Function to get phase index to UUID map
+        setPhaseId: (index, id) => { }, // Function to set phase UUID after creation
     },
+
+    // Save timer for debounced Supabase sync
+    saveTimer: null,
 
     // State
     currentPhaseIndex: null,
@@ -106,28 +113,67 @@ const PhaseManager = {
         this.renderList();
 
         if (this.config.onUpdate) this.config.onUpdate();
+
+        // Debounced Supabase sync
+        this.scheduleSaveToSupabase(this.currentPhaseIndex, p);
+    },
+
+    /**
+     * Schedule a debounced save to Supabase (500ms delay)
+     */
+    scheduleSaveToSupabase(index, phase) {
+        if (this.saveTimer) clearTimeout(this.saveTimer);
+        this.saveTimer = setTimeout(() => this.savePhaseToSupabase(index, phase), 500);
+    },
+
+    /**
+     * Save single phase to Supabase
+     */
+    async savePhaseToSupabase(index, phase) {
+        const courseId = this.config.getCourseId?.();
+
+        if (!courseId) {
+            console.warn('[PhaseManager] Cannot save to Supabase: missing courseId');
+            return;
+        }
+
+        if (typeof SupabaseSync !== 'undefined') {
+            const saved = await SupabaseSync.savePhaseToSupabase(courseId, phase, index);
+            if (saved) {
+
+                // Update the phase ID map if this was a new phase
+                if (this.config.setPhaseId) {
+                    this.config.setPhaseId(index, saved.id);
+                }
+            }
+        }
     },
 
     // --- ADD PHASE ---
-    add() {
+    async add() {
         const phases = this.config.getPhases();
         if (!phases) return;
 
         const newIndex = phases.length;
-        phases.push({
+        const newPhase = {
             title: `Bölüm ${newIndex}`,
             icon: '✨',
             description: 'Yeni bölüm açıklaması',
             color: 'blue',
-        });
+        };
+
+        phases.push(newPhase);
         this.renderList();
         this.load(newIndex);
 
         if (this.config.onUpdate) this.config.onUpdate();
+
+        // Save to Supabase
+        await this.savePhaseToSupabase(newIndex, newPhase);
     },
 
     // --- DELETE PHASE ---
-    delete() {
+    async delete() {
         if (this.currentPhaseIndex === null) return null;
 
         const phases = this.config.getPhases();
@@ -145,6 +191,17 @@ const PhaseManager = {
                 return null;
         } else {
             if (!confirm('Bu fazı silmek istediğinize emin misiniz?')) return null;
+        }
+
+        // Delete from Supabase if we have the UUID
+        const phaseIdMap = this.config.getPhaseIdMap?.();
+        const phaseId = phaseIdMap?.[idx];
+        if (phaseId && typeof SupabaseSync !== 'undefined') {
+            const deleted = await SupabaseSync.deletePhaseFromSupabase(phaseId);
+            if (!deleted) {
+                alert('Supabase silme hatası. Yerel veri silinmedi.');
+                return null;
+            }
         }
 
         const deletedPhase = phases[idx];

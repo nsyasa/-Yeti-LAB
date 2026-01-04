@@ -1,3 +1,4 @@
+/* global SupabaseClient */
 /**
  * Admin Panel Coordinator Module
  *
@@ -57,39 +58,131 @@ const admin = {
         }
     },
 
-    init: () => {
-        if (typeof window.courseData !== 'undefined') {
-            admin.allCourseData = window.courseData;
+    // Loading state management
+    showLoading(message = 'Yükleniyor...') {
+        let overlay = document.getElementById('loading-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'loading-overlay';
+            overlay.className = 'fixed inset-0 bg-black/30 flex items-center justify-center z-[300]';
+            overlay.innerHTML = `
+                <div class="bg-white rounded-lg p-6 shadow-xl text-center">
+                    <div class="animate-spin text-4xl mb-2">⏳</div>
+                    <p id="loading-message" class="text-gray-600">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        } else {
+            const msg = overlay.querySelector('#loading-message');
+            if (msg) msg.textContent = message;
+            overlay.classList.remove('hidden');
+        }
+    },
 
-            // Restore from LocalStorage if available
-            admin.restoreFromLocal();
+    hideLoading() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) overlay.classList.add('hidden');
+    },
+
+    init: async () => {
+        admin.showLoading('Yeti LAB Yönetim Paneli Yükleniyor...');
+
+        try {
+            // Initialize empty course data container
+            admin.allCourseData = {};
+
+            // Try to load from Supabase first (if available)
+            if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && SupabaseClient.isAdmin) {
+
+
+                const courseList = await SupabaseSync.loadCourseList();
+
+                if (courseList.length > 0) {
+                    // Load each course from Supabase
+                    for (const course of courseList) {
+
+                        const courseData = await SupabaseSync.loadFromSupabase(course.slug);
+                        if (courseData) {
+                            admin.allCourseData[course.slug] = courseData;
+                        }
+                    }
+
+                } else {
+                    console.warn('[Admin] No courses found in Supabase');
+                }
+            }
+
+            // Fallback: If no Supabase data, try local courseData
+            if (Object.keys(admin.allCourseData).length === 0 && typeof window.courseData !== 'undefined') {
+
+                admin.allCourseData = window.courseData;
+
+                // Restore from LocalStorage if available
+                admin.restoreFromLocal();
+            }
 
             // Migrate Quiz Data if needed
             if (admin.migrateQuizData) admin.migrateQuizData();
 
-            if (window.applyTheme) window.applyTheme('arduino');
-            admin.changeCourse('arduino'); // Başlangıçta Arduino yükle
-        } else {
-            alert('data.js yüklenemedi!');
+            // Populate course selector dynamically
+            if (admin.populateCourseSelector) admin.populateCourseSelector();
+
+            // Select first available course
+            const firstCourseKey = Object.keys(admin.allCourseData)[0] || 'arduino';
+            if (window.applyTheme) window.applyTheme(firstCourseKey);
+            await admin.changeCourse(firstCourseKey);
+
+        } catch (error) {
+            console.error('[Admin] Initialization error:', error);
+            alert('Yükleme hatası: ' + error.message);
+        } finally {
+            admin.hideLoading();
         }
 
         // Initialize Project Manager
         if (typeof ProjectManager !== 'undefined') {
             ProjectManager.init({
-                onUpdate: admin.triggerAutoSave,
+                onUpdate: () => admin.triggerAutoSave(),
                 onProjectSelect: (id) => admin.loadProject(id),
-                getProjects: () => admin.currentData.projects,
-                getComponentInfo: () => admin.currentData.componentInfo,
+                // Read directly from source of truth to avoid 'currentData' sync issues
+                getProjects: () => {
+                    const key = admin.currentCourseKey;
+                    if (key && admin.allCourseData[key] && admin.allCourseData[key].data) {
+                        return admin.allCourseData[key].data.projects || [];
+                    }
+                    return [];
+                },
+                getPhases: () => admin.currentData?.phases || [],
+                getComponentInfo: () => admin.currentData?.componentInfo || {},
                 getCourseKey: () => admin.currentCourseKey,
+                // NEW: Get Supabase IDs for real-time sync
+                getCourseId: () => admin.allCourseData[admin.currentCourseKey]?._supabaseId,
+                getPhaseIdMap: () => admin.allCourseData[admin.currentCourseKey]?._phaseIds || {},
             });
         }
 
-        // Initialize Phase Manager
+        // Initialize CourseManager
+        if (typeof CourseManager !== 'undefined') {
+            CourseManager.init();
+        }
+
+        // Initialize sub-modules (HotspotEditor is initialized when a project is loaded, not here)
+
         if (typeof PhaseManager !== 'undefined') {
             PhaseManager.init({
-                onUpdate: admin.triggerAutoSave,
+                onUpdate: () => admin.triggerAutoSave(),
                 getPhases: () => admin.currentData?.phases || [],
                 getProjects: () => admin.currentData?.projects || [],
+                // NEW: Supabase IDs for real-time sync
+                getCourseId: () => admin.allCourseData[admin.currentCourseKey]?._supabaseId,
+                getPhaseIdMap: () => admin.allCourseData[admin.currentCourseKey]?._phaseIds || {},
+                setPhaseId: (index, id) => {
+                    const course = admin.allCourseData[admin.currentCourseKey];
+                    if (course) {
+                        if (!course._phaseIds) course._phaseIds = {};
+                        course._phaseIds[index] = id;
+                    }
+                },
             });
         }
 
@@ -133,13 +226,82 @@ const admin = {
         document
             .querySelectorAll('#component-form input, #component-form textarea, #component-form select')
             .forEach((i) => i.addEventListener('input', admin.updateComponent));
+
+        // Show/hide sticky save bar on scroll
+        window.addEventListener('scroll', () => {
+            const stickyBar = document.getElementById('sticky-save-bar');
+            if (stickyBar) {
+                if (window.scrollY > 200) {
+                    stickyBar.classList.remove('hidden');
+                } else {
+                    stickyBar.classList.add('hidden');
+                }
+            }
+        });
+    },
+
+    populateCourseSelector: () => {
+        const selector = document.getElementById('course-selector');
+        if (!selector) return;
+
+        // Use admin.allCourseData as the source of truth (Supabase-First)
+        let courses = [];
+
+        if (admin.allCourseData && Object.keys(admin.allCourseData).length > 0) {
+            courses = Object.entries(admin.allCourseData).map(([key, data]) => ({
+                key,
+                title: data.title || key,
+                position: data._position || 999,
+            }));
+        } else if (typeof CourseLoader !== 'undefined' && CourseLoader.manifest) {
+            // Fallback to CourseLoader manifest if allCourseData is empty
+            courses = Object.entries(CourseLoader.manifest).map(([key, data]) => ({
+                key,
+                title: data.title || key,
+                position: data.position !== undefined ? data.position : 999,
+            }));
+        }
+
+        // Sort by position
+        courses.sort((a, b) => a.position - b.position);
+
+        if (courses.length === 0) return;
+
+        const currentVal = selector.value || admin.currentCourseKey;
+
+        selector.innerHTML = courses.map(c =>
+            `<option value="${c.key}" class="bg-white text-gray-800">${c.title}</option>`
+        ).join('');
+
+        // Restore selection if possible, otherwise select first
+        if (courses.find(c => c.key === currentVal)) {
+            selector.value = currentVal;
+        } else if (courses.length > 0) {
+            selector.value = courses[0].key;
+        }
     },
 
     changeCourse: (key) => {
+        // If data is missing (e.g. file not found), create a placeholder in memory
         if (!admin.allCourseData[key]) {
-            console.error(`Course '${key}' not found in courseData.`);
-            alert(`Hata: '${key}' dersi verileri bulunamadı via data dosyasını kontrol edin.`);
-            return;
+            console.warn(`[Admin] Course data '${key}' not found. Creating placeholder.`);
+            admin.allCourseData[key] = {
+                title: key,
+                description: '',
+                data: {
+                    projects: [],
+                    componentInfo: {},
+                    phases: [
+                        { title: 'Bölüm 1', description: 'Giriş', color: 'blue' }
+                    ]
+                }
+            };
+
+            // Try to get metadata from CourseLoader manifest
+            if (typeof CourseLoader !== 'undefined' && CourseLoader.manifest && CourseLoader.manifest[key]) {
+                admin.allCourseData[key].title = CourseLoader.manifest[key].title;
+                admin.allCourseData[key].description = CourseLoader.manifest[key].description;
+            }
         }
 
         admin.currentCourseKey = key;
@@ -147,9 +309,12 @@ const admin = {
         // Apply Theme
         if (window.applyTheme) window.applyTheme(key);
 
+
+
         admin.currentData = admin.allCourseData[key].data;
         // Eğer seçilen kursta data objesi yoksa (veya boşsa) init et
         if (!admin.currentData) {
+            console.warn(`[Admin] Data not found for '${key}', creating empty structure.`);
             admin.allCourseData[key].data = { projects: [], componentInfo: {}, phases: [] };
             admin.currentData = admin.allCourseData[key].data;
         }
@@ -209,6 +374,14 @@ const admin = {
         document.getElementById('phase-welcome').classList.remove('hidden');
         document.getElementById('phase-form').classList.add('hidden');
         admin.currentPhaseIndex = null;
+
+        // Metadata'yı Supabase'den çek (async)
+        admin.fetchMetadataFromSupabase(key);
+
+        // Update course selector grid (if visible)
+        if (typeof CourseManager !== 'undefined') {
+            CourseManager.renderSelectorGrid();
+        }
     },
 
     showTab: (tabName) => {
@@ -252,6 +425,11 @@ const admin = {
             CourseSettings.toggle();
             // Render tab editor when opening
             CourseSettings.renderTabEditor();
+        }
+        // Render course selector grid when opening
+        if (typeof CourseManager !== 'undefined') {
+            CourseManager.refreshList();
+            CourseManager.renderSelectorGrid();
         }
     },
 
@@ -789,6 +967,57 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
         if (!imagePath) return '';
         if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
         return imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;
+    },
+
+    // --- SUPABASE FETCH METADATA ---
+    fetchMetadataFromSupabase: async (courseKey) => {
+        if (typeof SupabaseClient === 'undefined' || !SupabaseClient.client) return;
+
+
+        try {
+            // Simple slugify for matching (same logic as SupabaseSync)
+            const title = admin.allCourseData[courseKey]?.title || courseKey;
+            const slug = (typeof SupabaseSync !== 'undefined') ? SupabaseSync.slugify(title) : title.toLowerCase();
+
+            const { data: course, error } = await SupabaseClient.client
+                .from('courses')
+                .select('meta')
+                .eq('slug', slug)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            if (course && course.meta) {
+                const currentCourse = admin.allCourseData[courseKey];
+                let hasChanges = false;
+
+                // Update customTabNames
+                if (course.meta.customTabNames) {
+                    currentCourse.customTabNames = course.meta.customTabNames;
+                    hasChanges = true;
+
+                }
+
+                // Update other meta if needed
+                if (course.meta.icon && course.meta.icon !== currentCourse.icon) {
+                    currentCourse.icon = course.meta.icon;
+                    hasChanges = true;
+                }
+
+                if (hasChanges) {
+                    // Update UI components that rely on this data
+                    if (courseKey === admin.currentCourseKey) {
+                        if (typeof CourseSettings !== 'undefined') {
+                            CourseSettings.load(); // Reload preview
+                            CourseSettings.renderTabEditor(); // Reload tab editor
+                            CourseSettings.applyCustomTabNames(); // Apply to project tabs
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('[Admin] Failed to fetch metadata:', e);
+        }
     },
 };
 

@@ -73,6 +73,20 @@ const Progress = {
             return;
         }
 
+        // Validate studentId is a valid UUID (not a temporary code like "123")
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(studentId)) {
+            console.warn('[Progress] Invalid student_id (not UUID), clearing invalid session:', studentId);
+            // Clear invalid session
+            if (typeof Auth !== 'undefined') {
+                localStorage.removeItem('yeti_student_session');
+                localStorage.removeItem('yeti_user_role');
+                Auth.currentStudent = null;
+                Auth.userRole = null;
+            }
+            return;
+        }
+
         Progress.isLoading = true;
 
         try {
@@ -394,10 +408,10 @@ const Progress = {
     onUpdate: null,
 
     // Legacy compatibility - load does nothing now, init handles everything
-    load: () => {},
+    load: () => { },
 
     // Legacy compatibility - save does nothing now, saveToServer handles everything
-    save: () => {},
+    save: () => { },
 };
 
 // Export for global access
