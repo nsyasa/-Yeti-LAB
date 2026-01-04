@@ -4,11 +4,62 @@
  */
 
 const UI = {
+    // --- View Transitions ---
+    /**
+     * Switch between views with smooth transition
+     * @param {string} showId - ID of the view to show
+     */
+    switchView: (showId) => {
+        const views = ['course-selection-view', 'dashboard-view', 'project-view'];
+        const showEl = document.getElementById(showId);
+
+        // Find currently visible view
+        const currentId = views.find((id) => !document.getElementById(id).classList.contains('hidden'));
+        const currentEl = currentId ? document.getElementById(currentId) : null;
+
+        if (currentId === showId) return; // Already on this view
+
+        // 1. Exit current view
+        if (currentEl) {
+            currentEl.classList.add('view-exit-start');
+            requestAnimationFrame(() => {
+                currentEl.classList.add('view-exit-active');
+            });
+
+            // Wait for exit animation
+            setTimeout(() => {
+                currentEl.classList.add('hidden');
+                currentEl.classList.remove('view-exit-start', 'view-exit-active');
+
+                // 2. Enter new view
+                showEl.classList.remove('hidden');
+                showEl.classList.add('view-enter-start');
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        showEl.classList.remove('view-enter-start');
+                        showEl.classList.add('view-enter-active');
+
+                        // Cleanup after enter animation
+                        setTimeout(() => {
+                            showEl.classList.remove('view-enter-active');
+                        }, 300);
+                    });
+                });
+            }, 300); // Matches CSS transition duration
+        } else {
+            // First load (no transition)
+            views.forEach((id) => {
+                const el = document.getElementById(id);
+                if (id === showId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+    },
+
     // --- Course Selection Screen ---
     renderCourseSelection: (manifest) => {
-        document.getElementById('course-selection-view').classList.remove('hidden');
-        document.getElementById('dashboard-view').classList.add('hidden');
-        document.getElementById('project-view').classList.add('hidden');
+        UI.switchView('course-selection-view');
 
         const container = document.getElementById('course-list');
         container.innerHTML = '';
@@ -221,9 +272,7 @@ const UI = {
 
     // --- Dashboard ---
     renderDashboard: (phases, projects, progressModule) => {
-        document.getElementById('course-selection-view').classList.add('hidden');
-        document.getElementById('dashboard-view').classList.remove('hidden');
-        document.getElementById('project-view').classList.add('hidden');
+        UI.switchView('dashboard-view');
 
         const container = document.getElementById('dashboard-content');
         container.innerHTML = '';
@@ -257,8 +306,8 @@ const UI = {
                     phase.color === 'green'
                         ? 'border-green-400'
                         : phase.color === 'blue'
-                            ? 'border-blue-400'
-                            : 'border-purple-400';
+                          ? 'border-blue-400'
+                          : 'border-purple-400';
 
                 sectionHTML += `
                     <div onclick="app.loadProject(${p.id})" 
@@ -489,16 +538,16 @@ const UI = {
                             <p class="font-bold text-gray-800 mb-3">${idx + 1}. ${q.q}</p>
                             <div class="space-y-2">
                                 ${q.options
-                            .map(
-                                (opt, optIdx) => `
+                                    .map(
+                                        (opt, optIdx) => `
                                     <button onclick="app.checkAnswer(${idx}, ${optIdx}, ${q.answer}, this)" 
                                             class="w-full text-left p-3 rounded bg-white border border-gray-200 hover:bg-gray-100 transition flex items-center group">
                                         <span class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center mr-3 text-xs font-bold bg-gray-50 group-hover:bg-theme group-hover:text-white transition-colors">${['A', 'B', 'C', 'D'][optIdx]}</span>
                                         ${opt}
                                     </button>
                                 `
-                            )
-                            .join('')}
+                                    )
+                                    .join('')}
                             </div>
                             <div class="quiz-feedback hidden mt-3 p-3 rounded font-bold text-sm"></div>
                         </div>`;
@@ -594,8 +643,8 @@ const UI = {
         const clickHandler = (b) => {
             btns.forEach(
                 (t) =>
-                (t.className =
-                    'tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent')
+                    (t.className =
+                        'tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent')
             );
             b.className = 'tab-btn px-4 py-3 text-sm font-bold text-theme border-b-2 border-theme';
             area.innerHTML = content[b.dataset.tab] || I18n.t('no_content');

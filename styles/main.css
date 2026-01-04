@@ -774,3 +774,41 @@ body.dark-mode .loading-overlay {
 body.dark-mode .course-card.is-loading::after {
     background: rgba(31, 41, 59, 0.7);
 }
+
+/* ============================================
+   PAGE TRANSITIONS
+   View switching animations
+   ============================================ */
+
+/* Base container styles for transitions */
+#course-selection-view,
+#dashboard-view,
+#project-view {
+    transition:
+        opacity 0.3s ease-in-out,
+        transform 0.3s ease-out;
+}
+
+/* Hidden state for transitions (used before removing 'hidden' class) */
+.view-enter-start {
+    opacity: 0 !important;
+    transform: translateY(20px) !important;
+}
+
+/* Entering state (transition to visible) */
+.view-enter-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Exiting state (transition to hidden) */
+.view-exit-start {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.view-exit-active {
+    opacity: 0 !important;
+    transform: translateY(-20px) !important;
+    pointer-events: none; /* Prevent clicks during exit */
+}

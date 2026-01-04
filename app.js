@@ -81,6 +81,11 @@ const app = {
 
                         // Re-render with dynamic data (e.g. updated counts or titles)
                         app.renderCourseSelection();
+
+                        // Router Init: URL parametrelerini kontrol et ve yönlendir
+                        if (window.Router) {
+                            window.Router.init(app);
+                        }
                     })
                     .catch((err) => {
                         console.warn('[App] Course init warning (using static manifest):', err);
@@ -199,7 +204,15 @@ const app = {
                         userInfo.avatarUrl.includes('.');
 
                     if (isUrl && !isEmoji) {
-                        userAvatar.innerHTML = `<img src="${userInfo.avatarUrl}" class="w-8 h-8 rounded-full object-cover" alt="" onerror="this.parentElement.textContent='👤'">`;
+                        userAvatar.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = userInfo.avatarUrl;
+                        img.className = 'w-8 h-8 rounded-full object-cover';
+                        img.alt = '';
+                        img.onerror = () => {
+                            userAvatar.textContent = '👤';
+                        };
+                        userAvatar.appendChild(img);
                     } else {
                         // Emoji veya kısa metin - doğrudan göster
                         userAvatar.textContent = userInfo.avatarUrl;
@@ -365,17 +378,19 @@ const app = {
     restoreFromLocalStorage: () => {
         // Allow all courses defined in manifest + defaults
         const defaultAllowed = ['arduino', 'microbit', 'scratch', 'mblock', 'appinventor'];
-        const manifestKeys = window.CourseLoader && window.CourseLoader.manifest ? Object.keys(window.CourseLoader.manifest) : [];
+        const manifestKeys =
+            window.CourseLoader && window.CourseLoader.manifest ? Object.keys(window.CourseLoader.manifest) : [];
         const allowedCourses = [...new Set([...defaultAllowed, ...manifestKeys])];
 
         try {
             // In Supabase-First architecture, the main app should only read from the database.
             // localStorage contains admin autosaves which might be stale, duplicate, or draft.
             // We only want to restore from localStorage if we are in the Admin Panel.
-            const isAdminPanel = window.location.pathname.includes('admin.html') || window.location.pathname.includes('admin');
+            const isAdminPanel =
+                window.location.pathname.includes('admin.html') || window.location.pathname.includes('admin');
 
             if (!isAdminPanel) {
-                // Check if we have connectivity/Supabase loaded? 
+                // Check if we have connectivity/Supabase loaded?
                 // Actually, regardless, main app shouldn't read admin drafts.
                 // Exception: Maybe offline mode? But current issue is duplicates.
                 console.log('[App] Skipping restoreFromLocalStorage on main site (Supabase-First)');
@@ -498,6 +513,9 @@ const app = {
 
         UI.renderCourseSelection(manifest);
         app.stopSimulation();
+
+        // URL'yi temizle (Ana sayfa)
+        if (window.Router) window.Router.updateUrl(null, null);
     },
 
     selectCourse: async (key, event) => {
@@ -548,6 +566,9 @@ const app = {
             app.renderDashboard();
             app.renderSidebar();
             app.renderProgressBar();
+
+            // URL güncelle
+            if (window.Router) window.Router.updateUrl(key, null);
         } catch (error) {
             console.error('[App] Failed to load course:', error);
             Toast?.errorWithRetry('Kurs yüklenemedi!', () => app.selectCourse(key));
@@ -571,6 +592,11 @@ const app = {
         const { phases, projects } = app.state;
         UI.renderDashboard(phases, projects, app.progress);
         app.stopSimulation();
+
+        // URL güncelle (Sadece proje seçimini kaldır)
+        if (window.Router && app.state.currentCourseKey) {
+            window.Router.updateUrl(app.state.currentCourseKey, null);
+        }
     },
 
     loadProject: (id) => {
@@ -591,8 +617,14 @@ const app = {
         }
 
         app.currentProject = p;
-        document.getElementById('dashboard-view').classList.add('hidden');
-        document.getElementById('project-view').classList.remove('hidden');
+        app.currentProject = p;
+        if (UI.switchView) {
+            UI.switchView('project-view');
+        } else {
+            // Fallback if UI.switchView is missing
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('project-view').classList.remove('hidden');
+        }
         document.getElementById('project-tag').innerText = p.phase === 0 ? 'Hazırlık' : `Ders ${p.id}`;
         document.getElementById('project-title').innerText = p.title;
         document.getElementById('project-desc').innerText = p.desc;
@@ -617,6 +649,9 @@ const app = {
 
         app.renderTabs(p);
         window.scrollTo(0, 0);
+
+        // URL güncelle
+        if (window.Router) window.Router.updateUrl(app.state.currentCourseKey, id);
 
         // Clear loading state after a short delay
         setTimeout(() => UI.setActionLoading(actionId, false), 100);
