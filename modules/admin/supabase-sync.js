@@ -58,8 +58,23 @@ const SupabaseSync = {
      */
     slugify(text) {
         if (!text) return '';
+        const trMap = {
+            ç: 'c',
+            Ç: 'c',
+            ğ: 'g',
+            Ğ: 'g',
+            ş: 's',
+            Ş: 's',
+            ü: 'u',
+            Ü: 'u',
+            ı: 'i',
+            İ: 'i',
+            ö: 'o',
+            Ö: 'o',
+        };
         return text
             .toString()
+            .replace(/[çÇğĞşŞüÜıİöÖ]/g, (c) => trMap[c] || c)
             .normalize('NFKD')
             .replace(/[\u0300-\u036F]/g, '')
             .toLowerCase()
@@ -201,7 +216,6 @@ const SupabaseSync = {
 
             if (error) throw error;
 
-
             return data;
         } catch (error) {
             console.error('[SupabaseSync] Failed to save project:', error);
@@ -242,7 +256,6 @@ const SupabaseSync = {
                 .eq('slug', slug);
 
             if (error) throw error;
-
 
             return true;
         } catch (error) {
@@ -286,7 +299,6 @@ const SupabaseSync = {
                     meta: { color: phase.color, icon: phase.icon },
                 });
             }
-
 
             return result;
         } catch (error) {
@@ -346,8 +358,6 @@ const SupabaseSync = {
             // FIX: Always use the stable courseKey as slug, don't generate from title
             // This prevents creating duplicate courses when title is updated
             const slug = courseKey || this.slugify(courseData.title);
-
-
 
             let course = await SupabaseClient.getCourseBySlug(slug);
 

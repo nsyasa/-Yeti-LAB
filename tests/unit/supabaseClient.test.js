@@ -62,8 +62,23 @@ describe('SupabaseClient Module', () => {
     describe('Slug Generation', () => {
         const slugify = (text) => {
             if (!text) return '';
+            const trMap = {
+                ç: 'c',
+                Ç: 'c',
+                ğ: 'g',
+                Ğ: 'g',
+                ş: 's',
+                Ş: 's',
+                ü: 'u',
+                Ü: 'u',
+                ı: 'i',
+                İ: 'i',
+                ö: 'o',
+                Ö: 'o',
+            };
             return text
                 .toString()
+                .replace(/[çÇğĞşŞüÜıİöÖ]/g, (c) => trMap[c] || c)
                 .normalize('NFKD')
                 .replace(/[\u0300-\u036F]/g, '')
                 .toLowerCase()
