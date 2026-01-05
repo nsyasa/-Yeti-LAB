@@ -179,6 +179,7 @@ const Router = {
 
     // Başlangıç durumunu yükle
     init: async (appInstance) => {
+        if (window.Performance) window.Performance.mark('router_init');
         console.log('[Router] Initializing...');
 
         // ===== Adım 1.6: Hash Change Listener =====
@@ -228,6 +229,7 @@ const Router = {
         });
 
         console.log('[Router] Initialized successfully');
+        if (window.Performance) window.Performance.measure('Router Init', 'router_init');
     },
 };
 

@@ -20,17 +20,40 @@
                 font-family: 'Outfit', sans-serif;
             }
         </style>
+
+        <!-- Performance Monitor (Critical - Must be first) -->
+        <script>
+            window.Performance = {
+                marks: {},
+                mark(name) {
+                    this.marks[name] = performance.now();
+                },
+                measure(name, startMark) {
+                    if (!this.marks[startMark]) return 0;
+                    const duration = performance.now() - this.marks[startMark];
+                    console.log(`⚡ [Performance] ${name}: ${duration.toFixed(2)}ms`);
+                    return duration;
+                },
+                logPageLoad() {
+                    if (window.performance && window.performance.timing) {
+                        const t = window.performance.timing;
+                        console.log(`⚡ [Performance] Page Load: ${t.loadEventEnd - t.navigationStart}ms`);
+                    }
+                },
+            };
+            window.Performance.mark('app_start');
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
         <!-- Core Data (namespace init) -->
-        <script src="data/base.js"></script>
+        <script src="data/base.js" defer></script>
 
         <!-- Course Data - NOW LAZY LOADED! -->
         <!-- Individual course files (arduino.js, microbit.js, etc.) are loaded on-demand -->
 
         <!-- Essential Data (small, always needed) -->
-        <script src="data/tips.js"></script>
-        <script src="data/quiz.js"></script>
+        <script src="data/tips.js" defer></script>
+        <script src="data/quiz.js" defer></script>
 
         <!-- Modules -->
         <script src="modules/courseLoader.js" defer></script>

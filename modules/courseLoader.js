@@ -128,6 +128,9 @@ const CourseLoader = {
                 return;
             }
 
+            // Performance tracking
+            if (window.Performance) window.Performance.mark('load_course_' + key);
+
             // 1. Try to load from Supabase (Supabase-First Strategy)
             if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client) {
                 try {
@@ -143,6 +146,8 @@ const CourseLoader = {
                             window.courseData[key] = legacyData;
                             CourseLoader.loadedCourses.add(key);
 
+                            if (window.Performance)
+                                window.Performance.measure('Load Course (Supabase): ' + key, 'load_course_' + key);
                             resolve(legacyData);
                             return;
                         }
@@ -196,6 +201,8 @@ const CourseLoader = {
                     console.warn('[CourseLoader] Supabase meta sync failed:', e);
                 }
 
+                if (window.Performance)
+                    window.Performance.measure('Load Course (Script): ' + key, 'load_course_' + key);
                 resolve(window.courseData[key]);
             };
 

@@ -1,4 +1,5 @@
 // --- UYGULAMA MOTORU ---
+
 const app = {
     state: {
         currentCourseKey: null,
@@ -114,6 +115,9 @@ const app = {
         } else {
             UI.showError('course-list', 'Veri Yüklenemedi', 'window.location.reload()');
         }
+
+        // Performance Check
+        Performance.measure('App Init', 'app_start');
     },
 
     // --- Auth Management ---
