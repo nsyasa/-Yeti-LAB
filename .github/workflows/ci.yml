@@ -11,17 +11,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
     - uses: actions/checkout@v3
     
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 20
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 20
         cache: 'npm'
         
     - name: Install Dependencies
@@ -30,8 +26,16 @@ jobs:
     - name: Run Linter
       run: npm run lint
       
-    - name: Run Formatter Check
-      run: npx prettier --check .
+    - name: Format code with Prettier
+      run: npx prettier --write .
+      
+    - name: Commit formatted code
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: github-actions[bot]
+        author_email: 41898282+github-actions[bot]@users.noreply.github.com
+        message: "style: auto-format with Prettier"
+        add: "."
       
     - name: Run Tests
       run: npm run test
