@@ -190,7 +190,7 @@ const CourseSettings = {
             circuit: ['lbl-circuit', 'lbl-chk-circuit'],
             code: ['lbl-code', 'lbl-chk-code'],
             quiz: ['lbl-quiz', 'lbl-chk-quiz'],
-            challenge: ['lbl-challenge', 'lbl-chk-challenge']
+            challenge: ['lbl-challenge', 'lbl-chk-challenge'],
         };
 
         // Default Labels (to restore if custom name is deleted)
@@ -200,14 +200,14 @@ const CourseSettings = {
             circuit: '⚡ Simülasyon',
             code: '💻 Kod',
             quiz: '📝 Test',
-            challenge: '🏆 Görev'
+            challenge: '🏆 Görev',
         };
 
         // Apply custom names to targets
         Object.keys(tabMapping).forEach((tabId) => {
             const targetIds = tabMapping[tabId];
 
-            targetIds.forEach(targetId => {
+            targetIds.forEach((targetId) => {
                 const element = document.getElementById(targetId);
                 if (element) {
                     // Use custom name or fall back to default

@@ -8,7 +8,6 @@ const CourseManager = {
     courses: [],
 
     init() {
-
         // Pre-load current manifest as array
         this.refreshList();
     },
@@ -24,7 +23,7 @@ const CourseManager = {
                 description: data.description || '',
                 icon: data.icon || '📦',
                 position: data._position !== undefined ? data._position : 999,
-                _supabaseId: data._supabaseId
+                _supabaseId: data._supabaseId,
             }));
         }
         // Fallback: CourseLoader manifest
@@ -35,7 +34,7 @@ const CourseManager = {
                 title: data.title || key,
                 description: data.description || '',
                 icon: data.icon || '📦',
-                position: data.position !== undefined ? data.position : 999
+                position: data.position !== undefined ? data.position : 999,
             }));
         }
 
@@ -45,7 +44,6 @@ const CourseManager = {
             const posB = b.position !== undefined ? b.position : 999;
             return posA - posB;
         });
-
     },
 
     // --- INLINE COURSE SELECTOR GRID ---
@@ -62,17 +60,20 @@ const CourseManager = {
 
         const currentKey = admin.currentCourseKey;
 
-        container.innerHTML = this.courses.map((c, index) => {
-            const isActive = c.key === currentKey;
-            const isFirst = index === 0;
-            const isLast = index === this.courses.length - 1;
+        container.innerHTML = this.courses
+            .map((c, index) => {
+                const isActive = c.key === currentKey;
+                const isFirst = index === 0;
+                const isLast = index === this.courses.length - 1;
 
-            return `
+                return `
             <div class="relative group">
                 <button type="button" onclick="CourseManager.selectCourse('${c.key}')"
-                    class="w-full p-3 rounded-lg border-2 transition text-left ${isActive
-                    ? 'border-theme bg-theme/10 shadow-md'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow'}">
+                    class="w-full p-3 rounded-lg border-2 transition text-left ${
+                        isActive
+                            ? 'border-theme bg-theme/10 shadow-md'
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow'
+                    }">
                     <div class="flex items-center gap-2">
                         <span class="text-2xl">${c.icon || '📦'}</span>
                         <div class="flex-1 min-w-0">
@@ -91,7 +92,8 @@ const CourseManager = {
                         title="Aşağı">↓</button>
                 </div>
             </div>`;
-        }).join('');
+            })
+            .join('');
     },
 
     selectCourse(key) {
@@ -126,7 +128,9 @@ const CourseManager = {
 
         // Auto-format key
         if (key) {
-            key = key.toLowerCase().trim()
+            key = key
+                .toLowerCase()
+                .trim()
                 .replace(/_/g, '-')
                 .replace(/\s+/g, '-')
                 .replace(/[^a-z0-9-]/g, '');
@@ -143,7 +147,7 @@ const CourseManager = {
             return;
         }
 
-        if (this.courses.find(c => c.key === key)) {
+        if (this.courses.find((c) => c.key === key)) {
             alert('Bu anahtara sahip bir kurs zaten var.');
             return;
         }
@@ -165,7 +169,7 @@ const CourseManager = {
                         description: desc,
                         meta: { icon },
                         is_published: true,
-                        position: this.courses.length
+                        position: this.courses.length,
                     })
                     .select('id')
                     .single();
@@ -174,15 +178,13 @@ const CourseManager = {
                 courseId = data.id;
 
                 // Create default phase
-                await SupabaseClient.client
-                    .from('phases')
-                    .insert({
-                        course_id: courseId,
-                        name: 'Başlangıç',
-                        description: 'İlk adımlar',
-                        position: 0,
-                        meta: { color: 'blue', icon: '🚀' }
-                    });
+                await SupabaseClient.client.from('phases').insert({
+                    course_id: courseId,
+                    name: 'Başlangıç',
+                    description: 'İlk adımlar',
+                    position: 0,
+                    meta: { color: 'blue', icon: '🚀' },
+                });
             }
 
             // Add to local course data
@@ -197,8 +199,8 @@ const CourseManager = {
                     data: {
                         phases: [{ color: 'blue', title: 'Başlangıç', description: 'İlk adımlar', icon: '🚀' }],
                         projects: [],
-                        componentInfo: {}
-                    }
+                        componentInfo: {},
+                    },
                 };
             }
 
@@ -211,7 +213,6 @@ const CourseManager = {
             }
 
             alert(`✅ "${title}" kursu oluşturuldu!`);
-
         } catch (e) {
             console.error(e);
             alert('Kurs oluşturulurken hata oluştu: ' + e.message);
@@ -300,11 +301,12 @@ const CourseManager = {
             return;
         }
 
-        container.innerHTML = this.courses.map((c, index) => {
-            const isFirst = index === 0;
-            const isLast = index === this.courses.length - 1;
+        container.innerHTML = this.courses
+            .map((c, index) => {
+                const isFirst = index === 0;
+                const isLast = index === this.courses.length - 1;
 
-            return `
+                return `
             <div class="flex items-center justify-between p-3 bg-white border rounded shadow-sm hover:shadow transition group" draggable="true" ondragstart="CourseManager.dragStart(event, ${index})" ondragover="CourseManager.allowDrop(event)" ondrop="CourseManager.drop(event, ${index})">
                 <div class="flex items-center gap-4">
                     <div class="flex flex-col items-center gap-1">
@@ -329,7 +331,8 @@ const CourseManager = {
                     <button onclick="CourseManager.deleteCourse('${c.key}')" class="p-2 text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="Sil">🗑️</button>
                 </div>
             </div>`;
-        }).join('');
+            })
+            .join('');
     },
 
     showAddForm() {
@@ -345,7 +348,6 @@ const CourseManager = {
     // --- ACTIONS ---
 
     async createCourse() {
-
         const title = document.getElementById('new-course-title').value;
         let key = document.getElementById('new-course-key').value;
         const desc = document.getElementById('new-course-desc').value;
@@ -354,7 +356,9 @@ const CourseManager = {
 
         // Auto-format key to be URL friendly (lowercase, hyphens only)
         if (key) {
-            key = key.toLowerCase().trim()
+            key = key
+                .toLowerCase()
+                .trim()
                 .replace(/_/g, '-') // underscores to hyphens
                 .replace(/\s+/g, '-') // spaces to hyphens
                 .replace(/[^a-z0-9-]/g, ''); // remove others
@@ -362,8 +366,6 @@ const CourseManager = {
             // Update input to show user the formatted key
             document.getElementById('new-course-key').value = key;
         }
-
-
 
         if (!title || !key) {
             alert('Lütfen başlık ve anahtar alanlarını doldurun.');
@@ -376,7 +378,7 @@ const CourseManager = {
             return;
         }
 
-        if (this.courses.find(c => c.key === key)) {
+        if (this.courses.find((c) => c.key === key)) {
             alert('Bu anahtara sahip bir kurs zaten var.');
             return;
         }
@@ -399,7 +401,7 @@ const CourseManager = {
                         description: desc,
                         meta: { icon, color },
                         is_published: true,
-                        position: this.courses.length
+                        position: this.courses.length,
                     })
                     .select('id')
                     .single();
@@ -408,15 +410,13 @@ const CourseManager = {
                 courseId = data.id;
 
                 // 2. Create default phase
-                const { error: phaseError } = await SupabaseClient.client
-                    .from('phases')
-                    .insert({
-                        course_id: courseId,
-                        name: 'Başlangıç',
-                        description: 'İlk adımlar',
-                        position: 0,
-                        meta: { color: 'blue', icon: '🚀' }
-                    });
+                const { error: phaseError } = await SupabaseClient.client.from('phases').insert({
+                    course_id: courseId,
+                    name: 'Başlangıç',
+                    description: 'İlk adımlar',
+                    position: 0,
+                    meta: { color: 'blue', icon: '🚀' },
+                });
 
                 if (phaseError) {
                     console.error('Phase creation error:', phaseError);
@@ -433,12 +433,10 @@ const CourseManager = {
                     _phaseIds: {},
                     _projectIds: {},
                     data: {
-                        phases: [
-                            { color: 'blue', title: 'Başlangıç', description: 'İlk adımlar', icon: '🚀' }
-                        ],
+                        phases: [{ color: 'blue', title: 'Başlangıç', description: 'İlk adımlar', icon: '🚀' }],
                         projects: [],
-                        componentInfo: {}
-                    }
+                        componentInfo: {},
+                    },
                 };
 
                 // Update course selector
@@ -455,9 +453,8 @@ const CourseManager = {
                 await admin.changeCourse(key);
                 alert(`✅ "${title}" kursu oluşturuldu!`);
             } else {
-                alert(`✅ Kurs Supabase'e kaydedildi! Sayfayı yenileyerek kursu görebilirsiniz.`);
+                alert("✅ Kurs Supabase'e kaydedildi! Sayfayı yenileyerek kursu görebilirsiniz.");
             }
-
         } catch (e) {
             console.error(e);
             alert('Kurs oluşturulurken hata oluştu: ' + e.message);
@@ -469,20 +466,14 @@ const CourseManager = {
     },
 
     async deleteCourse(key) {
-
         // Confirm devre dışı: Kullanıcıda popup çıkmıyor.
         // if (!confirm(`'${key}' kursunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!`)) return;
-
-
 
         try {
             // 1. Delete from Supabase
             if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client) {
                 // We use slug to identify course
-                const { error } = await SupabaseClient.client
-                    .from('courses')
-                    .delete()
-                    .eq('slug', key);
+                const { error } = await SupabaseClient.client.from('courses').delete().eq('slug', key);
 
                 if (error) throw error;
             }
@@ -495,7 +486,6 @@ const CourseManager = {
             this.renderList();
             alert('Kurs silindi.');
             location.reload();
-
         } catch (e) {
             console.error(e);
             alert('Silme işlemi başarısız: ' + e.message);
@@ -513,7 +503,7 @@ const CourseManager = {
         this.courses[index - 1] = temp;
 
         this.renderList();
-        this.renderSelectorGrid();  // Also update inline grid
+        this.renderSelectorGrid(); // Also update inline grid
         await this.saveOrder();
     },
 
@@ -526,7 +516,7 @@ const CourseManager = {
         this.courses[index + 1] = temp;
 
         this.renderList();
-        this.renderSelectorGrid();  // Also update inline grid
+        this.renderSelectorGrid(); // Also update inline grid
         await this.saveOrder();
     },
 
@@ -564,7 +554,7 @@ const CourseManager = {
         if (typeof SupabaseClient === 'undefined' || !SupabaseClient.client) return;
 
         // This is tricky because Supabase doesn't have a bulk update easily for different values
-        // We will loop through and update position. 
+        // We will loop through and update position.
         // OPTIMIZATION: In production, create a Postgres function or use a specialized library.
         // For now, simple loop is fine for < 20 courses.
 
@@ -574,11 +564,10 @@ const CourseManager = {
             });
 
             await Promise.all(updates);
-
         } catch (e) {
             console.error('Failed to save order', e);
         }
-    }
+    },
 };
 
 window.CourseManager = CourseManager;

@@ -16,11 +16,41 @@ const CourseLoader = {
     // Course manifest - metadata without full content
     manifest: {
         // Static defaults (will be overwritten/merged with dynamic data)
-        arduino: { title: 'Arduino Serüveni', description: '20 Haftalık Arduino robotik eğitimi', icon: '🤖', color: '#00979C', file: 'data/arduino.js' },
-        microbit: { title: 'Micro:bit Dünyası', description: 'BBC Micro:bit ile kodlama', icon: '💻', color: '#6C63FF', file: 'data/microbit.js' },
-        scratch: { title: 'Scratch ile Oyun Yapımı', description: 'Blok tabanlı programlama', icon: '🎮', color: '#FF6F00', file: 'data/scratch.js' },
-        mblock: { title: 'mBlock ile Robotik', description: 'mBlock tabanlı Arduino programlama', icon: '🦾', color: '#30B0C7', file: 'data/mblock.js' },
-        appinventor: { title: 'App Inventor', description: 'Android uygulama geliştirme', icon: '📱', color: '#7CB342', file: 'data/appinventor.js' },
+        arduino: {
+            title: 'Arduino Serüveni',
+            description: '20 Haftalık Arduino robotik eğitimi',
+            icon: '🤖',
+            color: '#00979C',
+            file: 'data/arduino.js',
+        },
+        microbit: {
+            title: 'Micro:bit Dünyası',
+            description: 'BBC Micro:bit ile kodlama',
+            icon: '💻',
+            color: '#6C63FF',
+            file: 'data/microbit.js',
+        },
+        scratch: {
+            title: 'Scratch ile Oyun Yapımı',
+            description: 'Blok tabanlı programlama',
+            icon: '🎮',
+            color: '#FF6F00',
+            file: 'data/scratch.js',
+        },
+        mblock: {
+            title: 'mBlock ile Robotik',
+            description: 'mBlock tabanlı Arduino programlama',
+            icon: '🦾',
+            color: '#30B0C7',
+            file: 'data/mblock.js',
+        },
+        appinventor: {
+            title: 'App Inventor',
+            description: 'Android uygulama geliştirme',
+            icon: '📱',
+            color: '#7CB342',
+            file: 'data/appinventor.js',
+        },
     },
 
     /**
@@ -30,7 +60,6 @@ const CourseLoader = {
         if (typeof SupabaseClient === 'undefined' || !SupabaseClient.client) return;
 
         try {
-
             // Fetch courses with project count
             const { data: courses, error } = await SupabaseClient.client
                 .from('courses')
@@ -48,9 +77,10 @@ const CourseLoader = {
                     // Get count from join relation (projects: [{count: 12}] or similar based on API)
                     // Supabase returns { count: N } or array depending on select mode
                     // With select('*, projects(count)'), projects is [{count: N}] array if 1-many
-                    const pCount = c.projects && c.projects[0] && c.projects[0].count
-                        ? c.projects[0].count
-                        : (existing?.projectCount || 10);
+                    const pCount =
+                        c.projects && c.projects[0] && c.projects[0].count
+                            ? c.projects[0].count
+                            : existing?.projectCount || 10;
 
                     newManifest[c.slug] = {
                         title: c.title,
@@ -61,13 +91,12 @@ const CourseLoader = {
                         color: c.meta?.color || (existing ? existing.color : 'gray'),
                         isDynamic: true,
                         position: c.position !== undefined ? c.position : 999,
-                        projectCount: pCount
+                        projectCount: pCount,
                     };
                 });
 
                 // Overwrite manifest to reflect Supabase state (including additions/deletions/order)
                 this.manifest = newManifest;
-
             }
         } catch (e) {
             console.error('[CourseLoader] Failed to fetch course list:', e);
@@ -102,8 +131,6 @@ const CourseLoader = {
             // 1. Try to load from Supabase (Supabase-First Strategy)
             if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client) {
                 try {
-
-
                     // Use key directly as slug (most reliable matching with Supabase)
                     // The key (e.g., 'arduino', 'minecraft-edu') should match the DB slug.
                     const slug = key;
@@ -146,7 +173,7 @@ const CourseLoader = {
                         title: courseInfo.title,
                         description: courseInfo.description,
                         icon: courseInfo.icon,
-                        data: { projects: [], componentInfo: {}, phases: [] }
+                        data: { projects: [], componentInfo: {}, phases: [] },
                     };
                 }
 
