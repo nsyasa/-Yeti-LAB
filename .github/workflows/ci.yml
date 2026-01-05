@@ -1,5 +1,8 @@
 name: Flash CI
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ "main", "master" ]
@@ -13,6 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        persist-credentials: true
+        fetch-depth: 0
     
     - name: Use Node.js 20
       uses: actions/setup-node@v3
@@ -36,6 +42,7 @@ jobs:
         author_email: 41898282+github-actions[bot]@users.noreply.github.com
         message: "style: auto-format with Prettier"
         add: "."
+        github_token: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Run Tests
       run: npm run test
