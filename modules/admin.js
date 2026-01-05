@@ -1,4 +1,4 @@
-/* global SupabaseClient */
+/* global SupabaseClient, CourseManager */
 /**
  * Admin Panel Coordinator Module
  *
@@ -93,20 +93,16 @@ const admin = {
 
             // Try to load from Supabase first (if available)
             if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && SupabaseClient.isAdmin) {
-
-
                 const courseList = await SupabaseSync.loadCourseList();
 
                 if (courseList.length > 0) {
                     // Load each course from Supabase
                     for (const course of courseList) {
-
                         const courseData = await SupabaseSync.loadFromSupabase(course.slug);
                         if (courseData) {
                             admin.allCourseData[course.slug] = courseData;
                         }
                     }
-
                 } else {
                     console.warn('[Admin] No courses found in Supabase');
                 }
@@ -114,7 +110,6 @@ const admin = {
 
             // Fallback: If no Supabase data, try local courseData
             if (Object.keys(admin.allCourseData).length === 0 && typeof window.courseData !== 'undefined') {
-
                 admin.allCourseData = window.courseData;
 
                 // Restore from LocalStorage if available
@@ -131,7 +126,6 @@ const admin = {
             const firstCourseKey = Object.keys(admin.allCourseData)[0] || 'arduino';
             if (window.applyTheme) window.applyTheme(firstCourseKey);
             await admin.changeCourse(firstCourseKey);
-
         } catch (error) {
             console.error('[Admin] Initialization error:', error);
             alert('Yükleme hatası: ' + error.message);
@@ -269,12 +263,12 @@ const admin = {
 
         const currentVal = selector.value || admin.currentCourseKey;
 
-        selector.innerHTML = courses.map(c =>
-            `<option value="${c.key}" class="bg-white text-gray-800">${c.title}</option>`
-        ).join('');
+        selector.innerHTML = courses
+            .map((c) => `<option value="${c.key}" class="bg-white text-gray-800">${c.title}</option>`)
+            .join('');
 
         // Restore selection if possible, otherwise select first
-        if (courses.find(c => c.key === currentVal)) {
+        if (courses.find((c) => c.key === currentVal)) {
             selector.value = currentVal;
         } else if (courses.length > 0) {
             selector.value = courses[0].key;
@@ -291,10 +285,8 @@ const admin = {
                 data: {
                     projects: [],
                     componentInfo: {},
-                    phases: [
-                        { title: 'Bölüm 1', description: 'Giriş', color: 'blue' }
-                    ]
-                }
+                    phases: [{ title: 'Bölüm 1', description: 'Giriş', color: 'blue' }],
+                },
             };
 
             // Try to get metadata from CourseLoader manifest
@@ -308,8 +300,6 @@ const admin = {
 
         // Apply Theme
         if (window.applyTheme) window.applyTheme(key);
-
-
 
         admin.currentData = admin.allCourseData[key].data;
         // Eğer seçilen kursta data objesi yoksa (veya boşsa) init et
@@ -973,11 +963,10 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
     fetchMetadataFromSupabase: async (courseKey) => {
         if (typeof SupabaseClient === 'undefined' || !SupabaseClient.client) return;
 
-
         try {
             // Simple slugify for matching (same logic as SupabaseSync)
             const title = admin.allCourseData[courseKey]?.title || courseKey;
-            const slug = (typeof SupabaseSync !== 'undefined') ? SupabaseSync.slugify(title) : title.toLowerCase();
+            const slug = typeof SupabaseSync !== 'undefined' ? SupabaseSync.slugify(title) : title.toLowerCase();
 
             const { data: course, error } = await SupabaseClient.client
                 .from('courses')
@@ -995,7 +984,6 @@ window.courseData.${key} = ${JSON.stringify(courseData, null, 4)};`;
                 if (course.meta.customTabNames) {
                     currentCourse.customTabNames = course.meta.customTabNames;
                     hasChanges = true;
-
                 }
 
                 // Update other meta if needed
