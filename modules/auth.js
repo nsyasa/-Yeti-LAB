@@ -163,7 +163,7 @@ const Auth = {
     async loadUserProfile() {
         if (!this.currentUser) return null;
 
-        const { data, error } = await SupabaseClient.getClient()
+        const { data } = await SupabaseClient.getClient()
             .from('user_profiles')
             .select('*')
             .eq('id', this.currentUser.id)

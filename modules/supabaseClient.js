@@ -155,7 +155,7 @@ const SupabaseClient = {
             client.from('courses').select('*').eq('id', courseId).single(),
             client.from('phases').select('*').eq('course_id', courseId).order('position'),
             client.from('projects').select('*').eq('course_id', courseId).order('position'),
-            client.from('course_components').select('*').eq('course_id', courseId)
+            client.from('course_components').select('*').eq('course_id', courseId),
         ]);
 
         // Check for errors
@@ -168,7 +168,7 @@ const SupabaseClient = {
             course: courseResult.data,
             phases: phasesResult.data,
             projects: projectsResult.data,
-            components: componentsResult.data
+            components: componentsResult.data,
         };
     },
 
@@ -191,10 +191,7 @@ const SupabaseClient = {
      * Update course by slug
      */
     async updateCourseBySlug(slug, updates) {
-        return await this.client
-            .from('courses')
-            .update(updates)
-            .eq('slug', slug);
+        return await this.client.from('courses').update(updates).eq('slug', slug);
     },
 
     // ==========================================
@@ -436,7 +433,7 @@ const SupabaseClient = {
         });
 
         // Convert phases to array format with color/title
-        const phasesArray = phases.map((phase, idx) => ({
+        const phasesArray = phases.map((phase) => ({
             color: phase.meta?.color || 'blue',
             title: phase.name,
             description: phase.description || '',

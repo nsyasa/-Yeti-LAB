@@ -265,7 +265,6 @@ const Progress = {
         }
 
         // 1. Total Lessons
-        const totalLessons = 0;
         const completedLessons = Progress.getCompleted();
         const quizScores = Progress.scores || {};
         const quizKeys = Object.keys(quizScores);
@@ -408,10 +407,10 @@ const Progress = {
     onUpdate: null,
 
     // Legacy compatibility - load does nothing now, init handles everything
-    load: () => { },
+    load: () => {},
 
     // Legacy compatibility - save does nothing now, saveToServer handles everything
-    save: () => { },
+    save: () => {},
 };
 
 // Export for global access

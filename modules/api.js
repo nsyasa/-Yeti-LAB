@@ -192,8 +192,8 @@ const API = {
 
             const result = await this.withRetry(queryFn, {
                 maxRetries,
-                context,
-                onRetry: (attempt, error) => {
+                // context, // unused by withRetry logic but passed for potential extension
+                onRetry: () => {
                     // Retry silently
                 },
             });
