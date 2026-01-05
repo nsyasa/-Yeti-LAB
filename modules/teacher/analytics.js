@@ -163,7 +163,7 @@ const TeacherAnalytics = {
                                     <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                         <div class="w-10 h-10 rounded-full bg-theme/10 flex items-center justify-center text-xl">🎓</div>
                                         <div class="flex-grow">
-                                            <p class="font-medium text-gray-800 dark:text-white">${Utils.escapeHtml(studentData.name)}</p>
+                                            <p class="font-medium text-gray-800 dark:text-white">${TeacherAnalytics.escapeHtml(studentData.name)}</p>
                                             <p class="text-sm text-gray-500">${completedCount} ders tamamladı</p>
                                         </div>
                                         <div class="flex gap-1">
@@ -373,6 +373,17 @@ const TeacherAnalytics = {
                 </div>
              `;
         }
+    },
+
+    // Helper - escapeHtml fallback
+    escapeHtml: (text) => {
+        if (!text) return '';
+        if (typeof Utils !== 'undefined' && Utils.escapeHtml) {
+            return Utils.escapeHtml(text);
+        }
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     },
 };
 

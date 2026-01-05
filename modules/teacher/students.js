@@ -47,7 +47,7 @@ const StudentManager = {
             filterSelect.innerHTML =
                 '<option value="all">Tüm Sınıflar</option>' +
                 StudentManager.classrooms
-                    .map((c) => `<option value="${c.id}">${Utils.escapeHtml(c.name)}</option>`)
+                    .map((c) => `<option value="${c.id}">${StudentManager.escapeHtml(c.name)}</option>`)
                     .join('');
             filterSelect.value = currentVal;
 
@@ -94,7 +94,7 @@ const StudentManager = {
                         </div>
                         <div class="min-w-0 flex flex-col justify-center">
                             <div class="flex items-center gap-2">
-                                <p class="font-semibold text-gray-800 dark:text-white text-sm truncate leading-none">${Utils.escapeHtml(student.display_name)}</p>
+                                <p class="font-semibold text-gray-800 dark:text-white text-sm truncate leading-none">${StudentManager.escapeHtml(student.display_name)}</p>
                                 <span class="text-[10px] text-gray-400">${hasPassword}</span>
                             </div>
                             <p class="text-[10px] text-gray-500 truncate mt-0.5">${classroom?.name || '-'} • ${progressCount} ders ${hasArduino}</p>
@@ -232,7 +232,7 @@ const StudentManager = {
         `);
         printWindow.document.write('</style></head><body>');
         printWindow.document.write('<h1>Yeti LAB Öğrenci Listesi</h1>');
-        printWindow.document.write(`<h2>${classroomName} (${Utils.formatDate(new Date())})</h2>`);
+        printWindow.document.write(`<h2>${classroomName} (${StudentManager.formatDate(new Date())})</h2>`);
         printWindow.document.write(
             '<table><thead><tr><th>Öğrenci Adı</th><th>Sınıf</th><th>Şifre</th></tr></thead><tbody>'
         );
@@ -241,8 +241,8 @@ const StudentManager = {
             const cName = StudentManager.classrooms.find((c) => c.id === s.classroom_id)?.name || '-';
             printWindow.document.write(`
             <tr>
-                <td>${Utils.escapeHtml(s.display_name)}</td>
-                <td>${Utils.escapeHtml(cName)}</td>
+                <td>${StudentManager.escapeHtml(s.display_name)}</td>
+                <td>${StudentManager.escapeHtml(cName)}</td>
                 <td class="password-col">${s.password || '<span style="color:#999;font-style:italic">Şifresiz</span>'}</td>
             </tr>
         `);
@@ -261,6 +261,35 @@ const StudentManager = {
             pass += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return pass;
+    },
+
+    // Helper - escapeHtml fallback
+    escapeHtml: (text) => {
+        if (!text) return '';
+        if (typeof Utils !== 'undefined' && Utils.escapeHtml) {
+            return Utils.escapeHtml(text);
+        }
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    // Helper - formatDate fallback
+    formatDate: (dateInput) => {
+        if (!dateInput) return '';
+        if (typeof Utils !== 'undefined' && Utils.formatDate) {
+            return Utils.formatDate(dateInput);
+        }
+        try {
+            const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+            return date.toLocaleDateString('tr-TR', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            });
+        } catch (e) {
+            return String(dateInput);
+        }
     },
 };
 

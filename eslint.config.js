@@ -50,6 +50,14 @@ export default [
                 TeacherAnalytics: 'readonly', // Added Teacher Analytics
                 Router: 'readonly', // SPA Router
                 Store: 'readonly', // State Management
+                // Teacher View Components (SPA)
+                TeacherView: 'readonly',
+                TeacherLayout: 'readonly',
+                TeacherModals: 'readonly',
+                DashboardSection: 'readonly',
+                ClassroomsSection: 'readonly',
+                StudentsSection: 'readonly',
+                TeacherManager: 'readonly',
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',

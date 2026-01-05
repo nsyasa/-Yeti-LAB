@@ -58,7 +58,7 @@ const ClassroomManager = {
                     <div class="code-box text-xl mb-4" onclick="copyCode(this)">${classroom.code}</div>
                     <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                         <span>👨‍🎓 ${studentCount} öğrenci</span>
-                        <span>${Utils.formatDate(classroom.created_at)}</span>
+                        <span>${ClassroomManager.formatDate(classroom.created_at)}</span>
                     </div>
                     <div class="flex gap-2 mb-3">
                         <button onclick="viewClassroom('${classroom.id}')" 
@@ -189,6 +189,26 @@ const ClassroomManager = {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    },
+
+    // Date formatter - fallback if Utils not available
+    formatDate: (dateString) => {
+        if (!dateString) return '';
+        // Try to use global Utils if available
+        if (typeof Utils !== 'undefined' && Utils.formatDate) {
+            return Utils.formatDate(dateString);
+        }
+        // Fallback: simple Turkish date format
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            });
+        } catch (e) {
+            return dateString;
+        }
     },
 };
 

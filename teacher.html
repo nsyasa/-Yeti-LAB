@@ -9,6 +9,25 @@
         <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
 
+        <!-- SPA Redirect: Teacher panel artık index.html SPA içinde -->
+        <script>
+            // Teacher.html'e direkt erişim yapılırsa SPA'ya yönlendir
+            // NOT: Bu dosya geçiş dönemi için korunuyor, tamamen SPA'ya geçildiğinde silinebilir
+            (function () {
+                // Eğer zaten yönlendirildiyse sonsuz döngü önle
+                const redirected = sessionStorage.getItem('teacher_spa_redirect');
+                if (!redirected) {
+                    sessionStorage.setItem('teacher_spa_redirect', 'true');
+                    console.log('[Teacher] Redirecting to SPA: index.html#/teacher');
+                    window.location.replace('index.html#/teacher');
+                } else {
+                    // Fallback: Redirect tekrar tetiklenmiş, temizle ve devam et
+                    sessionStorage.removeItem('teacher_spa_redirect');
+                    console.log('[Teacher] SPA redirect skipped (fallback mode)');
+                }
+            })();
+        </script>
+
         <!-- Tailwind CSS -->
         <link href="styles/output.css" rel="stylesheet" />
 

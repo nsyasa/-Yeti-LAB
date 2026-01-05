@@ -541,6 +541,33 @@ const app = {
         const { route, params } = routeInfo;
         console.log(`[App] Route change: ${route}`, params);
 
+        // Teacher view'dan çıkış kontrolü - teacher olmayan route'a geçişte unmount et
+        const isTeacherRoute = route === 'teacher' || route === 'teacher-classrooms' || route === 'teacher-students';
+        const teacherViewInDOM = document.getElementById('teacher-view') !== null;
+
+        if (!isTeacherRoute && (teacherViewInDOM || (window.TeacherView && TeacherView.isLoaded))) {
+            console.log('[App] Leaving teacher view, unmounting...');
+            if (window.TeacherView) {
+                TeacherView.unmount();
+            } else {
+                // Fallback: Manuel temizlik
+                const teacherView = document.getElementById('teacher-view');
+                if (teacherView) teacherView.remove();
+
+                const container = document.getElementById('teacher-view-container');
+                if (container) {
+                    container.innerHTML = '';
+                    container.classList.add('hidden');
+                }
+
+                // Show main layout
+                const header = document.getElementById('main-header');
+                if (header) header.style.display = '';
+                const footer = document.getElementById('main-footer');
+                if (footer) footer.style.display = '';
+            }
+        }
+
         switch (route) {
             case 'home':
                 // Ana sayfa - kurs seçim ekranı
@@ -575,10 +602,89 @@ const app = {
                 }
                 break;
 
+            // ===== TEACHER PANEL ROUTES (SPA) =====
+            case 'teacher':
+            case 'teacher-classrooms':
+            case 'teacher-students':
+                await app.loadTeacherView(route);
+                break;
+
             default:
                 console.warn(`[App] Unknown route: ${route}`);
                 app.renderCourseSelection(false);
         }
+    },
+
+    // ===== Teacher View Loader (SPA) =====
+    loadTeacherView: async (route) => {
+        console.log('[App] Loading teacher view:', route);
+
+        // TeacherView yüklü değilse, script'leri yükle
+        if (!window.TeacherView) {
+            await app.loadTeacherScripts();
+        }
+
+        // Container al veya oluştur
+        let container = document.getElementById('teacher-view-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'teacher-view-container';
+            container.className = 'hidden';
+            document.querySelector('main').appendChild(container);
+        }
+
+        // Mount view
+        const mounted = await TeacherView.mount(container);
+
+        if (mounted) {
+            // Handle sub-routes
+            if (route === 'teacher-classrooms') {
+                TeacherView.showSection('classrooms');
+            } else if (route === 'teacher-students') {
+                TeacherView.showSection('students');
+            }
+        }
+    },
+
+    // Teacher script'lerini lazy load et
+    loadTeacherScripts: async () => {
+        console.log('[App] Loading teacher scripts...');
+
+        const scripts = [
+            'views/teacher/TeacherLayout.js',
+            'views/teacher/sections/DashboardSection.js',
+            'views/teacher/sections/ClassroomsSection.js',
+            'views/teacher/sections/StudentsSection.js',
+            'views/teacher/modals/TeacherModals.js',
+            'views/teacher/TeacherView.js',
+        ];
+
+        for (const src of scripts) {
+            await app.loadScript(src);
+        }
+
+        console.log('[App] Teacher scripts loaded');
+    },
+
+    // Script loader helper
+    loadScript: (src) => {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`script[src="${src}"]`)) {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = () => {
+                console.log(`[App] Loaded: ${src}`);
+                resolve();
+            };
+            script.onerror = () => {
+                console.error(`[App] Failed to load: ${src}`);
+                reject(new Error(`Failed to load ${src}`));
+            };
+            document.body.appendChild(script);
+        });
     },
 
     renderCourseSelection: (updateHistory = true) => {
