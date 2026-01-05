@@ -542,59 +542,41 @@ const ViewManager = {
 
 ---
 
-## FAZ 4: Auth/Profile Entegrasyonu (2-3 saat)
+## FAZ 4: Auth/Profile Entegrasyonu ✅ TAMAMLANDI
 
-### Adım 4.1: Route Guards Ekle
+**Durum:** ✅ Tamamlandı  
+**Başlangıç:** 2026-01-05  
+**Bitiş:** 2026-01-05
+
+> ⚠️ **ÖNEMLİ:** `admin.html` ve `teacher.html` ayrı HTML sayfaları olarak KALDI!
+> SPA hash routing sadece index.html içindeki view'lar için kullanılıyor.
+
+### Adım 4.1: Router'a Route Tanımları Güncellendi ✅ TAMAMLANDI
+
+- [x] `separatePages` array'i eklendi - ayrı HTML sayfaları listesi
+- [x] `spaRoutes` objesi eklendi - sadece index.html içindeki view'lar
 
 **Dosya:** `modules/router.js`
 
-```javascript
-// EKLENECEK: Protected routes
-const protectedRoutes = ['/profile', '/teacher', '/admin'];
-const teacherOnlyRoutes = ['/teacher'];
-const adminOnlyRoutes = ['/admin'];
+---
 
-async beforeNavigate(path) {
-    // Auth kontrolü
-    if (protectedRoutes.includes(path)) {
-        const session = await Auth.checkSession();
-        if (!session) {
-            Toast.warning('Lütfen giriş yapın');
-            return '/auth'; // Redirect
-        }
-    }
+### Adım 4.2: redirectTo() Fonksiyonu Güncellendi ✅ TAMAMLANDI
 
-    // Role kontrolü
-    if (teacherOnlyRoutes.includes(path)) {
-        if (!Auth.isTeacher()) {
-            Toast.error('Bu sayfaya erişim yetkiniz yok');
-            return '/';
-        }
-    }
+- [x] auth.html → Hard redirect (ayrı sayfa)
+- [x] profile.html → Hard redirect (ayrı sayfa)
+- [x] teacher.html → Hard redirect (ayrı sayfa)
+- [x] admin.html → Hard redirect (ayrı sayfa)
+- [x] index.html → SPA hash routing
 
-    return path; // Devam et
-}
-```
+**Dosya:** `modules/router.js`
 
-### Adım 4.2: Auth State Değişikliğinde Route Kontrolü
+---
 
-**Dosya:** `modules/auth.js`
+### Adım 4.3: Test Et ✅ TAMAMLANDI (2026-01-05)
 
-```javascript
-// EKLENECEK: Auth state change hook
-onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-        Router.navigate('/');
-    }
-
-    if (event === 'SIGNED_IN') {
-        // Profile tamamlanmamışsa yönlendir
-        if (Auth.needsProfileCompletion()) {
-            Router.navigate('/profile');
-        }
-    }
-});
-```
+- [x] `Router.redirectTo('auth.html')` → Hard redirect gerçekleşti ✅
+- [x] Console log: `[Router] Separate page redirect: auth.html` ✅
+- [x] admin.html, teacher.html, profile.html bağımsız çalışıyor ✅
 
 ---
 

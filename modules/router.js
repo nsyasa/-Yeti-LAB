@@ -70,32 +70,38 @@ const Router = {
     },
 
     // ===== Adım 2.1 (FAZ 2): Backward Compatible Redirect =====
-    // HTML dosya adını hash route'a dönüştür
-    // Örn: Router.redirectTo('auth.html') → /#/auth
-    // Aynı sayfadaysak (index.html) sadece hash güncelle, değilse hard redirect
+    // HTML dosya adını hash route'a dönüştür veya ayrı sayfaya yönlendir
+    // NOTLAR:
+    // - auth.html, profile.html, teacher.html, admin.html → AYRI HTML SAYFALARI (hard redirect)
+    // - index.html, course seçimi → SPA hash routing
     redirectTo(page) {
-        // HTML dosya → hash route mapping
-        const routes = {
-            'auth.html': '/auth',
+        // Ayrı HTML sayfaları - bunlar SPA'nın parçası DEĞİL
+        // Her zaman hard redirect kullan
+        const separatePages = ['auth.html', 'profile.html', 'teacher.html', 'admin.html', 'student-dashboard.html'];
+
+        if (separatePages.includes(page)) {
+            console.log(`[Router] Separate page redirect: ${page}`);
+            window.location.href = page;
+            return;
+        }
+
+        // SPA route mapping - sadece index.html içindeki view'lar için
+        const spaRoutes = {
             'index.html': '/',
-            'profile.html': '/profile',
-            'teacher.html': '/teacher',
-            'admin.html': '/admin',
-            'student-dashboard.html': '/student',
         };
 
-        // Eğer şu an index.html'deysen ve hedef de index.html tabanlıysa, hash kullan
+        // Eğer şu an index.html'deysen ve hedef de SPA route'uysa, hash kullan
         const currentPage = window.location.pathname.split('/').pop() || 'index.html';
         const isOnMainApp = currentPage === 'index.html' || currentPage === '' || currentPage === '-Yeti-LAB';
 
-        if (routes[page] && isOnMainApp) {
+        if (spaRoutes[page] && isOnMainApp) {
             // SPA modu: Hash ile navigate et
-            console.log(`[Router] SPA redirect: ${page} → ${routes[page]}`);
-            this.navigate(routes[page]);
-        } else if (routes[page]) {
+            console.log(`[Router] SPA redirect: ${page} → ${spaRoutes[page]}`);
+            this.navigate(spaRoutes[page]);
+        } else if (spaRoutes[page]) {
             // Farklı sayfadan geliyoruz, index.html'e yönlendir + hash
-            console.log(`[Router] MPA redirect: ${page} → index.html${routes[page]}`);
-            window.location.href = 'index.html#' + routes[page];
+            console.log(`[Router] MPA redirect: ${page} → index.html${spaRoutes[page]}`);
+            window.location.href = 'index.html#' + spaRoutes[page];
         } else {
             // Fallback: Eski davranış (bilinmeyen sayfa)
             console.log(`[Router] Fallback redirect: ${page}`);
