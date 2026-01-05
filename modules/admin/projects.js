@@ -268,17 +268,17 @@ const ProjectManager = {
         const tagsVal = document.getElementById('p-tags')?.value || '';
         p.tags = tagsVal
             ? tagsVal
-                .split(',')
-                .map((t) => t.trim())
-                .filter((t) => t)
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter((t) => t)
             : [];
 
         const prereqVal = document.getElementById('p-prerequisites')?.value || '';
         p.prerequisites = prereqVal
             ? prereqVal
-                .split(',')
-                .map((t) => parseInt(t.trim()))
-                .filter((n) => !isNaN(n))
+                  .split(',')
+                  .map((t) => parseInt(t.trim()))
+                  .filter((n) => !isNaN(n))
             : [];
 
         // Sim Type
@@ -365,7 +365,6 @@ const ProjectManager = {
         if (typeof SupabaseSync !== 'undefined') {
             const saved = await SupabaseSync.saveProjectToSupabase(courseId, project, phaseIdMap);
             if (saved) {
-
             }
         }
     },
@@ -510,7 +509,7 @@ const ProjectManager = {
     async moveUp(projectId) {
         const projects = this.config.getProjects();
         const sortedProjects = [...projects].sort((a, b) => a.id - b.id);
-        const index = sortedProjects.findIndex(p => p.id === projectId);
+        const index = sortedProjects.findIndex((p) => p.id === projectId);
 
         if (index <= 0) return; // Already at top
 
@@ -523,7 +522,7 @@ const ProjectManager = {
     async moveDown(projectId) {
         const projects = this.config.getProjects();
         const sortedProjects = [...projects].sort((a, b) => a.id - b.id);
-        const index = sortedProjects.findIndex(p => p.id === projectId);
+        const index = sortedProjects.findIndex((p) => p.id === projectId);
 
         if (index >= sortedProjects.length - 1) return; // Already at bottom
 
@@ -550,15 +549,11 @@ const ProjectManager = {
         const phaseIdMap = this.config.getPhaseIdMap?.();
 
         if (courseId && phaseIdMap && typeof SupabaseSync !== 'undefined') {
-
-
             // Save both projects with swapped positions
             await Promise.all([
                 SupabaseSync.saveProjectToSupabase(courseId, projectA, phaseIdMap),
-                SupabaseSync.saveProjectToSupabase(courseId, projectB, phaseIdMap)
+                SupabaseSync.saveProjectToSupabase(courseId, projectB, phaseIdMap),
             ]);
-
-
         }
     },
 
@@ -699,7 +694,7 @@ const ProjectManager = {
                 materials: 'pcontent-donanim',
                 circuit: 'pcontent-devre',
                 code: 'pcontent-kod',
-                quiz: 'pcontent-test'
+                quiz: 'pcontent-test',
             };
             const contentId = map[tabId];
             const content = document.getElementById(contentId);

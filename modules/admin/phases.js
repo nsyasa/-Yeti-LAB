@@ -12,7 +12,7 @@ const PhaseManager = {
         // NEW: Supabase IDs for real-time sync
         getCourseId: () => null, // Function to get Supabase course UUID
         getPhaseIdMap: () => ({}), // Function to get phase index to UUID map
-        setPhaseId: (index, id) => { }, // Function to set phase UUID after creation
+        setPhaseId: (index, id) => {}, // Function to set phase UUID after creation
     },
 
     // Save timer for debounced Supabase sync
@@ -140,7 +140,6 @@ const PhaseManager = {
         if (typeof SupabaseSync !== 'undefined') {
             const saved = await SupabaseSync.savePhaseToSupabase(courseId, phase, index);
             if (saved) {
-
                 // Update the phase ID map if this was a new phase
                 if (this.config.setPhaseId) {
                     this.config.setPhaseId(index, saved.id);
