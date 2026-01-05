@@ -2,3 +2,4 @@ node_modules
 dist
 coverage
 styles/output.css
+.github/
