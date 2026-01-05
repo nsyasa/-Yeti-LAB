@@ -404,30 +404,40 @@ init() {
 
 ---
 
-## FAZ 3: View Container Sistemi (3-4 saat)
+## FAZ 3: View Container Sistemi ✅ TAMAMLANDI
 
-### Adım 3.1: App Shell Oluştur
+**Durum:** ✅ Tamamlandı  
+**Başlangıç:** 2026-01-05  
+**Bitiş:** 2026-01-05
 
-**Dosya:** `index.html` (değişecek)
+### Adım 3.1: Route Event Handler'ı app.js'e Entegre Et ✅ TAMAMLANDI
 
-```html
-<body>
-    <!-- App Shell - Her zaman sabit -->
-    <div id="app">
-        <header id="main-header"></header>
+- [x] Store.on('route:change') listener eklendi - app.init() içinde
+- [x] Route'a göre mevcut view'ları göster/gizle
+- [x] Mevcut UI.switchView() fonksiyonunu kullanıyor
 
-        <!-- Dinamik İçerik Alanı -->
-        <main id="app-content">
-            <!-- Burası route'a göre değişecek -->
-        </main>
+**Dosya:** `app.js`
 
-        <footer id="main-footer"></footer>
-    </div>
+---
 
-    <!-- Mobile Nav -->
-    <nav id="mobile-bottom-nav" class="md:hidden">...</nav>
-</body>
-```
+### Adım 3.2: Hash Route'ları Mevcut View'lara Bağla ✅ TAMAMLANDI
+
+- [x] `#/` → course-selection-view (renderCourseSelection)
+- [x] `#/course/:key` → selectCourse() çağırıyor
+- [x] `#/course/:key/project/:id` → loadProject() çağırıyor
+
+**Dosya:** `app.js` - handleRouteChange() fonksiyonu eklendi
+
+---
+
+### Adım 3.3: Test Et ✅ TAMAMLANDI (2026-01-05)
+
+- [x] `/#/course/arduino` girince kurs açılıyor ✅
+- [x] `/#/course/arduino/project/0` girince proje açılıyor ✅
+- [x] `/#/` girince ana sayfa açılıyor ✅
+- [x] Console logları doğru: `[App] Route change: course {key: 'arduino'}` ✅
+
+---
 
 ### Adım 3.2: View Templates Oluştur
 

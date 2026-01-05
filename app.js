@@ -91,6 +91,14 @@ const app = {
                         // Re-render with dynamic data (e.g. updated counts or titles)
                         app.renderCourseSelection();
 
+                        // ===== FAZ 3: Route Change Event Handler =====
+                        // Store'un route:change eventini dinle
+                        if (window.Store && Store.on) {
+                            Store.on('route:change', (routeInfo) => {
+                                app.handleRouteChange(routeInfo);
+                            });
+                        }
+
                         // Router Init: URL parametrelerini kontrol et ve yönlendir
                         if (window.Router) {
                             window.Router.init(app);
@@ -521,6 +529,52 @@ const app = {
         const next = current === 'tr' ? 'en' : 'tr';
         Settings.set('language', next);
         window.location.reload();
+    },
+
+    // ===== FAZ 3: Route Change Handler =====
+    // Hash route değişikliklerini mevcut view'lara bağlar
+    handleRouteChange: async (routeInfo) => {
+        const { route, params } = routeInfo;
+        console.log(`[App] Route change: ${route}`, params);
+
+        switch (route) {
+            case 'home':
+                // Ana sayfa - kurs seçim ekranı
+                app.renderCourseSelection(false); // updateHistory: false (URL zaten hash'te)
+                break;
+
+            case 'course':
+                // Kurs dashboard
+                if (params.key) {
+                    // Kurs zaten yüklüyse tekrar yükleme
+                    if (app.state.currentCourseKey !== params.key) {
+                        await app.selectCourse(params.key, null, false);
+                    } else {
+                        // Aynı kurs, sadece dashboard göster
+                        UI.switchView('dashboard-view');
+                    }
+                }
+                break;
+
+            case 'project':
+                // Proje detay
+                if (params.key && params.id) {
+                    // Önce kurs yüklü mü kontrol et
+                    if (app.state.currentCourseKey !== params.key) {
+                        await app.selectCourse(params.key, null, false);
+                    }
+                    // Sonra projeyi aç
+                    const projectId = parseInt(params.id);
+                    if (!isNaN(projectId)) {
+                        app.loadProject(projectId, false);
+                    }
+                }
+                break;
+
+            default:
+                console.warn(`[App] Unknown route: ${route}`);
+                app.renderCourseSelection(false);
+        }
     },
 
     renderCourseSelection: (updateHistory = true) => {
