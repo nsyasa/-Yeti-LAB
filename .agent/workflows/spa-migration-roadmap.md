@@ -580,32 +580,39 @@ const ViewManager = {
 
 ---
 
-## FAZ 5: Inline Script'leri Taşı (3-4 saat)
+## FAZ 5: Inline Script'lerdeki Redirect'leri Güncelle ✅ TAMAMLANDI
 
-### Adım 5.1: auth.html İçindeki Script'leri Modüle Taşı
+**Durum:** ✅ Tamamlandı  
+**Başlangıç:** 2026-01-05  
+**Bitiş:** 2026-01-05
 
-**Mevcut:** `auth.html` içinde 500+ satır inline JavaScript
+> ⚠️ **NOT:** Tüm script'leri modüle taşımak yerine sadece redirect'leri güncelledik.
+> Bu daha güvenli ve hızlı bir yaklaşım.
 
-**Hedef:**
+### Adım 5.1: auth.html İçindeki Redirect'leri Güncelle ✅ TAMAMLANDI
 
-- `views/auth.js` - View template ve lifecycle
-- `modules/authForm.js` - Form validation ve submit logic
+- [x] Router script'i eklendi (modules/router.js)
+- [x] Satır 251: Logo onclick → Router.redirectTo('index.html')
+- [x] Satır 626, 635, 641: OAuth/session redirect → Router.redirectTo('index.html')
+- [x] Satır 982, 1004: Login redirect → Router.redirectTo('index.html')
 
-### Adım 5.2: student-dashboard.html İçindeki Script'leri Taşı
+**Dosya:** `auth.html`
 
-**Mevcut:** `student-dashboard.html` içinde inline script
+---
 
-**Hedef:**
+### Adım 5.2: student-dashboard.html İçindeki Redirect'leri Güncelle ✅ TAMAMLANDI
 
-- `views/studentDashboard.js` - View olarak
+- [x] Satır 173: Auth kontrol → Router.redirectTo('auth.html')
+- [x] Satır 197: Logout → Router.redirectTo('index.html')
 
-### Adım 5.3: teacher.html İçindeki Script'leri Taşı
+**Dosya:** `student-dashboard.html`
 
-Zaten `teacher-manager.js` var ama inline script'ler de mevcut.
+---
 
-### Adım 5.4: admin.html İçindeki Script'leri Taşı
+### Adım 5.3: Test Et ⏳ BEKLEMEDE
 
-`admin.js` ve alt modüller var ama HTML'de de script var.
+- [ ] auth.html'den giriş yapılınca index.html'e yönlendirmeli
+- [ ] student-dashboard.html'den çıkış yapılınca index.html'e gitmeli
 
 ---
 

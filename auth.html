@@ -248,7 +248,7 @@
                     <div class="text-center mb-8">
                         <div
                             class="flex items-center justify-center mb-4 cursor-pointer"
-                            onclick="window.location.href = 'index.html'"
+                            onclick="Router.redirectTo('index.html')"
                         >
                             <img src="img/logo.svg" alt="Yeti LAB" class="w-16 h-16 mr-3" />
                             <div class="brand-logo">
@@ -609,6 +609,7 @@
         <!-- Scripts -->
         <script src="modules/supabaseClient.js"></script>
         <script src="modules/themeManager.js"></script>
+        <script src="modules/router.js"></script>
         <script src="modules/auth.js"></script>
         <script>
             // ========================================
@@ -731,7 +732,7 @@
                         showAlert('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
                         setTimeout(() => {
                             // Clear the hash and redirect to index (teacher can access panel from there)
-                            window.location.href = 'index.html';
+                            Router.redirectTo('index.html');
                         }, 500);
                         return;
                     }
@@ -740,13 +741,13 @@
                 // Check if already logged in
                 const session = await Auth.checkSession();
                 if (session && !forceShow) {
-                    window.location.href = 'index.html';
+                    Router.redirectTo('index.html');
                     return;
                 }
 
                 // Check student session
                 if (Auth.checkStudentSession() && !forceShow) {
-                    window.location.href = 'index.html';
+                    Router.redirectTo('index.html');
                     return;
                 }
 
@@ -1087,7 +1088,7 @@
                         await Auth.studentLogin(code, student.display_name, password);
                         showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            Router.redirectTo('index.html');
                         }, 1000);
                     } catch (err) {
                         showAlert(err.message, 'error');
@@ -1109,7 +1110,7 @@
                         await Auth.signInWithEmail(email, password);
                         showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            Router.redirectTo('index.html');
                         }, 1000);
                     } catch (err) {
                         showAlert(err.message, 'error');
