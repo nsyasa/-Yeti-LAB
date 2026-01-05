@@ -195,7 +195,7 @@ const Progress = {
             if (
                 confirm('İlerlemenizi kaydetmek için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?')
             ) {
-                window.location.href = 'auth.html';
+                Router.redirectTo('auth.html');
             }
             return;
         }

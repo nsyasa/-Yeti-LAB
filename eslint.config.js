@@ -48,6 +48,8 @@ export default [
                 ClassroomManager: 'readonly',
                 StudentManager: 'readonly',
                 TeacherAnalytics: 'readonly', // Added Teacher Analytics
+                Router: 'readonly', // SPA Router
+                Store: 'readonly', // State Management
                 Toast: 'readonly',
                 // Test globals
                 describe: 'readonly',

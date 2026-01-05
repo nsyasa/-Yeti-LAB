@@ -341,7 +341,7 @@ const UI = {
             } else {
                 text.innerText = '🔐 Giriş yap';
                 text.style.cursor = 'pointer';
-                text.onclick = () => (window.location.href = 'auth.html');
+                text.onclick = () => Router.redirectTo('auth.html');
             }
         }
     },

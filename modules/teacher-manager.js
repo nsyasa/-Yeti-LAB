@@ -33,7 +33,7 @@ async function init() {
                 // If Auth.init didn't handle redirect
                 if (!window.location.pathname.includes('auth.html')) {
                     console.warn('No user, redirecting to auth...');
-                    window.location.href = 'auth.html';
+                    Router.redirectTo('auth.html');
                     return;
                 }
             } else {
@@ -41,7 +41,7 @@ async function init() {
                 if (Auth.userRole !== 'teacher' && Auth.userRole !== 'admin') {
                     showToast('Bu sayfa sadece öğretmenler içindir', 'error');
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        Router.redirectTo('index.html');
                     }, 2000);
                     return;
                 }

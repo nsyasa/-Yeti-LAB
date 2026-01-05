@@ -131,7 +131,7 @@ const app = {
                     `[App] Profile incomplete, redirecting to profile.html (attempt ${redirectCount + 1}/${MAX_REDIRECTS})`
                 );
                 sessionStorage.setItem('profile_redirect_count', String(redirectCount + 1));
-                window.location.href = 'profile.html';
+                Router.redirectTo('profile.html');
                 return;
             }
 
@@ -170,7 +170,7 @@ const app = {
                         currentRedirectCount < MAX_REDIRECTS
                     ) {
                         sessionStorage.setItem('profile_redirect_count', String(currentRedirectCount + 1));
-                        window.location.href = 'profile.html';
+                        Router.redirectTo('profile.html');
                     } else if (!Auth.needsProfileCompletion()) {
                         sessionStorage.removeItem('profile_redirect_count');
                         if (window.Progress?.loadFromServer) {
@@ -278,7 +278,7 @@ const app = {
 
     logout: async () => {
         if (typeof Auth === 'undefined') {
-            window.location.href = 'auth.html';
+            Router.redirectTo('auth.html');
             return;
         }
 

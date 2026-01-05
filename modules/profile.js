@@ -20,7 +20,7 @@ const Profile = {
         const userInfo = Auth.getUserInfo();
 
         if (!userInfo.isLoggedIn) {
-            window.location.href = 'auth.html';
+            Router.redirectTo('auth.html');
             return;
         }
 
@@ -64,7 +64,7 @@ const Profile = {
     },
 
     goHome() {
-        window.location.href = 'index.html';
+        Router.redirectTo('index.html');
     },
 
     // --- WIZARD SUB-MODULE ---
@@ -161,7 +161,7 @@ const Profile = {
 
             await Profile.Editor.saveToSupabase(this.data, btn, 'wiz-error', () => {
                 if (typeof Toast !== 'undefined') Toast.show('Profil oluşturuldu! Yönlendiriliyorsunuz...', 'success');
-                setTimeout(() => (window.location.href = 'index.html'), 1000);
+                setTimeout(() => Router.redirectTo('index.html'), 1000);
             });
         },
     },
@@ -553,7 +553,7 @@ const Profile = {
     logout() {
         Auth.signOut().then(() => {
             if (Auth.isStudent()) Auth.studentLogout();
-            window.location.href = 'auth.html';
+            Router.redirectTo('auth.html');
         });
     },
 };
