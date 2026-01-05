@@ -616,50 +616,61 @@ const ViewManager = {
 
 ---
 
-## FAZ 6: Single Entry Point (2-3 saat)
+## FAZ 6: Single Entry Point ✅ TAMAMLANDI
 
-### Adım 6.1: app.js'i Entry Point Yap
+**Durum:** ✅ Tamamlandı  
+**Başlangıç:** 2026-01-05  
+**Bitiş:** 2026-01-05
 
-**Dosya:** `app.js`
+> ⚠️ **NOT:** Teacher ve Admin panelleri ayrı kaldı!
 
-```javascript
-// GÜNCELLENECEK: Tek başlangıç noktası
-const App = {
-    async init() {
-        // 1. Core modülleri başlat
-        await Store.init();
-        await Auth.init();
+### Adım 6.1: App Init Sırasını Dokümante Et ✅ TAMAMLANDI
 
-        // 2. Layout'u render et
-        MainLayout.init();
+Mevcut init sırası doğru ve korundu:
 
-        // 3. Router'ı başlat (bu view'ı yükleyecek)
-        Router.init();
+1. courseData kontrol
+2. initScrollBehavior
+3. initAuth
+4. Progress callback
+5. Search/Assistant init
+6. MainLayout init
+7. CourseLoader.init (async)
+8. Store.on('route:change') listener
+9. Router.init
 
-        // 4. Global event listeners
-        this.setupGlobalListeners();
-    },
+**Dosya:** `app.js` (değişiklik gerekmedi)
 
-    setupGlobalListeners() {
-        // Theme, language, keyboard shortcuts...
-    },
-};
+---
 
-// DOM hazır olunca başlat
-document.addEventListener('DOMContentLoaded', () => App.init());
+### Adım 6.2: Router'ın Başlangıç Route'unu İşlemesini Sağla ✅ TAMAMLANDI
+
+- [x] Router.init() çağrıldığında mevcut hash'i oku
+- [x] handleRouteChange() her zaman çağrılıyor (hash olsa da olmasa da)
+- [x] Sayfa yüklendiğinde direkt doğru view açılıyor
+- [x] Console logları eklendi: Initializing, Initial route handled, Initialized successfully
+
+**Dosya:** `modules/router.js`
+
+---
+
+### Adım 6.3: Test Et ✅ TAMAMLANDI (2026-01-05)
+
+Console log sırası doğru:
+
+```
+[Router] Initializing...
+[Router] Route: course {key: arduino}
+[App] Route change: course {key: arduino}
+[Router] Initial route handled: {route: course, params: {key: arduino}, path: course/arduino}
+[Router] Initialized successfully
 ```
 
-### Adım 6.2: HTML Dosyalarını Sadeleştir
+Test sonuçları:
 
-**index.html** tek entry point olacak. Diğer HTML'ler:
-
-- `auth.html` → `/#/auth` route'una
-- `profile.html` → `/#/profile` route'una
-- `teacher.html` → `/#/teacher` route'una (veya ayrı kalabilir - complexity)
-- `admin.html` → `/#/admin` route'una (veya ayrı kalabilir - complexity)
-
-**NOT:** Teacher ve Admin panelleri çok büyük (60-80KB HTML).
-Bunları SPA'ya taşımak yerine ayrı "mini-app" olarak bırakmak daha mantıklı olabilir.
+- [x] Hash route ile direkt erişim çalışıyor ✅
+- [x] SPA navigasyon çalışıyor ✅
+- [x] Ana sayfaya dönüş çalışıyor ✅
+- [x] JavaScript hatası yok ✅
 
 ---
 

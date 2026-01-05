@@ -179,78 +179,55 @@ const Router = {
 
     // Başlangıç durumunu yükle
     init: async (appInstance) => {
+        console.log('[Router] Initializing...');
+
         // ===== Adım 1.6: Hash Change Listener =====
         if (Router.mode === 'hash') {
             window.addEventListener('hashchange', () => Router.handleRouteChange());
         }
 
-        // Önce legacy URL kontrolü yap
+        // Önce legacy URL kontrolü yap (?course=xxx → #/course/xxx)
         if (Router.checkLegacyParams()) {
             // Legacy URL dönüştürüldü, hash routing devralacak
+            console.log('[Router] Legacy params detected and converted');
             return;
         }
 
-        // Hash varsa hash routing kullan
-        if (window.location.hash) {
-            Router.handleRouteChange();
-            return;
-        }
+        // ===== FAZ 6: Başlangıç Route'unu Her Zaman İşle =====
+        // Hash varsa veya yoksa (ana sayfa) route'u işle
+        Router.handleRouteChange();
+        console.log('[Router] Initial route handled:', Router.currentRoute);
 
-        // === ESKİ MANTIK (Query String desteği - geriye uyumluluk) ===
-        const { course, project } = Router.getParams();
-
+        // === ESKİ MANTIK (Query String popstate desteği - geriye uyumluluk) ===
         // Tarayıcı geri/ileri butonlarını dinle
-        // Monitor browser back/forward buttons
-        window.addEventListener('popstate', (event) => {
+        window.addEventListener('popstate', (_event) => {
+            // Hash routing aktifse hashchange zaten dinleniyor
+            if (Router.mode === 'hash' && window.location.hash) {
+                return; // hashchange event'i halledecek
+            }
+
+            // Legacy query string desteği
             const { course, project } = Router.getParams();
 
-            if (course) {
+            if (course && appInstance) {
                 // Navigate to Course
-                // updateHistory: false (URL is already updated by browser)
                 appInstance.selectCourse(course, null, false).then(() => {
                     if (project) {
-                        // Navigate to Project
                         const projectId = parseInt(project);
-                        // Force project view if valid
                         if (!isNaN(projectId)) {
                             appInstance.loadProject(projectId, false);
                         }
                     } else {
-                        // If no project, explicitly show dashboard (in case we were in a project)
                         if (UI && UI.switchView) UI.switchView('dashboard-view');
                     }
                 });
-            } else {
+            } else if (appInstance) {
                 // Navigate to Home
                 appInstance.renderCourseSelection(false);
             }
         });
 
-        if (course) {
-            console.log(`[Router] Kurs tespit edildi: ${course}`);
-            try {
-                // Önce kursu seç ve verilerin yüklenmesini bekle
-                await appInstance.selectCourse(course);
-
-                // Eğer proje ID varsa ve kurs başarıyla yüklendiyse projeyi aç
-                if (project) {
-                    console.log(`[Router] Proje tespit edildi: ${project}`);
-                    // Proje ID string gelir, sayıya çevir
-                    const projectId = parseInt(project);
-
-                    // Projelerin yüklendiğinden emin ol
-                    if (appInstance.state.projects && appInstance.state.projects.length > 0) {
-                        setTimeout(() => {
-                            appInstance.loadProject(projectId);
-                        }, 100); // UI render için ufak bir gecikme
-                    }
-                }
-            } catch (error) {
-                console.error('[Router] Yönlendirme hatası:', error);
-                // Hata durumunda parametreleri temizle
-                Router.updateUrl(null, null);
-            }
-        }
+        console.log('[Router] Initialized successfully');
     },
 };
 
