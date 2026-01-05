@@ -17,13 +17,9 @@
         <link rel="stylesheet" href="styles/components.css" />
         <link rel="stylesheet" href="styles/main.css" />
 
-        <!-- Supabase -->
+        <!-- Supabase SDK -->
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="modules/supabaseClient.js"></script>
-        <script src="modules/themeManager.js"></script>
-        <script src="modules/auth.js"></script>
-        <script src="modules/settings.js"></script>
-        <script src="data/tips.js"></script>
+        <!-- Modules loaded at end of body for proper initialization order -->
 
         <style>
             /* Teacher Panel Styles */
@@ -352,7 +348,7 @@
                             class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-800 bg-theme/10 text-theme"
                             data-section="dashboard"
                         >
-                            <span>📊</span> Dashboard
+                            <span>📊</span> Kontrol Paneli
                         </button>
 
                         <a
@@ -383,23 +379,14 @@
                     <!-- User Info -->
                     <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                         <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-800">
-                            <img
-                                id="userAvatar"
-                                src=""
-                                class="w-10 h-10 rounded-full bg-gray-300 hidden"
-                                onerror="
-                                    this.style.display = 'none';
-                                    document.getElementById('userAvatarFallback').style.display = 'flex';
-                                "
-                            />
                             <div
-                                id="userAvatarFallback"
-                                class="w-10 h-10 rounded-full bg-theme flex items-center justify-center text-white font-bold"
+                                id="user-avatar"
+                                class="w-10 h-10 rounded-full bg-theme flex items-center justify-center text-white font-bold overflow-hidden"
                             >
-                                ?
+                                <!-- Avatar will be injected by JS -->
                             </div>
                             <div class="flex-grow min-w-0">
-                                <p id="userName" class="font-semibold text-gray-800 dark:text-white truncate">
+                                <p id="user-name" class="font-semibold text-gray-800 dark:text-white truncate">
                                     Yükleniyor...
                                 </p>
                                 <p class="text-xs text-gray-500">Öğretmen</p>
@@ -429,9 +416,8 @@
 
                 <!-- Main Content -->
                 <main class="flex-grow flex flex-col">
-                    <!-- Header -->
                     <header
-                        class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30"
+                        class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30"
                     >
                         <div class="flex items-center justify-between px-6 py-4">
                             <div class="flex items-center gap-4">
@@ -604,14 +590,8 @@
                 </main>
             </div>
 
-            <!-- Footer -->
-            <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
-                <div class="flex items-center justify-center gap-2 mb-2">
-                    <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6" />
-                    <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
-                </div>
-                <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
-            </footer>
+            <!-- Footer (Dynamic) -->
+            <footer id="main-footer"></footer>
         </div>
 
         <!-- Create Classroom Modal -->
@@ -1237,12 +1217,50 @@
 
         <!-- Scripts -->
         <script src="modules/supabaseClient.js"></script>
+        <script src="modules/themeManager.js"></script>
         <script src="modules/auth.js"></script>
         <script src="modules/toast.js"></script>
         <script src="modules/utils.js"></script>
+        <script src="modules/settings.js"></script>
+        <script src="modules/router.js"></script>
+        <script src="modules/components/Navbar.js"></script>
+        <script src="modules/components/Footer.js"></script>
+        <script src="modules/layout/MainLayout.js"></script>
         <script src="modules/teacher/classrooms.js"></script>
         <script src="modules/teacher/students.js"></script>
         <script src="modules/teacher/analytics.js"></script>
         <script src="modules/teacher-manager.js"></script>
+        <script>
+            // Başlat
+            document.addEventListener('DOMContentLoaded', async () => {
+                // Initialize MainLayout (Navbar, Footer, etc.)
+                if (window.MainLayout) window.MainLayout.init();
+
+                // Initialize manager (Handles Auth check, redirection and UI loading)
+                if (window.TeacherManager) {
+                    TeacherManager.init();
+                } else {
+                    console.error('TeacherManager not found');
+                }
+            });
+
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            // Global functions for HTML event handlers
+            window.showSection = (sectionId) => TeacherManager.showSection(sectionId);
+            window.openCreateClassroomModal = () => TeacherManager.openCreateClassroomModal();
+            window.closeModal = (modalId) => TeacherManager.closeModal(modalId);
+            window.createClassroom = (event) => TeacherManager.createClassroom(event);
+            window.generateRandomPassword = () => TeacherManager.generateRandomPassword();
+            window.addStudent = (event) => TeacherManager.addStudent(event);
+            window.saveBulkStudents = () => TeacherManager.saveBulkStudents();
+            window.toggleTheme = () => ThemeManager.toggle();
+            window.signOut = () => Auth.signOut();
+        </script>
     </body>
 </html>

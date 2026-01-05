@@ -39,6 +39,9 @@ const app = {
     },
 
     init: () => {
+        // Global Logout Alias for Component Compatibility
+        window.logout = app.logout;
+
         // data.js dosyasından courseData değişkenini alıyoruz
         if (typeof courseData !== 'undefined') {
             // Init modules
@@ -64,18 +67,24 @@ const app = {
             window.Search?.init(app.selectCourse, app.loadProject);
             window.Assistant?.init();
 
+            // Navbar'ı başlat
+            if (window.MainLayout) {
+                try {
+                    window.MainLayout.init();
+                } catch (layoutError) {
+                    console.error('MainLayout init error:', layoutError);
+                }
+            }
+
             // Performans İyileştirmesi: Full veriyi (loadAll) yüklemek yerine
             // Sadece kurs listesini (metadata) alıp listeliyoruz.
             // Detaylı veriler kurs seçilince (selectCourse) yüklenecek.
             if (window.CourseLoader?.init) {
                 // Optimistic Rendering: Show static manifest immediately to prevent waiting
-                console.log('[App] Rendering optimistic course list');
                 app.renderCourseSelection();
 
                 CourseLoader.init()
                     .then(() => {
-                        console.log('[App] Course list synced with Supabase');
-
                         // Restore admin changes from localStorage if available
                         app.restoreFromLocalStorage();
 
@@ -178,6 +187,12 @@ const app = {
     },
 
     updateUserUI: (userInfo) => {
+        // Modern Navbar Entegrasyonu (Eğer Navbar modülü varsa ona devret)
+        if (window.Navbar && window.Navbar.updateAuthUI) {
+            window.Navbar.updateAuthUI();
+            return;
+        }
+
         const loginBtn = document.getElementById('login-btn');
         const userMenu = document.getElementById('user-menu');
         const userName = document.getElementById('user-name');
@@ -278,6 +293,9 @@ const app = {
             alert('Çıkış yapılırken hata oluştu');
         }
     },
+
+    // Global alias for logout, useful for direct calls from HTML
+    globalLogout: () => app.logout(),
 
     // --- Scroll Behavior: Hide header/bottom nav on scroll down, show on scroll up ---
     scrollState: {
@@ -505,7 +523,7 @@ const app = {
         window.location.reload();
     },
 
-    renderCourseSelection: () => {
+    renderCourseSelection: (updateHistory = true) => {
         const manifest = window.CourseLoader?.getManifest() || {};
         // Update language button text
         const langText = document.getElementById('lang-text');
@@ -515,10 +533,10 @@ const app = {
         app.stopSimulation();
 
         // URL'yi temizle (Ana sayfa)
-        if (window.Router) window.Router.updateUrl(null, null);
+        if (window.Router && updateHistory) window.Router.updateUrl(null, null);
     },
 
-    selectCourse: async (key, event) => {
+    selectCourse: async (key, event, updateHistory = true) => {
         // Prevent double-click
         const actionId = `select-course-${key}`;
         if (UI.isLoading(actionId)) return;
@@ -568,7 +586,12 @@ const app = {
             app.renderProgressBar();
 
             // URL güncelle
-            if (window.Router) window.Router.updateUrl(key, null);
+            if (window.Router && updateHistory) window.Router.updateUrl(key, null);
+
+            // Store Update (Faz 2: Adım 4)
+            if (window.Store) {
+                window.Store.setCurrentCourse(course);
+            }
         } catch (error) {
             console.error('[App] Failed to load course:', error);
             Toast?.errorWithRetry('Kurs yüklenemedi!', () => app.selectCourse(key));
@@ -599,7 +622,7 @@ const app = {
         }
     },
 
-    loadProject: (id) => {
+    loadProject: (id, updateHistory = true) => {
         // Prevent double-click
         const actionId = `load-project-${id}`;
         if (UI.isLoading(actionId)) return;
@@ -617,7 +640,10 @@ const app = {
         }
 
         app.currentProject = p;
-        app.currentProject = p;
+        // Store Update (Faz 2: Adım 4)
+        if (window.Store) {
+            window.Store.setState({ activeProject: p });
+        }
         if (UI.switchView) {
             UI.switchView('project-view');
         } else {
@@ -651,7 +677,7 @@ const app = {
         window.scrollTo(0, 0);
 
         // URL güncelle
-        if (window.Router) window.Router.updateUrl(app.state.currentCourseKey, id);
+        if (window.Router && updateHistory) window.Router.updateUrl(app.state.currentCourseKey, id);
 
         // Clear loading state after a short delay
         setTimeout(() => UI.setActionLoading(actionId, false), 100);

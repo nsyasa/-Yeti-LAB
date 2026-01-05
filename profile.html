@@ -17,7 +17,6 @@
 
         <!-- Supabase -->
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="modules/toast.js"></script>
 
         <style>
             .profile-bg {
@@ -172,7 +171,7 @@
 
             /* Stat Badge */
             .stat-badge {
-                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
+                background: linear-gradient(135deg, #f0fdfa 0%, #ecf5 100%);
                 border: 1px solid #d1fae5;
                 border-radius: 1rem;
                 padding: 1.25rem;
@@ -392,31 +391,11 @@
 
     <body class="bg-gray-50 text-gray-800">
         <div class="profile-bg flex flex-col min-h-screen">
-            <!-- Header -->
-            <header class="py-4 px-6 bg-white/50 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
-                <div class="max-w-4xl mx-auto flex items-center justify-between">
-                    <div class="flex items-center cursor-pointer" onclick="goHome()">
-                        <img src="img/logo.svg" alt="Yeti LAB" class="w-10 h-10 mr-2" />
-                        <div class="brand-logo">
-                            <h1 class="text-xl text-gray-800 leading-tight flex items-baseline gap-1">
-                                <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button onclick="goHome()" class="text-gray-500 hover:text-theme font-medium text-sm">
-                            ← Ana Sayfa
-                        </button>
-                        <div
-                            id="userInfoHeader"
-                            class="flex items-center gap-2 text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full"
-                        >
-                            <span id="headerAvatar" class="text-lg">👤</span>
-                            <span id="headerName" class="font-bold">...</span>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <!-- Header (Dynamic) -->
+            <header
+                id="main-header"
+                class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50 transition-all"
+            ></header>
 
             <!-- Main Content -->
             <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
@@ -859,13 +838,7 @@
             </main>
 
             <!-- Footer -->
-            <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
-                <div class="flex items-center justify-center gap-2 mb-2">
-                    <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6" />
-                    <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
-                </div>
-                <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
-            </footer>
+            <footer id="main-footer" class="mt-auto"></footer>
         </div>
 
         <!-- Scripts -->
@@ -879,11 +852,19 @@
         <script src="modules/progress.js"></script>
         <script src="data/cities.js"></script>
         <script src="modules/badges.js"></script>
+        <script src="modules/router.js"></script>
+        <script src="modules/components/Navbar.js"></script>
+        <script src="modules/components/Footer.js"></script>
+        <script src="modules/layout/MainLayout.js"></script>
         <script src="modules/profile.js"></script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                Profile.init();
+            document.addEventListener('DOMContentLoaded', async () => {
+                // Initialize Navbar & Footer first
+                if (window.MainLayout) window.MainLayout.init();
+
+                // Then other components
+                await Profile.init();
             });
 
             function logout() {

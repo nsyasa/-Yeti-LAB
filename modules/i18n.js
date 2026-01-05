@@ -141,6 +141,23 @@ const I18n = {
 
         return str;
     },
+
+    /**
+     * Switch Language (Toggle)
+     */
+    toggle: () => {
+        const current = I18n.lang;
+        const next = current === 'tr' ? 'en' : 'tr';
+
+        if (window.Settings) {
+            window.Settings.set('language', next);
+        } else {
+            localStorage.setItem('settings_language', next);
+        }
+
+        // Reload to apply changes instantly
+        window.location.reload();
+    },
 };
 
 window.I18n = I18n;

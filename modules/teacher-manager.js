@@ -17,7 +17,8 @@ let currentDetailStudentId = null;
 // INITIALIZATION
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', async () => {
+// Exposed init function for TeacherManager wrapper
+async function init() {
     try {
         // Initialize Supabase & Auth
         if (typeof SupabaseClient !== 'undefined') {
@@ -62,7 +63,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Initialization error:', e);
         showToast('Başlatma hatası: ' + e.message, 'error');
     }
-});
+}
+
+// Auto-run if DOM is ready (Legacy support)
+// document.addEventListener('DOMContentLoaded', init);
 
 // ==========================================
 // UI FUNCTIONS
@@ -80,7 +84,7 @@ function showSection(section) {
 
     // Update title
     const titles = {
-        dashboard: 'Dashboard',
+        dashboard: 'Kontrol Paneli',
         classrooms: 'Sınıflarım',
         students: 'Öğrenciler',
         progress: 'İlerleme Takibi',
@@ -141,20 +145,11 @@ function toggleSidebar() {
 }
 
 function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('yeti_theme', isDark ? 'dark' : 'light');
-    const icon = document.getElementById('themeIcon');
-    if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+    if (window.ThemeManager) window.ThemeManager.toggle();
 }
 
 function applyTheme() {
-    const theme = localStorage.getItem('yeti_theme');
-    if (theme === 'dark') {
-        document.body.classList.add('dark-mode');
-        const icon = document.getElementById('themeIcon');
-        if (icon) icon.textContent = '☀️';
-    }
+    if (window.ThemeManager) window.ThemeManager.load();
 }
 
 // ==========================================
@@ -255,7 +250,7 @@ async function loadDashboardData() {
 
             const { data: studentsData, error: studentsError } = await SupabaseClient.getClient()
                 .from('students')
-                .select('*, student_progress(*)')
+                .select('*')
                 .in('classroom_id', classroomIds);
 
             if (!studentsError && studentsData) {
@@ -755,10 +750,6 @@ async function saveStudentEdit(event) {
 // STUDENT DETAIL FUNCTIONS
 // ==========================================
 
-// ==========================================
-// ANALYTICS & DETAIL DELEGATES
-// ==========================================
-
 function renderStudentDetailStats(progressData) {
     if (typeof TeacherAnalytics !== 'undefined') {
         const completedProjectIds = progressData.map((p) => p.project_id);
@@ -801,23 +792,39 @@ async function openStudentDetailModal(studentId) {
     document.getElementById('detailCompletedCount').textContent = '-';
     document.getElementById('detailAvgScore').textContent = '-';
     document.getElementById('detailCourseProgress').innerHTML = '<div class="spinner"></div>';
+    document.getElementById('detailRecentLessons').innerHTML = '';
 
     document.getElementById('studentDetailModal').classList.add('open');
 
-    try {
-        const { data: progressData, error } = await SupabaseClient.getClient()
-            .from('student_progress')
-            .select('*')
-            .eq('student_id', studentId);
+    // Load details
+    if (typeof TeacherAnalytics !== 'undefined') {
+        const progressData = await TeacherAnalytics.loadStudentDetails(studentId);
 
-        if (error) throw error;
+        // Update Stats
+        const completedCount = progressData.length;
+        document.getElementById('detailCompletedCount').textContent = completedCount;
 
-        // Render stats and lists (Delegated inside these functions)
+        // Calculate score
+        let totalScore = 0;
+        let quizCount = 0;
+        progressData.forEach((p) => {
+            if (p.quiz_score !== null) {
+                totalScore += p.quiz_score;
+                quizCount++;
+            }
+        });
+        const avgScore = quizCount > 0 ? Math.round(totalScore / quizCount) : 0;
+        document.getElementById('detailAvgScore').textContent = avgScore + '%';
+
+        // Last Active
+        if (student.last_active_at) {
+            document.getElementById('detailLastActive').textContent = formatRelativeTime(student.last_active_at);
+        } else {
+            document.getElementById('detailLastActive').textContent = 'Hiç';
+        }
+
         renderStudentDetailStats(progressData);
-        renderStudentCourseProgress(progressData); // Alias for project list
-    } catch (error) {
-        console.error('Error loading student details:', error);
-        showToast('Öğrenci detayları yüklenemedi', 'error');
+        renderStudentProjectList(progressData);
     }
 }
 
@@ -827,66 +834,123 @@ function openClassroomSettings(classroomId) {
 
     document.getElementById('settingsClassroomId').value = classroomId;
     document.getElementById('settingsClassroomName').value = classroom.name;
-    document.getElementById('settingsClassroomDesc').value = classroom.description || '';
-    document.getElementById('settingsRequirePassword').checked = classroom.requires_password || false;
+    document.getElementById('settingsClassroomDescription').value = classroom.description || '';
+
+    // Tab settings
+    if (classroom.tab_settings) {
+        if (classroom.tab_settings.names) {
+            document.getElementById('tabNameGeneral').value = classroom.tab_settings.names.general || 'Genel';
+            document.getElementById('tabNameContent').value = classroom.tab_settings.names.content || 'İçerik';
+            document.getElementById('tabNameHardware').value = classroom.tab_settings.names.hardware || 'Donanım';
+            document.getElementById('tabNameCircuit').value = classroom.tab_settings.names.circuit || 'Devre';
+            document.getElementById('tabNameCode').value = classroom.tab_settings.names.code || 'Kod';
+            document.getElementById('tabNameTest').value = classroom.tab_settings.names.test || 'Test';
+        }
+        if (classroom.tab_settings.visibility) {
+            document.getElementById('tabVisGeneral').checked = classroom.tab_settings.visibility.general !== false;
+            document.getElementById('tabVisContent').checked = classroom.tab_settings.visibility.content !== false;
+            document.getElementById('tabVisHardware').checked = classroom.tab_settings.visibility.hardware !== false;
+            document.getElementById('tabVisCircuit').checked = classroom.tab_settings.visibility.circuit !== false;
+            document.getElementById('tabVisCode').checked = classroom.tab_settings.visibility.code !== false;
+            document.getElementById('tabVisTest').checked = classroom.tab_settings.visibility.test !== false;
+        }
+    }
 
     document.getElementById('classroomSettingsModal').classList.add('open');
 }
 
 async function saveClassroomSettings(event) {
     event.preventDefault();
-
     const classroomId = document.getElementById('settingsClassroomId').value;
-    const name = document.getElementById('settingsClassroomName').value.trim();
-    const description = document.getElementById('settingsClassroomDesc').value.trim();
-    const requiresPassword = document.getElementById('settingsRequirePassword').checked;
+    const name = document.getElementById('settingsClassroomName').value;
+    const description = document.getElementById('settingsClassroomDescription').value;
 
-    if (!name) {
-        showToast('Sınıf adı gerekli', 'error');
-        return;
-    }
+    const tabSettings = {
+        names: {
+            general: document.getElementById('tabNameGeneral').value,
+            content: document.getElementById('tabNameContent').value,
+            hardware: document.getElementById('tabNameHardware').value,
+            circuit: document.getElementById('tabNameCircuit').value,
+            code: document.getElementById('tabNameCode').value,
+            test: document.getElementById('tabNameTest').value,
+        },
+        visibility: {
+            general: document.getElementById('tabVisGeneral').checked,
+            content: document.getElementById('tabVisContent').checked,
+            hardware: document.getElementById('tabVisHardware').checked,
+            circuit: document.getElementById('tabVisCircuit').checked,
+            code: document.getElementById('tabVisCode').checked,
+            test: document.getElementById('tabVisTest').checked,
+        },
+    };
 
-    try {
-        const { error } = await SupabaseClient.getClient()
-            .from('classrooms')
-            .update({
-                name,
-                description: description || null,
-                requires_password: requiresPassword,
-            })
-            .eq('id', classroomId);
+    if (typeof ClassroomManager !== 'undefined') {
+        const result = await ClassroomManager.update(classroomId, {
+            name,
+            description,
+            tab_settings: tabSettings,
+        });
 
-        if (error) throw error;
-
-        const classroom = classrooms.find((c) => c.id === classroomId);
-        if (classroom) {
-            classroom.name = name;
-            classroom.description = description;
-            classroom.requires_password = requiresPassword;
+        if (result.success) {
+            closeModal('classroomSettingsModal');
+            showToast('Sınıf ayarları kaydedildi', 'success');
+        } else {
+            showToast('Ayarlar kaydedilemedi', 'error');
         }
-
-        closeModal('classroomSettingsModal');
-        showToast('Sınıf ayarları güncellendi', 'success');
-        loadClassrooms();
-    } catch (error) {
-        console.error('Error updating classroom:', error);
-        showToast('Ayarlar kaydedilemedi', 'error');
-    }
-}
-
-async function signOut() {
-    try {
-        await Auth.signOut();
-        window.location.href = 'auth.html';
-    } catch (error) {
-        console.error('Error signing out:', error);
-        showToast('Çıkış yapılamadı', 'error');
     }
 }
 
 // ==========================================
-// EXPORT FUNCTIONS TO WINDOW
+// EXPORT FUNCTIONS TO WINDOW & WRAPPER
 // ==========================================
+
+// Create Wrapper Object
+window.TeacherManager = {
+    init,
+    showSection,
+    hideLoading,
+    updateUserInfo,
+    toggleSidebar,
+    toggleTheme,
+    applyTheme,
+    showToast,
+    escapeHtml, // uses utility but exposing wrapper
+    loadDashboardData,
+    loadClassrooms,
+    loadStudents,
+    loadProgress,
+    loadProjects,
+    openCreateClassroomModal,
+    closeModal,
+    createClassroom,
+    viewClassroom,
+    toggleClassroom,
+    deleteClassroom,
+    copyCode,
+    shareClassroomCode,
+    selectAvatar,
+    generateRandomPassword,
+    openAddStudentModal,
+    addStudent,
+    deleteStudent,
+    printStudentList,
+    openBulkAddModal,
+    previewBulkStudents,
+    resetBulkForm,
+    copyBulkList,
+    saveBulkStudents,
+    selectEditAvatar,
+    openEditStudentModal,
+    saveStudentEdit,
+    openStudentDetailModal,
+    renderStudentDetailStats,
+    renderStudentCourseProgress,
+    openEditStudentFromDetail,
+    openClassroomSettings,
+    saveClassroomSettings,
+};
+
+// Also expose global functions for inline HTML event handlers
 window.showSection = showSection;
 window.hideLoading = hideLoading;
 window.updateUserInfo = updateUserInfo;
@@ -894,41 +958,10 @@ window.toggleSidebar = toggleSidebar;
 window.toggleTheme = toggleTheme;
 window.applyTheme = applyTheme;
 window.showToast = showToast;
-window.escapeHtml = Utils.escapeHtml;
-window.formatDate = Utils.formatDate;
+// window.escapeHtml = escapeHtml; // Conflict with Utils
 window.formatRelativeTime = formatRelativeTime;
 window.loadDashboardData = loadDashboardData;
-window.loadClassrooms = loadClassrooms;
-window.loadStudents = loadStudents;
-window.loadProgress = loadProgress;
-window.loadProjects = loadProjects;
-window.openCreateClassroomModal = openCreateClassroomModal;
-window.closeModal = closeModal;
-window.createClassroom = createClassroom;
-window.viewClassroom = viewClassroom;
-window.toggleClassroom = toggleClassroom;
-window.deleteClassroom = deleteClassroom;
-window.copyCode = copyCode;
-window.shareClassroomCode = shareClassroomCode;
-window.selectAvatar = selectAvatar;
-window.generateRandomPassword = generateRandomPassword;
-window.openAddStudentModal = openAddStudentModal;
-window.addStudent = addStudent;
-window.deleteStudent = deleteStudent;
-window.printStudentList = printStudentList;
-window.openBulkAddModal = openBulkAddModal;
-window.previewBulkStudents = previewBulkStudents;
-window.resetBulkForm = resetBulkForm;
-window.copyBulkList = copyBulkList;
-window.saveBulkStudents = saveBulkStudents;
-window.selectEditAvatar = selectEditAvatar;
-window.openEditStudentModal = openEditStudentModal;
-window.saveStudentEdit = saveStudentEdit;
-window.openStudentDetailModal = openStudentDetailModal;
-window.renderStudentDetailStats = renderStudentDetailStats;
-window.renderStudentCourseProgress = renderStudentCourseProgress;
-window.renderStudentRecentLessons = renderStudentRecentLessons;
-window.openEditStudentFromDetail = openEditStudentFromDetail;
-window.openClassroomSettings = openClassroomSettings;
-window.saveClassroomSettings = saveClassroomSettings;
-window.signOut = signOut;
+// ... (others are implicitly exposed by being functions in global scope)
+
+// Helper: Ensure other modules used are available or mocked if needed for safe init
+// Already handled in init() check

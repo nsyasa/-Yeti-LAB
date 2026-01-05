@@ -39,11 +39,29 @@ const Router = {
         const { course, project } = Router.getParams();
 
         // Tarayıcı geri/ileri butonlarını dinle
+        // Monitor browser back/forward buttons
         window.addEventListener('popstate', (event) => {
-            if (event.state) {
-                // Basitçe sayfayı yenilemek en temiz çözüm şu an için
-                // İleride tam SPA geçişi yapılabilir
-                window.location.reload();
+            const { course, project } = Router.getParams();
+
+            if (course) {
+                // Navigate to Course
+                // updateHistory: false (URL is already updated by browser)
+                appInstance.selectCourse(course, null, false).then(() => {
+                    if (project) {
+                        // Navigate to Project
+                        const projectId = parseInt(project);
+                        // Force project view if valid
+                        if (!isNaN(projectId)) {
+                            appInstance.loadProject(projectId, false);
+                        }
+                    } else {
+                        // If no project, explicitly show dashboard (in case we were in a project)
+                        if (UI && UI.switchView) UI.switchView('dashboard-view');
+                    }
+                });
+            } else {
+                // Navigate to Home
+                appInstance.renderCourseSelection(false);
             }
         });
 

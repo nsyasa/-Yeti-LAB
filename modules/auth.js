@@ -137,10 +137,24 @@ const Auth = {
 
         if (session) {
             this.currentUser = session.user;
+            if (window.Store) window.Store.setUser(this.currentUser);
             await this.loadUserProfile();
         }
 
         return session;
+    },
+
+    /**
+     * Check user role and return detailed status
+     * Used by teacher.html for initialization checks
+     */
+    async checkUserRole() {
+        await this.checkSession();
+        return {
+            success: !!this.currentUser,
+            user: this.currentUser,
+            role: this.userRole,
+        };
     },
 
     /**
@@ -158,6 +172,8 @@ const Auth = {
         if (data) {
             this.userRole = data.role;
             this.profileData = data;
+
+            if (window.Store) window.Store.setProfile(data);
 
             // Check both DB and Metadata for completion status
             // Metadata is now the primary source of truth for new profiles
@@ -199,10 +215,15 @@ const Auth = {
         return SupabaseClient.getClient().auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
                 this.currentUser = session.user;
+                if (window.Store) window.Store.setUser(this.currentUser);
                 await this.loadUserProfile();
             } else if (event === 'SIGNED_OUT') {
                 this.currentUser = null;
                 this.userRole = null;
+                if (window.Store) {
+                    window.Store.setUser(null);
+                    window.Store.setProfile(null);
+                }
             }
 
             callback(event, session, this.userRole);

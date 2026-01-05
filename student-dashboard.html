@@ -18,9 +18,20 @@
         <link rel="stylesheet" href="styles/components.css" />
         <link rel="stylesheet" href="styles/main.css" />
 
-        <!-- Supabase -->
+        <!-- Dynamic Components & Utilities -->
+        <script src="modules/toast.js" defer></script>
+        <script src="modules/themeManager.js" defer></script>
+        <script src="modules/components/Navbar.js" defer></script>
+        <script src="modules/components/Footer.js" defer></script>
+        <script src="modules/layout/MainLayout.js" defer></script>
+        <script src="modules/store/store.js" defer></script>
+        <script src="modules/router.js" defer></script>
+        <script src="modules/themeManager.js" defer></script>
+
+        <!-- Auth System -->
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="modules/toast.js"></script>
+        <script src="modules/supabaseClient.js"></script>
+        <script src="modules/auth.js"></script>
 
         <style>
             .dashboard-bg {
@@ -74,32 +85,11 @@
     <body class="bg-gray-50 text-gray-800">
         <div class="dashboard-bg min-h-screen pb-8">
             <!-- Header -->
-            <header class="py-4 px-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-                <div class="max-w-6xl mx-auto flex items-center justify-between">
-                    <a href="index.html" class="flex items-center">
-                        <img src="img/logo.svg" alt="Yeti LAB" class="w-10 h-10 mr-2" />
-                        <div class="brand-logo">
-                            <h1 class="text-xl text-gray-800 leading-tight flex items-baseline gap-1">
-                                <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
-                            </h1>
-                        </div>
-                    </a>
-                    <div class="flex items-center gap-4">
-                        <a href="index.html" class="text-gray-600 hover:text-theme transition-colors"> 🏠 Ana Sayfa </a>
-                        <div id="userInfo" class="flex items-center gap-2">
-                            <span id="userAvatar" class="text-2xl">👤</span>
-                            <span id="userName" class="font-medium">Yükleniyor...</span>
-                        </div>
-                        <button
-                            onclick="logout()"
-                            class="text-red-500 hover:text-red-600 transition-colors"
-                            title="Çıkış"
-                        >
-                            🚪
-                        </button>
-                    </div>
-                </div>
-            </header>
+            <!-- Header (Dynamic) -->
+            <header
+                id="main-header"
+                class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-100 sticky top-0 z-50 transition-all"
+            ></header>
 
             <!-- Main Content -->
             <main class="max-w-6xl mx-auto px-4 py-8">
@@ -161,19 +151,11 @@
                 </div>
             </main>
 
-            <!-- Footer -->
-            <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
-                <div class="flex items-center justify-center gap-2 mb-2">
-                    <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6" />
-                    <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
-                </div>
-                <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
-            </footer>
+            <!-- Footer (Dynamic) -->
+            <footer id="main-footer"></footer>
         </div>
 
         <!-- Scripts -->
-        <script src="modules/supabaseClient.js"></script>
-        <script src="modules/auth.js"></script>
         <script src="modules/courseLoader.js"></script>
         <script>
             // State
@@ -205,6 +187,15 @@
                 renderCourseProgress();
                 renderRecentActivity();
                 renderQuizHistory();
+
+                // Components init
+                if (window.MainLayout) window.MainLayout.init();
+
+                // Çıkış Yap Fonksiyonu (Navbar zaten çağırıyor ama legacy support için kalsın)
+                window.logout = async () => {
+                    await Auth.signOut();
+                    window.location.href = 'index.html';
+                };
             });
 
             async function loadProgressData() {
@@ -464,11 +455,6 @@
                 `;
                     })
                     .join('');
-            }
-
-            function logout() {
-                Auth.studentLogout();
-                window.location.href = 'auth.html';
             }
         </script>
     </body>

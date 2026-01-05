@@ -538,7 +538,7 @@ const Simulations = {
             ctx.fillStyle = '#eee';
             ctx.fillRect(0, 0, cw, ch);
 
-            if (app.arduinoImg && app.arduinoImg.complete) {
+            if (app.arduinoImg && app.arduinoImg.complete && app.arduinoImg.naturalWidth > 0) {
                 // Fit image to current canvas size but keeping relative coords of 500x350
                 const refW = 500;
                 const refH = 350;

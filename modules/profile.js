@@ -34,8 +34,13 @@ const Profile = {
         const isProfileComplete = Auth.isProfileComplete || (userInfo.isStudent && !userInfo.isAdmin);
         // Note: Students via code usually just start.
 
-        // Initial Header Render
-        this.renderHeader(userInfo);
+        // Initial Header Render -> OLD, removed
+        // this.renderHeader(userInfo);
+
+        // Update Navbar Auth State (Sync Navbar with current user)
+        if (window.Navbar && window.Navbar.updateAuthUI) {
+            window.Navbar.updateAuthUI();
+        }
 
         if (isProfileComplete) {
             this.Settings.init(userInfo);
@@ -164,20 +169,22 @@ const Profile = {
     // --- SETTINGS (MAIN VIEW) SUB-MODULE ---
     Settings: {
         async init(userInfo) {
-            document.getElementById('view-settings').classList.remove('hidden');
+            try {
+                // Show view immediately
+                document.getElementById('view-settings').classList.remove('hidden');
 
-            // Populate Hero
-            Profile.Editor.populateHero(userInfo);
+                // Populate UI
+                Profile.Editor.populateHero(userInfo);
+                Profile.Editor.populateFields(userInfo);
+                Profile.Editor.loadCities();
+                Profile.Editor.renderAvatars();
 
-            // Populate Fields
-            Profile.Editor.populateFields(userInfo);
-
-            // Load extra data
-            Profile.Editor.loadCities();
-            Profile.Editor.renderAvatars();
-
-            // Load Stats (Wait for it)
-            await Profile.Editor.loadStats();
+                // Load Stats async (don't block UI)
+                Profile.Editor.loadStats().catch((e) => console.warn('Stats load error:', e));
+            } catch (err) {
+                console.error('Profile Settings init error:', err);
+                if (typeof Toast !== 'undefined') Toast.show('Profil yüklenirken hata oluştu: ' + err.message, 'error');
+            }
         },
     },
 
@@ -261,7 +268,7 @@ const Profile = {
                 setVal('stat-lessons', stats.totalLessons);
                 setVal('stat-badges', stats.badges);
                 setVal('stat-streak', stats.streak);
-                setVal('stat-quiz', stats.quizAvg + '%');
+                setVal('stat-quiz', (isNaN(stats.quizAvg) ? 0 : stats.quizAvg) + '%');
 
                 // Level UI
                 setVal('hero-level-badge', 'Level ' + stats.level);
