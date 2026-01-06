@@ -180,11 +180,10 @@ const SupabaseClient = {
             .from('courses')
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq('id', courseId)
-            .select()
-            .single();
+            .select();
 
         if (error) throw error;
-        return data;
+        return data?.[0] || null;
     },
 
     /**
@@ -230,11 +229,10 @@ const SupabaseClient = {
             .from('phases')
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq('id', phaseId)
-            .select()
-            .single();
+            .select();
 
         if (error) throw error;
-        return data;
+        return data?.[0] || null;
     },
 
     /**
@@ -282,11 +280,10 @@ const SupabaseClient = {
             .from('projects')
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq('id', projectId)
-            .select()
-            .single();
+            .select();
 
         if (error) throw error;
-        return data;
+        return data?.[0] || null;
     },
 
     /**
@@ -319,11 +316,10 @@ const SupabaseClient = {
         const { data, error } = await this.getClient()
             .from('course_components')
             .upsert(component, { onConflict: 'course_id,key' })
-            .select()
-            .single();
+            .select();
 
         if (error) throw error;
-        return data;
+        return data?.[0] || null;
     },
 
     /**

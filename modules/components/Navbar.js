@@ -108,6 +108,9 @@ const Navbar = {
                 ? `<span class="text-xl">${avatarUrl}</span>`
                 : `<img src="${avatarUrl}" class="w-6 h-6 rounded-full object-cover">`;
 
+            // Admin kontrolü
+            const isAdmin = window.Auth && window.Auth.isAdmin();
+
             container.innerHTML = `
                 <div class="relative group" id="user-menu-wrapper">
                     <button onclick="document.getElementById('user-dropdown').classList.toggle('hidden')" 
@@ -129,7 +132,7 @@ const Navbar = {
                                 </div>
                                 <div>
                                     <div class="font-bold text-gray-800 dark:text-white text-sm">${meta.full_name || 'Misafir'}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">${isTeacher ? 'Eğitmen Hesabı' : 'Öğrenci Hesabı'}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">${isAdmin ? 'Yönetici Hesabı' : isTeacher ? 'Eğitmen Hesabı' : 'Öğrenci Hesabı'}</div>
                                 </div>
                             </div>
                             
@@ -140,8 +143,16 @@ const Navbar = {
                                 ${
                                     isTeacher
                                         ? `
-                                <a href="teacher.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                                <a href="#/teacher" onclick="event.preventDefault(); Router.navigate('/teacher')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                                     <span>👨‍🏫</span> Öğretmen Paneli
+                                </a>`
+                                        : ''
+                                }
+                                ${
+                                    isAdmin
+                                        ? `
+                                <a href="#/admin" onclick="event.preventDefault(); Router.navigate('/admin')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-purple-600 transition-colors">
+                                    <span>⚙️</span> Admin Paneli
                                 </a>`
                                         : ''
                                 }

@@ -211,12 +211,11 @@ const SupabaseSync = {
             const { data, error } = await SupabaseClient.getClient()
                 .from('projects')
                 .upsert(projectData, { onConflict: 'course_id,slug' })
-                .select()
-                .single();
+                .select();
 
             if (error) throw error;
 
-            return data;
+            return data?.[0] || null;
         } catch (error) {
             console.error('[SupabaseSync] Failed to save project:', error);
             return null;
@@ -436,39 +435,19 @@ const SupabaseSync = {
     async syncPhases(courseId, phases) {
         const phaseIdMap = {};
 
-        for (let i = 0; i < phases.length; i++) {
-            const phase = phases[i];
-            const name = phase.title || `Bölüm ${i}`;
+        // Process phases in parallel
+        const promises = phases.map(async (phase, i) => {
+            // Use existing helper function to save/update phase
+            const savedPhase = await this.savePhaseToSupabase(courseId, phase, i);
 
-            // Try to find existing phase
-            const { data: existing } = await SupabaseClient.getClient()
-                .from('phases')
-                .select('id')
-                .eq('course_id', courseId)
-                .eq('name', name)
-                .maybeSingle();
-
-            if (existing) {
-                // Update existing
-                await SupabaseClient.updatePhase(existing.id, {
-                    description: phase.description,
-                    position: i,
-                    meta: { color: phase.color, icon: phase.icon },
-                });
-                phaseIdMap[i] = existing.id;
+            if (savedPhase && savedPhase.id) {
+                phaseIdMap[i] = savedPhase.id;
             } else {
-                // Create new
-                const newPhase = await SupabaseClient.createPhase({
-                    course_id: courseId,
-                    name: name,
-                    description: phase.description || null,
-                    position: i,
-                    meta: { color: phase.color, icon: phase.icon },
-                });
-                phaseIdMap[i] = newPhase.id;
+                console.warn(`[SupabaseSync] Failed to sync phase index ${i}`);
             }
-        }
+        });
 
+        await Promise.all(promises);
         return phaseIdMap;
     },
 
@@ -476,75 +455,52 @@ const SupabaseSync = {
      * Sync projects to Supabase
      */
     async syncProjects(courseId, projects, phaseIdMap) {
-        for (const proj of projects) {
-            // CRITICAL FIX: Use position-based slug instead of title-based
-            // This prevents duplicate records when title changes
-            // Format: p-{position} - stable and unique per course
-            const position = proj.id !== undefined ? proj.id : projects.indexOf(proj);
-            const slug = `p-${position}`;
-            const phaseId = phaseIdMap[proj.phase] || Object.values(phaseIdMap)[0];
+        // Process in chunks (batches) to ensure stability and avoid timeouts
+        const CHUNK_SIZE = 4;
+        const results = [];
 
-            if (!phaseId) {
-                console.warn(`Phase not found for project ${proj.title}, skipping...`);
-                continue;
+        console.log(`[SupabaseSync] Syncing ${projects.length} projects in chunks of ${CHUNK_SIZE}...`);
+
+        for (let i = 0; i < projects.length; i += CHUNK_SIZE) {
+            const chunk = projects.slice(i, i + CHUNK_SIZE);
+
+            // Execute chunk in parallel
+            const chunkPromises = chunk.map((proj) => this.saveProjectToSupabase(courseId, proj, phaseIdMap));
+
+            // Wait for this chunk to finish
+            const chunkResults = await Promise.all(chunkPromises);
+            results.push(...chunkResults);
+
+            // Optional: Update status in console or UI
+            if (this.updateStatus) {
+                // Determine color based on progress
+                const progress = Math.min(i + CHUNK_SIZE, projects.length);
+                this.updateStatus(`💾 Kaydediliyor... (${progress}/${projects.length})`, 'blue');
             }
 
-            const projectData = {
-                course_id: courseId,
-                phase_id: phaseId,
-                slug: slug,
-                title: typeof proj.title === 'object' ? proj.title.tr : proj.title,
-                description: typeof proj.desc === 'object' ? proj.desc.tr : proj.desc,
-                materials: proj.materials || [],
-                circuit: proj.circuitImage || proj.circuit_desc || null,
-                code: proj.code || null,
-                simulation: proj.simType || null,
-                challenge: typeof proj.challenge === 'object' ? proj.challenge.tr : proj.challenge,
-                component_info: {
-                    id: proj.id,
-                    icon: proj.icon,
-                    phase: proj.phase,
-                    mainComponent: proj.mainComponent,
-                    hotspots: proj.hotspots,
-                    hasGraph: proj.hasGraph,
-                    hasSim: proj.hasSim,
-                    mission: proj.mission,
-                    theory: proj.theory,
-                    quiz: proj.quiz,
-                    hiddenTabs: proj.hiddenTabs,
-                    enableHotspots: proj.enableHotspots,
-                    showHotspotsInLab: proj.showHotspotsInLab,
-                    difficulty: proj.difficulty,
-                    duration: proj.duration,
-                    tags: proj.tags,
-                    prerequisites: proj.prerequisites,
-                },
-                is_published: false,
-                position: proj.id || 0,
-            };
-
-            // Upsert project
-            const { error } = await SupabaseClient.getClient()
-                .from('projects')
-                .upsert(projectData, { onConflict: 'course_id,slug' });
-
-            if (error) {
-                console.error(`Error saving project ${proj.title}:`, error);
+            // Small delay to release event loop
+            if (i + CHUNK_SIZE < projects.length) {
+                await new Promise((r) => setTimeout(r, 50));
             }
         }
+
+        // Log results
+        const successCount = results.filter((r) => r !== null).length;
+        console.log(`[SupabaseSync] Synced ${successCount}/${projects.length} projects`);
     },
 
     /**
      * Sync components to Supabase
      */
     async syncComponents(courseId, componentInfo) {
-        for (const [key, data] of Object.entries(componentInfo)) {
-            await SupabaseClient.upsertComponent({
+        const promises = Object.entries(componentInfo).map(([key, data]) =>
+            SupabaseClient.upsertComponent({
                 course_id: courseId,
                 key: key,
                 data: data,
-            });
-        }
+            })
+        );
+        await Promise.all(promises);
     },
 };
 

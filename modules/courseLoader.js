@@ -57,9 +57,20 @@ const CourseLoader = {
      * Initialize CourseLoader and fetch dynamic course list
      */
     async init() {
-        if (typeof SupabaseClient === 'undefined' || !SupabaseClient.client) return;
+        // Initialize SupabaseClient if not already done
+        if (typeof SupabaseClient !== 'undefined' && !SupabaseClient.client) {
+            SupabaseClient.init();
+        }
+
+        // Check again after init attempt
+        if (typeof SupabaseClient === 'undefined' || !SupabaseClient.client) {
+            console.warn('[CourseLoader] SupabaseClient not available, using static manifest');
+            return;
+        }
 
         try {
+            console.log('[CourseLoader] Fetching courses from Supabase...');
+
             // Fetch courses with project count
             const { data: courses, error } = await SupabaseClient.client
                 .from('courses')
@@ -67,6 +78,8 @@ const CourseLoader = {
                 .order('position', { ascending: true, nullsFirst: false });
 
             if (error) throw error;
+
+            console.log('[CourseLoader] Courses loaded:', courses?.length || 0);
 
             if (courses && courses.length > 0) {
                 // Rebuild manifest based on Supabase order (Master Source)

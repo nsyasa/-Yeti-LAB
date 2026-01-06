@@ -71,9 +71,9 @@ const EL = {
 
         // Course Settings
         COURSE: {
-            ICON: 'course-icon',
-            TITLE: 'course-title',
-            DESC: 'course-description',
+            ICON: 'admin-course-icon',
+            TITLE: 'admin-course-title',
+            DESC: 'admin-course-description',
             PREVIEW_ICON: 'course-icon-preview',
             PREVIEW_TITLE: 'course-title-preview',
             PREVIEW_DESC: 'course-desc-preview',

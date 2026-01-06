@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="tr">
     <head>
         <meta charset="UTF-8" />
@@ -22,7 +22,7 @@
         <link rel="stylesheet" href="styles/main.css" />
 
         <!-- Supabase -->
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
         <script src="modules/toast.js"></script>
 
         <style>
@@ -708,73 +708,101 @@
             // MAIN INITIALIZATION
             // ========================================
 
+            // ========================================
+            // MAIN INITIALIZATION
+            // ========================================
+
+            // Global Error Handler
+            window.onerror = function (msg, url, line, col, error) {
+                console.error('Global Error:', error);
+                // alert('Bir hata oluştu: ' + msg); // Kullanıcıyı çok rahatsız etmemek için önce sessiz log
+                return false;
+            };
+
             // Initialize
             document.addEventListener('DOMContentLoaded', async () => {
-                // Initialize Supabase
-                SupabaseClient.init();
+                // 1. SETUP FORMS FIRST (To prevent page reload on submit even if init fails)
+                setupForms();
 
-                // Check URL params - if force=true, don't redirect
-                const urlParams = new URLSearchParams(window.location.search);
-                const forceShow = urlParams.get('force') === 'true';
-
-                // Check for OAuth callback (URL contains access_token in hash)
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                if (hashParams.get('access_token')) {
-                    // OAuth callback - wait for session to be established
-                    showAlert('Giriş yapılıyor, lütfen bekleyin...', 'info');
-
-                    // Give Supabase time to process the token
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-                    // Check session again
-                    const session = await Auth.checkSession();
-                    if (session) {
-                        showAlert('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
-                        setTimeout(() => {
-                            // Clear the hash and redirect to index (teacher can access panel from there)
-                            Router.redirectTo('index.html');
-                        }, 500);
+                try {
+                    // Initialize Supabase
+                    const supInit = SupabaseClient.init();
+                    if (!supInit) {
+                        showAlert('Sunucu bağlantısı kurulamadı (SDK eksik).', 'error');
                         return;
                     }
-                }
 
-                // Check if already logged in
-                const session = await Auth.checkSession();
-                if (session && !forceShow) {
-                    Router.redirectTo('index.html');
-                    return;
-                }
+                    // Check URL params
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const forceShow = urlParams.get('force') === 'true';
 
-                // Check student session
-                if (Auth.checkStudentSession() && !forceShow) {
-                    Router.redirectTo('index.html');
-                    return;
-                }
+                    // ... devamı orijinal kod ...
 
-                // If logged in but force=true, show logout option
-                if (session && forceShow) {
-                    const userName =
-                        session.user?.user_metadata?.full_name ||
-                        session.user?.user_metadata?.name ||
-                        session.user?.email ||
-                        'Kullanıcı';
-                    showAlert(`Zaten giriş yapmışsınız: ${userName}`, 'success');
+                    // Check for OAuth callback (URL contains access_token in hash)
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    if (hashParams.get('access_token')) {
+                        // OAuth callback - wait for session to be established
+                        showAlert('Giriş yapılıyor, lütfen bekleyin...', 'info');
 
-                    // Replace guest link with logout
-                    const guestLink = document.querySelector('.mt-6.pt-6');
-                    guestLink.innerHTML = `
+                        // Give Supabase time to process the token
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                        // Check session again
+                        const session = await Auth.checkSession();
+                        if (session) {
+                            showAlert('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
+                            setTimeout(() => {
+                                // Clear the hash and redirect to index (teacher can access panel from there)
+                                Router.redirectTo('index.html');
+                            }, 500);
+                            return;
+                        }
+                    }
+
+                    // Check if already logged in
+                    const session = await Auth.checkSession();
+                    if (session && !forceShow) {
+                        Router.redirectTo('index.html');
+                        return;
+                    }
+
+                    // Check student session
+                    if (Auth.checkStudentSession() && !forceShow) {
+                        Router.redirectTo('index.html');
+                        return;
+                    }
+
+                    // If logged in but force=true, show logout option
+                    if (session && forceShow) {
+                        const userName =
+                            session.user?.user_metadata?.full_name ||
+                            session.user?.user_metadata?.name ||
+                            session.user?.email ||
+                            'Kullanıcı';
+                        showAlert(`Zaten giriş yapmışsınız: ${userName}`, 'success');
+
+                        // Replace guest link with logout
+                        const guestLink = document.querySelector('.mt-6.pt-6');
+                        guestLink.innerHTML = `
                     <button onclick="logout()" class="w-full bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition-all mb-3">
                         🚪 Çıkış Yap
                     </button>
                     <a href="index.html" class="text-gray-500 hover:text-theme transition-colors">← Ana sayfaya dön</a>
                 `;
+                    }
+
+                    // Setup code inputs
+                    setupCodeInputs();
+                } catch (err) {
+                    console.error('Critical Init Error:', err);
+                    // Try to show in alert box if exists
+                    const alertBox = document.getElementById('alertBox');
+                    if (alertBox) {
+                        alertBox.textContent = 'Sistem hatası: ' + err.message;
+                        alertBox.classList.remove('hidden');
+                        alertBox.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                    }
                 }
-
-                // Setup code inputs
-                setupCodeInputs();
-
-                // Setup forms
-                setupForms();
             });
 
             // Logout function
@@ -1107,7 +1135,22 @@
                     setLoading(btn, true);
 
                     try {
-                        await Auth.signInWithEmail(email, password);
+                        // Create timeout promise (10s)
+                        const timeout = new Promise((_, reject) =>
+                            setTimeout(
+                                () =>
+                                    reject(
+                                        new Error(
+                                            'Sunucudan yanıt alınamadı (Zaman aşımı). Lütfen internet bağlantınızı kontrol edin.'
+                                        )
+                                    ),
+                                10000
+                            )
+                        );
+
+                        // Race against login
+                        await Promise.race([Auth.signInWithEmail(email, password), timeout]);
+
                         showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
                         setTimeout(() => {
                             Router.redirectTo('index.html');

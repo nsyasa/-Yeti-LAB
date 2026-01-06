@@ -34,9 +34,25 @@ const admin = {
     undoStack: [], // {type: 'project'|'component'|'phase', data: {...}, courseKey: 'arduino'}
 
     // --- AUTOSAVE SYSTEM (Delegated to modules/admin/storage.js) ---
+    // --- AUTOSAVE SYSTEM ---
+    supabaseAutoSaveTimer: null,
+
     triggerAutoSave: () => {
+        // Local Save (Immediate / Fast)
         if (typeof StorageManager !== 'undefined') {
             StorageManager.triggerAutoSave();
+        }
+
+        // Remote Save (Debounced 5s for Supabase)
+        // This prevents excessive API cals
+        if (admin.supabaseAutoSaveTimer) clearTimeout(admin.supabaseAutoSaveTimer);
+
+        // Only autosave to Supabase if user is admin
+        if (window.Auth && Auth.isAdmin()) {
+            admin.supabaseAutoSaveTimer = setTimeout(() => {
+                console.log('[Admin] Triggering Supabase auto-save...');
+                admin.saveData(true); // true = silent mode
+            }, 5000);
         }
     },
 
@@ -91,13 +107,30 @@ const admin = {
             // Initialize empty course data container
             admin.allCourseData = {};
 
-            // Try to load from Supabase first (if available)
-            if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && SupabaseClient.isAdmin) {
-                const courseList = await SupabaseSync.loadCourseList();
+            // Check if user is admin
+            const isAdmin = window.Auth && Auth.isAdmin();
+            console.log('[Admin] User is admin:', isAdmin);
+
+            // Try to load from Supabase first (if available and user is admin)
+            if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && isAdmin) {
+                console.log('[Admin] Loading courses from Supabase...');
+
+                // Add 15s Timeout
+                const timeout = new Promise((_, reject) =>
+                    setTimeout(
+                        () => reject(new Error('Kurs listesi yüklenemedi: Sunucu 15 saniye içinde yanıt vermedi.')),
+                        15000
+                    )
+                );
+
+                const courseList = await Promise.race([SupabaseSync.loadCourseList(), timeout]);
+
+                console.log('[Admin] Course list:', courseList);
 
                 if (courseList.length > 0) {
                     // Load each course from Supabase
                     for (const course of courseList) {
+                        console.log('[Admin] Loading course:', course.slug);
                         const courseData = await SupabaseSync.loadFromSupabase(course.slug);
                         if (courseData) {
                             admin.allCourseData[course.slug] = courseData;
@@ -314,13 +347,17 @@ const admin = {
             window.applyTheme(key);
         }
 
-        // UI Reset
-        document.getElementById('project-welcome').classList.remove('hidden');
-        document.getElementById('project-form').classList.add('hidden');
+        // UI Reset - SPA modunda bu elementler olmayabilir
+        const projectWelcome = document.getElementById('project-welcome');
+        const projectForm = document.getElementById('project-form');
+        if (projectWelcome) projectWelcome.classList.remove('hidden');
+        if (projectForm) projectForm.classList.add('hidden');
         admin.currentProjectId = null;
 
-        document.getElementById('component-welcome').classList.remove('hidden');
-        document.getElementById('component-form').classList.add('hidden');
+        const componentWelcome = document.getElementById('component-welcome');
+        const componentForm = document.getElementById('component-form');
+        if (componentWelcome) componentWelcome.classList.remove('hidden');
+        if (componentForm) componentForm.classList.add('hidden');
         admin.currentComponentKey = null;
 
         // Dynamic Labels
@@ -358,11 +395,23 @@ const admin = {
         }
         admin.renderComponentList();
         admin.renderPhaseList();
-        admin.loadCourseSettings();
 
-        // Reset phase UI too
-        document.getElementById('phase-welcome').classList.remove('hidden');
-        document.getElementById('phase-form').classList.add('hidden');
+        // Load course settings only if data is available
+        const courseData = admin.allCourseData[key];
+        if (courseData && courseData.title) {
+            admin.loadCourseSettings();
+        } else {
+            // Retry after a short delay (data might still be loading)
+            setTimeout(() => {
+                admin.loadCourseSettings();
+            }, 100);
+        }
+
+        // Reset phase UI too - SPA modunda bu elementler olmayabilir
+        const phaseWelcome = document.getElementById('phase-welcome');
+        const phaseForm = document.getElementById('phase-form');
+        if (phaseWelcome) phaseWelcome.classList.remove('hidden');
+        if (phaseForm) phaseForm.classList.add('hidden');
         admin.currentPhaseIndex = null;
 
         // Metadata'yı Supabase'den çek (async)
@@ -380,6 +429,9 @@ const admin = {
         tabs.forEach((t) => {
             const view = document.getElementById('view-' + t);
             const btn = document.getElementById('tab-' + t);
+
+            // SPA modunda bu elementler olmayabilir
+            if (!view || !btn) return;
 
             if (t === tabName) {
                 view.classList.remove('hidden');
@@ -758,21 +810,43 @@ const admin = {
         }
     },
 
-    saveData: async () => {
+    saveData: async (silent = false) => {
         const errors = admin.validateProjectData();
         if (errors.length > 0) {
-            if (!confirm('Hatalar var (konsola bak). Yine de kaydetmek ister misin?')) return;
+            console.warn('[Admin] Validation errors:', errors);
+            if (!silent && !confirm('Hatalar var (konsola bak). Yine de kaydetmek ister misin?')) return;
         }
 
         const key = admin.currentCourseKey;
         const courseData = admin.allCourseData[key];
 
-        // Check if Supabase is available and user is authenticated
-        if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && SupabaseClient.isAdmin) {
-            await admin.saveToSupabase(key, courseData);
+        // Check if Supabase is available and user is admin
+        const isAdmin = window.Auth && Auth.isAdmin();
+        if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && isAdmin) {
+            // Show saving status (custom toast or persistent UI)
+            if (silent && typeof StorageManager !== 'undefined') {
+                StorageManager.updateStatus('Buluta kaydediliyor...', 'blue');
+            } else if (!silent) {
+                admin.showLoading('Kaydediliyor...');
+            }
+
+            try {
+                await admin.saveToSupabase(key, courseData);
+
+                if (silent && typeof StorageManager !== 'undefined') {
+                    StorageManager.updateStatus('Buluta kaydedildi ✓', 'green');
+                }
+            } catch (err) {
+                console.error('Save failed:', err);
+                if (silent && typeof StorageManager !== 'undefined') {
+                    StorageManager.updateStatus('Bulut kaydı başarısız!', 'red');
+                }
+            } finally {
+                if (!silent) admin.hideLoading();
+            }
         } else {
             // Fallback: Download as file
-            admin.downloadCourseAsFile(key, courseData);
+            if (!silent) admin.downloadCourseAsFile(key, courseData);
         }
     },
 

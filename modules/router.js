@@ -18,6 +18,11 @@ const Router = {
         teacher: 'teacher', // Teacher dashboard
         'teacher/classrooms': 'teacher-classrooms', // Sınıflar
         'teacher/students': 'teacher-students', // Öğrenciler
+        // Admin Panel Routes (SPA)
+        admin: 'admin', // Admin dashboard/projects
+        'admin/projects': 'admin-projects', // Ders yönetimi
+        'admin/phases': 'admin-phases', // Faz yönetimi
+        'admin/components': 'admin-components', // Bileşen yönetimi
     },
 
     // ===== Adım 1.2: Hash Parse Fonksiyonu =====
@@ -81,8 +86,8 @@ const Router = {
     redirectTo(page) {
         // Ayrı HTML sayfaları - bunlar SPA'nın parçası DEĞİL
         // Her zaman hard redirect kullan
-        // NOT: teacher.html artık SPA'nın parçası, listeden çıkarıldı
-        const separatePages = ['auth.html', 'profile.html', 'admin.html', 'student-dashboard.html'];
+        // NOT: teacher.html ve admin.html artık SPA'nın parçası, listeden çıkarıldı
+        const separatePages = ['auth.html', 'profile.html', 'student-dashboard.html'];
 
         if (separatePages.includes(page)) {
             console.log(`[Router] Separate page redirect: ${page}`);
@@ -94,6 +99,7 @@ const Router = {
         const spaRoutes = {
             'index.html': '/',
             'teacher.html': '/teacher', // Teacher panel artık SPA
+            'admin.html': '/admin', // Admin panel artık SPA
         };
 
         // Eğer şu an index.html'deysen ve hedef de SPA route'uysa, hash kullan

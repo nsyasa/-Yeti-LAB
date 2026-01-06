@@ -59,6 +59,16 @@ export default [
                 StudentsSection: 'readonly',
                 TeacherManager: 'readonly',
                 Toast: 'readonly',
+                // Admin View Components (SPA)
+                AdminView: 'readonly',
+                AdminLayout: 'readonly',
+                AdminModals: 'readonly',
+                ProjectsSection: 'readonly',
+                PhasesSection: 'readonly',
+                ComponentsSection: 'readonly',
+                CourseManager: 'readonly',
+                HotspotManager: 'readonly',
+                QuizManager: 'readonly',
                 // Test globals
                 describe: 'readonly',
                 it: 'readonly',

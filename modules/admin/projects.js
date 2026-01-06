@@ -186,8 +186,11 @@ const ProjectManager = {
         // Code Mode Logic
         const codeVal = p.code || '';
         const isImg = codeVal.match(/\.(jpeg|jpg|gif|png)$/) != null;
-        document.getElementById('p-code-mode').value = isImg ? 'image' : 'text';
-        this.toggleCodeMode();
+        const codeModeEl = document.getElementById('p-code-mode');
+        if (codeModeEl) {
+            codeModeEl.value = isImg ? 'image' : 'text';
+            this.toggleCodeMode();
+        }
 
         if (isImg) {
             setVal('p-code', codeVal);

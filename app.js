@@ -568,9 +568,41 @@ const app = {
             }
         }
 
+        // Admin view'dan çıkış kontrolü - admin olmayan route'a geçişte unmount et
+        const isAdminRoute =
+            route === 'admin' || route === 'admin-projects' || route === 'admin-phases' || route === 'admin-components';
+        const adminViewInDOM = document.getElementById('admin-view') !== null;
+
+        if (!isAdminRoute && (adminViewInDOM || (window.AdminView && AdminView.isLoaded))) {
+            console.log('[App] Leaving admin view, unmounting...');
+            if (window.AdminView) {
+                AdminView.unmount();
+            } else {
+                // Fallback: Manuel temizlik
+                const adminView = document.getElementById('admin-view');
+                if (adminView) adminView.remove();
+
+                const container = document.getElementById('admin-view-container');
+                if (container) {
+                    container.innerHTML = '';
+                    container.classList.add('hidden');
+                }
+
+                // Show main layout
+                const header = document.getElementById('main-header');
+                if (header) header.style.display = '';
+                const footer = document.getElementById('main-footer');
+                if (footer) footer.style.display = '';
+            }
+        }
+
         switch (route) {
             case 'home':
                 // Ana sayfa - kurs seçim ekranı
+                // Refresh course list from Supabase (in case admin made changes)
+                if (window.CourseLoader?.init) {
+                    await CourseLoader.init();
+                }
                 app.renderCourseSelection(false); // updateHistory: false (URL zaten hash'te)
                 break;
 
@@ -609,10 +641,104 @@ const app = {
                 await app.loadTeacherView(route);
                 break;
 
+            // ===== ADMIN PANEL ROUTES (SPA) =====
+            case 'admin':
+            case 'admin-projects':
+            case 'admin-phases':
+            case 'admin-components':
+                await app.loadAdminView(route);
+                break;
+
             default:
                 console.warn(`[App] Unknown route: ${route}`);
                 app.renderCourseSelection(false);
         }
+    },
+
+    // ===== Admin View Loader (SPA) =====
+    loadAdminView: async (route) => {
+        console.log('[App] Loading admin view:', route);
+
+        // Admin view'dan çıkış kontrolü - admin olmayan route'a geçişte unmount et
+        const isAdminRoute = route.startsWith('admin');
+        const adminViewInDOM = document.getElementById('admin-view') !== null;
+
+        if (!isAdminRoute && (adminViewInDOM || (window.AdminView && AdminView.isLoaded))) {
+            console.log('[App] Leaving admin view, unmounting...');
+            if (window.AdminView) {
+                AdminView.unmount();
+            }
+            return;
+        }
+
+        // AdminView yüklü değilse, script'leri yükle
+        if (!window.AdminView) {
+            await app.loadAdminScripts();
+        }
+
+        // Container al veya oluştur
+        let container = document.getElementById('admin-view-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'admin-view-container';
+            container.className = 'hidden';
+            document.querySelector('main').appendChild(container);
+        }
+
+        // Mount view
+        const mounted = await AdminView.mount(container);
+
+        if (mounted) {
+            // Handle sub-routes
+            if (route === 'admin-projects' || route === 'admin') {
+                AdminView.showSection('projects');
+            } else if (route === 'admin-phases') {
+                AdminView.showSection('phases');
+            } else if (route === 'admin-components') {
+                AdminView.showSection('components');
+            }
+        }
+    },
+
+    // Admin script'lerini lazy load et
+    loadAdminScripts: async () => {
+        console.log('[App] Loading admin scripts...');
+
+        const scripts = [
+            // Constants
+            'constants/elements.js',
+            // Core dependencies
+            'data/base.js',
+            'modules/courseLoader.js',
+            'data/quiz.js',
+            'modules/themes.js',
+            'config/tabs.js',
+            // Admin modules
+            'modules/admin/storage.js',
+            'modules/admin/courses.js',
+            'modules/admin/phases.js',
+            'modules/admin/components.js',
+            'modules/admin/projects.js',
+            'modules/admin/settings.js',
+            'modules/admin/supabase-sync.js',
+            'modules/admin/hotspots.js',
+            'modules/admin/images.js',
+            'modules/admin/quizzes.js',
+            'modules/admin.js', // Main admin coordinator
+            // View components
+            'views/admin/AdminLayout.js',
+            'views/admin/sections/ProjectsSection.js',
+            'views/admin/sections/PhasesSection.js',
+            'views/admin/sections/ComponentsSection.js',
+            'views/admin/modals/AdminModals.js',
+            'views/admin/AdminView.js',
+        ];
+
+        for (const src of scripts) {
+            await app.loadScript(src);
+        }
+
+        console.log('[App] Admin scripts loaded');
     },
 
     // ===== Teacher View Loader (SPA) =====

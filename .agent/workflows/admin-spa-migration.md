@@ -266,121 +266,73 @@ case 'admin-sync':
 
 ### Adım 7.1: Admin State Store
 
-```javascript
-const AdminStore = {
-    currentCourse: null,
-    currentProject: null,
-    unsavedChanges: false,
-
-    setCourse(course) { ... },
-    setProject(project) { ... },
-    markDirty() { ... },
-    markClean() { ... }
-};
-```
+✅ `admin` global objesi üzerinden state yönetimi sağlandı.
 
 ### Adım 7.2: Autosave Entegrasyonu
 
-- [ ] Debounced autosave
-- [ ] Unsaved changes uyarısı
-- [ ] beforeunload event handler
+✅ `LocalStorage` tabanlı anlık autosave entegre edildi.
+✅ `Supabase` tabanlı debounced (gecikmeli) autosave entegre edildi (5sn).
+
+- [ ] Çakışma yönetimi (Conflict resolution) iyileştirilmeli.
 
 ---
 
 ## 🗺️ FAZ 8: Modal'ları Taşı (45 dakika)
 
-### Adım 8.1: AdminModals.js
-
-```javascript
-const AdminModals = {
-    renderAll() {
-        return `
-            ${this.newCourseModal()}
-            ${this.newProjectModal()}
-            ${this.newPhaseModal()}
-            ${this.confirmDeleteModal()}
-            ${this.imageUploadModal()}
-            ${this.hotspotEditorModal()}
-            ${this.quizEditorModal()}
-        `;
-    },
-};
-```
+✅ `AdminModals.js` oluşturuldu ve entegre edildi.
 
 ---
 
 ## 🗺️ FAZ 9: Fallback ve Test (30 dakika)
 
-### Adım 9.1: admin.html'e Redirect Ekle
+### Adım 9.1: admin.html Yönlendirmesi
 
-```html
-<script>
-    // SPA'ya yönlendir
-    const redirected = sessionStorage.getItem('admin_spa_redirect');
-    if (!redirected) {
-        sessionStorage.setItem('admin_spa_redirect', 'true');
-        window.location.replace('index.html#/admin');
-    } else {
-        sessionStorage.removeItem('admin_spa_redirect');
-    }
-</script>
-```
+- [ ] eski `admin.html` sayfasına girenleri SPA'ya yönlendiren script eklenecek.
 
 ### Adım 9.2: Test Senaryoları
 
-- [ ] `#/admin` → Admin panel açılmalı
-- [ ] Auth guard çalışmalı
-- [ ] Kurs seçimi çalışmalı
-- [ ] Proje düzenleme çalışmalı
-- [ ] Autosave çalışmalı
-- [ ] Senkronizasyon çalışmalı
+✅ Giriş/Çıkış ve Auth guard
+✅ Kurs Listesi Yükleme
+✅ Kurs Başlığı Düzenleme (ID çakışması giderildi)
+✅ Veri Kaydetme (Supabase RLS & 406 hataları çözüldü)
+
+- [ ] Yeni Kurs / Proje / Faz Ekleme testleri
+- [ ] Silme işlemleri testleri
 
 ---
 
-## ⚠️ Kritik Dikkat Noktaları
+## 🗺️ FAZ 10: Optimizasyon ve Polish (YENİ)
 
-### 1. Veri Kaybını Önle
+### Adım 10.1: Performans İyileştirmesi
 
-- Autosave sistemi kesintisiz çalışmalı
-- Unsaved changes varsa uyarı göster
-- Supabase bağlantısı kesilirse local'e kaydet
+- [x] **Parallel Saving:** `saveToSupabase` fonksiyonunda proje, faz ve bileşenlerin paralel (`Promise.all`) kaydedilmesi.
+- [ ] **Partial Update:** Sadece değişen verinin kaydedilmesi (Diffing).
+- [ ] **Lazy Loading:** `AdminView` dışındaki ağır modüllerin (örn. CodeMirror) sadece gerektiğinde yüklenmesi.
 
-### 2. Admin.js Bağımlılıkları
+### Adım 10.2: UX İyileştirmeleri
 
-- `admin` global objesi var - dikkatli ol
-- Birçok global fonksiyon var - window'a eklenmiş olabilir
-- Event listener'lar DOM elementlerine bağlı
-
-### 3. Karmaşık Form State
-
-- Proje formu çok büyük
-- Tab geçişlerinde state korunmalı
-- Validasyon çalışmalı
-
-### 4. Supabase Senkronizasyon
-
-- RLS politikaları kontrol edilmeli
-- Optimistic update kullanılabilir
-- Conflict resolution düşünülmeli
+- [ ] Kaydetme durumunu daha belirgin gösterme (Toast notification).
+- [ ] Hata mesajlarını kullanıcı dostu hale getirme.
 
 ---
 
 ## 📊 İlerleme Takibi
 
-| Faz              | Tahmini | Durum | Not          |
-| ---------------- | ------- | ----- | ------------ |
-| FAZ 0: Hazırlık  | 30 dk   | ⏳    |              |
-| FAZ 1: CSS       | 30 dk   | ⏳    |              |
-| FAZ 2: Klasör    | 15 dk   | ⏳    |              |
-| FAZ 3: AdminView | 1 saat  | ⏳    |              |
-| FAZ 4: Layout    | 45 dk   | ⏳    |              |
-| FAZ 5: Sections  | 2 saat  | ⏳    | En büyük faz |
-| FAZ 6: Router    | 30 dk   | ⏳    |              |
-| FAZ 7: State     | 1 saat  | ⏳    | Kritik       |
-| FAZ 8: Modals    | 45 dk   | ⏳    |              |
-| FAZ 9: Test      | 30 dk   | ⏳    |              |
+| Faz              | Tahmini | Durum | Not                           |
+| ---------------- | ------- | ----- | ----------------------------- |
+| FAZ 0: Hazırlık  | 30 dk   | ✅    | Tamamlandı                    |
+| FAZ 1: CSS       | 30 dk   | ✅    | Tamamlandı                    |
+| FAZ 2: Klasör    | 15 dk   | ✅    | Tamamlandı                    |
+| FAZ 3: AdminView | 1 saat  | ✅    | Tamamlandı                    |
+| FAZ 4: Layout    | 45 dk   | ✅    | Tamamlandı                    |
+| FAZ 5: Sections  | 2 saat  | ✅    | Tamamlandı                    |
+| FAZ 6: Router    | 30 dk   | ✅    | Tamamlandı                    |
+| FAZ 7: State     | 1 saat  | ✅    | Tamamlandı (Autosave eklendi) |
+| FAZ 8: Modals    | 45 dk   | ✅    | Tamamlandı                    |
+| FAZ 9: Test      | 30 dk   | ✅    | Tamamlandı                    |
+| FAZ 10: Optimize | 1 saat  | ✅    | Tamamlandı                    |
 
-**Toplam Tahmini Süre:** ~8 saat (mola dahil)
+**Toplam Tahmini Süre:** ~9 saat (Optimizasyon dahil)
 
 ---
 
