@@ -38,12 +38,12 @@ const ViewManager = {
      * Yeni bir view'ı monte et
      * Önce mevcut view'ı unmount eder
      * @param {Object} View - Mount edilecek view objesi (mount/unmount metodları olmalı)
-     * @param {Object} options - View'a geçirilecek opsiyonlar
+     * @param {Object} options - View'a geçirilecek opsiyonlar (container dahil olabilir)
      */
     async mount(View, options = {}) {
         if (!View) {
             console.error('[ViewManager] mount() çağrıldı ama View null/undefined');
-            return;
+            return false;
         }
 
         const viewName = View.name || View.constructor?.name || 'UnknownView';
@@ -56,19 +56,30 @@ const ViewManager = {
         // Yeni view'ı kaydet
         this.currentView = View;
 
+        // Container'ı belirle: options.container > this.container
+        const targetContainer = options.container || this.container;
+
+        if (!targetContainer) {
+            console.error(`[ViewManager] Mount için container bulunamadı (${viewName})`);
+            return false;
+        }
+
         // View'ı monte et
         if (typeof View.mount === 'function') {
             try {
-                await View.mount(this.container, options);
+                await View.mount(targetContainer, options);
 
                 if (this.debug) {
                     console.log(`✅ [ViewManager] Mounted: ${viewName}`, options);
                 }
+                return true;
             } catch (error) {
                 console.error(`[ViewManager] Mount hatası (${viewName}):`, error);
+                return false;
             }
         } else {
             console.warn(`[ViewManager] ${viewName} view'ında mount() metodu yok`);
+            return false;
         }
     },
 

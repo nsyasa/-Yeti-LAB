@@ -43,8 +43,10 @@ const admin = {
             StorageManager.triggerAutoSave();
         }
 
-        // Remote Save (Debounced 5s for Supabase)
-        // This prevents excessive API cals
+        // TEMPORARILY DISABLED: Remote Save to Supabase
+        // Too many concurrent requests cause issues
+        // Use manual "Kaydet" button instead
+        /*
         if (admin.supabaseAutoSaveTimer) clearTimeout(admin.supabaseAutoSaveTimer);
 
         // Only autosave to Supabase if user is admin
@@ -54,6 +56,7 @@ const admin = {
                 admin.saveData(true); // true = silent mode
             }, 5000);
         }
+        */
     },
 
     saveToLocal: () => {
@@ -101,6 +104,13 @@ const admin = {
     },
 
     init: async () => {
+        // Prevent duplicate initialization
+        if (admin._isInitialized && Object.keys(admin.allCourseData || {}).length > 0) {
+            console.log('[Admin] Already initialized, skipping...');
+            admin.hideLoading();
+            return;
+        }
+
         admin.showLoading('Yeti LAB Yönetim Paneli Yükleniyor...');
 
         try {
@@ -115,11 +125,11 @@ const admin = {
             if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client && isAdmin) {
                 console.log('[Admin] Loading courses from Supabase...');
 
-                // Add 15s Timeout
+                // Add 30s Timeout (increased from 15s to handle slow connections)
                 const timeout = new Promise((_, reject) =>
                     setTimeout(
-                        () => reject(new Error('Kurs listesi yüklenemedi: Sunucu 15 saniye içinde yanıt vermedi.')),
-                        15000
+                        () => reject(new Error('Kurs listesi yüklenemedi: Sunucu 30 saniye içinde yanıt vermedi.')),
+                        30000
                     )
                 );
 
@@ -148,6 +158,8 @@ const admin = {
                 // Restore from LocalStorage if available
                 admin.restoreFromLocal();
             }
+
+            admin._isInitialized = true;
 
             // Migrate Quiz Data if needed
             if (admin.migrateQuizData) admin.migrateQuizData();

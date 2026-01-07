@@ -211,14 +211,20 @@ const ProjectManager = {
         const editorContent = document.getElementById('hotspot-editor-content');
 
         const hasHotspots = (p.hotspots && p.hotspots.length > 0) || p.enableHotspots;
-        enableHotspots.checked = hasHotspots;
-        showInLab.checked = p.showHotspotsInLab || false;
 
-        if (hasHotspots) {
+        // Null checks - these elements may not exist in SPA context
+        if (enableHotspots) {
+            enableHotspots.checked = hasHotspots;
+        }
+        if (showInLab) {
+            showInLab.checked = p.showHotspotsInLab || false;
+        }
+
+        if (hasHotspots && editorContent) {
             editorContent.classList.remove('hidden');
             // Assuming HotspotEditor is global or we need to bridge it
             if (typeof HotspotEditor !== 'undefined') setTimeout(() => HotspotEditor.init(), 100);
-        } else {
+        } else if (editorContent) {
             editorContent.classList.add('hidden');
         }
 

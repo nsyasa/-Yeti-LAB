@@ -79,8 +79,13 @@ const Progress = {
         }
 
         // Validate studentId is a valid UUID (not a temporary code like "123")
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        if (!uuidRegex.test(studentId)) {
+        // Use Validators module if available, fallback to inline regex
+        const isValidUUID =
+            typeof Validators !== 'undefined'
+                ? Validators.isValidUUID(studentId)
+                : /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId);
+
+        if (!isValidUUID) {
             console.warn('[Progress] Invalid student_id (not UUID), clearing invalid session:', studentId);
             // Clear invalid session
             if (typeof Auth !== 'undefined') {

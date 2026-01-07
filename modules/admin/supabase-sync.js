@@ -208,10 +208,16 @@ const SupabaseSync = {
                 position: project.id || 0,
             };
 
+            // Debug: Log what we're sending
+            console.log(`[SupabaseSync] Saving project ${slug}:`, projectData.title);
+
             const { data, error } = await SupabaseClient.getClient()
                 .from('projects')
                 .upsert(projectData, { onConflict: 'course_id,slug' })
                 .select();
+
+            // Debug: Log response
+            console.log(`[SupabaseSync] Project ${slug} response:`, data?.[0]?.id || 'no data', error || 'success');
 
             if (error) throw error;
 
@@ -350,6 +356,8 @@ const SupabaseSync = {
      * Save course data to Supabase
      */
     async saveToSupabase(courseKey, courseData) {
+        console.log('[SupabaseSync] saveToSupabase called:', courseKey);
+
         try {
             this.updateStatus("☁️ Supabase'e kaydediliyor...", 'yellow');
 
@@ -357,10 +365,13 @@ const SupabaseSync = {
             // FIX: Always use the stable courseKey as slug, don't generate from title
             // This prevents creating duplicate courses when title is updated
             const slug = courseKey || this.slugify(courseData.title);
+            console.log('[SupabaseSync] Step 1: Getting course by slug:', slug);
 
             let course = await SupabaseClient.getCourseBySlug(slug);
+            console.log('[SupabaseSync] Step 1 complete: course =', course?.id || 'new');
 
             if (!course) {
+                console.log('[SupabaseSync] Creating new course...');
                 const { data, error } = await SupabaseClient.getClient()
                     .from('courses')
                     .insert({
@@ -375,11 +386,13 @@ const SupabaseSync = {
 
                 if (error) throw error;
                 course = { id: data.id };
+                console.log('[SupabaseSync] New course created:', course.id);
             }
 
             const courseId = course.id;
 
             // 2. Update course metadata
+            console.log('[SupabaseSync] Step 2: Updating course metadata...');
             await SupabaseClient.updateCourse(courseId, {
                 title: courseData.title,
                 description: courseData.description,
@@ -388,19 +401,34 @@ const SupabaseSync = {
                     customTabNames: courseData.customTabNames || null,
                 },
             });
+            console.log('[SupabaseSync] Step 2 complete');
 
             // 3. Sync phases
+            console.log('[SupabaseSync] Step 3: Syncing phases...');
             const phases = courseData.data?.phases || [];
             const phaseIdMap = await this.syncPhases(courseId, phases);
+            console.log('[SupabaseSync] Step 3 complete: phaseIdMap =', phaseIdMap);
 
             // 4. Sync projects
+            console.log('[SupabaseSync] Step 4: Syncing projects...');
             const projects = courseData.data?.projects || [];
             await this.syncProjects(courseId, projects, phaseIdMap);
+            console.log('[SupabaseSync] Step 4 complete');
 
             // 5. Sync components
+            console.log('[SupabaseSync] Step 5: Syncing components...');
             const componentInfo = courseData.data?.componentInfo || {};
             await this.syncComponents(courseId, componentInfo);
+            console.log('[SupabaseSync] Step 5 complete');
 
+            // 6. Invalidate cache to ensure fresh data on next load (if our Cache module is loaded)
+            if (typeof Cache !== 'undefined' && typeof Cache.invalidate === 'function') {
+                Cache.invalidate('courses');
+                Cache.invalidate(`course_${slug}`);
+                console.log('[SupabaseSync] Cache invalidated for courses');
+            }
+
+            console.log('[SupabaseSync] All steps complete!');
             this.updateStatus(`☁️ Supabase'e kaydedildi: ${new Date().toLocaleTimeString()}`, 'green');
             alert("✅ Değişiklikler Supabase'e kaydedildi!");
 

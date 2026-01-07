@@ -85,14 +85,23 @@ const PhaseManager = {
 
         const p = phases[index];
 
-        document.getElementById('phase-welcome').classList.add('hidden');
-        document.getElementById('phase-form').classList.remove('hidden');
+        // SPA modunda bu elementler olmayabilir
+        const welcomeEl = document.getElementById('phase-welcome');
+        const formEl = document.getElementById('phase-form');
 
-        // Load phase data with fallbacks
-        document.getElementById('ph-title').value = p.title || `Bölüm ${index}`;
-        document.getElementById('ph-icon').value = p.icon || '📁';
-        document.getElementById('ph-desc').value = p.description || '';
-        document.getElementById('ph-color').value = p.color || 'gray';
+        if (welcomeEl) welcomeEl.classList.add('hidden');
+        if (formEl) formEl.classList.remove('hidden');
+
+        // Load phase data with fallbacks - null check for each element
+        const titleEl = document.getElementById('ph-title');
+        const iconEl = document.getElementById('ph-icon');
+        const descEl = document.getElementById('ph-desc');
+        const colorEl = document.getElementById('ph-color');
+
+        if (titleEl) titleEl.value = p.title || `Bölüm ${index}`;
+        if (iconEl) iconEl.value = p.icon || '📁';
+        if (descEl) descEl.value = p.description || '';
+        if (colorEl) colorEl.value = p.color || 'gray';
 
         this.renderList();
     },
@@ -207,8 +216,11 @@ const PhaseManager = {
         phases.splice(idx, 1);
         this.currentPhaseIndex = null;
 
-        document.getElementById('phase-welcome').classList.remove('hidden');
-        document.getElementById('phase-form').classList.add('hidden');
+        // SPA modunda null kontrolü
+        const welcomeEl = document.getElementById('phase-welcome');
+        const formEl = document.getElementById('phase-form');
+        if (welcomeEl) welcomeEl.classList.remove('hidden');
+        if (formEl) formEl.classList.add('hidden');
 
         this.renderList();
 

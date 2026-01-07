@@ -604,38 +604,51 @@ const app = {
         const { route, params } = routeInfo;
         console.log(`[App] Route change: ${route}`, params);
 
-        // ===== FAZ C: ViewManager ile merkezi unmount =====
-        // Önce mevcut view'ı temizle (tüm SPA view'lar için)
-        if (window.ViewManager) {
-            ViewManager.unmountCurrent();
-        }
-
         // Route tipini belirle
         const isTeacherRoute = route === 'teacher' || route === 'teacher-classrooms' || route === 'teacher-students';
         const isAdminRoute =
             route === 'admin' || route === 'admin-projects' || route === 'admin-phases' || route === 'admin-components';
         const isProfileRoute = route === 'profile' || route === 'profile-wizard';
         const isStudentDashboardRoute = route === 'student-dashboard';
+        const isHomeRoute = route === 'home' || route === 'course' || route === 'project';
 
-        // Teacher view'dan çıkış kontrolü
+        // ===== ViewManager ile akıllı unmount =====
+        // Sadece farklı bir view grubuna geçerken unmount et
+        // Admin route'ları arasında geçişte yeniden mount ETME!
+        const currentView = window.ViewManager?.getCurrentView?.();
+
+        // Sadece view grup değişimlerinde unmount
+        if (currentView) {
+            const isLeavingAdmin = currentView === window.AdminView && !isAdminRoute;
+            const isLeavingTeacher = currentView === window.TeacherView && !isTeacherRoute;
+            const isLeavingProfile = currentView === window.ProfileView && !isProfileRoute;
+            const isLeavingStudentDashboard = currentView === window.StudentDashboardView && !isStudentDashboardRoute;
+
+            if (isLeavingAdmin || isLeavingTeacher || isLeavingProfile || isLeavingStudentDashboard) {
+                console.log('[App] Leaving current view, unmounting...');
+                ViewManager.unmountCurrent();
+            }
+        }
+
+        // Teacher view'dan çıkış kontrolü (fallback)
         if (!isTeacherRoute && window.TeacherView?.isLoaded) {
             console.log('[App] Leaving teacher view, unmounting...');
             TeacherView.unmount();
         }
 
-        // Admin view'dan çıkış kontrolü
+        // Admin view'dan çıkış kontrolü (fallback)
         if (!isAdminRoute && window.AdminView?.isLoaded) {
             console.log('[App] Leaving admin view, unmounting...');
             AdminView.unmount();
         }
 
-        // Profile view'dan çıkış kontrolü
+        // Profile view'dan çıkış kontrolü (fallback)
         if (!isProfileRoute && window.ProfileView?.isLoaded) {
             console.log('[App] Leaving profile view, unmounting...');
             ProfileView.unmount();
         }
 
-        // Student Dashboard view'dan çıkış kontrolü
+        // Student Dashboard view'dan çıkış kontrolü (fallback)
         if (!isStudentDashboardRoute && window.StudentDashboardView?.isLoaded) {
             console.log('[App] Leaving student dashboard view, unmounting...');
             StudentDashboardView.unmount();
@@ -726,13 +739,31 @@ const app = {
             container = document.createElement('div');
             container.id = 'admin-view-container';
             container.className = 'hidden';
-            document.querySelector('main').appendChild(container);
+
+            // Ana içerik alanına ekle
+            const mainContent =
+                document.getElementById('main-content') || document.querySelector('main') || document.body;
+            mainContent.appendChild(container);
         }
 
         // Visible yap (Diğer viewları gizle)
         UI.switchView('admin-view-container');
 
-        // ViewManager ile mount et
+        // AdminView zaten yüklü ve mount edilmişse, sadece section değiştir
+        if (window.AdminView?.isLoaded) {
+            console.log('[App] AdminView already loaded, just switching section');
+            // Handle sub-routes
+            if (route === 'admin-projects' || route === 'admin') {
+                AdminView.showSection('projects');
+            } else if (route === 'admin-phases') {
+                AdminView.showSection('phases');
+            } else if (route === 'admin-components') {
+                AdminView.showSection('components');
+            }
+            return;
+        }
+
+        // ViewManager ile mount et (sadece ilk kez)
         let mounted = false;
         if (window.ViewManager && window.AdminView) {
             mounted = await ViewManager.mount(AdminView, { route, container });
@@ -809,13 +840,28 @@ const app = {
             container = document.createElement('div');
             container.id = 'teacher-view-container';
             container.className = 'hidden';
-            document.querySelector('main').appendChild(container);
+
+            // Ana içerik alanına ekle
+            const mainContent =
+                document.getElementById('main-content') || document.querySelector('main') || document.body;
+            mainContent.appendChild(container);
         }
 
         // Visible yap (Diğer viewları gizle)
         UI.switchView('teacher-view-container');
 
-        // ViewManager ile mount et
+        // TeacherView zaten yüklü ve mount edilmişse, sadece section değiştir
+        if (window.TeacherView?.isLoaded) {
+            console.log('[App] TeacherView already loaded, just switching section');
+            if (route === 'teacher-classrooms') {
+                TeacherView.showSection('classrooms');
+            } else if (route === 'teacher-students') {
+                TeacherView.showSection('students');
+            }
+            return;
+        }
+
+        // ViewManager ile mount et (sadece ilk kez)
         let mounted = false;
         if (window.ViewManager && window.TeacherView) {
             mounted = await ViewManager.mount(TeacherView, { route, container });
@@ -869,7 +915,11 @@ const app = {
             container = document.createElement('div');
             container.id = 'profile-view-container';
             container.className = '';
-            document.querySelector('main').appendChild(container);
+
+            // Ana içerik alanına ekle
+            const mainContent =
+                document.getElementById('main-content') || document.querySelector('main') || document.body;
+            mainContent.appendChild(container);
         }
 
         // Hide main layout elements
@@ -919,7 +969,11 @@ const app = {
             container = document.createElement('div');
             container.id = 'student-dashboard-container';
             container.className = '';
-            document.querySelector('main').appendChild(container);
+
+            // Ana içerik alanına ekle
+            const mainContent =
+                document.getElementById('main-content') || document.querySelector('main') || document.body;
+            mainContent.appendChild(container);
         }
 
         // Hide main layout elements

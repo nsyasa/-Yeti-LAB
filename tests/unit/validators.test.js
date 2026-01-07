@@ -28,6 +28,36 @@ const Validators = {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     },
+
+    // Yeni fonksiyonlar
+    isValidUUID: (str) => {
+        if (!str || typeof str !== 'string') return false;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(str);
+    },
+
+    isValidClassroomCode: (code) => {
+        if (!code || typeof code !== 'string') return false;
+        return /^[A-Z0-9]{5}$/.test(code.toUpperCase());
+    },
+
+    sanitizeString: (str, maxLength = 500) => {
+        if (!str) return '';
+        return String(str)
+            .slice(0, maxLength)
+            .replace(/<[^>]*>/g, '')
+            .trim();
+    },
+
+    isValidSlug: (slug) => {
+        if (!slug || typeof slug !== 'string') return false;
+        return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+    },
+
+    isPositiveInteger: (value) => {
+        const num = Number(value);
+        return Number.isInteger(num) && num > 0;
+    },
 };
 
 describe('Validators Module', () => {
@@ -103,6 +133,132 @@ describe('Validators Module', () => {
         it('should return false for empty email', () => {
             expect(Validators.isValidEmail('')).toBe(false);
             expect(Validators.isValidEmail(null)).toBe(false);
+        });
+    });
+
+    // ==========================================
+    // YENİ: Backend Güvenlik Validasyonları Testleri
+    // ==========================================
+
+    describe('isValidUUID', () => {
+        it('should return true for valid UUIDs', () => {
+            expect(Validators.isValidUUID('123e4567-e89b-12d3-a456-426614174000')).toBe(true);
+            expect(Validators.isValidUUID('550e8400-e29b-41d4-a716-446655440000')).toBe(true);
+            // Büyük harfli UUID da geçerli olmalı
+            expect(Validators.isValidUUID('550E8400-E29B-41D4-A716-446655440000')).toBe(true);
+        });
+
+        it('should return false for invalid UUIDs', () => {
+            expect(Validators.isValidUUID('123')).toBe(false);
+            expect(Validators.isValidUUID('not-a-uuid')).toBe(false);
+            expect(Validators.isValidUUID('123e4567-e89b-12d3-a456')).toBe(false); // Eksik
+            expect(Validators.isValidUUID('123e4567e89b12d3a456426614174000')).toBe(false); // Tire yok
+        });
+
+        it('should return false for null/undefined/empty', () => {
+            expect(Validators.isValidUUID(null)).toBe(false);
+            expect(Validators.isValidUUID(undefined)).toBe(false);
+            expect(Validators.isValidUUID('')).toBe(false);
+        });
+
+        it('should return false for non-string values', () => {
+            expect(Validators.isValidUUID(123)).toBe(false);
+            expect(Validators.isValidUUID({})).toBe(false);
+        });
+    });
+
+    describe('isValidClassroomCode', () => {
+        it('should return true for valid 5-char codes', () => {
+            expect(Validators.isValidClassroomCode('ABC12')).toBe(true);
+            expect(Validators.isValidClassroomCode('12345')).toBe(true);
+            expect(Validators.isValidClassroomCode('ABCDE')).toBe(true);
+            // Küçük harf de kabul edilmeli (toUpperCase yapılıyor)
+            expect(Validators.isValidClassroomCode('abc12')).toBe(true);
+        });
+
+        it('should return false for invalid codes', () => {
+            expect(Validators.isValidClassroomCode('ABC')).toBe(false); // Çok kısa
+            expect(Validators.isValidClassroomCode('ABC123')).toBe(false); // Çok uzun
+            expect(Validators.isValidClassroomCode('ABC-1')).toBe(false); // Özel karakter
+            expect(Validators.isValidClassroomCode('ABC 1')).toBe(false); // Boşluk
+        });
+
+        it('should return false for null/undefined/empty', () => {
+            expect(Validators.isValidClassroomCode(null)).toBe(false);
+            expect(Validators.isValidClassroomCode(undefined)).toBe(false);
+            expect(Validators.isValidClassroomCode('')).toBe(false);
+        });
+    });
+
+    describe('sanitizeString', () => {
+        it('should remove HTML tags', () => {
+            expect(Validators.sanitizeString('<script>alert("xss")</script>')).toBe('alert("xss")');
+            expect(Validators.sanitizeString('<b>bold</b>')).toBe('bold');
+            expect(Validators.sanitizeString('Hello <i>world</i>!')).toBe('Hello world!');
+        });
+
+        it('should respect max length', () => {
+            expect(Validators.sanitizeString('Hello World', 5)).toBe('Hello');
+            expect(Validators.sanitizeString('Short', 100)).toBe('Short');
+        });
+
+        it('should trim whitespace', () => {
+            expect(Validators.sanitizeString('  hello  ')).toBe('hello');
+        });
+
+        it('should handle empty/null values', () => {
+            expect(Validators.sanitizeString('')).toBe('');
+            expect(Validators.sanitizeString(null)).toBe('');
+            expect(Validators.sanitizeString(undefined)).toBe('');
+        });
+
+        it('should convert non-strings to string', () => {
+            expect(Validators.sanitizeString(123)).toBe('123');
+        });
+    });
+
+    describe('isValidSlug', () => {
+        it('should return true for valid slugs', () => {
+            expect(Validators.isValidSlug('arduino')).toBe(true);
+            expect(Validators.isValidSlug('micro-bit')).toBe(true);
+            expect(Validators.isValidSlug('lesson-01-intro')).toBe(true);
+            expect(Validators.isValidSlug('project123')).toBe(true);
+        });
+
+        it('should return false for invalid slugs', () => {
+            expect(Validators.isValidSlug('Arduino')).toBe(false); // Büyük harf
+            expect(Validators.isValidSlug('my slug')).toBe(false); // Boşluk
+            expect(Validators.isValidSlug('my_slug')).toBe(false); // Underscore
+            expect(Validators.isValidSlug('-invalid')).toBe(false); // Tire ile başlıyor
+            expect(Validators.isValidSlug('invalid-')).toBe(false); // Tire ile bitiyor
+            expect(Validators.isValidSlug('my--slug')).toBe(false); // Çift tire
+        });
+
+        it('should return false for null/undefined/empty', () => {
+            expect(Validators.isValidSlug(null)).toBe(false);
+            expect(Validators.isValidSlug(undefined)).toBe(false);
+            expect(Validators.isValidSlug('')).toBe(false);
+        });
+    });
+
+    describe('isPositiveInteger', () => {
+        it('should return true for positive integers', () => {
+            expect(Validators.isPositiveInteger(1)).toBe(true);
+            expect(Validators.isPositiveInteger(100)).toBe(true);
+            expect(Validators.isPositiveInteger('42')).toBe(true); // String'den dönüşüm
+        });
+
+        it('should return false for zero and negative numbers', () => {
+            expect(Validators.isPositiveInteger(0)).toBe(false);
+            expect(Validators.isPositiveInteger(-1)).toBe(false);
+            expect(Validators.isPositiveInteger(-100)).toBe(false);
+        });
+
+        it('should return false for non-integers', () => {
+            expect(Validators.isPositiveInteger(1.5)).toBe(false);
+            expect(Validators.isPositiveInteger('abc')).toBe(false);
+            expect(Validators.isPositiveInteger(null)).toBe(false);
+            expect(Validators.isPositiveInteger(undefined)).toBe(false);
         });
     });
 });

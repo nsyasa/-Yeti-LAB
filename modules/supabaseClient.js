@@ -12,10 +12,15 @@
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 // Default credentials (public - anon key)
-// Not: Vite production build sırasında bunları .env'den alabilir
+// Bu değerler production'da kullanılır
+// Vite build zamanında .env dosyasından override edilebilir
 const DEFAULT_SUPABASE_URL = 'https://zuezvfojutlefdvqrica.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8';
+
+// NOT: Environment variables desteği için Vite build pipeline'ı gereklidir
+// Şu an klasik <script> tag'leri kullanıldığı için doğrudan değerler kullanılıyor
+// Gelecekte ES modules'a geçildiğinde import.meta.env kullanılabilir
 
 const SupabaseClient = {
     // Supabase credentials
@@ -137,69 +142,152 @@ const SupabaseClient = {
 
     /**
      * Get all courses
+     * @param {boolean} publishedOnly - Only return published courses
+     * @param {boolean} forceRefresh - Bypass cache and fetch fresh data
      */
-    async getCourses(publishedOnly = false) {
-        let query = this.getClient().from('courses').select('*').order('position', { ascending: true });
+    async getCourses(publishedOnly = false, forceRefresh = false) {
+        const cacheKey = `courses_${publishedOnly}`;
 
-        if (publishedOnly) {
-            query = query.eq('is_published', true);
+        // Use Cache module if available (NOT browser's Cache API)
+        if (typeof Cache !== 'undefined' && typeof Cache.getOrFetch === 'function' && !forceRefresh) {
+            return Cache.getOrFetch(
+                cacheKey,
+                async () => {
+                    return this._fetchCourses(publishedOnly);
+                },
+                Cache.DEFAULT_TTL
+            );
         }
 
-        const { data, error } = await query;
-        if (error) throw error;
-        return data;
+        // Fallback: direct fetch
+        return this._fetchCourses(publishedOnly);
+    },
+
+    /**
+     * Internal method to fetch courses from database
+     * @private
+     */
+    async _fetchCourses(publishedOnly = false) {
+        try {
+            let query = this.getClient().from('courses').select('*').order('position', { ascending: true });
+
+            if (publishedOnly) {
+                query = query.eq('is_published', true);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getCourses');
+            }
+            throw error;
+        }
     },
 
     /**
      * Get course by slug
+     * @param {string} slug - Course slug
+     * @param {boolean} forceRefresh - Bypass cache
      */
-    async getCourseBySlug(slug) {
-        const { data, error } = await this.getClient().from('courses').select('*').eq('slug', slug).maybeSingle();
+    async getCourseBySlug(slug, forceRefresh = false) {
+        console.log('[SupabaseClient] getCourseBySlug called:', slug);
+        const cacheKey = `course_${slug}`;
 
-        if (error) throw error;
-        return data;
+        // Use Cache module if available (NOT browser's Cache API)
+        if (typeof Cache !== 'undefined' && typeof Cache.getOrFetch === 'function' && !forceRefresh) {
+            console.log('[SupabaseClient] Using cache...');
+            return Cache.getOrFetch(
+                cacheKey,
+                async () => {
+                    return this._fetchCourseBySlug(slug);
+                },
+                Cache.DEFAULT_TTL
+            );
+        }
+
+        console.log('[SupabaseClient] Fetching directly...');
+        const result = await this._fetchCourseBySlug(slug);
+        console.log('[SupabaseClient] getCourseBySlug result:', result?.id || 'null');
+        return result;
+    },
+
+    /**
+     * Internal method to fetch course by slug
+     * @private
+     */
+    async _fetchCourseBySlug(slug) {
+        console.log('[SupabaseClient] _fetchCourseBySlug:', slug);
+        try {
+            const { data, error } = await this.getClient().from('courses').select('*').eq('slug', slug).maybeSingle();
+            console.log('[SupabaseClient] _fetchCourseBySlug result:', data?.id || 'null', error || 'no error');
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('[SupabaseClient] _fetchCourseBySlug error:', error);
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getCourseBySlug');
+            }
+            throw error;
+        }
     },
 
     /**
      * Get full course data (with phases, projects, components)
      */
     async getFullCourseData(courseId) {
-        const client = this.getClient();
+        try {
+            const client = this.getClient();
 
-        // Execute all queries in parallel
-        const [courseResult, phasesResult, projectsResult, componentsResult] = await Promise.all([
-            client.from('courses').select('*').eq('id', courseId).single(),
-            client.from('phases').select('*').eq('course_id', courseId).order('position'),
-            client.from('projects').select('*').eq('course_id', courseId).order('position'),
-            client.from('course_components').select('*').eq('course_id', courseId),
-        ]);
+            // Execute all queries in parallel
+            const [courseResult, phasesResult, projectsResult, componentsResult] = await Promise.all([
+                client.from('courses').select('*').eq('id', courseId).single(),
+                client.from('phases').select('*').eq('course_id', courseId).order('position'),
+                client.from('projects').select('*').eq('course_id', courseId).order('position'),
+                client.from('course_components').select('*').eq('course_id', courseId),
+            ]);
 
-        // Check for errors
-        if (courseResult.error) throw courseResult.error;
-        if (phasesResult.error) throw phasesResult.error;
-        if (projectsResult.error) throw projectsResult.error;
-        if (componentsResult.error) throw componentsResult.error;
+            // Check for errors
+            if (courseResult.error) throw courseResult.error;
+            if (phasesResult.error) throw phasesResult.error;
+            if (projectsResult.error) throw projectsResult.error;
+            if (componentsResult.error) throw componentsResult.error;
 
-        return {
-            course: courseResult.data,
-            phases: phasesResult.data,
-            projects: projectsResult.data,
-            components: componentsResult.data,
-        };
+            return {
+                course: courseResult.data,
+                phases: phasesResult.data,
+                projects: projectsResult.data,
+                components: componentsResult.data,
+            };
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getFullCourseData');
+            }
+            throw error;
+        }
     },
 
     /**
      * Update course
      */
     async updateCourse(courseId, updates) {
-        const { data, error } = await this.getClient()
-            .from('courses')
-            .update({ ...updates, updated_at: new Date().toISOString() })
-            .eq('id', courseId)
-            .select();
+        try {
+            const { data, error } = await this.getClient()
+                .from('courses')
+                .update({ ...updates, updated_at: new Date().toISOString() })
+                .eq('id', courseId)
+                .select();
 
-        if (error) throw error;
-        return data?.[0] || null;
+            if (error) throw error;
+            return data?.[0] || null;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.updateCourse');
+            }
+            throw error;
+        }
     },
 
     /**
