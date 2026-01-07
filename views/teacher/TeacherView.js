@@ -95,8 +95,10 @@ const TeacherView = {
         // Apply theme
         if (window.ThemeManager) ThemeManager.load();
 
-        // Show dashboard section
-        this.showSection('dashboard');
+        // Parse initial section from URL hash
+        // #/teacher → dashboard, #/teacher/classrooms → classrooms
+        const initialSection = this.parseInitialSection();
+        this.showSection(initialSection, false); // false = don't update URL on initial load
 
         this.isLoaded = true;
         console.log('[TeacherView] Mounted successfully');
@@ -205,9 +207,31 @@ const TeacherView = {
     },
 
     /**
-     * Section göster
+     * URL'den başlangıç section'ını parse et
      */
-    showSection(section) {
+    parseInitialSection() {
+        const hash = window.location.hash;
+        // #/teacher/classrooms → classrooms
+        // #/teacher/students → students
+        // #/teacher → dashboard
+        if (hash.includes('/teacher/')) {
+            const parts = hash.split('/teacher/');
+            if (parts[1]) {
+                const section = parts[1].split('/')[0]; // İlk segment
+                if (['classrooms', 'students'].includes(section)) {
+                    return section;
+                }
+            }
+        }
+        return 'dashboard';
+    },
+
+    /**
+     * Section göster
+     * @param {string} section - Gösterilecek section (dashboard, classrooms, students)
+     * @param {boolean} updateUrl - URL'yi güncellesin mi (default: true)
+     */
+    showSection(section, updateUrl = true) {
         this.currentSection = section;
 
         // Hide all sections
@@ -253,9 +277,13 @@ const TeacherView = {
             }
         }
 
-        // Update URL hash
-        if (section !== 'dashboard') {
-            Router.navigate(`/teacher/${section}`);
+        // Update URL hash (if requested)
+        if (updateUrl) {
+            if (section === 'dashboard') {
+                Router.navigate('/teacher');
+            } else {
+                Router.navigate(`/teacher/${section}`);
+            }
         }
     },
 

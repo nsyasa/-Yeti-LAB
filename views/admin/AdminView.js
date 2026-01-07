@@ -82,8 +82,10 @@ const AdminView = {
         // Initialize admin
         await this.initializeAdmin();
 
-        // Show projects section by default
-        this.showSection('projects');
+        // Parse initial section from URL hash
+        // #/admin → projects, #/admin/phases → phases
+        const initialSection = this.parseInitialSection();
+        this.showSection(initialSection, false); // false = don't update URL on initial load
 
         this.isLoaded = true;
         console.log('[AdminView] Mounted successfully');
@@ -253,9 +255,31 @@ const AdminView = {
     },
 
     /**
-     * Section göster
+     * URL'den başlangıç section'ını parse et
      */
-    showSection(section) {
+    parseInitialSection() {
+        const hash = window.location.hash;
+        // #/admin/phases → phases
+        // #/admin/components → components
+        // #/admin → projects (default)
+        if (hash.includes('/admin/')) {
+            const parts = hash.split('/admin/');
+            if (parts[1]) {
+                const section = parts[1].split('/')[0]; // İlk segment
+                if (['phases', 'components', 'projects'].includes(section)) {
+                    return section;
+                }
+            }
+        }
+        return 'projects';
+    },
+
+    /**
+     * Section göster
+     * @param {string} section - Gösterilecek section (projects, phases, components)
+     * @param {boolean} updateUrl - URL'yi güncellesin mi (default: true)
+     */
+    showSection(section, updateUrl = true) {
         this.currentSection = section;
 
         // Hide all sections
@@ -282,6 +306,15 @@ const AdminView = {
 
         // Trigger content render for sections
         this.renderSectionContent(section);
+
+        // Update URL hash (if requested)
+        if (updateUrl) {
+            if (section === 'projects') {
+                Router.navigate('/admin');
+            } else {
+                Router.navigate(`/admin/${section}`);
+            }
+        }
     },
 
     /**

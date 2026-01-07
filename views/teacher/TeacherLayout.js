@@ -10,7 +10,7 @@ const TeacherLayout = {
         return `
             <!-- Logo -->
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                <a href="#/" class="flex items-center gap-3" onclick="Router.navigate('/')">
+                <a href="index.html" class="flex items-center gap-3" onclick="event.preventDefault(); Router.navigate('/')">
                     <span class="text-4xl">❄️</span>
                     <div>
                         <h1 class="text-xl font-bold text-gray-800 dark:text-white">Yeti LAB</h1>
@@ -18,6 +18,7 @@ const TeacherLayout = {
                     </div>
                 </a>
             </div>
+
 
             <!-- Navigation -->
             <nav class="flex-grow p-4 space-y-2">
