@@ -23,14 +23,48 @@ const Auth = {
     /**
      * Initialize auth module
      */
+    isInitialized: false,
+    initPromise: null,
+
+    /**
+     * Initialize auth module
+     */
     async init() {
-        // Check for existing Supabase session (teachers/admins)
-        await this.checkSession();
+        if (this.isInitialized) return this;
+        // If initialization is already in progress, return the existing promise
+        if (this.initPromise) return this.initPromise;
 
-        // Check for existing student session
-        this.checkStudentSession();
+        // Create a new initialization promise
+        this.initPromise = (async () => {
+            try {
+                // Check for existing Supabase session (teachers/admins)
+                await this.checkSession();
 
-        return this;
+                // Check for existing student session
+                this.checkStudentSession();
+
+                this.isInitialized = true;
+                return this;
+            } catch (error) {
+                console.error('[Auth] Init error:', error);
+                // Even on error, mark as initialized to prevent infinite loading state
+                this.isInitialized = true;
+                throw error;
+            }
+        })();
+
+        return this.initPromise;
+    },
+
+    /**
+     * Wait for initialization to complete
+     */
+    async waitForInit() {
+        if (this.isInitialized) return this;
+        if (!this.initPromise) {
+            return this.init();
+        }
+        return this.initPromise;
     },
 
     // ==========================================
