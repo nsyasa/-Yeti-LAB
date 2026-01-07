@@ -167,7 +167,7 @@ const Navbar = {
                             </div>
                             
                             <div class="py-1">
-                                <a href="profile.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-theme transition-colors">
+                                <a href="index.html#/profile" onclick="event.preventDefault(); Navbar.navigateSPA('/profile')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-theme transition-colors">
                                     <span>👤</span> Profilim
                                 </a>
                                 ${
