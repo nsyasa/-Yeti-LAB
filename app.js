@@ -135,6 +135,11 @@ const app = {
                 }
             }
 
+            // ViewManager başlat (SPA view lifecycle yönetimi)
+            if (window.ViewManager) {
+                window.ViewManager.init('main-content');
+            }
+
             // Performans İyileştirmesi: Full veriyi (loadAll) yüklemek yerine
             // Sadece kurs listesini (metadata) alıp listeliyoruz.
             // Detaylı veriler kurs seçilince (selectCourse) yüklenecek.
@@ -599,59 +604,41 @@ const app = {
         const { route, params } = routeInfo;
         console.log(`[App] Route change: ${route}`, params);
 
-        // Teacher view'dan çıkış kontrolü - teacher olmayan route'a geçişte unmount et
-        const isTeacherRoute = route === 'teacher' || route === 'teacher-classrooms' || route === 'teacher-students';
-        const teacherViewInDOM = document.getElementById('teacher-view') !== null;
-
-        if (!isTeacherRoute && (teacherViewInDOM || (window.TeacherView && TeacherView.isLoaded))) {
-            console.log('[App] Leaving teacher view, unmounting...');
-            if (window.TeacherView) {
-                TeacherView.unmount();
-            } else {
-                // Fallback: Manuel temizlik
-                const teacherView = document.getElementById('teacher-view');
-                if (teacherView) teacherView.remove();
-
-                const container = document.getElementById('teacher-view-container');
-                if (container) {
-                    container.innerHTML = '';
-                    container.classList.add('hidden');
-                }
-
-                // Show main layout
-                const header = document.getElementById('main-header');
-                if (header) header.style.display = '';
-                const footer = document.getElementById('main-footer');
-                if (footer) footer.style.display = '';
-            }
+        // ===== FAZ C: ViewManager ile merkezi unmount =====
+        // Önce mevcut view'ı temizle (tüm SPA view'lar için)
+        if (window.ViewManager) {
+            ViewManager.unmountCurrent();
         }
 
-        // Admin view'dan çıkış kontrolü - admin olmayan route'a geçişte unmount et
+        // Route tipini belirle
+        const isTeacherRoute = route === 'teacher' || route === 'teacher-classrooms' || route === 'teacher-students';
         const isAdminRoute =
             route === 'admin' || route === 'admin-projects' || route === 'admin-phases' || route === 'admin-components';
-        const adminViewInDOM = document.getElementById('admin-view') !== null;
+        const isProfileRoute = route === 'profile' || route === 'profile-wizard';
+        const isStudentDashboardRoute = route === 'student-dashboard';
 
-        if (!isAdminRoute && (adminViewInDOM || (window.AdminView && AdminView.isLoaded))) {
+        // Teacher view'dan çıkış kontrolü
+        if (!isTeacherRoute && window.TeacherView?.isLoaded) {
+            console.log('[App] Leaving teacher view, unmounting...');
+            TeacherView.unmount();
+        }
+
+        // Admin view'dan çıkış kontrolü
+        if (!isAdminRoute && window.AdminView?.isLoaded) {
             console.log('[App] Leaving admin view, unmounting...');
-            if (window.AdminView) {
-                AdminView.unmount();
-            } else {
-                // Fallback: Manuel temizlik
-                const adminView = document.getElementById('admin-view');
-                if (adminView) adminView.remove();
+            AdminView.unmount();
+        }
 
-                const container = document.getElementById('admin-view-container');
-                if (container) {
-                    container.innerHTML = '';
-                    container.classList.add('hidden');
-                }
+        // Profile view'dan çıkış kontrolü
+        if (!isProfileRoute && window.ProfileView?.isLoaded) {
+            console.log('[App] Leaving profile view, unmounting...');
+            ProfileView.unmount();
+        }
 
-                // Show main layout
-                const header = document.getElementById('main-header');
-                if (header) header.style.display = '';
-                const footer = document.getElementById('main-footer');
-                if (footer) footer.style.display = '';
-            }
+        // Student Dashboard view'dan çıkış kontrolü
+        if (!isStudentDashboardRoute && window.StudentDashboardView?.isLoaded) {
+            console.log('[App] Leaving student dashboard view, unmounting...');
+            StudentDashboardView.unmount();
         }
 
         switch (route) {
@@ -728,18 +715,6 @@ const app = {
     loadAdminView: async (route) => {
         console.log('[App] Loading admin view:', route);
 
-        // Admin view'dan çıkış kontrolü - admin olmayan route'a geçişte unmount et
-        const isAdminRoute = route.startsWith('admin');
-        const adminViewInDOM = document.getElementById('admin-view') !== null;
-
-        if (!isAdminRoute && (adminViewInDOM || (window.AdminView && AdminView.isLoaded))) {
-            console.log('[App] Leaving admin view, unmounting...');
-            if (window.AdminView) {
-                AdminView.unmount();
-            }
-            return;
-        }
-
         // AdminView yüklü değilse, script'leri yükle
         if (!window.AdminView) {
             await app.loadAdminScripts();
@@ -757,8 +732,14 @@ const app = {
         // Visible yap (Diğer viewları gizle)
         UI.switchView('admin-view-container');
 
-        // Mount view
-        const mounted = await AdminView.mount(container);
+        // ViewManager ile mount et
+        let mounted = false;
+        if (window.ViewManager && window.AdminView) {
+            mounted = await ViewManager.mount(AdminView, { route, container });
+        } else {
+            // Fallback: doğrudan mount
+            mounted = await AdminView.mount(container);
+        }
 
         if (mounted) {
             // Handle sub-routes
@@ -834,8 +815,14 @@ const app = {
         // Visible yap (Diğer viewları gizle)
         UI.switchView('teacher-view-container');
 
-        // Mount view
-        const mounted = await TeacherView.mount(container);
+        // ViewManager ile mount et
+        let mounted = false;
+        if (window.ViewManager && window.TeacherView) {
+            mounted = await ViewManager.mount(TeacherView, { route, container });
+        } else {
+            // Fallback: doğrudan mount
+            mounted = await TeacherView.mount(container);
+        }
 
         if (mounted) {
             // Handle sub-routes
@@ -888,8 +875,13 @@ const app = {
         // Hide main layout elements
         UI.switchView('profile-view-container');
 
-        // Mount view
-        await ProfileView.mount(container);
+        // ViewManager ile mount et
+        if (window.ViewManager && window.ProfileView) {
+            await ViewManager.mount(ProfileView, { route, container });
+        } else {
+            // Fallback: doğrudan mount
+            await ProfileView.mount(container);
+        }
     },
 
     // Profile script'lerini lazy load et
@@ -933,8 +925,13 @@ const app = {
         // Hide main layout elements
         UI.switchView('student-dashboard-container');
 
-        // Mount view
-        await StudentDashboardView.mount(container);
+        // ViewManager ile mount et
+        if (window.ViewManager && window.StudentDashboardView) {
+            await ViewManager.mount(StudentDashboardView, { container });
+        } else {
+            // Fallback: doğrudan mount
+            await StudentDashboardView.mount(container);
+        }
     },
 
     // Student Dashboard script'lerini lazy load et

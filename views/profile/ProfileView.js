@@ -449,8 +449,23 @@ const ProfileView = {
      */
     unmount() {
         console.log('[ProfileView] Unmounting...');
+
+        // Container içeriğini temizle
+        if (this.container) {
+            this.container.innerHTML = '';
+            this.container.classList.add('hidden');
+        }
+
+        // Profile view container'ı gizle
+        const profileViewContainer = document.getElementById('profile-view-container');
+        if (profileViewContainer) {
+            profileViewContainer.innerHTML = '';
+            profileViewContainer.classList.add('hidden');
+        }
+
         this.isLoaded = false;
         this.container = null;
+        console.log('[ProfileView] Unmounted');
     },
 
     /**
@@ -461,10 +476,10 @@ const ProfileView = {
             Profile.logout();
         } else if (window.Auth && typeof Auth.signOut === 'function') {
             Auth.signOut();
-            window.location.href = 'index.html';
+            Router.navigate('/');
         } else {
             sessionStorage.removeItem('studentSession');
-            window.location.href = 'index.html';
+            Router.navigate('/');
         }
     },
 
@@ -474,6 +489,8 @@ const ProfileView = {
     goHome() {
         if (window.Navbar && typeof Navbar.navigateSPA === 'function') {
             Navbar.navigateSPA('/');
+        } else if (window.Router) {
+            Router.navigate('/');
         } else {
             window.location.href = 'index.html';
         }

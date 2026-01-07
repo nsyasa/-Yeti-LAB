@@ -79,6 +79,8 @@ export default [
                 Cities: 'readonly',
                 // Student Dashboard View (SPA)
                 StudentDashboardView: 'readonly',
+                // View Manager (SPA Lifecycle)
+                ViewManager: 'readonly',
                 // Test globals
                 describe: 'readonly',
                 it: 'readonly',

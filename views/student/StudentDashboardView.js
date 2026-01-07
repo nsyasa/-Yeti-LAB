@@ -154,10 +154,25 @@ const StudentDashboardView = {
      */
     unmount() {
         console.log('[StudentDashboardView] Unmounting...');
+
+        // Container içeriğini temizle
+        if (this.container) {
+            this.container.innerHTML = '';
+            this.container.classList.add('hidden');
+        }
+
+        // Student dashboard container'ı gizle
+        const sdViewContainer = document.getElementById('student-dashboard-view-container');
+        if (sdViewContainer) {
+            sdViewContainer.innerHTML = '';
+            sdViewContainer.classList.add('hidden');
+        }
+
         this.isLoaded = false;
         this.container = null;
         this.progressData = [];
         this.quizData = [];
+        console.log('[StudentDashboardView] Unmounted');
     },
 
     /**
