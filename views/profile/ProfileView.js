@@ -414,9 +414,18 @@ const ProfileView = {
         container.innerHTML = this.template();
 
         // 4. Initialize Profile module if available
-        if (window.Profile) {
+        if (window.Profile && window.Auth) {
+            // Use normalized user info from Auth module for consistent property access
+            const userInfo = Auth.getUserInfo();
+
             // Determine if wizard or settings view
-            const isFirstTime = !userInfo.role || !userInfo.full_name;
+            // Check checks:
+            // 1. Auth.isProfileComplete (set by loadUserProfile from DB/Metadata)
+            // 2. Fallback: Check if role and display name are present (and not Guest)
+            const isProfileComplete =
+                Auth.isProfileComplete || (userInfo.role && userInfo.displayName && userInfo.displayName !== 'Misafir');
+
+            const isFirstTime = !isProfileComplete;
 
             if (isFirstTime) {
                 this.currentView = 'wizard';
