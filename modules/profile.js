@@ -490,18 +490,25 @@ const Profile = {
                     const { error: metaError } = await SupabaseClient.getClient().auth.updateUser({ data: updates });
                     if (metaError) throw metaError;
 
-                    // Try Table Update
+                    // Try Table Update (Only core fields to avoid 400 Schema errors)
                     try {
-                        await SupabaseClient.getClient()
-                            .from('user_profiles')
-                            .upsert({
-                                id: userInfo.userId,
-                                ...updates,
-                                email: Auth.currentUser?.email,
-                            });
+                        // DB'ye sadece temel alanları yaz, şema hatası (400) almamak için
+                        // Diğer detaylar zaten metadata içinde (auth.users)
+                        const profileUpdate = {
+                            id: userInfo.userId,
+                            full_name: data.name,
+                            role: data.role,
+                            avatar_url: data.avatar,
+                            updated_at: new Date().toISOString(),
+                        };
+
+                        await SupabaseClient.getClient().from('user_profiles').upsert(profileUpdate);
                     } catch (_e) {
-                        console.warn('Profile table update skipped');
+                        console.warn('Profile table update skipped:', _e);
                     }
+
+                    // Force refresh session to ensure Auth module sees the new metadata
+                    await Auth.checkSession();
                 }
 
                 btn.textContent = '✅ Kaydedildi';
