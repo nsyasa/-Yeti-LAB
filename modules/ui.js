@@ -10,11 +10,28 @@ const UI = {
      * @param {string} showId - ID of the view to show
      */
     switchView: (showId) => {
-        const views = ['course-selection-view', 'dashboard-view', 'project-view'];
+        // Core views that are always in the DOM
+        const coreViews = ['course-selection-view', 'dashboard-view', 'project-view'];
+        // Dynamic SPA views (created on demand)
+        const spaViews = [
+            'teacher-view-container',
+            'admin-view-container',
+            'profile-view-container',
+            'student-dashboard-container',
+        ];
+        const allViews = [...coreViews, ...spaViews];
+
         const showEl = document.getElementById(showId);
+        if (!showEl) {
+            console.warn(`[UI] View not found: ${showId}`);
+            return;
+        }
 
         // Find currently visible view
-        const currentId = views.find((id) => !document.getElementById(id).classList.contains('hidden'));
+        const currentId = allViews.find((id) => {
+            const el = document.getElementById(id);
+            return el && !el.classList.contains('hidden');
+        });
         const currentEl = currentId ? document.getElementById(currentId) : null;
 
         if (currentId === showId) return; // Already on this view
@@ -49,8 +66,9 @@ const UI = {
             }, 300); // Matches CSS transition duration
         } else {
             // First load (no transition)
-            views.forEach((id) => {
+            allViews.forEach((id) => {
                 const el = document.getElementById(id);
+                if (!el) return;
                 if (id === showId) el.classList.remove('hidden');
                 else el.classList.add('hidden');
             });

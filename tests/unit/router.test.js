@@ -18,6 +18,9 @@ const createRouter = () => {
         'admin/projects': 'admin-projects',
         'admin/phases': 'admin-phases',
         'admin/components': 'admin-components',
+        profile: 'profile',
+        'profile/wizard': 'profile-wizard',
+        'student-dashboard': 'student-dashboard',
     };
 
     return {
@@ -112,6 +115,15 @@ describe('Router Module', () => {
             expect(Router.routes['admin/phases']).toBe('admin-phases');
             expect(Router.routes['admin/components']).toBe('admin-components');
         });
+
+        it('should have profile routes', () => {
+            expect(Router.routes['profile']).toBe('profile');
+            expect(Router.routes['profile/wizard']).toBe('profile-wizard');
+        });
+
+        it('should have student dashboard routes', () => {
+            expect(Router.routes['student-dashboard']).toBe('student-dashboard');
+        });
     });
 
     describe('parseRoute()', () => {
@@ -187,6 +199,25 @@ describe('Router Module', () => {
             });
         });
 
+        describe('Profile Routes', () => {
+            it('should parse /profile', () => {
+                const result = Router.parseRoute('#/profile');
+                expect(result.route).toBe('profile');
+            });
+
+            it('should parse /profile/wizard', () => {
+                const result = Router.parseRoute('#/profile/wizard');
+                expect(result.route).toBe('profile-wizard');
+            });
+        });
+
+        describe('Student Dashboard Routes', () => {
+            it('should parse /student-dashboard', () => {
+                const result = Router.parseRoute('#/student-dashboard');
+                expect(result.route).toBe('student-dashboard');
+            });
+        });
+
         describe('Unknown Routes', () => {
             it('should default to home for unknown routes', () => {
                 const result = Router.parseRoute('#/unknown/path');
@@ -241,11 +272,14 @@ describe('Router Module', () => {
 });
 
 describe('Router Redirect Logic', () => {
-    const separatePages = ['auth.html', 'profile.html', 'student-dashboard.html'];
+    // UPDATED: profile and student-dashboard are now SPA, so remove from separate pages list
+    const separatePages = ['auth.html'];
     const spaRoutes = {
         'index.html': '/',
         'teacher.html': '/teacher',
         'admin.html': '/admin',
+        'profile.html': '/profile',
+        'student-dashboard.html': '/student-dashboard',
     };
 
     describe('Separate Pages', () => {
@@ -253,8 +287,12 @@ describe('Router Redirect Logic', () => {
             expect(separatePages.includes('auth.html')).toBe(true);
         });
 
-        it('should identify profile.html as separate page', () => {
-            expect(separatePages.includes('profile.html')).toBe(true);
+        it('should NOT identify profile.html as separate page (now SPA)', () => {
+            expect(separatePages.includes('profile.html')).toBe(false);
+        });
+
+        it('should NOT identify student-dashboard.html as separate page (now SPA)', () => {
+            expect(separatePages.includes('student-dashboard.html')).toBe(false);
         });
 
         it('should NOT include teacher.html as separate page (now SPA)', () => {
@@ -273,6 +311,14 @@ describe('Router Redirect Logic', () => {
 
         it('should map admin.html to /admin', () => {
             expect(spaRoutes['admin.html']).toBe('/admin');
+        });
+
+        it('should map profile.html to /profile', () => {
+            expect(spaRoutes['profile.html']).toBe('/profile');
+        });
+
+        it('should map student-dashboard.html to /student-dashboard', () => {
+            expect(spaRoutes['student-dashboard.html']).toBe('/student-dashboard');
         });
 
         it('should map index.html to /', () => {

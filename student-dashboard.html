@@ -5,457 +5,55 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>İlerleme - Yeti LAB</title>
         <meta name="description" content="Yeti LAB öğrenci ilerleme paneli" />
-
-        <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
-        <link rel="apple-touch-icon" href="img/favicon.svg" />
-
-        <!-- Tailwind CSS -->
-        <link href="styles/output.css" rel="stylesheet" />
-
-        <!-- Main Styles -->
-        <link rel="stylesheet" href="styles/tokens.css" />
-        <link rel="stylesheet" href="styles/components.css" />
-        <link rel="stylesheet" href="styles/main.css" />
-
-        <!-- Dynamic Components & Utilities -->
-        <script src="modules/toast.js" defer></script>
-        <script src="modules/themeManager.js" defer></script>
-        <script src="modules/components/Navbar.js" defer></script>
-        <script src="modules/components/Footer.js" defer></script>
-        <script src="modules/layout/MainLayout.js" defer></script>
-        <script src="modules/store/store.js" defer></script>
-        <script src="modules/router.js" defer></script>
-        <script src="modules/themeManager.js" defer></script>
-
-        <!-- Auth System -->
-        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-        <script src="modules/supabaseClient.js"></script>
-        <script src="modules/auth.js"></script>
-
         <style>
-            .dashboard-bg {
-                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 min-height: 100vh;
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
             }
 
-            body.dark-mode .dashboard-bg {
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            .loading {
+                text-align: center;
             }
 
-            .progress-ring {
-                transform: rotate(-90deg);
+            .spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #e5e7eb;
+                border-top-color: #00979c;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+                margin: 0 auto 1rem;
             }
 
-            .course-progress-card {
-                transition: all 0.3s ease;
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
             }
 
-            .course-progress-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
-            }
-
-            .lesson-item {
-                transition: all 0.2s ease;
-            }
-
-            .lesson-item:hover {
-                background: rgba(0, 151, 156, 0.05);
-            }
-
-            .lesson-item.completed {
-                background: rgba(16, 185, 129, 0.05);
-                border-left: 3px solid #10b981;
-            }
-
-            .stat-card {
-                background: white;
-                border-radius: 1rem;
-                padding: 1.5rem;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            }
-
-            body.dark-mode .stat-card {
-                background: #1e293b;
+            p {
+                color: #6b7280;
+                font-size: 0.875rem;
             }
         </style>
     </head>
 
-    <body class="bg-gray-50 text-gray-800">
-        <div class="dashboard-bg min-h-screen pb-8">
-            <!-- Header -->
-            <!-- Header (Dynamic) -->
-            <header
-                id="main-header"
-                class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-100 sticky top-0 z-50 transition-all"
-            ></header>
-
-            <!-- Main Content -->
-            <main class="max-w-6xl mx-auto px-4 py-8">
-                <!-- Welcome Section -->
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Merhaba, <span id="welcomeName">Öğrenci</span>! 👋</h2>
-                    <p class="text-gray-600">İşte senin öğrenme yolculuğun</p>
-                </div>
-
-                <!-- Stats Overview -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="stat-card text-center">
-                        <div class="text-4xl mb-2">📚</div>
-                        <div id="totalLessons" class="text-3xl font-bold text-theme">0</div>
-                        <div class="text-gray-500 text-sm">Tamamlanan Ders</div>
-                    </div>
-                    <div class="stat-card text-center">
-                        <div class="text-4xl mb-2">🏆</div>
-                        <div id="avgScore" class="text-3xl font-bold text-yellow-500">0</div>
-                        <div class="text-gray-500 text-sm">Ortalama Puan</div>
-                    </div>
-                    <div class="stat-card text-center">
-                        <div class="text-4xl mb-2">🔥</div>
-                        <div id="streak" class="text-3xl font-bold text-orange-500">0</div>
-                        <div class="text-gray-500 text-sm">Gün Seri</div>
-                    </div>
-                    <div class="stat-card text-center">
-                        <div class="text-4xl mb-2">⭐</div>
-                        <div id="totalQuizzes" class="text-3xl font-bold text-purple-500">0</div>
-                        <div class="text-gray-500 text-sm">Tamamlanan Quiz</div>
-                    </div>
-                </div>
-
-                <!-- Course Progress -->
-                <h3 class="text-xl font-bold mb-4">📊 Kurs İlerlemen</h3>
-                <div id="courseProgress" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <!-- Course cards will be loaded here -->
-                    <div class="flex justify-center py-12">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <h3 class="text-xl font-bold mb-4">📝 Son Aktiviteler</h3>
-                <div id="recentActivity" class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <!-- Activity items will be loaded here -->
-                    <div class="flex justify-center py-12">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-
-                <!-- Quiz History -->
-                <h3 class="text-xl font-bold mb-4 mt-8">🎯 Quiz Puanları</h3>
-                <div id="quizHistory" class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <!-- Quiz items will be loaded here -->
-                    <div class="flex justify-center py-12">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-            </main>
-
-            <!-- Footer (Dynamic) -->
-            <footer id="main-footer"></footer>
+    <body>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Öğrenci paneli yükleniyor...</p>
         </div>
 
-        <!-- Scripts -->
-        <script src="modules/courseLoader.js"></script>
         <script>
-            // State
-            let studentData = null;
-            let progressData = [];
-            let quizData = [];
-
-            // Initialize
-            document.addEventListener('DOMContentLoaded', async () => {
-                SupabaseClient.init();
-                await Auth.init();
-
-                // Check if student is logged in
-                if (!Auth.isStudent() || !Auth.currentStudent) {
-                    Router.redirectTo('auth.html');
-                    return;
-                }
-
-                studentData = Auth.currentStudent;
-
-                // Update UI
-                document.getElementById('welcomeName').textContent = studentData.displayName || 'Öğrenci';
-                document.getElementById('userName').textContent = studentData.displayName || 'Öğrenci';
-
-                // Load data
-                await Promise.all([loadProgressData(), loadQuizData()]);
-
-                renderStats();
-                renderCourseProgress();
-                renderRecentActivity();
-                renderQuizHistory();
-
-                // Components init
-                if (window.MainLayout) window.MainLayout.init();
-
-                // Çıkış Yap Fonksiyonu (Navbar zaten çağırıyor ama legacy support için kalsın)
-                window.logout = async () => {
-                    await Auth.signOut();
-                    Router.redirectTo('index.html');
-                };
-            });
-
-            async function loadProgressData() {
-                try {
-                    const { data, error } = await SupabaseClient.getClient()
-                        .from('student_progress')
-                        .select('*')
-                        .eq('student_id', studentData.studentId)
-                        .order('completed_at', { ascending: false });
-
-                    if (error) throw error;
-                    progressData = data || [];
-                } catch (err) {
-                    console.error('Error loading progress:', err);
-                    progressData = [];
-                }
-            }
-
-            async function loadQuizData() {
-                try {
-                    const { data, error } = await SupabaseClient.getClient()
-                        .from('student_progress')
-                        .select('*')
-                        .eq('student_id', studentData.studentId)
-                        .not('quiz_score', 'is', null)
-                        .order('completed_at', { ascending: false });
-
-                    if (error) throw error;
-                    quizData = data || [];
-                } catch (err) {
-                    console.error('Error loading quiz data:', err);
-                    quizData = [];
-                }
-            }
-
-            function renderStats() {
-                // Total completed lessons
-                document.getElementById('totalLessons').textContent = progressData.length;
-
-                // Average quiz score
-                const quizScores = quizData.filter((q) => q.quiz_score !== null).map((q) => q.quiz_score);
-                const avgScore =
-                    quizScores.length > 0 ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
-                document.getElementById('avgScore').textContent = avgScore;
-
-                // Total quizzes
-                document.getElementById('totalQuizzes').textContent = quizData.length;
-
-                // Calculate streak (simplified - consecutive days)
-                const today = new Date().toDateString();
-                let streak = 0;
-                const uniqueDays = [...new Set(progressData.map((p) => new Date(p.completed_at).toDateString()))];
-
-                // Sort days descending
-                uniqueDays.sort((a, b) => new Date(b) - new Date(a));
-
-                // Count consecutive days from today/yesterday
-                const todayDate = new Date();
-                for (let i = 0; i < uniqueDays.length; i++) {
-                    const checkDate = new Date(todayDate);
-                    checkDate.setDate(checkDate.getDate() - i);
-
-                    if (uniqueDays.includes(checkDate.toDateString())) {
-                        streak++;
-                    } else if (i > 0) {
-                        break;
-                    }
-                }
-
-                document.getElementById('streak').textContent = streak;
-            }
-
-            function renderCourseProgress() {
-                const container = document.getElementById('courseProgress');
-
-                // Courses configuration
-                const courses = {
-                    arduino: { title: 'Arduino Serüveni', icon: '🤖', color: '#00979C', total: 20 },
-                    microbit: { title: 'Micro:bit Dünyası', icon: '💻', color: '#6C63FF', total: 10 },
-                    scratch: { title: 'Scratch ile Oyun', icon: '🎮', color: '#FF6F00', total: 8 },
-                    mblock: { title: 'mBlock ile Robotik', icon: '🦾', color: '#30B0C7', total: 10 },
-                };
-
-                const courseStats = {};
-
-                // Calculate progress for each course
-                Object.keys(courses).forEach((key) => {
-                    const courseProgress = progressData.filter((p) => p.course_id === key);
-                    courseStats[key] = {
-                        completed: courseProgress.length,
-                        total: courses[key].total,
-                        percentage: Math.round((courseProgress.length / courses[key].total) * 100),
-                    };
-                });
-
-                container.innerHTML = Object.entries(courses)
-                    .map(([key, course]) => {
-                        const stats = courseStats[key];
-                        const circumference = 2 * Math.PI * 40;
-                        const offset = circumference - (stats.percentage / 100) * circumference;
-
-                        return `
-                    <div class="course-progress-card bg-white rounded-2xl p-6 shadow-lg">
-                        <div class="flex items-center gap-4">
-                            <div class="relative">
-                                <svg width="100" height="100" class="progress-ring">
-                                    <circle
-                                        cx="50" cy="50" r="40"
-                                        fill="none"
-                                        stroke="#e5e7eb"
-                                        stroke-width="8"
-                                    />
-                                    <circle
-                                        cx="50" cy="50" r="40"
-                                        fill="none"
-                                        stroke="${course.color}"
-                                        stroke-width="8"
-                                        stroke-linecap="round"
-                                        stroke-dasharray="${circumference}"
-                                        stroke-dashoffset="${offset}"
-                                    />
-                                </svg>
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="text-3xl">${course.icon}</span>
-                                </div>
-                            </div>
-                            <div class="flex-grow">
-                                <h4 class="font-bold text-lg mb-1">${course.title}</h4>
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-2xl font-bold" style="color: ${course.color}">${stats.percentage}%</span>
-                                    <span class="text-gray-500 text-sm">(${stats.completed}/${stats.total} ders)</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="h-2 rounded-full transition-all duration-500" 
-                                         style="width: ${stats.percentage}%; background: ${course.color}"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="index.html" 
-                           class="mt-4 block text-center py-2 px-4 border-2 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-                           style="border-color: ${course.color}; color: ${course.color}">
-                            Devam Et →
-                        </a>
-                    </div>
-                `;
-                    })
-                    .join('');
-            }
-
-            function renderRecentActivity() {
-                const container = document.getElementById('recentActivity');
-
-                if (progressData.length === 0) {
-                    container.innerHTML = `
-                    <div class="p-8 text-center text-gray-500">
-                        <div class="text-4xl mb-2">📭</div>
-                        <p>Henüz aktivite yok</p>
-                        <p class="text-sm">Dersleri tamamladıkça burada görünecek</p>
-                    </div>
-                `;
-                    return;
-                }
-
-                // Show last 10 activities
-                const recent = progressData.slice(0, 10);
-
-                container.innerHTML = recent
-                    .map((activity) => {
-                        const date = new Date(activity.completed_at);
-                        const formattedDate = date.toLocaleDateString('tr-TR', {
-                            day: 'numeric',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        });
-
-                        const courseIcons = {
-                            arduino: '🤖',
-                            microbit: '💻',
-                            scratch: '🎮',
-                            mblock: '🦾',
-                        };
-
-                        const icon = courseIcons[activity.course_id] || '📚';
-                        const hasQuiz = activity.quiz_score !== null;
-
-                        return `
-                    <div class="lesson-item completed px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">${icon}</span>
-                            <div>
-                                <p class="font-medium">${activity.project_id}</p>
-                                <p class="text-sm text-gray-500">${activity.course_id} kursu</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            ${hasQuiz ? `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg text-sm font-medium">Quiz: ${activity.quiz_score}%</span>` : ''}
-                            <p class="text-sm text-gray-400 mt-1">${formattedDate}</p>
-                        </div>
-                    </div>
-                `;
-                    })
-                    .join('');
-            }
-
-            function renderQuizHistory() {
-                const container = document.getElementById('quizHistory');
-
-                if (quizData.length === 0) {
-                    container.innerHTML = `
-                    <div class="p-8 text-center text-gray-500">
-                        <div class="text-4xl mb-2">🎯</div>
-                        <p>Henüz quiz tamamlanmadı</p>
-                        <p class="text-sm">Ders sonlarındaki quizleri çöz</p>
-                    </div>
-                `;
-                    return;
-                }
-
-                container.innerHTML = quizData
-                    .map((quiz) => {
-                        const date = new Date(quiz.completed_at);
-                        const formattedDate = date.toLocaleDateString('tr-TR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                        });
-
-                        const score = quiz.quiz_score;
-                        let scoreColor = 'text-red-500';
-                        let scoreEmoji = '😢';
-
-                        if (score >= 80) {
-                            scoreColor = 'text-green-500';
-                            scoreEmoji = '🎉';
-                        } else if (score >= 60) {
-                            scoreColor = 'text-yellow-500';
-                            scoreEmoji = '👍';
-                        } else if (score >= 40) {
-                            scoreColor = 'text-orange-500';
-                            scoreEmoji = '💪';
-                        }
-
-                        return `
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">${scoreEmoji}</span>
-                            <div>
-                                <p class="font-medium">${quiz.project_id}</p>
-                                <p class="text-sm text-gray-500">${quiz.course_id} kursu • ${formattedDate}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-2xl font-bold ${scoreColor}">${score}%</span>
-                        </div>
-                    </div>
-                `;
-                    })
-                    .join('');
-            }
+            // Redirect to SPA student-dashboard route
+            // This page exists for backward compatibility with old links
+            window.location.replace('index.html#/student-dashboard');
         </script>
     </body>
 </html>

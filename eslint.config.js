@@ -59,6 +59,9 @@ export default [
                 StudentsSection: 'readonly',
                 TeacherManager: 'readonly',
                 Toast: 'readonly',
+                Navbar: 'readonly',
+                MainLayout: 'readonly',
+                Footer: 'readonly',
                 // Admin View Components (SPA)
                 AdminView: 'readonly',
                 AdminLayout: 'readonly',
@@ -69,6 +72,13 @@ export default [
                 CourseManager: 'readonly',
                 HotspotManager: 'readonly',
                 QuizManager: 'readonly',
+                // Profile View Components (SPA)
+                ProfileView: 'readonly',
+                Profile: 'readonly',
+                Wizard: 'readonly',
+                Cities: 'readonly',
+                // Student Dashboard View (SPA)
+                StudentDashboardView: 'readonly',
                 // Test globals
                 describe: 'readonly',
                 it: 'readonly',

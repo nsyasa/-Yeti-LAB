@@ -120,11 +120,23 @@ describe('Navbar Module', () => {
                 expect(result.type).toBe('hash');
                 expect(mockLocation.hash).toBe('#/teacher/classrooms');
             });
+
+            it('should use hash navigation for /profile route', () => {
+                const result = Navbar.navigateSPA('/profile');
+                expect(result.type).toBe('hash');
+                expect(mockLocation.hash).toBe('#/profile');
+            });
+
+            it('should use hash navigation for /student-dashboard route', () => {
+                const result = Navbar.navigateSPA('/student-dashboard');
+                expect(result.type).toBe('hash');
+                expect(mockLocation.hash).toBe('#/student-dashboard');
+            });
         });
 
-        describe('when on separate page (profile.html)', () => {
+        describe('when on separate page (auth.html)', () => {
             beforeEach(() => {
-                mockLocation.pathname = '/profile.html';
+                mockLocation.pathname = '/auth.html';
             });
 
             it('should redirect to index.html#/ for / route', () => {
@@ -144,17 +156,11 @@ describe('Navbar Module', () => {
                 expect(result.type).toBe('redirect');
                 expect(result.url).toBe('index.html#/teacher');
             });
-        });
 
-        describe('when on auth.html', () => {
-            beforeEach(() => {
-                mockLocation.pathname = '/auth.html';
-            });
-
-            it('should redirect to index.html for / route', () => {
-                const result = Navbar.navigateSPA('/');
+            it('should redirect to index.html#/profile for /profile route', () => {
+                const result = Navbar.navigateSPA('/profile');
                 expect(result.type).toBe('redirect');
-                expect(result.url).toBe('index.html#/');
+                expect(result.url).toBe('index.html#/profile');
             });
         });
     });
@@ -176,6 +182,21 @@ describe('SPA Routes', () => {
             validRoutes.forEach((route) => {
                 expect(route.startsWith('/admin')).toBe(true);
             });
+        });
+    });
+
+    describe('Profile Routes', () => {
+        it('should recognize valid profile routes', () => {
+            const validRoutes = ['/profile', '/profile/wizard'];
+            validRoutes.forEach((route) => {
+                expect(route.startsWith('/profile')).toBe(true);
+            });
+        });
+    });
+
+    describe('Student Dashboard Routes', () => {
+        it('should recognize valid student dashboard routes', () => {
+            expect('/student-dashboard'.startsWith('/student-dashboard')).toBe(true);
         });
     });
 

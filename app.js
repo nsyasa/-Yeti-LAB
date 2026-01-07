@@ -707,6 +707,17 @@ const app = {
                 await app.loadAdminView(route);
                 break;
 
+            // ===== PROFILE ROUTES (SPA) =====
+            case 'profile':
+            case 'profile-wizard':
+                await app.loadProfileView(route);
+                break;
+
+            // ===== STUDENT DASHBOARD ROUTE (SPA) =====
+            case 'student-dashboard':
+                await app.loadStudentDashboardView();
+                break;
+
             default:
                 console.warn(`[App] Unknown route: ${route}`);
                 app.renderCourseSelection(false);
@@ -848,6 +859,89 @@ const app = {
         }
 
         console.log('[App] Teacher scripts loaded');
+    },
+
+    // ===== Profile View Loader (SPA) =====
+    loadProfileView: async (route) => {
+        console.log('[App] Loading profile view:', route);
+
+        // ProfileView yüklü değilse, script'leri yükle
+        if (!window.ProfileView) {
+            await app.loadProfileScripts();
+        }
+
+        // Container al veya oluştur
+        let container = document.getElementById('profile-view-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'profile-view-container';
+            container.className = '';
+            document.querySelector('main').appendChild(container);
+        }
+
+        // Hide main layout elements
+        UI.switchView('profile-view-container');
+
+        // Mount view
+        await ProfileView.mount(container);
+    },
+
+    // Profile script'lerini lazy load et
+    loadProfileScripts: async () => {
+        console.log('[App] Loading profile scripts...');
+
+        const scripts = [
+            'modules/constants.js',
+            'modules/validators.js',
+            'data/cities.js',
+            'modules/badges.js',
+            'modules/profile.js',
+            'views/profile/ProfileView.js',
+        ];
+
+        for (const src of scripts) {
+            await app.loadScript(src);
+        }
+
+        console.log('[App] Profile scripts loaded');
+    },
+
+    // ===== Student Dashboard View Loader (SPA) =====
+    loadStudentDashboardView: async () => {
+        console.log('[App] Loading student dashboard view...');
+
+        // StudentDashboardView yüklü değilse, script'leri yükle
+        if (!window.StudentDashboardView) {
+            await app.loadStudentDashboardScripts();
+        }
+
+        // Container al veya oluştur
+        let container = document.getElementById('student-dashboard-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'student-dashboard-container';
+            container.className = '';
+            document.querySelector('main').appendChild(container);
+        }
+
+        // Hide main layout elements
+        UI.switchView('student-dashboard-container');
+
+        // Mount view
+        await StudentDashboardView.mount(container);
+    },
+
+    // Student Dashboard script'lerini lazy load et
+    loadStudentDashboardScripts: async () => {
+        console.log('[App] Loading student dashboard scripts...');
+
+        const scripts = ['modules/courseLoader.js', 'views/student/StudentDashboardView.js'];
+
+        for (const src of scripts) {
+            await app.loadScript(src);
+        }
+
+        console.log('[App] Student dashboard scripts loaded');
     },
 
     // Script loader helper
