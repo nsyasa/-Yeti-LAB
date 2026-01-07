@@ -22,8 +22,8 @@ const ProfileView = {
         }
 
         // Check if user is logged in
-        if (window.Auth && Auth.user) {
-            return Auth.user;
+        if (window.Auth && Auth.currentUser) {
+            return Auth.currentUser;
         }
 
         // Check for student code auth
