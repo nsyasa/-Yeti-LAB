@@ -754,6 +754,9 @@ const app = {
             document.querySelector('main').appendChild(container);
         }
 
+        // Visible yap (Diğer viewları gizle)
+        UI.switchView('admin-view-container');
+
         // Mount view
         const mounted = await AdminView.mount(container);
 
@@ -827,6 +830,9 @@ const app = {
             container.className = 'hidden';
             document.querySelector('main').appendChild(container);
         }
+
+        // Visible yap (Diğer viewları gizle)
+        UI.switchView('teacher-view-container');
 
         // Mount view
         const mounted = await TeacherView.mount(container);
