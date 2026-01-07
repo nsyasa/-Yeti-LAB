@@ -561,4 +561,19 @@ const Profile = {
 window.Profile = Profile;
 window.ProfileEditor = Profile.Editor; // Backward compatibility
 window.Wizard = Profile.Wizard; // Backward compatibility
-window.loadDistricts = (cid, did) => Profile.Editor.loadDistricts(); // Helper
+window.loadDistricts = (cid, did) => {
+    // If IDs are provided (Wizard usage), use them logic
+    if (typeof cid === 'string' && typeof did === 'string') {
+        const citySelect = document.getElementById(cid);
+        const districtSelect = document.getElementById(did);
+        if (citySelect && districtSelect && window.turkeyData) {
+            const city = citySelect.value;
+            const districts = window.turkeyData[city] || [];
+            districtSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+            districts.forEach((d) => districtSelect.add(new Option(d, d)));
+        }
+    } else {
+        // Fallback to Editor default (Settings usage)
+        Profile.Editor.loadDistricts();
+    }
+};

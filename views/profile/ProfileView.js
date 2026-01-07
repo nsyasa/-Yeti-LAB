@@ -483,13 +483,21 @@ window.Wizard = {
 };
 
 // loadDistricts for wizard compatibility
+// loadDistricts for wizard compatibility
 window.loadDistricts = (cityId, districtId) => {
     const citySelect = document.getElementById(cityId);
     const districtSelect = document.getElementById(districtId);
-    if (!citySelect || !districtSelect || !window.Cities) return;
+
+    // Use turkeyData (defined in data/cities.js) or fallback to Cities.districts if available
+    const cityData = window.turkeyData || (window.Cities && window.Cities.districts);
+
+    if (!citySelect || !districtSelect || !cityData) {
+        console.warn('[ProfileView] Missing city data or elements');
+        return;
+    }
 
     const selectedCity = citySelect.value;
-    const districts = Cities.districts[selectedCity] || [];
+    const districts = cityData[selectedCity] || [];
 
     districtSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
     districts.forEach((d) => {
