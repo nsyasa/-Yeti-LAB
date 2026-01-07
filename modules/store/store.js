@@ -8,10 +8,16 @@ const Store = {
         user: null, // Current authenticated user
         userProfile: null, // Extended profile data (XP, level etc.)
         courses: [], // List of available courses
-        currentCourse: null, // Currently selected course
+        currentCourse: null, // Currently selected course object
+        currentCourseKey: null, // Course key (e.g., 'arduino', 'microbit')
         activeProject: null, // Currently active project
         theme: 'light', // Current theme (light/dark)
         notifications: [], // System notifications
+
+        // Course-specific data (FAZ 4.1 - app.state'den taşındı)
+        phases: [], // Current course phases
+        projects: [], // Current course projects
+        componentInfo: {}, // Current course component info
     },
 
     listeners: [],
@@ -95,7 +101,9 @@ const Store = {
         });
     },
 
+    // ==========================================
     // Specific Actions
+    // ==========================================
 
     // User Actions
     setUser(user) {
@@ -111,8 +119,63 @@ const Store = {
         this.setState({ courses });
     },
 
-    setCurrentCourse(course) {
-        this.setState({ currentCourse: course });
+    setCurrentCourse(course, key = null) {
+        this.setState({
+            currentCourse: course,
+            currentCourseKey: key || course?.key || course?.slug || null,
+        });
+    },
+
+    /**
+     * Set current course key (FAZ 4.1)
+     * @param {string} key - Course key (e.g., 'arduino')
+     */
+    setCurrentCourseKey(key) {
+        this.setState({ currentCourseKey: key });
+    },
+
+    /**
+     * Get current course key
+     * @returns {string|null}
+     */
+    getCurrentCourseKey() {
+        return this.state.currentCourseKey;
+    },
+
+    /**
+     * Set course data (FAZ 4.1 - app.state'den taşındı)
+     * @param {Object} data - Course data containing phases, projects, componentInfo
+     */
+    setCourseData(data) {
+        this.setState({
+            phases: data.phases || [],
+            projects: data.projects || [],
+            componentInfo: data.componentInfo || {},
+        });
+    },
+
+    /**
+     * Get phases
+     * @returns {Array}
+     */
+    getPhases() {
+        return this.state.phases;
+    },
+
+    /**
+     * Get projects
+     * @returns {Array}
+     */
+    getProjects() {
+        return this.state.projects;
+    },
+
+    /**
+     * Get component info
+     * @returns {Object}
+     */
+    getComponentInfo() {
+        return this.state.componentInfo;
     },
 
     // UI Actions

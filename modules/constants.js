@@ -1,7 +1,13 @@
 /**
- * Yeti LAB - Constants
- * Sabit değerler ve konfigürasyonlar
+ * @deprecated Bu dosya artık kullanılmıyor.
+ * Lütfen 'constants/index.js' dosyasını kullanın.
+ *
+ * Bu dosya geriye uyumluluk için korunuyor ve
+ * FAZ 5 tamamlandığında silinecek.
  */
+
+// Yeni merkezi dosyadan import et ve re-export et
+// Not: ES Module olarak yüklenene kadar doğrudan tanımlama kullan
 
 const Constants = {
     // Roller
@@ -11,7 +17,7 @@ const Constants = {
         ADMIN: 'admin',
     },
 
-    // Avatar Listesi (Tüm uygulama genelinde ortak)
+    // Avatar Listesi
     AVATARS: ['👨‍🎓', '👩‍🎓', '👨‍🏫', '👩‍🏫', '👦', '👧', '🧑', '🤖', '🐱', '🐶', '🚀', '⭐', '🦸', '🦹', '🧙', '🧟'],
 
     // Storage Keys
@@ -30,5 +36,8 @@ const Constants = {
     },
 };
 
-// Global export
-window.Constants = Constants;
+// Global export (geriye uyumluluk)
+// NOT: Dosyalar dynamic <script> tag ile yükleniyor, ES6 export kullanılamaz
+if (typeof window !== 'undefined') {
+    window.Constants = Constants;
+}

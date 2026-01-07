@@ -1187,8 +1187,15 @@
                             if (user && user.identities && user.identities.length === 0) {
                                 showAlert('Bu e-posta adresi zaten kayıtlı.', 'error');
                             } else {
-                                showAlert('Kayıt başarılı! Lütfen e-postanızı kontrol edip onaylayın.', 'success');
+                                // Kayıt başarılı - önce formu temizle ve paneli kapat
                                 registerForm.reset();
+                                toggleRegisterMode(); // Kayıt panelini kapat
+
+                                // Sonra alert mesajını göster (kullanıcı hemen görsün)
+                                showAlert(
+                                    '✅ Kayıt başarılı! E-posta adresinize onay maili gönderildi. Lütfen spam/gereksiz klasörünü de kontrol edin.',
+                                    'success'
+                                );
                             }
                         } catch (err) {
                             showAlert(err.message, 'error');

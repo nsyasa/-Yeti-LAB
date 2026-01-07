@@ -46,5 +46,11 @@ const Validators = {
     },
 };
 
-// Global export
-window.Validators = Validators;
+// ============================================
+// GLOBAL EXPORT (Geriye uyumluluk)
+// ============================================
+// NOT: Dosyalar dynamic <script> tag ile yükleniyor, ES6 export kullanılamaz
+// FAZ 5'te module sistemine geçildiğinde export'lar eklenecek
+if (typeof window !== 'undefined') {
+    window.Validators = Validators;
+}

@@ -1,11 +1,51 @@
 /**
- * @deprecated Bu dosya artık kullanılmıyor.
- * Lütfen 'constants/index.js' dosyasını kullanın.
+ * Yeti LAB - Constants Index
+ * Tüm sabit değerler tek bir dosyada toplanmıştır
  *
- * Bu dosya geriye uyumluluk için korunuyor ve
- * FAZ 5 tamamlandığında silinecek.
+ * NOT: Bu dosya FAZ 5'e kadar ES6 export KULLANMAZ
+ * Çünkü dynamic <script> tag ile yüklendiğinde export syntax error verir
+ *
+ * Kullanım (Global):
+ *   window.Constants.ROLES
+ *   window.EL.ADMIN.PROJECT_LIST
  */
 
+// ============================================
+// ROLLER
+// ============================================
+const ROLES = {
+    STUDENT: 'student',
+    TEACHER: 'teacher',
+    ADMIN: 'admin',
+};
+
+// ============================================
+// AVATARLAR
+// ============================================
+const AVATARS = ['👨‍🎓', '👩‍🎓', '👨‍🏫', '👩‍🏫', '👦', '👧', '🧑', '🤖', '🐱', '🐶', '🚀', '⭐', '🦸', '🦹', '🧙', '🧟'];
+
+// ============================================
+// STORAGE KEYS
+// ============================================
+const STORAGE_KEYS = {
+    USER_ROLE: 'yeti_user_role',
+    THEME: 'yeti_theme',
+    STUDENT_SESSION: 'yeti_student_session',
+    LANGUAGE: 'yeti_lang',
+};
+
+// ============================================
+// UI KONFİGÜRASYONLARI
+// ============================================
+const CONFIG = {
+    TOAST_DURATION: 3000,
+    DEBOUNCE_DELAY: 300,
+    PASSWORD_MIN_LENGTH: 6,
+};
+
+// ============================================
+// ELEMENT ID'LERİ
+// ============================================
 const EL = {
     // --- ADMIN PANEL ---
     ADMIN: {
@@ -91,12 +131,31 @@ const EL = {
         SIDEBAR: 'sidebar',
         HEADER: 'main-header',
         FOOTER: 'main-footer',
+        COURSE_LIST: 'course-list',
+        DASHBOARD_VIEW: 'dashboard-view',
+        PROJECT_VIEW: 'project-view',
     },
 };
 
-// Global export (geriye uyumluluk)
-// NOT: Bu dosya admin panelinde dynamic <script> tag ile yükleniyor
-// ES6 export kullanılamaz, FAZ 5'te module sistemine geçildiğinde eklenecek
+// ============================================
+// LEGACY UYUMLULUK İÇİN BİRLEŞİK OBJE
+// ============================================
+const Constants = {
+    ROLES,
+    AVATARS,
+    STORAGE_KEYS,
+    CONFIG,
+};
+
+// ============================================
+// GLOBAL EXPORTS (Geriye uyumluluk)
+// ============================================
+// NOT: ES6 export kullanılamaz, dosyalar dynamic <script> tag ile yükleniyor
 if (typeof window !== 'undefined') {
+    window.Constants = Constants;
     window.EL = EL;
+    window.ROLES = ROLES;
+    window.AVATARS = AVATARS;
+    window.STORAGE_KEYS = STORAGE_KEYS;
+    window.CONFIG = CONFIG;
 }

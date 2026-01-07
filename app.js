@@ -1,11 +1,69 @@
 // --- UYGULAMA MOTORU ---
 
-const app = {
-    state: {
+// FAZ 4.1: app.state artık Store ile senkronize
+// Geriye uyumluluk için app.state kullanılabilir, ama veriler Store'da tutulur
+const createStateProxy = () => {
+    // Fallback değerler - Store yüklenmeden önce kullanılır
+    const fallback = {
         currentCourseKey: null,
         componentInfo: {},
         phases: [],
         projects: [],
+    };
+
+    // Proxy ile Store'a senkronize et
+    return new Proxy(fallback, {
+        get(target, prop) {
+            // Store yüklü mü kontrol et - her erişimde
+            if (typeof Store !== 'undefined' && Store.getCurrentCourseKey) {
+                switch (prop) {
+                    case 'currentCourseKey':
+                        return Store.getCurrentCourseKey();
+                    case 'phases':
+                        return Store.getPhases();
+                    case 'projects':
+                        return Store.getProjects();
+                    case 'componentInfo':
+                        return Store.getComponentInfo();
+                }
+            }
+            // Store yoksa veya bilinen bir prop değilse fallback'ten oku
+            return target[prop];
+        },
+        set(target, prop, value) {
+            // Her zaman fallback'e de yaz (Store yokken kullanılır)
+            target[prop] = value;
+
+            // Store yüklü mü kontrol et
+            if (typeof Store !== 'undefined' && Store.setCurrentCourseKey) {
+                switch (prop) {
+                    case 'currentCourseKey':
+                        Store.setCurrentCourseKey(value);
+                        break;
+                    case 'phases':
+                        Store.setState({ phases: value });
+                        break;
+                    case 'projects':
+                        Store.setState({ projects: value });
+                        break;
+                    case 'componentInfo':
+                        Store.setState({ componentInfo: value });
+                        break;
+                }
+            }
+            return true;
+        },
+    });
+};
+
+const app = {
+    // State artık Store ile senkronize (geriye uyumluluk için)
+    get state() {
+        // Lazy init
+        if (!this._stateProxy) {
+            this._stateProxy = createStateProxy();
+        }
+        return this._stateProxy;
     },
 
     currentProject: null,
@@ -510,22 +568,22 @@ const app = {
 
     toggleSidebar: () => UI.toggleSidebar(),
 
-    // --- Theme Management (System Preference Based) ---
-    theme: {
-        current: 'light',
-    },
-
+    // --- Theme Management ---
+    // ThemeManager modülünü kullan (modules/themeManager.js)
+    // Bu fonksiyonlar sadece geriye uyumluluk için burada, ThemeManager'a delege eder
     initTheme: () => {
-        // ThemeManager zaten başta çalıştı, burada bir şey yapmaya gerek yok.
-        // Sadece app state'ini güncelleyebiliriz
-        app.theme.current = window.ThemeManager ? window.ThemeManager.getCurrentTheme() : 'light';
+        // ThemeManager otomatik init oluyor, bu fonksiyon artık gereksiz
+        // Ama çağrıldığında hata vermesin diye bırakıldı
     },
 
     setTheme: (mode) => {
         if (window.ThemeManager) {
             window.ThemeManager.setTheme(mode);
-            app.theme.current = mode;
         }
+    },
+
+    getCurrentTheme: () => {
+        return window.ThemeManager ? window.ThemeManager.getCurrentTheme() : 'light';
     },
 
     toggleLanguage: () => {
@@ -793,15 +851,46 @@ const app = {
     },
 
     // Script loader helper
+    // Zaten yüklü modülleri tekrar yüklemeyi önler
+    _loadedScripts: new Set(),
+
     loadScript: (src) => {
         return new Promise((resolve, reject) => {
-            if (document.querySelector(`script[src="${src}"]`)) {
+            // 1. Daha önce yüklediğimizi kontrol et
+            if (app._loadedScripts.has(src)) {
                 resolve();
                 return;
             }
+
+            // 2. DOM'da script tag var mı kontrol et
+            if (document.querySelector(`script[src="${src}"]`)) {
+                app._loadedScripts.add(src);
+                resolve();
+                return;
+            }
+
+            // 3. Global modül zaten tanımlı mı kontrol et
+            // Bu, Vite dev server'ın inline yüklediği modülleri yakalar
+            const moduleChecks = {
+                'modules/courseLoader.js': () => typeof window.CourseLoader !== 'undefined',
+                'config/tabs.js': () => typeof window.TabConfig !== 'undefined',
+                'modules/themes.js': () => typeof window.applyTheme !== 'undefined',
+                'data/base.js': () => typeof window.courseData !== 'undefined',
+                'data/quiz.js': () => typeof window.quizQuestions !== 'undefined',
+            };
+
+            const checkFn = moduleChecks[src];
+            if (checkFn && checkFn()) {
+                app._loadedScripts.add(src);
+                resolve();
+                return;
+            }
+
+            // 4. Script'i yükle
             const script = document.createElement('script');
             script.src = src;
             script.onload = () => {
+                app._loadedScripts.add(src);
                 console.log(`[App] Loaded: ${src}`);
                 resolve();
             };
@@ -880,7 +969,7 @@ const app = {
 
             // Store Update (Faz 2: Adım 4)
             if (window.Store) {
-                window.Store.setCurrentCourse(course);
+                window.Store.setCurrentCourse(course, key);
             }
         } catch (error) {
             console.error('[App] Failed to load course:', error);

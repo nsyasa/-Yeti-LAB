@@ -20,13 +20,18 @@ const Progress = {
     isLoading: false,
     isInitialized: false,
 
-    // Reference to app state - try multiple sources
+    // Reference to app state - try multiple sources (FAZ 4.1: Store first)
     _getKey: () => {
-        // Try window._appState first
+        // Try Store first (FAZ 4.1)
+        if (typeof Store !== 'undefined' && Store.getCurrentCourseKey) {
+            const key = Store.getCurrentCourseKey();
+            if (key) return key;
+        }
+        // Try window._appState
         if (window._appState?.currentCourseKey) {
             return window._appState.currentCourseKey;
         }
-        // Try app.state
+        // Try app.state (fallback)
         if (typeof app !== 'undefined' && app.state?.currentCourseKey) {
             return app.state.currentCourseKey;
         }

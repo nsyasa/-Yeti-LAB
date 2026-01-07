@@ -80,5 +80,11 @@ const Utils = {
     },
 };
 
-// Global export
-window.Utils = Utils;
+// ============================================
+// GLOBAL EXPORT (Geriye uyumluluk)
+// ============================================
+// NOT: Dosyalar dynamic <script> tag ile yükleniyor, ES6 export kullanılamaz
+// FAZ 5'te module sistemine geçildiğinde export'lar eklenecek
+if (typeof window !== 'undefined') {
+    window.Utils = Utils;
+}

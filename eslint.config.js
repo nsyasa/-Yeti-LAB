@@ -95,9 +95,11 @@ export default [
             // Kod kalitesi
             'no-console': 'off', // Development için izin
             'no-debugger': 'warn',
+            eqeqeq: ['warn', 'always'], // === kullanımı zorunlu
+            'no-shadow': 'warn', // Değişken gölgeleme uyarısı
 
             // ES6+
-            'prefer-const': 'warn',
+            'prefer-const': 'error', // const kullanımı zorunlu (warn'dan yükseltildi)
             'no-var': 'warn',
 
             // Tutarlılık

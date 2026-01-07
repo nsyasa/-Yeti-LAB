@@ -2,25 +2,41 @@
 /**
  * Supabase Client Module
  * Merkezi Supabase bağlantı yönetimi
+ *
+ * Environment Variables (Vite):
+ * - VITE_SUPABASE_URL: Supabase proje URL'si
+ * - VITE_SUPABASE_ANON_KEY: Public anon key (RLS ile güvenli)
  */
 
-// Supabase CDN'den yüklenir (admin.html ve index2.html'de script tag ile)
+// Supabase CDN'den yüklenir (admin.html ve index.html'de script tag ile)
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+// Default credentials (public - anon key)
+// Not: Vite production build sırasında bunları .env'den alabilir
+const DEFAULT_SUPABASE_URL = 'https://zuezvfojutlefdvqrica.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8';
+
 const SupabaseClient = {
-    // Supabase credentials (public - anon key)
-    SUPABASE_URL: 'https://zuezvfojutlefdvqrica.supabase.co',
-    SUPABASE_ANON_KEY:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8',
+    // Supabase credentials
+    // Fallback değerler kullanılıyor, Vite build sırasında .env'den override edilebilir
+    SUPABASE_URL: DEFAULT_SUPABASE_URL,
+    SUPABASE_ANON_KEY: DEFAULT_SUPABASE_ANON_KEY,
 
     client: null,
     currentUser: null,
     isAdmin: false,
 
     /**
-     * Initialize Supabase client
+     * Initialize Supabase client (Singleton Pattern)
+     * Birden fazla çağrılsa bile sadece bir kez client oluşturur
      */
     init() {
+        // Singleton: Zaten init edilmişse tekrar oluşturma
+        if (this.client) {
+            return true;
+        }
+
         if (typeof supabase === 'undefined') {
             console.error('Supabase SDK yüklenmedi! Script tag ekleyin.');
             return false;
