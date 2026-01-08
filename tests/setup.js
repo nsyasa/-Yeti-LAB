@@ -27,6 +27,18 @@ Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });
 // sessionStorage mock
 Object.defineProperty(globalThis, 'sessionStorage', { value: localStorageMock });
 
+// --- Performance API Mock ---
+if (!globalThis.performance) {
+    globalThis.performance = {
+        mark: () => {},
+        measure: () => {},
+        now: () => Date.now(),
+    };
+}
+if (!globalThis.Performance) {
+    globalThis.Performance = globalThis.performance;
+}
+
 // --- Supabase Mock ---
 // Gerçek Supabase bağlantısı olmadan test yapmak için
 globalThis.mockSupabase = {
