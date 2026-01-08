@@ -139,6 +139,7 @@ import '../views/teacher/TeacherView.js';
 
 // Profile View & Modules
 import '../data/cities.js';
+import '../modules/profile.js';
 import '../views/profile/ProfileView.js';
 
 // Student Dashboard View
