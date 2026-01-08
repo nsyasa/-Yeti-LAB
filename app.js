@@ -1,59 +1,22 @@
 // --- UYGULAMA MOTORU ---
 
 // FAZ 4.1: app.state artık Store ile senkronize
+// StateProxy modülü: modules/core/stateProxy.js
 // Geriye uyumluluk için app.state kullanılabilir, ama veriler Store'da tutulur
 const createStateProxy = () => {
-    // Fallback değerler - Store yüklenmeden önce kullanılır
-    const fallback = {
+    // StateProxy modülü yüklü ise onu kullan
+    if (window.StateProxy?.create) {
+        return window.StateProxy.create();
+    }
+
+    // Fallback: Modül yüklenmemişse basit obje döndür
+    console.warn('[App] StateProxy module not loaded, using fallback');
+    return {
         currentCourseKey: null,
         componentInfo: {},
         phases: [],
         projects: [],
     };
-
-    // Proxy ile Store'a senkronize et
-    return new Proxy(fallback, {
-        get(target, prop) {
-            // Store yüklü mü kontrol et - her erişimde
-            if (typeof Store !== 'undefined' && Store.getCurrentCourseKey) {
-                switch (prop) {
-                    case 'currentCourseKey':
-                        return Store.getCurrentCourseKey();
-                    case 'phases':
-                        return Store.getPhases();
-                    case 'projects':
-                        return Store.getProjects();
-                    case 'componentInfo':
-                        return Store.getComponentInfo();
-                }
-            }
-            // Store yoksa veya bilinen bir prop değilse fallback'ten oku
-            return target[prop];
-        },
-        set(target, prop, value) {
-            // Her zaman fallback'e de yaz (Store yokken kullanılır)
-            target[prop] = value;
-
-            // Store yüklü mü kontrol et
-            if (typeof Store !== 'undefined' && Store.setCurrentCourseKey) {
-                switch (prop) {
-                    case 'currentCourseKey':
-                        Store.setCurrentCourseKey(value);
-                        break;
-                    case 'phases':
-                        Store.setState({ phases: value });
-                        break;
-                    case 'projects':
-                        Store.setState({ projects: value });
-                        break;
-                    case 'componentInfo':
-                        Store.setState({ componentInfo: value });
-                        break;
-                }
-            }
-            return true;
-        },
-    });
 };
 
 const app = {
