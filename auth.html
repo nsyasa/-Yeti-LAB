@@ -13,17 +13,16 @@
         <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
         <link rel="apple-touch-icon" href="img/favicon.svg" />
 
-        <!-- Tailwind CSS - CDN -->
-        <link href="styles/output.css" rel="stylesheet" />
-
         <!-- Main Styles (includes Nunito font) -->
         <link rel="stylesheet" href="styles/tokens.css" />
         <link rel="stylesheet" href="styles/components.css" />
         <link rel="stylesheet" href="styles/main.css" />
 
-        <!-- Supabase -->
+        <!-- Supabase CDN (External) -->
         <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-        <script src="modules/toast.js"></script>
+
+        <!-- Vite Entry Point -->
+        <script type="module" src="/src/auth.js"></script>
 
         <style>
             /* Auth page specific styles */
@@ -607,10 +606,8 @@
         </div>
 
         <!-- Scripts -->
-        <script src="modules/supabaseClient.js"></script>
-        <script src="modules/themeManager.js"></script>
-        <script src="modules/router.js"></script>
-        <script src="modules/auth.js"></script>
+        <!-- Scripts loaded via src/auth.js -->
+
         <script>
             // ========================================
             // FORM VALIDATION FUNCTIONS

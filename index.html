@@ -45,62 +45,19 @@
         </script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-        <!-- Core Data (namespace init) -->
-        <script src="data/base.js" defer></script>
+        <!-- External CDN Dependencies (not bundled) -->
+        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-        <!-- Course Data - NOW LAZY LOADED! -->
-        <!-- Individual course files (arduino.js, microbit.js, etc.) are loaded on-demand -->
+        <!-- 
+            VITE ENTRY POINT
+            Tüm modüller src/main.js üzerinden bundle edilir.
+            Development: Vite dev server ile hot reload
+            Production: Tek optimize edilmiş dosya
+        -->
+        <script type="module" src="/src/main.js"></script>
 
-        <!-- Essential Data (small, always needed) -->
-        <script src="data/tips.js" defer></script>
-        <script src="data/quiz.js" defer></script>
+        <!-- CSS styles are injected via src/main.js -> src/style.css -->
 
-        <!-- Modules -->
-        <script src="modules/utils.js" defer></script>
-        <script src="modules/validators.js" defer></script>
-        <script src="modules/core/localStorage.js" defer></script>
-        <script src="modules/cache.js" defer></script>
-        <script src="modules/courseLoader.js" defer></script>
-        <script src="modules/settings.js" defer></script>
-        <script src="modules/i18n.js" defer></script>
-        <script src="modules/progress.js" defer></script>
-        <script src="config/tabs.js" defer></script>
-        <script src="modules/search.js" defer></script>
-        <script src="modules/ui.js" defer></script>
-        <script src="modules/scrollManager.js" defer></script>
-        <script src="modules/toast.js" defer></script>
-        <script src="modules/themeManager.js" defer></script>
-        <script src="modules/api.js" defer></script>
-        <script src="modules/core/stateProxy.js" defer></script>
-        <script src="modules/store/store.js" defer></script>
-        <script src="modules/router.js" defer></script>
-        <script src="modules/viewManager.js" defer></script>
-        <script src="modules/routing/viewLoader.js" defer></script>
-        <script src="modules/components/Navbar.js" defer></script>
-        <script src="modules/components/Footer.js" defer></script>
-        <script src="modules/layout/MainLayout.js" defer></script>
-        <script src="modules/assistant.js" defer></script>
-
-        <!-- Auth System -->
-        <script src="https://unpkg.com/@supabase/supabase-js@2" defer></script>
-        <script src="modules/supabaseClient.js" defer></script>
-        <script src="modules/auth.js" defer></script>
-        <script src="modules/authUI.js" defer></script>
-
-        <script src="modules/simulation/simController.js" defer></script>
-        <script src="modules/simulations.js" defer></script>
-
-        <link rel="stylesheet" href="styles/tokens.css" />
-        <link rel="stylesheet" href="styles/components.css" />
-        <link rel="stylesheet" href="styles/main.css" />
-        <!-- Teacher Panel Styles (Lazy loaded view, CSS always available) -->
-        <link rel="stylesheet" href="styles/teacher.css" />
-        <!-- Admin Panel Styles (Lazy loaded view, CSS always available) -->
-        <link rel="stylesheet" href="styles/admin.css" />
-        <!-- Profile View Styles (Lazy loaded view, CSS always available) -->
-        <link rel="stylesheet" href="styles/profile.css" />
-        <!-- Student Dashboard Styles (Lazy loaded view, CSS always available) -->
-        <link rel="stylesheet" href="styles/student.css" />
         <style>
             /* Inline critical styles or overrides can remain here if needed */
         </style>
@@ -174,7 +131,11 @@
 
         <!-- Ana İçerik -->
         <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+            <!-- SPA View Container (Ders Detay, Admin, Profile vb.) -->
+            <div id="main-content" class="w-full transition-opacity duration-300"></div>
+
             <!-- DERS SEÇİM EKRANI (Ana Sayfa) -->
+
             <div id="course-selection-view" class="fade-in pb-10">
                 <div class="text-center max-w-4xl mx-auto mb-8 mt-8 space-y-4">
                     <h2 class="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight">
@@ -439,6 +400,6 @@
         <!-- Dynamic Footer -->
         <footer id="main-footer"></footer>
 
-        <script src="app.js" defer></script>
+        <!-- app.js is now loaded via src/main.js entry point -->
     </body>
 </html>

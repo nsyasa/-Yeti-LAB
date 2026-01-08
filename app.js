@@ -767,4 +767,13 @@ const app = {
     },
 };
 
-window.onload = app.init;
+// Global erişim için window'a ata (Vite/Module sistemi için KRİTİK)
+window.app = app;
+
+// Başlatma mantığı
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', app.init);
+} else {
+    // DOM zaten hazırsa hemen başlat
+    app.init();
+}

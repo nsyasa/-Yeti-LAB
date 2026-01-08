@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: ['./*.html', './*.js', './modules/**/*.js', './data/*.js'],
+    content: [
+        './*.html',
+        './src/**/*.js', // YENİ: Entry point
+        './views/**/*.js', // YENİ: View modules
+        './modules/**/*.js',
+        './data/*.js',
+    ],
     theme: {
         extend: {
             colors: {
