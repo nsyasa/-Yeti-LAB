@@ -187,104 +187,13 @@ const app = {
 
     // Restore course data from localStorage (syncs with admin panel autosave)
     // Security: Validates and sanitizes data to prevent XSS attacks
+    // Refactored to modules/core/localStorage.js
     restoreFromLocalStorage: () => {
-        // Allow all courses defined in manifest + defaults
-        const defaultAllowed = ['arduino', 'microbit', 'scratch', 'mblock', 'appinventor'];
-        const manifestKeys =
-            window.CourseLoader && window.CourseLoader.manifest ? Object.keys(window.CourseLoader.manifest) : [];
-        const allowedCourses = [...new Set([...defaultAllowed, ...manifestKeys])];
-
-        try {
-            // In Supabase-First architecture, the main app should only read from the database.
-            // localStorage contains admin autosaves which might be stale, duplicate, or draft.
-            // We only want to restore from localStorage if we are in the Admin Panel.
-            const isAdminPanel =
-                window.location.pathname.includes('admin.html') || window.location.pathname.includes('admin');
-
-            if (!isAdminPanel) {
-                // Check if we have connectivity/Supabase loaded?
-                // Actually, regardless, main app shouldn't read admin drafts.
-                // Exception: Maybe offline mode? But current issue is duplicates.
-                console.log('[App] Skipping restoreFromLocalStorage on main site (Supabase-First)');
-                return;
-            }
-
-            const saved = localStorage.getItem('mucit_atolyesi_autosave');
-            if (!saved) return;
-
-            // Parse with error handling
-            let parsed;
-            try {
-                parsed = JSON.parse(saved);
-            } catch (parseError) {
-                console.warn('[App] Invalid JSON in localStorage, clearing corrupted data:', parseError);
-                localStorage.removeItem('mucit_atolyesi_autosave');
-                return;
-            }
-
-            // Validate top-level structure
-            if (!parsed || typeof parsed !== 'object') {
-                console.warn('[App] Invalid autosave structure, ignoring');
-                return;
-            }
-
-            if (!parsed.data || typeof parsed.data !== 'object' || Object.keys(parsed.data).length === 0) {
-                return;
-            }
-
-            // Validate timestamp
-            if (
-                parsed.timestamp &&
-                (typeof parsed.timestamp !== 'number' || parsed.timestamp > Date.now() + 86400000)
-            ) {
-                console.warn('[App] Invalid autosave timestamp, ignoring');
-                return;
-            }
-
-            // Process only allowed courses with validation and sanitization
-            let restoredCount = 0;
-            Object.keys(parsed.data).forEach((key) => {
-                // Only accept whitelisted course keys
-                if (!allowedCourses.includes(key)) {
-                    console.warn(`[App] Unknown course key rejected: ${key}`);
-                    return;
-                }
-
-                // Only merge if course exists in window.courseData
-                if (!window.courseData[key]) {
-                    return;
-                }
-
-                // Skip if course data is sourced from Supabase (Official Source)
-                if (window.courseData[key]._supabaseId) {
-                    console.log(`[App] Skipping localStorage restore for ${key} (Supabase source)`);
-                    return;
-                }
-
-                const courseData = parsed.data[key];
-
-                // Validate course data structure
-                if (!Validators.isValidCourseData(courseData)) {
-                    console.warn(`[App] Invalid course data structure for: ${key}`);
-                    return;
-                }
-
-                // Sanitize all string values to prevent XSS
-                const sanitizedData = Validators.sanitizeObject(courseData);
-
-                // Merge sanitized data
-                window.courseData[key] = sanitizedData;
-                restoredCount++;
-            });
-
-            if (restoredCount > 0) {
-                const date = new Date(parsed.timestamp).toLocaleString();
-                console.log(`[App] Course data restored from localStorage (${date}), ${restoredCount} course(s)`);
-            }
-        } catch (e) {
-            console.error('[App] Failed to restore from localStorage:', e);
-            // Don't propagate error, just log it
+        if (window.LocalStorageManager?.restoreFromLocalStorage) {
+            return window.LocalStorageManager.restoreFromLocalStorage();
         }
+        console.warn('[App] LocalStorageManager module not loaded');
+        return 0;
     },
 
     // Mobile UI Controls
