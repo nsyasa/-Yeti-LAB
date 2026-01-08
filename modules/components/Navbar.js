@@ -88,12 +88,7 @@ const Navbar = {
                     <div class="h-8 flex items-center gap-1">
                     </div>
 
-                    <!-- Language -->
-                    <button onclick="window.I18n?.toggle()" 
-                        class="p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 font-bold border border-gray-200 min-w-[44px] min-h-[44px] flex items-center justify-center transform hover:scale-105 transition-all"
-                        title="Dil Değiştir / Change Language">
-                        <span id="lang-text" class="text-sm">TR</span>
-                    </button>
+                    <!-- Language toggle removed - single language for now -->
 
                     <!-- Auth Menu -->
                     <div id="navbar-auth-section" class="ml-2">
