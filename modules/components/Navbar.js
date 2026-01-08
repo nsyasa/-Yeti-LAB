@@ -45,7 +45,9 @@ const Navbar = {
             <div class="flex justify-between h-20 items-center">
                 
                 <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group" onclick="Navbar.navigateSPA('/')">
+                <a href="index.html#/" 
+                   onclick="event.preventDefault(); Navbar.navigateSPA('/');" 
+                   class="flex-shrink-0 flex items-center gap-3 cursor-pointer group no-underline">
                     <div class="relative w-10 h-10 transition-transform group-hover:scale-110 duration-300">
                         <div class="absolute inset-0 bg-gradient-to-tr from-theme to-cyan-300 rounded-xl rotate-6 group-hover:rotate-12 transition-transform opacity-20"></div>
                         <div class="absolute inset-0 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center overflow-hidden">
@@ -55,7 +57,7 @@ const Navbar = {
                     <div class="flex flex-col brand-logo">
                         <span class="text-2xl font-bold text-gray-800 dark:text-white tracking-tight leading-none group-hover:text-theme transition-colors">Yeti<span class="brand-lab text-theme">LAB</span></span>
                     </div>
-                </div>
+                </a>
 
                 <div class="flex-1 max-w-xl mx-8 hidden lg:block relative group">
                     <input type="text" 
