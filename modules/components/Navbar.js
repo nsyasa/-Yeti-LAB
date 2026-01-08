@@ -23,11 +23,20 @@ const Navbar = {
      * @param {string} route - Hedef route (orn: '/', '/admin', '/teacher')
      */
     navigateSPA: (route) => {
-        // Ana sayfaya dönüyorsa query parametrelerini temizle
-        if (route === '/' && window.location.search) {
+        // Ana sayfaya dönüyorsa özel işlem yap
+        if (route === '/') {
             // URL'deki ?course=... gibi parametreleri temizle
-            const cleanUrl = window.location.pathname + '#/';
-            window.history.replaceState(null, '', cleanUrl);
+            if (window.location.search) {
+                const cleanUrl = window.location.pathname + '#/';
+                window.history.replaceState(null, '', cleanUrl);
+            }
+
+            // Doğrudan kurs seçim ekranını göster (Router'a güvenmeden)
+            if (Navbar.isOnSPA() && window.app?.renderCourseSelection) {
+                window.location.hash = '#/';
+                app.renderCourseSelection(false);
+                return;
+            }
         }
 
         if (Navbar.isOnSPA()) {
