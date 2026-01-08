@@ -456,12 +456,20 @@ const app = {
 
     renderCourseSelection: (updateHistory = true) => {
         const manifest = window.CourseLoader?.getManifest() || {};
-        // Update language button text
-        const langText = document.getElementById('lang-text');
-        if (langText) langText.innerText = (Settings.get('language') || 'tr').toUpperCase();
+
+        // Explicitly hide other views first (fix for logo navigation)
+        const dashboardView = document.getElementById('dashboard-view');
+        const projectView = document.getElementById('project-view');
+        if (dashboardView) dashboardView.classList.add('hidden');
+        if (projectView) projectView.classList.add('hidden');
+
+        // Stop any running simulation
+        app.stopSimulation();
+
+        // Reset current project and course state for clean navigation
+        app.currentProject = null;
 
         UI.renderCourseSelection(manifest);
-        app.stopSimulation();
 
         // URL'yi temizle (Ana sayfa)
         if (window.Router && updateHistory) window.Router.updateUrl(null, null);
