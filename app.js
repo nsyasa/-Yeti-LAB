@@ -105,7 +105,9 @@ const app = {
         if (typeof courseData !== 'undefined') {
             // Init modules
             // app.initTheme(); // ThemeManager handles this automatically in <head>
-            app.initScrollBehavior();
+            if (window.ScrollManager) {
+                window.ScrollManager.init();
+            }
             app.initAuth(); // Auth durumunu kontrol et, Progress da burada başlatılacak
 
             // Progress callback'i ayarla (init auth içinde çağrılacak)
@@ -184,235 +186,41 @@ const app = {
     },
 
     // --- Auth Management ---
-    initAuth: async () => {
-        // Auth modülü yüklü mü kontrol et
-        if (typeof Auth === 'undefined') {
-            console.log('[App] Auth module not loaded, showing login button');
-            app.updateUserUI(null);
-            return;
-        }
-
-        try {
-            await Auth.init();
-
-            // Profil tamamlanmamışsa profile sayfasına yönlendir
-            // Güvenlik: Sonsuz redirect döngüsünü önle
-            const isProfilePage = window.location.pathname.includes('profile.html');
-            const redirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');
-            const MAX_REDIRECTS = 3;
-
-            if (Auth.needsProfileCompletion() && !isProfilePage && redirectCount < MAX_REDIRECTS) {
-                console.log(
-                    `[App] Profile incomplete, redirecting to profile.html (attempt ${redirectCount + 1}/${MAX_REDIRECTS})`
-                );
-                sessionStorage.setItem('profile_redirect_count', String(redirectCount + 1));
-                Router.redirectTo('profile.html');
-                return;
-            }
-
-            // Profil tamamlandı veya sayfa zaten profile.html - sayacı sıfırla
-            if (!Auth.needsProfileCompletion()) {
-                sessionStorage.removeItem('profile_redirect_count');
-            }
-
-            // Max redirect'e ulaşıldıysa uyar
-            if (redirectCount >= MAX_REDIRECTS && Auth.needsProfileCompletion()) {
-                console.error(
-                    '[App] Max profile redirects reached, possible loop detected. Please check profile completion logic.'
-                );
-                Toast?.error('Profil yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.');
-            }
-
-            // Progress modülünü başlat (Auth'dan sonra)
-            if (window.Progress?.init) {
-                await window.Progress.init();
-            }
-
-            app.updateUserUI(Auth.getUserInfo());
-
-            // Auth değişikliklerini dinle
-            Auth.onAuthStateChange(async (event, _session, _role) => {
-                app.updateUserUI(Auth.getUserInfo());
-
-                // Yeni giriş yapıldıysa profil kontrolü ve progress yeniden yükle
-                if (event === 'SIGNED_IN') {
-                    const currentIsProfilePage = window.location.pathname.includes('profile.html');
-                    const currentRedirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');
-
-                    if (
-                        Auth.needsProfileCompletion() &&
-                        !currentIsProfilePage &&
-                        currentRedirectCount < MAX_REDIRECTS
-                    ) {
-                        sessionStorage.setItem('profile_redirect_count', String(currentRedirectCount + 1));
-                        Router.redirectTo('profile.html');
-                    } else if (!Auth.needsProfileCompletion()) {
-                        sessionStorage.removeItem('profile_redirect_count');
-                        if (window.Progress?.loadFromServer) {
-                            await window.Progress.loadFromServer();
-                        }
-                    }
-                }
-            });
-        } catch (err) {
-            console.warn('[App] Auth init error:', err);
-            Toast?.apiError(err, 'Kimlik doğrulama');
-            app.updateUserUI(null);
+    // Refactored to modules/authUI.js (FAZ 4.1 Part 2)
+    initAuth: () => {
+        if (window.AuthUI) {
+            window.AuthUI.init();
+        } else {
+            console.error('[App] AuthUI module not found');
         }
     },
 
     updateUserUI: (userInfo) => {
-        // Modern Navbar Entegrasyonu (Eğer Navbar modülü varsa ona devret)
-        if (window.Navbar && window.Navbar.updateAuthUI) {
-            window.Navbar.updateAuthUI();
-            return;
-        }
-
-        const loginBtn = document.getElementById('login-btn');
-        const userMenu = document.getElementById('user-menu');
-        const userName = document.getElementById('user-name');
-        const userAvatar = document.getElementById('user-avatar');
-        const teacherLink = document.getElementById('teacher-link');
-
-        if (!loginBtn || !userMenu) return;
-
-        if (userInfo && userInfo.isLoggedIn) {
-            // Giriş yapılmış - kullanıcı menüsünü göster
-            loginBtn.classList.add('hidden');
-            loginBtn.classList.remove('md:flex');
-            userMenu.classList.remove('hidden');
-
-            // Kullanıcı bilgilerini güncelle
-            if (userName) userName.textContent = userInfo.displayName || 'Kullanıcı';
-            if (userAvatar) {
-                if (userInfo.avatarUrl) {
-                    // Emoji kontrolü - emoji karakterleri URL değil, doğrudan gösterilmeli
-                    const isEmoji = /^[\p{Emoji}\u200d]+$/u.test(userInfo.avatarUrl) || userInfo.avatarUrl.length <= 4;
-                    const isUrl =
-                        userInfo.avatarUrl.startsWith('http') ||
-                        userInfo.avatarUrl.startsWith('/') ||
-                        userInfo.avatarUrl.includes('.');
-
-                    if (isUrl && !isEmoji) {
-                        userAvatar.innerHTML = '';
-                        const img = document.createElement('img');
-                        img.src = userInfo.avatarUrl;
-                        img.className = 'w-8 h-8 rounded-full object-cover';
-                        img.alt = '';
-                        img.onerror = () => {
-                            userAvatar.textContent = '👤';
-                        };
-                        userAvatar.appendChild(img);
-                    } else {
-                        // Emoji veya kısa metin - doğrudan göster
-                        userAvatar.textContent = userInfo.avatarUrl;
-                    }
-                } else {
-                    userAvatar.textContent = userInfo.isStudent ? '🎓' : '👨‍🏫';
-                }
-            }
-
-            // Öğretmen linkini göster/gizle
-            if (teacherLink) {
-                if (userInfo.isTeacher || userInfo.isAdmin) {
-                    teacherLink.classList.remove('hidden');
-                    teacherLink.classList.add('flex');
-                } else {
-                    teacherLink.classList.add('hidden');
-                }
-            }
-        } else {
-            // Giriş yapılmamış - login butonunu göster
-            loginBtn.classList.remove('hidden');
-            loginBtn.classList.add('md:flex');
-            userMenu.classList.add('hidden');
+        if (window.AuthUI) {
+            window.AuthUI.updateUserUI(userInfo);
         }
     },
 
     toggleUserMenu: () => {
-        const dropdown = document.getElementById('user-dropdown');
-        if (dropdown) {
-            dropdown.classList.toggle('hidden');
-
-            // Dışarı tıklandığında kapat
-            if (!dropdown.classList.contains('hidden')) {
-                setTimeout(() => {
-                    document.addEventListener('click', app.closeUserMenu, { once: true });
-                }, 10);
-            }
+        if (window.AuthUI) {
+            window.AuthUI.toggleUserMenu();
         }
     },
 
     closeUserMenu: (e) => {
-        const dropdown = document.getElementById('user-dropdown');
-        const userMenu = document.getElementById('user-menu');
-        if (dropdown && userMenu && !userMenu.contains(e.target)) {
-            dropdown.classList.add('hidden');
+        if (window.AuthUI) {
+            window.AuthUI.closeUserMenu(e);
         }
     },
 
-    logout: async () => {
-        if (typeof Auth === 'undefined') {
-            Router.redirectTo('auth.html');
-            return;
-        }
-
-        try {
-            await Auth.signOut();
-            Auth.studentLogout();
-            app.updateUserUI(null);
-            // Sayfayı yenile - çıkış işlemini tamamla
-            window.location.reload();
-        } catch (err) {
-            console.error('[App] Logout error:', err);
-            alert('Çıkış yapılırken hata oluştu');
+    logout: () => {
+        if (window.AuthUI) {
+            window.AuthUI.logout();
         }
     },
 
     // Global alias for logout, useful for direct calls from HTML
     globalLogout: () => app.logout(),
-
-    // --- Scroll Behavior: Hide header/bottom nav on scroll down, show on scroll up ---
-    scrollState: {
-        lastScrollY: 0,
-        ticking: false,
-    },
-
-    initScrollBehavior: () => {
-        window.addEventListener('scroll', app.handleScroll, { passive: true });
-    },
-
-    handleScroll: () => {
-        if (!app.scrollState.ticking) {
-            window.requestAnimationFrame(() => {
-                const currentScrollY = window.scrollY;
-                const header = document.getElementById('main-header');
-                const bottomNav = document.getElementById('mobile-bottom-nav');
-                const threshold = 50; // Minimum scroll amount before hiding
-
-                // Only apply scroll behavior after scrolling past threshold
-                if (currentScrollY > threshold) {
-                    if (currentScrollY > app.scrollState.lastScrollY) {
-                        // Scrolling DOWN - hide nav
-                        header?.classList.add('nav-hidden');
-                        bottomNav?.classList.add('nav-hidden');
-                    } else {
-                        // Scrolling UP - show nav
-                        header?.classList.remove('nav-hidden');
-                        bottomNav?.classList.remove('nav-hidden');
-                    }
-                } else {
-                    // At top of page - always show nav
-                    header?.classList.remove('nav-hidden');
-                    bottomNav?.classList.remove('nav-hidden');
-                }
-
-                app.scrollState.lastScrollY = currentScrollY;
-                app.scrollState.ticking = false;
-            });
-            app.scrollState.ticking = true;
-        }
-    },
 
     // Restore course data from localStorage (syncs with admin panel autosave)
     // Security: Validates and sanitizes data to prevent XSS attacks
