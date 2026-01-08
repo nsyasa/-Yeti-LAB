@@ -29,10 +29,31 @@ const ProjectManager = {
     },
 
     bindEvents() {
-        // Form inputs
-        document.querySelectorAll('#project-form input, #project-form textarea, #project-form select').forEach((i) => {
-            if (i.type === 'checkbox') i.addEventListener('change', () => this.update());
-            else i.addEventListener('input', () => this.update());
+        // Use event delegation for SPA compatibility
+        // This works even if #project-form is not yet in the DOM
+        document.addEventListener('input', (e) => {
+            const form = document.getElementById('project-form');
+            if (!form) return;
+
+            // Check if the event target is inside project-form
+            if (form.contains(e.target)) {
+                const tag = e.target.tagName.toLowerCase();
+                if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+                    this.update();
+                }
+            }
+        });
+
+        document.addEventListener('change', (e) => {
+            const form = document.getElementById('project-form');
+            if (!form) return;
+
+            // Check if the event target is inside project-form
+            if (form.contains(e.target)) {
+                if (e.target.type === 'checkbox' || e.target.tagName.toLowerCase() === 'select') {
+                    this.update();
+                }
+            }
         });
     },
 
@@ -290,46 +311,67 @@ const ProjectManager = {
                   .filter((n) => !isNaN(n))
             : [];
 
-        // Sim Type
+        // Sim Type (with null safety)
         const select = document.getElementById('p-simType');
-        if (select.value === 'custom') {
-            p.simType = document.getElementById('p-simType-custom').value;
-        } else {
-            p.simType = select.value;
+        if (select) {
+            if (select.value === 'custom') {
+                p.simType = document.getElementById('p-simType-custom')?.value || p.simType;
+            } else {
+                p.simType = select.value;
+            }
         }
 
-        p.hasGraph = document.getElementById('p-hasGraph').value === 'true';
-
-        // Code
-        const mode = document.getElementById('p-code-mode').value;
-        if (mode === 'text') {
-            p.code = document.getElementById('p-code').value;
-        } else {
-            const imgInput = document.getElementById('p-code-image-input');
-            p.code = imgInput ? imgInput.value : '';
+        // hasGraph (with null safety)
+        const hasGraphEl = document.getElementById('p-hasGraph');
+        if (hasGraphEl) {
+            p.hasGraph = hasGraphEl.value === 'true';
         }
 
-        p.circuitImage = document.getElementById('p-circuitImage').value;
+        // Code (with null safety)
+        const modeEl = document.getElementById('p-code-mode');
+        if (modeEl) {
+            const mode = modeEl.value;
+            if (mode === 'text') {
+                p.code = document.getElementById('p-code')?.value ?? p.code;
+            } else {
+                const imgInput = document.getElementById('p-code-image-input');
+                p.code = imgInput ? imgInput.value : p.code;
+            }
+        }
 
+        // Circuit Image (with null safety)
+        const circuitEl = document.getElementById('p-circuitImage');
+        if (circuitEl) {
+            p.circuitImage = circuitEl.value;
+        }
+
+        // Hotspots (with null safety)
         try {
-            const hs = document.getElementById('p-hotspots').value;
-            p.hotspots = hs ? JSON.parse(hs) : null;
+            const hotspotsEl = document.getElementById('p-hotspots');
+            if (hotspotsEl) {
+                const hs = hotspotsEl.value;
+                p.hotspots = hs ? JSON.parse(hs) : null;
+            }
         } catch (e) {
             // Error parsing hotspots JSON
         }
 
-        // Materials
+        // Materials (with null safety)
         const selected = Array.from(document.querySelectorAll('.material-checkbox:checked')).map((cb) => cb.value);
-        const custom = document
-            .getElementById('p-materials-custom')
-            .value.split(',')
-            .map((s) => s.trim())
-            .filter((s) => s !== '');
+        const materialsCustomEl = document.getElementById('p-materials-custom');
+        const custom = materialsCustomEl
+            ? materialsCustomEl.value
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter((s) => s !== '')
+            : [];
         p.materials = [...selected, ...custom];
 
-        // Options
-        p.enableHotspots = document.getElementById('p-enableHotspots').checked;
-        p.showHotspotsInLab = document.getElementById('p-showInLab').checked;
+        // Options (with null safety)
+        const enableHotspotsEl = document.getElementById('p-enableHotspots');
+        const showInLabEl = document.getElementById('p-showInLab');
+        if (enableHotspotsEl) p.enableHotspots = enableHotspotsEl.checked;
+        if (showInLabEl) p.showHotspotsInLab = showInLabEl.checked;
 
         // Hidden Tabs
         const tabIds = ['mission', 'materials', 'circuit', 'code', 'challenge', 'quiz'];

@@ -27,16 +27,26 @@ const PhaseManager = {
     },
 
     bindEvents() {
-        // Form inputs - bind on load since form is static
-        const titleEl = document.getElementById('ph-title');
-        const iconEl = document.getElementById('ph-icon');
-        const descEl = document.getElementById('ph-desc');
-        const colorEl = document.getElementById('ph-color');
+        // Use event delegation for SPA compatibility
+        // This works even if #phase-form is not yet in the DOM
+        document.addEventListener('input', (e) => {
+            const form = document.getElementById('phase-form');
+            if (!form || !form.contains(e.target)) return;
 
-        if (titleEl) titleEl.oninput = () => this.update();
-        if (iconEl) iconEl.oninput = () => this.update();
-        if (descEl) descEl.oninput = () => this.update();
-        if (colorEl) colorEl.onchange = () => this.update();
+            const id = e.target.id;
+            if (id === 'ph-title' || id === 'ph-icon' || id === 'ph-desc') {
+                this.update();
+            }
+        });
+
+        document.addEventListener('change', (e) => {
+            const form = document.getElementById('phase-form');
+            if (!form || !form.contains(e.target)) return;
+
+            if (e.target.id === 'ph-color') {
+                this.update();
+            }
+        });
     },
 
     // --- RENDER LIST ---
@@ -114,10 +124,16 @@ const PhaseManager = {
 
         const p = phases[this.currentPhaseIndex];
 
-        p.title = document.getElementById('ph-title').value;
-        p.icon = document.getElementById('ph-icon').value;
-        p.description = document.getElementById('ph-desc').value;
-        p.color = document.getElementById('ph-color').value;
+        // Update with null safety
+        const titleEl = document.getElementById('ph-title');
+        const iconEl = document.getElementById('ph-icon');
+        const descEl = document.getElementById('ph-desc');
+        const colorEl = document.getElementById('ph-color');
+
+        if (titleEl) p.title = titleEl.value;
+        if (iconEl) p.icon = iconEl.value;
+        if (descEl) p.description = descEl.value;
+        if (colorEl) p.color = colorEl.value;
 
         this.renderList();
 
