@@ -643,15 +643,15 @@ git push origin main
 
 ## 📊 İLERLEME TAKİBİ
 
-| Faz | Durum | Tarih      | Notlar                          |
+| Faz | Durum | Tari       | Notlar                          |
 | --- | ----- | ---------- | ------------------------------- |
 | 0   | ✅    | 2026-01-08 | Checkpoint commit atıldı        |
 | 1   | ✅    | 2026-01-08 | 48 → 36 uyarı düzeltildi        |
 | 2   | ✅    | 2026-01-08 | integration klasörü oluşturuldu |
 | 3   | ✅    | 2026-01-08 | Store %96 coverage! 🎉          |
-| 4   | ⬜    | -          | Sonraki - Validators            |
-| 5   | ⬜    | -          | Sonraki - Utils                 |
-| 6   | ⬜    | -          | Sonraki - Cache                 |
+| 4   | ✅    | 2026-01-08 | Validators %100 coverage! 🎉    |
+| 5   | ✅    | 2026-01-08 | Utils %97 coverage! 🎉          |
+| 6   | ✅    | 2026-01-08 | Cache %96 coverage! 🎉          |
 | 7   | ⬜    | -          | Final kontroller                |
 
 ---
