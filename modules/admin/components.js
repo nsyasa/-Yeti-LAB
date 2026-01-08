@@ -58,10 +58,13 @@ const ComponentManager = {
     load: (key) => {
         ComponentManager.currentKey = key;
         const c = ComponentManager.data[key];
+        if (!c) return;
 
-        // UI Switching (Delegate if possible, but simple DOM manipulation is fine here)
-        document.getElementById('component-welcome').classList.add('hidden');
-        document.getElementById('component-form').classList.remove('hidden');
+        // UI Switching with null safety for SPA
+        const welcomeEl = document.getElementById('component-welcome');
+        const formEl = document.getElementById('component-form');
+        if (welcomeEl) welcomeEl.classList.add('hidden');
+        if (formEl) formEl.classList.remove('hidden');
 
         const setVal = (id, val) => {
             const el = document.getElementById(id);
@@ -83,7 +86,13 @@ const ComponentManager = {
         if (!ComponentManager.currentKey) return;
 
         const c = ComponentManager.data[ComponentManager.currentKey];
-        const val = (id) => document.getElementById(id).value;
+        if (!c) return;
+
+        // Null-safe value getter
+        const val = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.value : '';
+        };
 
         c.name = val('c-name');
         c.icon = val('c-icon');
@@ -124,8 +133,11 @@ const ComponentManager = {
         delete ComponentManager.data[ComponentManager.currentKey];
         ComponentManager.currentKey = null;
 
-        document.getElementById('component-welcome').classList.remove('hidden');
-        document.getElementById('component-form').classList.add('hidden');
+        // Null safety for SPA context
+        const welcomeEl = document.getElementById('component-welcome');
+        const formEl = document.getElementById('component-form');
+        if (welcomeEl) welcomeEl.classList.remove('hidden');
+        if (formEl) formEl.classList.add('hidden');
 
         ComponentManager.renderList();
         if (ComponentManager.onUpdate) ComponentManager.onUpdate();
