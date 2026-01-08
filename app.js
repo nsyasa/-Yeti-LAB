@@ -352,331 +352,87 @@ const app = {
         }
     },
 
-    // ===== Admin View Loader (SPA) =====
+    // ===== View Loaders (Delegated to modules/routing/viewLoader.js) =====
+    // Admin View Loader (SPA)
     loadAdminView: async (route) => {
-        console.log('[App] Loading admin view:', route);
-
-        // AdminView yüklü değilse, script'leri yükle
-        if (!window.AdminView) {
-            await app.loadAdminScripts();
+        if (window.ViewLoader?.loadAdminView) {
+            return window.ViewLoader.loadAdminView(route);
         }
-
-        // Container al veya oluştur
-        let container = document.getElementById('admin-view-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'admin-view-container';
-            container.className = 'hidden';
-
-            // Ana içerik alanına ekle
-            const mainContent =
-                document.getElementById('main-content') || document.querySelector('main') || document.body;
-            mainContent.appendChild(container);
-        }
-
-        // Visible yap (Diğer viewları gizle)
-        UI.switchView('admin-view-container');
-
-        // AdminView zaten yüklü ve mount edilmişse, sadece section değiştir
-        if (window.AdminView?.isLoaded) {
-            console.log('[App] AdminView already loaded, just switching section');
-            // Handle sub-routes
-            if (route === 'admin-projects' || route === 'admin') {
-                AdminView.showSection('projects');
-            } else if (route === 'admin-phases') {
-                AdminView.showSection('phases');
-            } else if (route === 'admin-components') {
-                AdminView.showSection('components');
-            }
-            return;
-        }
-
-        // ViewManager ile mount et (sadece ilk kez)
-        let mounted = false;
-        if (window.ViewManager && window.AdminView) {
-            mounted = await ViewManager.mount(AdminView, { route, container });
-        } else {
-            // Fallback: doğrudan mount
-            mounted = await AdminView.mount(container);
-        }
-
-        if (mounted) {
-            // Handle sub-routes
-            if (route === 'admin-projects' || route === 'admin') {
-                AdminView.showSection('projects');
-            } else if (route === 'admin-phases') {
-                AdminView.showSection('phases');
-            } else if (route === 'admin-components') {
-                AdminView.showSection('components');
-            }
-        }
+        console.error('[App] ViewLoader module not loaded');
     },
 
     // Admin script'lerini lazy load et
     loadAdminScripts: async () => {
-        console.log('[App] Loading admin scripts...');
-
-        const scripts = [
-            // Constants
-            'constants/elements.js',
-            // Core dependencies
-            'data/base.js',
-            'modules/courseLoader.js',
-            'data/quiz.js',
-            'modules/themes.js',
-            'config/tabs.js',
-            // Admin modules
-            'modules/admin/storage.js',
-            'modules/admin/courses.js',
-            'modules/admin/phases.js',
-            'modules/admin/components.js',
-            'modules/admin/projects.js',
-            'modules/admin/settings.js',
-            'modules/admin/supabase-sync.js',
-            'modules/admin/hotspots.js',
-            'modules/admin/images.js',
-            'modules/admin/quizzes.js',
-            'modules/admin.js', // Main admin coordinator
-            // View components
-            'views/admin/AdminLayout.js',
-            'views/admin/sections/ProjectsSection.js',
-            'views/admin/sections/PhasesSection.js',
-            'views/admin/sections/ComponentsSection.js',
-            'views/admin/modals/AdminModals.js',
-            'views/admin/AdminView.js',
-        ];
-
-        for (const src of scripts) {
-            await app.loadScript(src);
+        if (window.ViewLoader?.loadAdminScripts) {
+            return window.ViewLoader.loadAdminScripts();
         }
-
-        console.log('[App] Admin scripts loaded');
     },
 
-    // ===== Teacher View Loader (SPA) =====
+    // Teacher View Loader (SPA)
     loadTeacherView: async (route) => {
-        console.log('[App] Loading teacher view:', route);
-
-        // TeacherView yüklü değilse, script'leri yükle
-        if (!window.TeacherView) {
-            await app.loadTeacherScripts();
+        if (window.ViewLoader?.loadTeacherView) {
+            return window.ViewLoader.loadTeacherView(route);
         }
-
-        // Container al veya oluştur
-        let container = document.getElementById('teacher-view-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'teacher-view-container';
-            container.className = 'hidden';
-
-            // Ana içerik alanına ekle
-            const mainContent =
-                document.getElementById('main-content') || document.querySelector('main') || document.body;
-            mainContent.appendChild(container);
-        }
-
-        // Visible yap (Diğer viewları gizle)
-        UI.switchView('teacher-view-container');
-
-        // TeacherView zaten yüklü ve mount edilmişse, sadece section değiştir
-        if (window.TeacherView?.isLoaded) {
-            console.log('[App] TeacherView already loaded, just switching section');
-            if (route === 'teacher-classrooms') {
-                TeacherView.showSection('classrooms');
-            } else if (route === 'teacher-students') {
-                TeacherView.showSection('students');
-            }
-            return;
-        }
-
-        // ViewManager ile mount et (sadece ilk kez)
-        let mounted = false;
-        if (window.ViewManager && window.TeacherView) {
-            mounted = await ViewManager.mount(TeacherView, { route, container });
-        } else {
-            // Fallback: doğrudan mount
-            mounted = await TeacherView.mount(container);
-        }
-
-        if (mounted) {
-            // Handle sub-routes
-            if (route === 'teacher-classrooms') {
-                TeacherView.showSection('classrooms');
-            } else if (route === 'teacher-students') {
-                TeacherView.showSection('students');
-            }
-        }
+        console.error('[App] ViewLoader module not loaded');
     },
 
     // Teacher script'lerini lazy load et
     loadTeacherScripts: async () => {
-        console.log('[App] Loading teacher scripts...');
-
-        const scripts = [
-            'views/teacher/TeacherLayout.js',
-            'views/teacher/sections/DashboardSection.js',
-            'views/teacher/sections/ClassroomsSection.js',
-            'views/teacher/sections/StudentsSection.js',
-            'views/teacher/modals/TeacherModals.js',
-            'views/teacher/TeacherView.js',
-        ];
-
-        for (const src of scripts) {
-            await app.loadScript(src);
+        if (window.ViewLoader?.loadTeacherScripts) {
+            return window.ViewLoader.loadTeacherScripts();
         }
-
-        console.log('[App] Teacher scripts loaded');
     },
 
-    // ===== Profile View Loader (SPA) =====
+    // Profile View Loader (SPA)
     loadProfileView: async (route) => {
-        console.log('[App] Loading profile view:', route);
-
-        // ProfileView yüklü değilse, script'leri yükle
-        if (!window.ProfileView) {
-            await app.loadProfileScripts();
+        if (window.ViewLoader?.loadProfileView) {
+            return window.ViewLoader.loadProfileView(route);
         }
-
-        // Container al veya oluştur
-        let container = document.getElementById('profile-view-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'profile-view-container';
-            container.className = '';
-
-            // Ana içerik alanına ekle
-            const mainContent =
-                document.getElementById('main-content') || document.querySelector('main') || document.body;
-            mainContent.appendChild(container);
-        }
-
-        // Hide main layout elements
-        UI.switchView('profile-view-container');
-
-        // ViewManager ile mount et
-        if (window.ViewManager && window.ProfileView) {
-            await ViewManager.mount(ProfileView, { route, container });
-        } else {
-            // Fallback: doğrudan mount
-            await ProfileView.mount(container);
-        }
+        console.error('[App] ViewLoader module not loaded');
     },
 
     // Profile script'lerini lazy load et
     loadProfileScripts: async () => {
-        console.log('[App] Loading profile scripts...');
-
-        const scripts = [
-            'modules/constants.js',
-            'modules/validators.js',
-            'data/cities.js',
-            'modules/badges.js',
-            'modules/profile.js',
-            'views/profile/ProfileView.js',
-        ];
-
-        for (const src of scripts) {
-            await app.loadScript(src);
+        if (window.ViewLoader?.loadProfileScripts) {
+            return window.ViewLoader.loadProfileScripts();
         }
-
-        console.log('[App] Profile scripts loaded');
     },
 
-    // ===== Student Dashboard View Loader (SPA) =====
+    // Student Dashboard View Loader (SPA)
     loadStudentDashboardView: async () => {
-        console.log('[App] Loading student dashboard view...');
-
-        // StudentDashboardView yüklü değilse, script'leri yükle
-        if (!window.StudentDashboardView) {
-            await app.loadStudentDashboardScripts();
+        if (window.ViewLoader?.loadStudentDashboardView) {
+            return window.ViewLoader.loadStudentDashboardView();
         }
-
-        // Container al veya oluştur
-        let container = document.getElementById('student-dashboard-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'student-dashboard-container';
-            container.className = '';
-
-            // Ana içerik alanına ekle
-            const mainContent =
-                document.getElementById('main-content') || document.querySelector('main') || document.body;
-            mainContent.appendChild(container);
-        }
-
-        // Hide main layout elements
-        UI.switchView('student-dashboard-container');
-
-        // ViewManager ile mount et
-        if (window.ViewManager && window.StudentDashboardView) {
-            await ViewManager.mount(StudentDashboardView, { container });
-        } else {
-            // Fallback: doğrudan mount
-            await StudentDashboardView.mount(container);
-        }
+        console.error('[App] ViewLoader module not loaded');
     },
 
     // Student Dashboard script'lerini lazy load et
     loadStudentDashboardScripts: async () => {
-        console.log('[App] Loading student dashboard scripts...');
-
-        const scripts = ['modules/courseLoader.js', 'views/student/StudentDashboardView.js'];
-
-        for (const src of scripts) {
-            await app.loadScript(src);
+        if (window.ViewLoader?.loadStudentDashboardScripts) {
+            return window.ViewLoader.loadStudentDashboardScripts();
         }
-
-        console.log('[App] Student dashboard scripts loaded');
     },
 
-    // Script loader helper
-    // Zaten yüklü modülleri tekrar yüklemeyi önler
+    // Script loader helper (delegated to ViewLoader)
     _loadedScripts: new Set(),
 
     loadScript: (src) => {
+        if (window.ViewLoader?.loadScript) {
+            return window.ViewLoader.loadScript(src);
+        }
+        // Fallback: basic script loader
         return new Promise((resolve, reject) => {
-            // 1. Daha önce yüklediğimizi kontrol et
             if (app._loadedScripts.has(src)) {
                 resolve();
                 return;
             }
-
-            // 2. DOM'da script tag var mı kontrol et
-            if (document.querySelector(`script[src="${src}"]`)) {
-                app._loadedScripts.add(src);
-                resolve();
-                return;
-            }
-
-            // 3. Global modül zaten tanımlı mı kontrol et
-            // Bu, Vite dev server'ın inline yüklediği modülleri yakalar
-            const moduleChecks = {
-                'modules/courseLoader.js': () => typeof window.CourseLoader !== 'undefined',
-                'config/tabs.js': () => typeof window.TabConfig !== 'undefined',
-                'modules/themes.js': () => typeof window.applyTheme !== 'undefined',
-                'data/base.js': () => typeof window.courseData !== 'undefined',
-                'data/quiz.js': () => typeof window.quizQuestions !== 'undefined',
-            };
-
-            const checkFn = moduleChecks[src];
-            if (checkFn && checkFn()) {
-                app._loadedScripts.add(src);
-                resolve();
-                return;
-            }
-
-            // 4. Script'i yükle
             const script = document.createElement('script');
             script.src = src;
             script.onload = () => {
                 app._loadedScripts.add(src);
-                console.log(`[App] Loaded: ${src}`);
                 resolve();
             };
-            script.onerror = () => {
-                console.error(`[App] Failed to load: ${src}`);
-                reject(new Error(`Failed to load ${src}`));
-            };
+            script.onerror = () => reject(new Error(`Failed to load ${src}`));
             document.body.appendChild(script);
         });
     },
