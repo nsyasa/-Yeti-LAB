@@ -414,58 +414,6 @@ const app = {
         }
     },
 
-    // --- Security Helpers ---
-    // HTML escape function to prevent XSS
-    escapeHtml: (str) => {
-        if (typeof str !== 'string') return str;
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-    },
-
-    // Recursively sanitize all string values in an object
-    sanitizeObject: (obj) => {
-        if (obj === null || obj === undefined) return obj;
-        if (typeof obj === 'string') return app.escapeHtml(obj);
-        if (typeof obj === 'number' || typeof obj === 'boolean') return obj;
-        if (Array.isArray(obj)) return obj.map((item) => app.sanitizeObject(item));
-        if (typeof obj === 'object') {
-            const sanitized = {};
-            for (const key of Object.keys(obj)) {
-                sanitized[key] = app.sanitizeObject(obj[key]);
-            }
-            return sanitized;
-        }
-        return obj;
-    },
-
-    // Validate course data structure
-    isValidCourseData: (data) => {
-        // Check if data has expected structure
-        if (!data || typeof data !== 'object') return false;
-
-        // Course data should have title and data properties
-        if (typeof data.title !== 'string') return false;
-        if (!data.data || typeof data.data !== 'object') return false;
-
-        // Validate nested data structure
-        const courseContent = data.data;
-        if (courseContent.phases && !Array.isArray(courseContent.phases)) return false;
-        if (courseContent.projects && !Array.isArray(courseContent.projects)) return false;
-        if (courseContent.componentInfo && typeof courseContent.componentInfo !== 'object') return false;
-
-        // Validate projects structure if present
-        if (courseContent.projects) {
-            for (const project of courseContent.projects) {
-                if (typeof project !== 'object') return false;
-                if (typeof project.id !== 'number') return false;
-                if (typeof project.title !== 'string') return false;
-            }
-        }
-
-        return true;
-    },
-
     // Restore course data from localStorage (syncs with admin panel autosave)
     // Security: Validates and sanitizes data to prevent XSS attacks
     restoreFromLocalStorage: () => {
@@ -545,13 +493,13 @@ const app = {
                 const courseData = parsed.data[key];
 
                 // Validate course data structure
-                if (!app.isValidCourseData(courseData)) {
+                if (!Validators.isValidCourseData(courseData)) {
                     console.warn(`[App] Invalid course data structure for: ${key}`);
                     return;
                 }
 
                 // Sanitize all string values to prevent XSS
-                const sanitizedData = app.sanitizeObject(courseData);
+                const sanitizedData = Validators.sanitizeObject(courseData);
 
                 // Merge sanitized data
                 window.courseData[key] = sanitizedData;

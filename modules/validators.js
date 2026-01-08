@@ -104,6 +104,72 @@ const Validators = {
         const num = Number(value);
         return Number.isInteger(num) && num > 0;
     },
+
+    /**
+     * Recursively sanitize all string values in an object
+     * @param {Object} obj - The object to sanitize
+     * @returns {Object} Sanitized object
+     */
+    sanitizeObject: (obj) => {
+        // Handle string input directly (for recursion in arrays)
+        if (typeof obj === 'string') {
+            if (typeof window !== 'undefined' && window.Utils && window.Utils.escapeHtml) {
+                return window.Utils.escapeHtml(obj);
+            } else {
+                return Validators.sanitizeString(obj);
+            }
+        }
+
+        if (typeof obj !== 'object' || obj === null) {
+            return obj;
+        }
+
+        if (Array.isArray(obj)) {
+            return obj.map((item) => Validators.sanitizeObject(item));
+        }
+
+        const sanitized = {};
+        for (const [key, value] of Object.entries(obj)) {
+            sanitized[key] = Validators.sanitizeObject(value);
+        }
+        return sanitized;
+    },
+
+    /**
+     * Validate course data structure
+     * @param {Object} data - Course data object
+     * @returns {boolean} True if structure is valid
+     */
+    isValidCourseData: (data) => {
+        if (!data || typeof data !== 'object') return false;
+
+        // Required logic: Check essential fields
+        const requiredFields = ['id', 'title', 'key', 'projects'];
+        for (const field of requiredFields) {
+            if (!data[field]) {
+                console.warn(`[Validator] Missing required field: ${field}`);
+                return false;
+            }
+        }
+
+        // Validate projects array
+        if (!Array.isArray(data.projects)) {
+            console.warn('[Validator] Projects must be an array');
+            return false;
+        }
+
+        // Validate each project
+        const validProjects = data.projects.every((project) => {
+            return project.id && project.title && project.type;
+        });
+
+        if (!validProjects) {
+            console.warn('[Validator] Invalid project structure found');
+            return false;
+        }
+
+        return true;
+    },
 };
 
 // ============================================

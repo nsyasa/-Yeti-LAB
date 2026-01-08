@@ -240,4 +240,54 @@ describe('Validators Integration', () => {
             expect(Validators.isPositiveInteger(null)).toBe(false);
         });
     });
+    describe('Helper Object Validations', () => {
+        it('should sanitize object recursively', () => {
+            if (!Validators) return;
+
+            // Explicitly mock Utils for this test
+            window.Utils = {
+                escapeHtml: vi.fn((str) => str.replace(/</g, '&lt;').replace(/>/g, '&gt;')),
+            };
+
+            const malicious = {
+                name: '<script>alert(1)</script>',
+                details: {
+                    bio: '<b>Bold</b>',
+                    tags: ['<img src=x>', 'safe'],
+                },
+                age: 25, // Should preserve numbers
+            };
+
+            const clean = Validators.sanitizeObject(malicious);
+
+            expect(clean.name).not.toContain('<script>');
+            expect(clean.details.bio).not.toContain('<b>');
+            expect(clean.details.tags[0]).not.toContain('<img');
+            expect(clean.details.tags[1]).toBe('safe');
+            expect(clean.age).toBe(25);
+        });
+
+        it('should validate valid course data structure', () => {
+            if (!Validators) return;
+
+            const validCourse = {
+                id: 1,
+                title: 'Test Course',
+                key: 'test',
+                projects: [{ id: 1, title: 'P1', type: 'code' }],
+            };
+
+            expect(Validators.isValidCourseData(validCourse)).toBe(true);
+        });
+
+        it('should reject invalid course data structure', () => {
+            if (!Validators) return;
+
+            const invalidCourse1 = { title: 'No Projects' }; // Missing projects array
+            const invalidCourse2 = { projects: [] }; // Missing key fields
+
+            expect(Validators.isValidCourseData(invalidCourse1)).toBe(false);
+            expect(Validators.isValidCourseData(invalidCourse2)).toBe(false);
+        });
+    });
 });
