@@ -2,12 +2,9 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import tailwindcss from '@tailwindcss/vite';
 
-
 export default defineConfig({
     base: '/-Yeti-LAB/', // GitHub Pages base path
-    plugins: [
-        tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
     // Multi-page app configuration
     build: {
         rollupOptions: {
