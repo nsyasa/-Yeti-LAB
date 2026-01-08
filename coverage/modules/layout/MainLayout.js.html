@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for themes.js</title>
+    <title>Code coverage report for modules/layout/MainLayout.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> themes.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/layout</a> MainLayout.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -153,51 +153,51 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >// --- MERKEZI TEMA YAPILANDIRMASI ---<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >// Tüm kurs renklerini burada tanımlayın.</span>
-<span class="cstat-no" title="statement not covered" >// Bu dosya hem index2.html hem de admin.html tarafından kullanılır.</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" > * Main Layout Module</span>
+<span class="cstat-no" title="statement not covered" > * Sayfanın genel iskeletini (Header + Content + Footer) yönetir.</span>
+<span class="cstat-no" title="statement not covered" > * Sayfa yüklendiğinde Navbar ve Footer'ı otomatik başlatır.</span>
+<span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >window.CourseThemes = {</span>
-<span class="cstat-no" title="statement not covered" >    arduino: {</span>
-<span class="cstat-no" title="statement not covered" >        name: 'Arduino',</span>
-<span class="cstat-no" title="statement not covered" >        color: '#00979C',    // Ana tema rengi</span>
-<span class="cstat-no" title="statement not covered" >        light: '#E6FFFA',    // Açık arka plan rengi</span>
-<span class="cstat-no" title="statement not covered" >        icon: '⚡'</span>
+<span class="cstat-no" title="statement not covered" >const MainLayout = {</span>
+<span class="cstat-no" title="statement not covered" >    init: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // 1. Header (Navbar) Başlat</span>
+<span class="cstat-no" title="statement not covered" >        if (window.Navbar) {</span>
+<span class="cstat-no" title="statement not covered" >            window.Navbar.init();</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            console.warn('Navbar module not found');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // 2. Footer Başlat</span>
+<span class="cstat-no" title="statement not covered" >        if (window.Footer) {</span>
+<span class="cstat-no" title="statement not covered" >            window.Footer.init();</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            console.warn('Footer module not found');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // 3. İçerik Alanı Ayarlamaları (Opsiyonel)</span>
+<span class="cstat-no" title="statement not covered" >        // Örneğin sayfa geçiş animasyonları veya scroll pozisyonu burada yönetilebilir</span>
+<span class="cstat-no" title="statement not covered" >        MainLayout.adjustContentSpacing();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Pencere boyutlanınca tekrar hesapla</span>
+<span class="cstat-no" title="statement not covered" >        window.addEventListener('resize', MainLayout.adjustContentSpacing);</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    microbit: {</span>
-<span class="cstat-no" title="statement not covered" >        name: 'Micro:bit',</span>
-<span class="cstat-no" title="statement not covered" >        color: '#E31C79',    // Pembe</span>
-<span class="cstat-no" title="statement not covered" >        light: '#FDE8F1',</span>
-<span class="cstat-no" title="statement not covered" >        icon: '📟'</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Header yüksekliğine göre içerik boşluğunu ayarla (Web sitelerindeki o klasik sorun için)</span>
+<span class="cstat-no" title="statement not covered" >    adjustContentSpacing: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const header = document.getElementById('main-header');</span>
+<span class="cstat-no" title="statement not covered" >        const main = document.querySelector('main');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        if (header &amp;&amp; main) {</span>
+<span class="cstat-no" title="statement not covered" >            // Eğer header fixed/sticky ise main'e margin gerekebilir.</span>
+<span class="cstat-no" title="statement not covered" >            // Şu an CSS ile halletik ama JS kontrolü daha sağlamdır.</span>
+<span class="cstat-no" title="statement not covered" >            // const headerHeight = header.offsetHeight;</span>
+<span class="cstat-no" title="statement not covered" >            // main.style.paddingTop = `${headerHeight + 20}px`;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    scratch: {</span>
-<span class="cstat-no" title="statement not covered" >        name: 'Scratch',</span>
-<span class="cstat-no" title="statement not covered" >        color: '#4C97FF',    // Mavi</span>
-<span class="cstat-no" title="statement not covered" >        light: '#E6F0FF',</span>
-<span class="cstat-no" title="statement not covered" >        icon: '🐱'</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    mblock: {</span>
-<span class="cstat-no" title="statement not covered" >        name: 'mBlock',</span>
-<span class="cstat-no" title="statement not covered" >        color: '#00979C',    // Arduino ile aynı (teal)</span>
-<span class="cstat-no" title="statement not covered" >        light: '#E6FFFA',</span>
-<span class="cstat-no" title="statement not covered" >        icon: '🐼'</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    appinventor: {</span>
-<span class="cstat-no" title="statement not covered" >        name: 'App Inventor',</span>
-<span class="cstat-no" title="statement not covered" >        color: '#88C542',    // Yeşil</span>
-<span class="cstat-no" title="statement not covered" >        light: '#F0F9E8',</span>
-<span class="cstat-no" title="statement not covered" >        icon: '📱'</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Tema uygulama yardımcı fonksiyonu</span>
-<span class="cstat-no" title="statement not covered" >window.applyTheme = (courseKey) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    const theme = window.CourseThemes[courseKey] || window.CourseThemes.arduino;</span>
-<span class="cstat-no" title="statement not covered" >    const root = document.documentElement;</span>
-<span class="cstat-no" title="statement not covered" >    root.style.setProperty('--theme-color', theme.color);</span>
-<span class="cstat-no" title="statement not covered" >    root.style.setProperty('--theme-light', theme.light);</span>
-<span class="cstat-no" title="statement not covered" >    return theme;</span>
-<span class="cstat-no" title="statement not covered" >};</span>
+<span class="cstat-no" title="statement not covered" >window.MainLayout = MainLayout;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -205,16 +205,16 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-02T18:54:14.301Z
+                at 2026-01-08T08:38:12.915Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     

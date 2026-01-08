@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for badges.js</title>
+    <title>Code coverage report for modules/badges.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> badges.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">modules</a> badges.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/63</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/63</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -125,8 +125,7 @@
 <a name='L60'></a><a href='#L60'>60</a>
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L63'></a><a href='#L63'>63</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -188,52 +187,50 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >// Rozet Tanımları</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >// Rozet Tanımları<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >const BADGES = [</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >        id: 'newbie',</span>
 <span class="cstat-no" title="statement not covered" >        icon: '🌱',</span>
 <span class="cstat-no" title="statement not covered" >        title: 'İlk Adım',</span>
 <span class="cstat-no" title="statement not covered" >        description: 'İlk dersini başarıyla tamamladın.',</span>
-<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.totalLessons &gt;= 1</span>
+<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.totalLessons &gt;= 1,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >        id: 'worker',</span>
 <span class="cstat-no" title="statement not covered" >        icon: '🐝',</span>
 <span class="cstat-no" title="statement not covered" >        title: 'Çalışkan Arı',</span>
 <span class="cstat-no" title="statement not covered" >        description: '5 farklı dersi tamamladın.',</span>
-<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.totalLessons &gt;= 5</span>
+<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.totalLessons &gt;= 5,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >        id: 'master',</span>
 <span class="cstat-no" title="statement not covered" >        icon: '🚀',</span>
 <span class="cstat-no" title="statement not covered" >        title: 'Usta Yeti',</span>
 <span class="cstat-no" title="statement not covered" >        description: '10 ders tamamladın! Artık bir uzmansın.',</span>
-<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.totalLessons &gt;= 10</span>
+<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.totalLessons &gt;= 10,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >        id: 'brain',</span>
 <span class="cstat-no" title="statement not covered" >        icon: '🧠',</span>
 <span class="cstat-no" title="statement not covered" >        title: 'Bilgi Küpü',</span>
 <span class="cstat-no" title="statement not covered" >        description: 'Quiz ortalaman %80 ve üzeri.',</span>
-<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.quizAvg &gt;= 80 &amp;&amp; stats.totalLessons &gt;= 3</span>
+<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.quizAvg &gt;= 80 &amp;&amp; stats.totalLessons &gt;= 3,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >        id: 'fire',</span>
 <span class="cstat-no" title="statement not covered" >        icon: '🔥',</span>
 <span class="cstat-no" title="statement not covered" >        title: 'Alev Alan',</span>
 <span class="cstat-no" title="statement not covered" >        description: '3 gün üst üste ders çalıştın! Zinciri kırma.',</span>
-<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.streak &gt;= 3</span>
+<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.streak &gt;= 3,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >        id: 'star',</span>
 <span class="cstat-no" title="statement not covered" >        icon: '⭐',</span>
 <span class="cstat-no" title="statement not covered" >        title: 'Yıldız Öğrenci',</span>
 <span class="cstat-no" title="statement not covered" >        description: 'Tüm quizlerden tam puan aldın!',</span>
-<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.quizAvg === 100 &amp;&amp; stats.totalLessons &gt;= 5</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >        condition: (stats) =&gt; stats.quizAvg === 100 &amp;&amp; stats.totalLessons &gt;= 5,</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >];</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >// Global scope'a ekleyelim ki her yerden erişilebilsin</span>
@@ -242,7 +239,7 @@
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    // Kullanıcının kazandığı rozetleri hesapla</span>
 <span class="cstat-no" title="statement not covered" >    calculateEarned: (stats) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        return BADGES.filter(badge =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        return BADGES.filter((badge) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            try {</span>
 <span class="cstat-no" title="statement not covered" >                return badge.condition(stats);</span>
 <span class="cstat-no" title="statement not covered" >            } catch (e) {</span>
@@ -250,7 +247,7 @@
 <span class="cstat-no" title="statement not covered" >                return false;</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 &nbsp;</pre></td></tr></table></pre>
 
@@ -259,16 +256,16 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-02T18:54:14.301Z
+                at 2026-01-08T08:38:12.915Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

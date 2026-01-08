@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for auth.js</title>
+    <title>Code coverage report for modules/progress.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> auth.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">modules</a> progress.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/420</span>
+                <span class='fraction'>0/427</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/420</span>
+                <span class='fraction'>0/427</span>
             </div>
         
             
@@ -483,7 +483,21 @@
 <a name='L418'></a><a href='#L418'>418</a>
 <a name='L419'></a><a href='#L419'>419</a>
 <a name='L420'></a><a href='#L420'>420</a>
-<a name='L421'></a><a href='#L421'>421</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -904,425 +918,432 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Auth Module - Yeti LAB</span>
-<span class="cstat-no" title="statement not covered" > * Kullanıcı kimlik doğrulama ve oturum yönetimi</span>
-<span class="cstat-no" title="statement not covered" > * </span>
-<span class="cstat-no" title="statement not covered" > * Desteklenen giriş yöntemleri:</span>
-<span class="cstat-no" title="statement not covered" > * - Öğretmen: Google/GitHub OAuth veya E-posta/Şifre</span>
-<span class="cstat-no" title="statement not covered" > * - Öğrenci: Sınıf Kodu + İsim (5 harfli kod)</span>
-<span class="cstat-no" title="statement not covered" > * - Öğrenci (opsiyonel): E-posta/Şifre veya OAuth</span>
+<span class="cstat-no" title="statement not covered" > * Progress Tracking Module - Yeti LAB</span>
+<span class="cstat-no" title="statement not covered" > * Handles lesson completion with Supabase integration.</span>
+<span class="cstat-no" title="statement not covered" > *</span>
+<span class="cstat-no" title="statement not covered" > * For logged-in students: Saves to Supabase (student_progress table)</span>
+<span class="cstat-no" title="statement not covered" > * For guests: No progress saving (removed localStorage to avoid confusion)</span>
+<span class="cstat-no" title="statement not covered" > *</span>
+<span class="cstat-no" title="statement not covered" > * Usage:</span>
+<span class="cstat-no" title="statement not covered" > *   Progress.init()             - Initialize (called after Auth.init)</span>
+<span class="cstat-no" title="statement not covered" > *   Progress.toggle(id)         - Toggle lesson completion</span>
+<span class="cstat-no" title="statement not covered" > *   Progress.isComplete(id)     - Check if lesson is complete</span>
+<span class="cstat-no" title="statement not covered" > *   Progress.getRate(key)       - Get completion percentage for a course</span>
+<span class="cstat-no" title="statement not covered" > *   Progress.loadFromServer()   - Load progress from Supabase</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >const Auth = {</span>
-<span class="cstat-no" title="statement not covered" >    // Current user state</span>
-<span class="cstat-no" title="statement not covered" >    currentUser: null,</span>
-<span class="cstat-no" title="statement not covered" >    currentStudent: null,</span>
-<span class="cstat-no" title="statement not covered" >    userRole: null, // 'teacher', 'student', 'admin'</span>
-<span class="cstat-no" title="statement not covered" >    profileData: null,</span>
-<span class="cstat-no" title="statement not covered" >    isProfileComplete: false,</span>
+<span class="cstat-no" title="statement not covered" >const Progress = {</span>
+<span class="cstat-no" title="statement not covered" >    data: {}, // { courseKey: [completedProjectId1, completedProjectId2, ...] }</span>
+<span class="cstat-no" title="statement not covered" >    scores: {}, // { courseKey: { projectId: score } }</span>
+<span class="cstat-no" title="statement not covered" >    dates: [], // Array of ISO date strings</span>
+<span class="cstat-no" title="statement not covered" >    isLoading: false,</span>
+<span class="cstat-no" title="statement not covered" >    isInitialized: false,</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // Session storage keys</span>
-<span class="cstat-no" title="statement not covered" >    STUDENT_SESSION_KEY: 'yeti_student_session',</span>
-<span class="cstat-no" title="statement not covered" >    USER_ROLE_KEY: 'yeti_user_role',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Initialize auth module</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async init() {</span>
-<span class="cstat-no" title="statement not covered" >        // Check for existing Supabase session (teachers/admins)</span>
-<span class="cstat-no" title="statement not covered" >        await this.checkSession();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Check for existing student session</span>
-<span class="cstat-no" title="statement not covered" >        this.checkStudentSession();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return this;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // TEACHER/ADMIN AUTH (Supabase Auth)</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign in with Google</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signInWithGoogle() {</span>
-<span class="cstat-no" title="statement not covered" >        // Always redirect to index.html after OAuth - role doesn't matter</span>
-<span class="cstat-no" title="statement not covered" >        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');</span>
-<span class="cstat-no" title="statement not covered" >        const redirectUrl = baseUrl + '/index.html';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({</span>
-<span class="cstat-no" title="statement not covered" >            provider: 'google',</span>
-<span class="cstat-no" title="statement not covered" >            options: {</span>
-<span class="cstat-no" title="statement not covered" >                redirectTo: redirectUrl</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign in with GitHub</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signInWithGitHub() {</span>
-<span class="cstat-no" title="statement not covered" >        // Always redirect to index.html after OAuth - role doesn't matter</span>
-<span class="cstat-no" title="statement not covered" >        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');</span>
-<span class="cstat-no" title="statement not covered" >        const redirectUrl = baseUrl + '/index.html';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({</span>
-<span class="cstat-no" title="statement not covered" >            provider: 'github',</span>
-<span class="cstat-no" title="statement not covered" >            options: {</span>
-<span class="cstat-no" title="statement not covered" >                redirectTo: redirectUrl</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign in with email/password</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signInWithEmail(email, password) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient().auth.signInWithPassword({</span>
-<span class="cstat-no" title="statement not covered" >            email,</span>
-<span class="cstat-no" title="statement not covered" >            password</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.currentUser = data.user;</span>
-<span class="cstat-no" title="statement not covered" >        await this.loadUserProfile();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign up with email/password (for teachers)</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signUpWithEmail(email, password, fullName) {</span>
-<span class="cstat-no" title="statement not covered" >        // Calculate correct redirect URL dynamically</span>
-<span class="cstat-no" title="statement not covered" >        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');</span>
-<span class="cstat-no" title="statement not covered" >        const redirectUrl = baseUrl + '/auth.html';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient().auth.signUp({</span>
-<span class="cstat-no" title="statement not covered" >            email,</span>
-<span class="cstat-no" title="statement not covered" >            password,</span>
-<span class="cstat-no" title="statement not covered" >            options: {</span>
-<span class="cstat-no" title="statement not covered" >                data: {</span>
-<span class="cstat-no" title="statement not covered" >                    full_name: fullName</span>
-<span class="cstat-no" title="statement not covered" >                },</span>
-<span class="cstat-no" title="statement not covered" >                emailRedirectTo: redirectUrl</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign out (for teachers/admins)</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signOut() {</span>
-<span class="cstat-no" title="statement not covered" >        const { error } = await SupabaseClient.getClient().auth.signOut();</span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.currentUser = null;</span>
-<span class="cstat-no" title="statement not covered" >        this.userRole = null;</span>
-<span class="cstat-no" title="statement not covered" >        localStorage.removeItem(this.USER_ROLE_KEY);</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check existing session</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async checkSession() {</span>
-<span class="cstat-no" title="statement not covered" >        const { data: { session } } = await SupabaseClient.getClient().auth.getSession();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (session) {</span>
-<span class="cstat-no" title="statement not covered" >            this.currentUser = session.user;</span>
-<span class="cstat-no" title="statement not covered" >            await this.loadUserProfile();</span>
+<span class="cstat-no" title="statement not covered" >    // Reference to app state - try multiple sources (FAZ 4.1: Store first)</span>
+<span class="cstat-no" title="statement not covered" >    _getKey: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // Try Store first (FAZ 4.1)</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Store !== 'undefined' &amp;&amp; Store.getCurrentCourseKey) {</span>
+<span class="cstat-no" title="statement not covered" >            const key = Store.getCurrentCourseKey();</span>
+<span class="cstat-no" title="statement not covered" >            if (key) return key;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return session;</span>
+<span class="cstat-no" title="statement not covered" >        // Try window._appState</span>
+<span class="cstat-no" title="statement not covered" >        if (window._appState?.currentCourseKey) {</span>
+<span class="cstat-no" title="statement not covered" >            return window._appState.currentCourseKey;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        // Try app.state (fallback)</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof app !== 'undefined' &amp;&amp; app.state?.currentCourseKey) {</span>
+<span class="cstat-no" title="statement not covered" >            return app.state.currentCourseKey;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        console.warn('[Progress] Could not get current course key');</span>
+<span class="cstat-no" title="statement not covered" >        return null;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >    _getCourseData: () =&gt; window.courseData || {},</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Load user profile from database</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async loadUserProfile() {</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.currentUser) return null;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('user_profiles')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', this.currentUser.id)</span>
-<span class="cstat-no" title="statement not covered" >            .maybeSingle();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (data) {</span>
-<span class="cstat-no" title="statement not covered" >            this.userRole = data.role;</span>
-<span class="cstat-no" title="statement not covered" >            this.profileData = data;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Check both DB and Metadata for completion status</span>
-<span class="cstat-no" title="statement not covered" >            // Metadata is now the primary source of truth for new profiles</span>
-<span class="cstat-no" title="statement not covered" >            if (data.is_profile_complete) {</span>
-<span class="cstat-no" title="statement not covered" >                this.isProfileComplete = true;</span>
-<span class="cstat-no" title="statement not covered" >            } else if (this.currentUser.user_metadata?.profile_completed) {</span>
-<span class="cstat-no" title="statement not covered" >                this.isProfileComplete = true;</span>
-<span class="cstat-no" title="statement not covered" >            } else {</span>
-<span class="cstat-no" title="statement not covered" >                this.isProfileComplete = false;</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            localStorage.setItem(this.USER_ROLE_KEY, data.role);</span>
+<span class="cstat-no" title="statement not covered" >    // Helper to get user ID for progress tracking (works for both classroom and OAuth users)</span>
+<span class="cstat-no" title="statement not covered" >    _getStudentId: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Auth === 'undefined') return null;</span>
+<span class="cstat-no" title="statement not covered" >        // Classroom-based student</span>
+<span class="cstat-no" title="statement not covered" >        if (Auth.currentStudent?.studentId) {</span>
+<span class="cstat-no" title="statement not covered" >            return Auth.currentStudent.studentId;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Fallback to metadata if profile/role missing</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.userRole &amp;&amp; this.currentUser.user_metadata?.role) {</span>
-<span class="cstat-no" title="statement not covered" >            this.userRole = this.currentUser.user_metadata.role;</span>
-<span class="cstat-no" title="statement not covered" >            localStorage.setItem(this.USER_ROLE_KEY, this.userRole);</span>
-<span class="cstat-no" title="statement not covered" >            // If metadata says completed, trust it</span>
-<span class="cstat-no" title="statement not covered" >            if (this.currentUser.user_metadata.profile_completed) {</span>
-<span class="cstat-no" title="statement not covered" >                this.isProfileComplete = true;</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        // OAuth-based user (uses user ID from Supabase Auth)</span>
+<span class="cstat-no" title="statement not covered" >        if (Auth.currentUser?.id) {</span>
+<span class="cstat-no" title="statement not covered" >            return Auth.currentUser.id;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if user needs to complete profile</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    needsProfileCompletion() {</span>
-<span class="cstat-no" title="statement not covered" >        return this.currentUser &amp;&amp; !this.isProfileComplete;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Listen to auth state changes</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    onAuthStateChange(callback) {</span>
-<span class="cstat-no" title="statement not covered" >        return SupabaseClient.getClient().auth.onAuthStateChange(async (event, session) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            if (event === 'SIGNED_IN' &amp;&amp; session) {</span>
-<span class="cstat-no" title="statement not covered" >                this.currentUser = session.user;</span>
-<span class="cstat-no" title="statement not covered" >                await this.loadUserProfile();</span>
-<span class="cstat-no" title="statement not covered" >            } else if (event === 'SIGNED_OUT') {</span>
-<span class="cstat-no" title="statement not covered" >                this.currentUser = null;</span>
-<span class="cstat-no" title="statement not covered" >                this.userRole = null;</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            callback(event, session, this.userRole);</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // STUDENT AUTH (Classroom Code + Name)</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Student login with classroom code, name and password</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} classroomCode - 5 character classroom code</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} displayName - Student's display name</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} password - Student's password</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async studentLogin(classroomCode, displayName, password) {</span>
-<span class="cstat-no" title="statement not covered" >        // Validate inputs</span>
-<span class="cstat-no" title="statement not covered" >        if (!classroomCode || classroomCode.length !== 5) {</span>
-<span class="cstat-no" title="statement not covered" >            throw new Error('Sınıf kodu 5 karakter olmalıdır');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!displayName || displayName.trim().length &lt; 2) {</span>
-<span class="cstat-no" title="statement not covered" >            throw new Error('İsim en az 2 karakter olmalıdır');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!password || password.length &lt; 3) {</span>
-<span class="cstat-no" title="statement not covered" >            throw new Error('Şifre en az 3 karakter olmalıdır');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Call the student_login_secure function in Supabase</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .rpc('student_login_secure', {</span>
-<span class="cstat-no" title="statement not covered" >                p_classroom_code: classroomCode.toUpperCase(),</span>
-<span class="cstat-no" title="statement not covered" >                p_display_name: displayName.trim(),</span>
-<span class="cstat-no" title="statement not covered" >                p_password: password</span>
-<span class="cstat-no" title="statement not covered" >            });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) {</span>
-<span class="cstat-no" title="statement not covered" >            if (error.message.includes('Geçersiz sınıf kodu')) {</span>
-<span class="cstat-no" title="statement not covered" >                throw new Error('Geçersiz sınıf kodu. Lütfen öğretmeninizden doğru kodu isteyin.');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >            if (error.message.includes('bulunamadı')) {</span>
-<span class="cstat-no" title="statement not covered" >                throw new Error('Öğrenci bulunamadı. Lütfen listeden isminizi seçtiğinizden emin olun.');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >            if (error.message.includes('Hatalı şifre')) {</span>
-<span class="cstat-no" title="statement not covered" >                throw new Error('Hatalı şifre. Lütfen tekrar deneyin.');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >            // Generic error</span>
-<span class="cstat-no" title="statement not covered" >            throw error;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!data || data.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >            throw new Error('Giriş yapılamadı. Beklenmedik bir hata oluştu.');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const studentData = data[0];</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Store session in localStorage</span>
-<span class="cstat-no" title="statement not covered" >        const session = {</span>
-<span class="cstat-no" title="statement not covered" >            studentId: studentData.out_student_id,</span>
-<span class="cstat-no" title="statement not covered" >            sessionToken: studentData.out_session_token,</span>
-<span class="cstat-no" title="statement not covered" >            displayName: displayName.trim(),</span>
-<span class="cstat-no" title="statement not covered" >            classroomName: studentData.out_classroom_name,</span>
-<span class="cstat-no" title="statement not covered" >            teacherName: studentData.out_teacher_name,</span>
-<span class="cstat-no" title="statement not covered" >            loginTime: new Date().toISOString()</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        localStorage.setItem(this.STUDENT_SESSION_KEY, JSON.stringify(session));</span>
-<span class="cstat-no" title="statement not covered" >        this.currentStudent = session;</span>
-<span class="cstat-no" title="statement not covered" >        this.userRole = 'student';</span>
-<span class="cstat-no" title="statement not covered" >        localStorage.setItem(this.USER_ROLE_KEY, 'student');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return session;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check existing student session</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    checkStudentSession() {</span>
-<span class="cstat-no" title="statement not covered" >        const stored = localStorage.getItem(this.STUDENT_SESSION_KEY);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (stored) {</span>
-<span class="cstat-no" title="statement not covered" >            try {</span>
-<span class="cstat-no" title="statement not covered" >                this.currentStudent = JSON.parse(stored);</span>
-<span class="cstat-no" title="statement not covered" >                this.userRole = 'student';</span>
-<span class="cstat-no" title="statement not covered" >                return this.currentStudent;</span>
-<span class="cstat-no" title="statement not covered" >            } catch (e) {</span>
-<span class="cstat-no" title="statement not covered" >                console.warn('[Auth] Invalid student session, clearing...');</span>
-<span class="cstat-no" title="statement not covered" >                this.studentLogout();</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        return null;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Student logout</span>
+<span class="cstat-no" title="statement not covered" >     * Initialize progress module</span>
+<span class="cstat-no" title="statement not covered" >     * Must be called after Auth.init()</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    studentLogout() {</span>
-<span class="cstat-no" title="statement not covered" >        localStorage.removeItem(this.STUDENT_SESSION_KEY);</span>
-<span class="cstat-no" title="statement not covered" >        localStorage.removeItem(this.USER_ROLE_KEY);</span>
-<span class="cstat-no" title="statement not covered" >        this.currentStudent = null;</span>
-<span class="cstat-no" title="statement not covered" >        this.userRole = null;</span>
+<span class="cstat-no" title="statement not covered" >    init: async () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (Progress.isInitialized) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Load from server if user is logged in</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Auth !== 'undefined' &amp;&amp; Auth.isLoggedIn()) {</span>
+<span class="cstat-no" title="statement not covered" >            await Progress.loadFromServer();</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        Progress.isInitialized = true;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Verify student session is still valid</span>
+<span class="cstat-no" title="statement not covered" >     * Load progress from Supabase (for logged-in students)</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async verifyStudentSession() {</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.currentStudent) return false;</span>
+<span class="cstat-no" title="statement not covered" >    loadFromServer: async () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const studentId = Progress._getStudentId();</span>
+<span class="cstat-no" title="statement not covered" >        if (!studentId) {</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await SupabaseClient.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('students')</span>
-<span class="cstat-no" title="statement not covered" >            .select('id, display_name, classroom_id')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('session_token', this.currentStudent.sessionToken)</span>
-<span class="cstat-no" title="statement not covered" >            .maybeSingle();</span>
+<span class="cstat-no" title="statement not covered" >        // Validate studentId is a valid UUID (not a temporary code like "123")</span>
+<span class="cstat-no" title="statement not covered" >        // Use Validators module if available, fallback to inline regex</span>
+<span class="cstat-no" title="statement not covered" >        const isValidUUID =</span>
+<span class="cstat-no" title="statement not covered" >            typeof Validators !== 'undefined'</span>
+<span class="cstat-no" title="statement not covered" >                ? Validators.isValidUUID(studentId)</span>
+<span class="cstat-no" title="statement not covered" >                : /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error || !data) {</span>
-<span class="cstat-no" title="statement not covered" >            console.warn('[Auth] Student session invalid, logging out...');</span>
-<span class="cstat-no" title="statement not covered" >            this.studentLogout();</span>
+<span class="cstat-no" title="statement not covered" >        if (!isValidUUID) {</span>
+<span class="cstat-no" title="statement not covered" >            console.warn('[Progress] Invalid student_id (not UUID), clearing invalid session:', studentId);</span>
+<span class="cstat-no" title="statement not covered" >            // Clear invalid session</span>
+<span class="cstat-no" title="statement not covered" >            if (typeof Auth !== 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >                localStorage.removeItem('yeti_student_session');</span>
+<span class="cstat-no" title="statement not covered" >                localStorage.removeItem('yeti_user_role');</span>
+<span class="cstat-no" title="statement not covered" >                Auth.currentStudent = null;</span>
+<span class="cstat-no" title="statement not covered" >                Auth.userRole = null;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        Progress.isLoading = true;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const { data, error } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('student_progress')</span>
+<span class="cstat-no" title="statement not covered" >                .select('course_id, project_id, completed_at, quiz_score')</span>
+<span class="cstat-no" title="statement not covered" >                .eq('student_id', studentId);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (error) throw error;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Organize by course</span>
+<span class="cstat-no" title="statement not covered" >            Progress.data = {};</span>
+<span class="cstat-no" title="statement not covered" >            Progress.scores = {};</span>
+<span class="cstat-no" title="statement not covered" >            Progress.dates = [];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            (data || []).forEach((row) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                // Course-Project mapping</span>
+<span class="cstat-no" title="statement not covered" >                if (!Progress.data[row.course_id]) {</span>
+<span class="cstat-no" title="statement not covered" >                    Progress.data[row.course_id] = [];</span>
+<span class="cstat-no" title="statement not covered" >                    Progress.scores[row.course_id] = {};</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >                Progress.data[row.course_id].push(row.project_id);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Store Score</span>
+<span class="cstat-no" title="statement not covered" >                if (row.quiz_score) {</span>
+<span class="cstat-no" title="statement not covered" >                    Progress.scores[row.course_id][row.project_id] = row.quiz_score;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Store Date</span>
+<span class="cstat-no" title="statement not covered" >                if (row.completed_at) {</span>
+<span class="cstat-no" title="statement not covered" >                    Progress.dates.push(row.completed_at);</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[Progress] Failed to load from server:', error);</span>
+<span class="cstat-no" title="statement not covered" >            Toast?.apiError(error, 'İlerleme verileri yükleme');</span>
+<span class="cstat-no" title="statement not covered" >        } finally {</span>
+<span class="cstat-no" title="statement not covered" >            Progress.isLoading = false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Save a single progress entry to Supabase</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    saveToServer: async (courseKey, projectId, completed) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const studentId = Progress._getStudentId();</span>
+<span class="cstat-no" title="statement not covered" >        if (!studentId) {</span>
 <span class="cstat-no" title="statement not covered" >            return false;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Update last active</span>
-<span class="cstat-no" title="statement not covered" >        await SupabaseClient.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('students')</span>
-<span class="cstat-no" title="statement not covered" >            .update({ last_active_at: new Date().toISOString() })</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', data.id);</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            if (completed) {</span>
+<span class="cstat-no" title="statement not covered" >                // Insert progress record</span>
+<span class="cstat-no" title="statement not covered" >                const payload = {</span>
+<span class="cstat-no" title="statement not covered" >                    student_id: studentId,</span>
+<span class="cstat-no" title="statement not covered" >                    course_id: courseKey,</span>
+<span class="cstat-no" title="statement not covered" >                    project_id: projectId,</span>
+<span class="cstat-no" title="statement not covered" >                    completed_at: new Date().toISOString(),</span>
+<span class="cstat-no" title="statement not covered" >                };</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return true;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >                const { error } = await SupabaseClient.getClient().from('student_progress').upsert(payload, {</span>
+<span class="cstat-no" title="statement not covered" >                    onConflict: 'student_id,project_id',</span>
+<span class="cstat-no" title="statement not covered" >                });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // UTILITY METHODS</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
+<span class="cstat-no" title="statement not covered" >                if (error) {</span>
+<span class="cstat-no" title="statement not covered" >                    console.error('[Progress] Save error:', error.message);</span>
+<span class="cstat-no" title="statement not covered" >                    throw error;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            } else {</span>
+<span class="cstat-no" title="statement not covered" >                // Delete progress record</span>
+<span class="cstat-no" title="statement not covered" >                const { error } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                    .from('student_progress')</span>
+<span class="cstat-no" title="statement not covered" >                    .delete()</span>
+<span class="cstat-no" title="statement not covered" >                    .eq('student_id', studentId)</span>
+<span class="cstat-no" title="statement not covered" >                    .eq('project_id', projectId);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if user is logged in (any type)</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    isLoggedIn() {</span>
-<span class="cstat-no" title="statement not covered" >        return !!(this.currentUser || this.currentStudent);</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >                if (error) {</span>
+<span class="cstat-no" title="statement not covered" >                    console.error('[Progress] Delete error:', error.message);</span>
+<span class="cstat-no" title="statement not covered" >                    throw error;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if current user is a teacher</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    isTeacher() {</span>
-<span class="cstat-no" title="statement not covered" >        return this.userRole === 'teacher';</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if current user is a student</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    isStudent() {</span>
-<span class="cstat-no" title="statement not covered" >        return this.userRole === 'student' || !!this.currentStudent;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if current user is an admin</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    isAdmin() {</span>
-<span class="cstat-no" title="statement not covered" >        return this.userRole === 'admin';</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get current user display name</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    getDisplayName() {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.currentStudent) {</span>
-<span class="cstat-no" title="statement not covered" >            return this.currentStudent.displayName;</span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[Progress] Failed:', error.message);</span>
+<span class="cstat-no" title="statement not covered" >            Toast?.error('İlerleme kaydedilemedi. Lütfen tekrar deneyin.');</span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        if (this.currentUser) {</span>
-<span class="cstat-no" title="statement not covered" >            return this.currentUser.user_metadata?.full_name ||</span>
-<span class="cstat-no" title="statement not covered" >                this.currentUser.user_metadata?.name ||</span>
-<span class="cstat-no" title="statement not covered" >                this.currentUser.email?.split('@')[0] ||</span>
-<span class="cstat-no" title="statement not covered" >                'Kullanıcı';</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        return 'Misafir';</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get current user avatar</span>
+<span class="cstat-no" title="statement not covered" >     * Toggle lesson completion</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    getAvatarUrl() {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.currentStudent) {</span>
-<span class="cstat-no" title="statement not covered" >            // Return emoji or default avatar for students</span>
-<span class="cstat-no" title="statement not covered" >            return null; // Will use emoji instead</span>
+<span class="cstat-no" title="statement not covered" >    toggle: async (projectId) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const key = Progress._getKey();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        if (!key) {</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        if (this.currentUser) {</span>
-<span class="cstat-no" title="statement not covered" >            return this.currentUser.user_metadata?.avatar_url || null;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Check if user is logged in (any logged-in user can save progress)</span>
+<span class="cstat-no" title="statement not covered" >        const isLoggedIn = typeof Auth !== 'undefined' &amp;&amp; Auth.isLoggedIn();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        if (!isLoggedIn) {</span>
+<span class="cstat-no" title="statement not covered" >            // Show login prompt for guests</span>
+<span class="cstat-no" title="statement not covered" >            if (</span>
+<span class="cstat-no" title="statement not covered" >                confirm('İlerlemenizi kaydetmek için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?')</span>
+<span class="cstat-no" title="statement not covered" >            ) {</span>
+<span class="cstat-no" title="statement not covered" >                Router.redirectTo('auth.html');</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        return null;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Initialize arrays if needed</span>
+<span class="cstat-no" title="statement not covered" >        if (!Progress.data[key]) Progress.data[key] = [];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const index = Progress.data[key].indexOf(projectId);</span>
+<span class="cstat-no" title="statement not covered" >        const isCompleting = index === -1;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Update local state immediately for UI responsiveness</span>
+<span class="cstat-no" title="statement not covered" >        if (isCompleting) {</span>
+<span class="cstat-no" title="statement not covered" >            Progress.data[key].push(projectId);</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            Progress.data[key].splice(index, 1);</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Trigger UI update</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Progress.onUpdate === 'function') {</span>
+<span class="cstat-no" title="statement not covered" >            Progress.onUpdate(projectId);</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Save to server in background</span>
+<span class="cstat-no" title="statement not covered" >        await Progress.saveToServer(key, projectId, isCompleting);</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get user info summary</span>
+<span class="cstat-no" title="statement not covered" >     * Check if a lesson is complete</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    getUserInfo() {</span>
+<span class="cstat-no" title="statement not covered" >    isComplete: (projectId) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const key = Progress._getKey();</span>
+<span class="cstat-no" title="statement not covered" >        return Progress.data[key] &amp;&amp; Progress.data[key].includes(projectId);</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Get all completed project IDs across all courses</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getCompleted: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        let all = [];</span>
+<span class="cstat-no" title="statement not covered" >        Object.values(Progress.data).forEach((arr) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            all = all.concat(arr);</span>
+<span class="cstat-no" title="statement not covered" >        });</span>
+<span class="cstat-no" title="statement not covered" >        return all;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Get completion rate for a course</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getRate: (key) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // If not logged in, return 0</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Auth !== 'undefined' &amp;&amp; !Auth.isLoggedIn()) {</span>
+<span class="cstat-no" title="statement not covered" >            return 0;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const completed = Progress.data[key] ? Progress.data[key].length : 0;</span>
+<span class="cstat-no" title="statement not covered" >        const courseData = Progress._getCourseData();</span>
+<span class="cstat-no" title="statement not covered" >        const total = courseData[key]?.data?.projects?.length || 1;</span>
+<span class="cstat-no" title="statement not covered" >        return Math.round((completed / total) * 100);</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Get overall statistics for the user</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getStats: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Auth !== 'undefined' &amp;&amp; !Auth.isLoggedIn()) {</span>
+<span class="cstat-no" title="statement not covered" >            return { totalLessons: 0, badges: 0, streak: 0, quizAvg: 0 };</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // 1. Total Lessons</span>
+<span class="cstat-no" title="statement not covered" >        const completedLessons = Progress.getCompleted();</span>
+<span class="cstat-no" title="statement not covered" >        const quizScores = Progress.scores || {};</span>
+<span class="cstat-no" title="statement not covered" >        const quizKeys = Object.keys(quizScores);</span>
+<span class="cstat-no" title="statement not covered" >        let quizSum = 0;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        quizKeys.forEach((k) =&gt; (quizSum += quizScores[k]));</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const quizAvg = quizKeys.length &gt; 0 ? quizSum / quizKeys.length : 0;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Calculate Streak</span>
+<span class="cstat-no" title="statement not covered" >        const dates = Progress.dates || [];</span>
+<span class="cstat-no" title="statement not covered" >        let streak = 0;</span>
+<span class="cstat-no" title="statement not covered" >        if (dates.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >            // Sort dates new to old</span>
+<span class="cstat-no" title="statement not covered" >            const sortedDates = dates.map((d) =&gt; new Date(d).toDateString()).sort((a, b) =&gt; new Date(b) - new Date(a));</span>
+<span class="cstat-no" title="statement not covered" >            const uniqueDates = [...new Set(sortedDates)];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Check if today or yesterday is present to start streak</span>
+<span class="cstat-no" title="statement not covered" >            const today = new Date().toDateString();</span>
+<span class="cstat-no" title="statement not covered" >            const yesterday = new Date();</span>
+<span class="cstat-no" title="statement not covered" >            yesterday.setDate(yesterday.getDate() - 1);</span>
+<span class="cstat-no" title="statement not covered" >            const yesterdayStr = yesterday.toDateString();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (uniqueDates.includes(today) || uniqueDates.includes(yesterdayStr)) {</span>
+<span class="cstat-no" title="statement not covered" >                streak = 1;</span>
+<span class="cstat-no" title="statement not covered" >                let currentDate = new Date(uniqueDates[0]); // Start checking from most recent</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                for (let i = 1; i &lt; uniqueDates.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >                    const prevDate = new Date(uniqueDates[i]);</span>
+<span class="cstat-no" title="statement not covered" >                    const diffTime = Math.abs(currentDate - prevDate);</span>
+<span class="cstat-no" title="statement not covered" >                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                    if (diffDays === 1) {</span>
+<span class="cstat-no" title="statement not covered" >                        streak++;</span>
+<span class="cstat-no" title="statement not covered" >                        currentDate = prevDate;</span>
+<span class="cstat-no" title="statement not covered" >                    } else {</span>
+<span class="cstat-no" title="statement not covered" >                        break;</span>
+<span class="cstat-no" title="statement not covered" >                    }</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // --- XP &amp; LEVEL CALCULATION ---</span>
+<span class="cstat-no" title="statement not covered" >        // 1 Lesson = 150 XP</span>
+<span class="cstat-no" title="statement not covered" >        // 1 Badge = 500 XP</span>
+<span class="cstat-no" title="statement not covered" >        const baseXP = completedLessons.length * 150;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Calculate Badges first</span>
+<span class="cstat-no" title="statement not covered" >        let earnedBadges = [];</span>
+<span class="cstat-no" title="statement not covered" >        if (window.BadgeSystem) {</span>
+<span class="cstat-no" title="statement not covered" >            earnedBadges = window.BadgeSystem.calculateEarned({</span>
+<span class="cstat-no" title="statement not covered" >                totalLessons: completedLessons.length,</span>
+<span class="cstat-no" title="statement not covered" >                quizAvg: quizAvg,</span>
+<span class="cstat-no" title="statement not covered" >                streak: streak,</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            // Fallback</span>
+<span class="cstat-no" title="statement not covered" >            if (completedLessons.length &gt;= 1) earnedBadges.push('newbie');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const badgeXP = earnedBadges.length * 500;</span>
+<span class="cstat-no" title="statement not covered" >        const totalXP = baseXP + badgeXP;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Level Logic: Level 1 = 0-1000 XP, Level 2 = 1001-2000...</span>
+<span class="cstat-no" title="statement not covered" >        // Formula: Floor(XP / 1000) + 1</span>
+<span class="cstat-no" title="statement not covered" >        const level = Math.floor(totalXP / 1000) + 1;</span>
+<span class="cstat-no" title="statement not covered" >        const nextLevelXP = level * 1000;</span>
+<span class="cstat-no" title="statement not covered" >        const currentLevelXP = totalXP % 1000; // Progress within current level</span>
+<span class="cstat-no" title="statement not covered" >        const levelProgress = (currentLevelXP / 1000) * 100;</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        return {</span>
-<span class="cstat-no" title="statement not covered" >            isLoggedIn: this.isLoggedIn(),</span>
-<span class="cstat-no" title="statement not covered" >            role: this.userRole,</span>
-<span class="cstat-no" title="statement not covered" >            displayName: this.getDisplayName(),</span>
-<span class="cstat-no" title="statement not covered" >            avatarUrl: this.getAvatarUrl(),</span>
-<span class="cstat-no" title="statement not covered" >            isTeacher: this.isTeacher(),</span>
-<span class="cstat-no" title="statement not covered" >            isStudent: this.isStudent(),</span>
-<span class="cstat-no" title="statement not covered" >            isAdmin: this.isAdmin(),</span>
-<span class="cstat-no" title="statement not covered" >            studentInfo: this.currentStudent,</span>
-<span class="cstat-no" title="statement not covered" >            userId: this.currentUser?.id || this.currentStudent?.studentId</span>
+<span class="cstat-no" title="statement not covered" >            totalLessons: completedLessons.length,</span>
+<span class="cstat-no" title="statement not covered" >            quizAvg: Math.round(quizAvg),</span>
+<span class="cstat-no" title="statement not covered" >            streak: streak,</span>
+<span class="cstat-no" title="statement not covered" >            badges: earnedBadges.length,</span>
+<span class="cstat-no" title="statement not covered" >            earnedBadges: earnedBadges,</span>
+<span class="cstat-no" title="statement not covered" >            xp: totalXP,</span>
+<span class="cstat-no" title="statement not covered" >            level: level,</span>
+<span class="cstat-no" title="statement not covered" >            levelProgress: Math.round(levelProgress),</span>
+<span class="cstat-no" title="statement not covered" >            nextLevelXP: nextLevelXP,</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Get completed project IDs for a specific student and course</span>
+<span class="cstat-no" title="statement not covered" >     * (Used by teacher panel)</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getStudentProgress: async (studentId, courseKey) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const { data, error } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('student_progress')</span>
+<span class="cstat-no" title="statement not covered" >                .select('project_id, completed_at, quiz_score')</span>
+<span class="cstat-no" title="statement not covered" >                .eq('student_id', studentId)</span>
+<span class="cstat-no" title="statement not covered" >                .eq('course_id', courseKey);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (error) throw error;</span>
+<span class="cstat-no" title="statement not covered" >            return data || [];</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[Progress] Failed to get student progress:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return [];</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Get all progress for a classroom (for teacher dashboard)</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getClassroomProgress: async (classroomId) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            // First get all students in the classroom</span>
+<span class="cstat-no" title="statement not covered" >            const { data: students, error: studentsError } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('students')</span>
+<span class="cstat-no" title="statement not covered" >                .select('id, display_name')</span>
+<span class="cstat-no" title="statement not covered" >                .eq('classroom_id', classroomId);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (studentsError) throw studentsError;</span>
+<span class="cstat-no" title="statement not covered" >            if (!students || students.length === 0) return [];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            const studentIds = students.map((s) =&gt; s.id);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Get all progress for these students</span>
+<span class="cstat-no" title="statement not covered" >            const { data: progressData, error: progressError } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('student_progress')</span>
+<span class="cstat-no" title="statement not covered" >                .select('student_id, course_id, project_id, completed_at')</span>
+<span class="cstat-no" title="statement not covered" >                .in('student_id', studentIds);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (progressError) throw progressError;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Combine data</span>
+<span class="cstat-no" title="statement not covered" >            return students.map((student) =&gt; ({</span>
+<span class="cstat-no" title="statement not covered" >                ...student,</span>
+<span class="cstat-no" title="statement not covered" >                progress: (progressData || []).filter((p) =&gt; p.student_id === student.id),</span>
+<span class="cstat-no" title="statement not covered" >            }));</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[Progress] Failed to get classroom progress:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return [];</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Callback for UI updates (set by app.js)</span>
+<span class="cstat-no" title="statement not covered" >    onUpdate: null,</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Legacy compatibility - load does nothing now, init handles everything</span>
+<span class="cstat-no" title="statement not covered" >    load: () =&gt; {},</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Legacy compatibility - save does nothing now, saveToServer handles everything</span>
+<span class="cstat-no" title="statement not covered" >    save: () =&gt; {},</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Make available globally</span>
-<span class="cstat-no" title="statement not covered" >if (typeof window !== 'undefined') {</span>
-<span class="cstat-no" title="statement not covered" >    window.Auth = Auth;</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+<span class="cstat-no" title="statement not covered" >// Export for global access</span>
+<span class="cstat-no" title="statement not covered" >window.Progress = Progress;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1330,16 +1351,16 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-02T18:54:14.301Z
+                at 2026-01-08T08:38:12.915Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for themeManager.js</title>
+    <title>Code coverage report for modules/utils.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> themeManager.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">modules</a> utils.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/90</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/90</span>
             </div>
         
             
@@ -153,19 +153,7 @@
 <a name='L88'></a><a href='#L88'>88</a>
 <a name='L89'></a><a href='#L89'>89</a>
 <a name='L90'></a><a href='#L90'>90</a>
-<a name='L91'></a><a href='#L91'>91</a>
-<a name='L92'></a><a href='#L92'>92</a>
-<a name='L93'></a><a href='#L93'>93</a>
-<a name='L94'></a><a href='#L94'>94</a>
-<a name='L95'></a><a href='#L95'>95</a>
-<a name='L96'></a><a href='#L96'>96</a>
-<a name='L97'></a><a href='#L97'>97</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -256,101 +244,95 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Global Theme Manager</span>
-<span class="cstat-no" title="statement not covered" > * - Detects system preference</span>
-<span class="cstat-no" title="statement not covered" > * - Respects user preference from localStorage</span>
-<span class="cstat-no" title="statement not covered" > * - Applies theme across all pages</span>
+<span class="cstat-no" title="statement not covered" > * Yeti LAB - Utility Functions</span>
+<span class="cstat-no" title="statement not covered" > * Ortak yardımcı fonksiyonlar</span>
 <span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" >const ThemeManager = {</span>
-<span class="cstat-no" title="statement not covered" >    STORAGE_KEY: 'yeti_theme',</span>
 <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >const Utils = {</span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Initialize theme on page load</span>
-<span class="cstat-no" title="statement not covered" >     * Priority: 1. User preference  2. System preference  3. Light</span>
+<span class="cstat-no" title="statement not covered" >     * Tarih formatlar (TR locale)</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string|Date} dateString - Tarih objesi veya string</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} options - Intl.DateTimeFormat options</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {string} Formatlanmış tarih</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    init() {</span>
-<span class="cstat-no" title="statement not covered" >        const savedTheme = localStorage.getItem(this.STORAGE_KEY);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (savedTheme) {</span>
-<span class="cstat-no" title="statement not covered" >            // User has a saved preference</span>
-<span class="cstat-no" title="statement not covered" >            this.applyTheme(savedTheme);</span>
-<span class="cstat-no" title="statement not covered" >        } else {</span>
-<span class="cstat-no" title="statement not covered" >            // Check system preference</span>
-<span class="cstat-no" title="statement not covered" >            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;</span>
-<span class="cstat-no" title="statement not covered" >            this.applyTheme(prefersDark ? 'dark' : 'light');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Listen for system theme changes (only if no user preference)</span>
-<span class="cstat-no" title="statement not covered" >        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            if (!localStorage.getItem(this.STORAGE_KEY)) {</span>
-<span class="cstat-no" title="statement not covered" >                this.applyTheme(e.matches ? 'dark' : 'light');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Apply theme to document</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} theme - 'light' or 'dark'</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    applyTheme(theme) {</span>
-<span class="cstat-no" title="statement not covered" >        if (theme === 'dark') {</span>
-<span class="cstat-no" title="statement not covered" >            document.body.classList.add('dark-mode');</span>
-<span class="cstat-no" title="statement not covered" >            document.documentElement.classList.add('dark');</span>
-<span class="cstat-no" title="statement not covered" >        } else {</span>
-<span class="cstat-no" title="statement not covered" >            document.body.classList.remove('dark-mode');</span>
-<span class="cstat-no" title="statement not covered" >            document.documentElement.classList.remove('dark');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Update meta theme-color for mobile browsers</span>
-<span class="cstat-no" title="statement not covered" >        const metaTheme = document.querySelector('meta[name="theme-color"]');</span>
-<span class="cstat-no" title="statement not covered" >        if (metaTheme) {</span>
-<span class="cstat-no" title="statement not covered" >            metaTheme.content = theme === 'dark' ? '#0f172a' : '#ffffff';</span>
+<span class="cstat-no" title="statement not covered" >    formatDate: (dateString, options = {}) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (!dateString) return '-';</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const date = new Date(dateString);</span>
+<span class="cstat-no" title="statement not covered" >            const defaultOptions = {</span>
+<span class="cstat-no" title="statement not covered" >                day: 'numeric',</span>
+<span class="cstat-no" title="statement not covered" >                month: 'long',</span>
+<span class="cstat-no" title="statement not covered" >                year: 'numeric',</span>
+<span class="cstat-no" title="statement not covered" >                hour: '2-digit',</span>
+<span class="cstat-no" title="statement not covered" >                minute: '2-digit',</span>
+<span class="cstat-no" title="statement not covered" >            };</span>
+<span class="cstat-no" title="statement not covered" >            return date.toLocaleDateString('tr-TR', { ...defaultOptions, ...options });</span>
+<span class="cstat-no" title="statement not covered" >        } catch (e) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('Date formatting error:', e);</span>
+<span class="cstat-no" title="statement not covered" >            return dateString;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Set user theme preference</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} theme - 'light', 'dark', or 'system'</span>
+<span class="cstat-no" title="statement not covered" >     * Fonksiyon çağrılarını geciktirir</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Function} func - Çağrılacak fonksiyon</span>
+<span class="cstat-no" title="statement not covered" >     * @param {number} wait - Bekleme süresi (ms)</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Function} Debounced fonksiyon</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    setTheme(theme) {</span>
-<span class="cstat-no" title="statement not covered" >        if (theme === 'system') {</span>
-<span class="cstat-no" title="statement not covered" >            // Remove saved preference, use system</span>
-<span class="cstat-no" title="statement not covered" >            localStorage.removeItem(this.STORAGE_KEY);</span>
-<span class="cstat-no" title="statement not covered" >            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;</span>
-<span class="cstat-no" title="statement not covered" >            this.applyTheme(prefersDark ? 'dark' : 'light');</span>
-<span class="cstat-no" title="statement not covered" >        } else {</span>
-<span class="cstat-no" title="statement not covered" >            // Save user preference</span>
-<span class="cstat-no" title="statement not covered" >            localStorage.setItem(this.STORAGE_KEY, theme);</span>
-<span class="cstat-no" title="statement not covered" >            this.applyTheme(theme);</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    debounce: (func, wait) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        let timeout;</span>
+<span class="cstat-no" title="statement not covered" >        return function executedFunction(...args) {</span>
+<span class="cstat-no" title="statement not covered" >            const later = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                clearTimeout(timeout);</span>
+<span class="cstat-no" title="statement not covered" >                func(...args);</span>
+<span class="cstat-no" title="statement not covered" >            };</span>
+<span class="cstat-no" title="statement not covered" >            clearTimeout(timeout);</span>
+<span class="cstat-no" title="statement not covered" >            timeout = setTimeout(later, wait);</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get current theme</span>
-<span class="cstat-no" title="statement not covered" >     * @returns {string} 'light' or 'dark'</span>
+<span class="cstat-no" title="statement not covered" >     * Benzersiz ID oluşturur</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {string} UUID v4 benzeri string</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    getCurrentTheme() {</span>
-<span class="cstat-no" title="statement not covered" >        return document.body.classList.contains('dark-mode') ? 'dark' : 'light';</span>
+<span class="cstat-no" title="statement not covered" >    generateId: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        return 'id-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Toggle between light and dark</span>
+<span class="cstat-no" title="statement not covered" >     * HTML özel karakterlerini escape eder (XSS koruması)</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} unsafe - Güvensiz string</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {string} Güvenli string</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    toggle() {</span>
-<span class="cstat-no" title="statement not covered" >        const current = this.getCurrentTheme();</span>
-<span class="cstat-no" title="statement not covered" >        this.setTheme(current === 'dark' ? 'light' : 'dark');</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    escapeHtml: (unsafe) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (!unsafe) return '';</span>
+<span class="cstat-no" title="statement not covered" >        return unsafe</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/&amp;/g, '&amp;amp;')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/&lt;/g, '&amp;lt;')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/&gt;/g, '&amp;gt;')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/"/g, '&amp;quot;')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/'/g, '&amp;#039;');</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * URL query parametresini döner</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} name - Parametre adı</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {string|null} Parametre değeri</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getUrlParam: (name) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const urlParams = new URLSearchParams(window.location.search);</span>
+<span class="cstat-no" title="statement not covered" >        return urlParams.get(name);</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Auto-initialize on DOMContentLoaded</span>
-<span class="cstat-no" title="statement not covered" >if (document.readyState === 'loading') {</span>
-<span class="cstat-no" title="statement not covered" >    document.addEventListener('DOMContentLoaded', () =&gt; ThemeManager.init());</span>
-<span class="cstat-no" title="statement not covered" >} else {</span>
-<span class="cstat-no" title="statement not covered" >    ThemeManager.init();</span>
+<span class="cstat-no" title="statement not covered" >// ============================================</span>
+<span class="cstat-no" title="statement not covered" >// GLOBAL EXPORT (Geriye uyumluluk)</span>
+<span class="cstat-no" title="statement not covered" >// ============================================</span>
+<span class="cstat-no" title="statement not covered" >// NOT: Dosyalar dynamic &lt;script&gt; tag ile yükleniyor, ES6 export kullanılamaz</span>
+<span class="cstat-no" title="statement not covered" >// FAZ 5'te module sistemine geçildiğinde export'lar eklenecek</span>
+<span class="cstat-no" title="statement not covered" >if (typeof window !== 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >    window.Utils = Utils;</span>
 <span class="cstat-no" title="statement not covered" >}</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Make globally available</span>
-<span class="cstat-no" title="statement not covered" >window.ThemeManager = ThemeManager;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -358,16 +340,16 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-02T18:54:14.301Z
+                at 2026-01-08T08:38:12.915Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

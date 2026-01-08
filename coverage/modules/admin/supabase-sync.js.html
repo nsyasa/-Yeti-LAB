@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for supabaseClient.js</title>
+    <title>Code coverage report for modules/admin/supabase-sync.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> supabaseClient.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/admin</a> supabase-sync.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/532</span>
+                <span class='fraction'>0/535</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/532</span>
+                <span class='fraction'>0/535</span>
             </div>
         
             
@@ -595,7 +595,13 @@
 <a name='L530'></a><a href='#L530'>530</a>
 <a name='L531'></a><a href='#L531'>531</a>
 <a name='L532'></a><a href='#L532'>532</a>
-<a name='L533'></a><a href='#L533'>533</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L533'></a><a href='#L533'>533</a>
+<a name='L534'></a><a href='#L534'>534</a>
+<a name='L535'></a><a href='#L535'>535</a>
+<a name='L536'></a><a href='#L536'>536</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1128,537 +1134,540 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Supabase Client Module</span>
-<span class="cstat-no" title="statement not covered" > * Merkezi Supabase bağlantı yönetimi</span>
+<span class="cstat-no" title="statement not covered" > * Supabase Sync Module for Admin Panel</span>
+<span class="cstat-no" title="statement not covered" > * Handles syncing course data to Supabase database.</span>
+<span class="cstat-no" title="statement not covered" > *</span>
+<span class="cstat-no" title="statement not covered" > * Dependencies:</span>
+<span class="cstat-no" title="statement not covered" > * - SupabaseClient (global) for database operations</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Supabase CDN'den yüklenir (admin.html ve index2.html'de script tag ile)</span>
-<span class="cstat-no" title="statement not covered" >// &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >const SupabaseClient = {</span>
-<span class="cstat-no" title="statement not covered" >    // Supabase credentials (public - anon key)</span>
-<span class="cstat-no" title="statement not covered" >    SUPABASE_URL: 'https://zuezvfojutlefdvqrica.supabase.co',</span>
-<span class="cstat-no" title="statement not covered" >    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    client: null,</span>
-<span class="cstat-no" title="statement not covered" >    currentUser: null,</span>
-<span class="cstat-no" title="statement not covered" >    isAdmin: false,</span>
+<span class="cstat-no" title="statement not covered" >const SupabaseSync = {</span>
+<span class="cstat-no" title="statement not covered" >    // Configuration</span>
+<span class="cstat-no" title="statement not covered" >    config: {</span>
+<span class="cstat-no" title="statement not covered" >        onStatusUpdate: null, // (message, color) =&gt; void</span>
+<span class="cstat-no" title="statement not covered" >        downloadFallback: null, // (courseKey, courseData) =&gt; void - fallback on error</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Initialize Supabase client</span>
+<span class="cstat-no" title="statement not covered" >     * Initialize with configuration</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    init() {</span>
-<span class="cstat-no" title="statement not covered" >        if (typeof supabase === 'undefined') {</span>
-<span class="cstat-no" title="statement not covered" >            console.error('Supabase SDK yüklenmedi! Script tag ekleyin.');</span>
-<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >    init(config) {</span>
+<span class="cstat-no" title="statement not covered" >        this.config = { ...this.config, ...config };</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Update status element</span>
+<span class="cstat-no" title="statement not covered" >     * @private</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    updateStatus(message, color) {</span>
+<span class="cstat-no" title="statement not covered" >        if (this.config.onStatusUpdate) {</span>
+<span class="cstat-no" title="statement not covered" >            this.config.onStatusUpdate(message, color);</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.client = supabase.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY);</span>
-<span class="cstat-no" title="statement not covered" >        return true;</span>
+<span class="cstat-no" title="statement not covered" >        // Default behavior - new HTML structure with dot and text</span>
+<span class="cstat-no" title="statement not covered" >        const statusEl = document.getElementById('autosave-status');</span>
+<span class="cstat-no" title="statement not covered" >        if (!statusEl) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Color mapping for dot and background</span>
+<span class="cstat-no" title="statement not covered" >        const colorMap = {</span>
+<span class="cstat-no" title="statement not covered" >            green: { dot: 'bg-green-400', bg: 'bg-green-500/20' },</span>
+<span class="cstat-no" title="statement not covered" >            red: { dot: 'bg-red-400', bg: 'bg-red-500/20' },</span>
+<span class="cstat-no" title="statement not covered" >            blue: { dot: 'bg-blue-400', bg: 'bg-blue-500/20' },</span>
+<span class="cstat-no" title="statement not covered" >            yellow: { dot: 'bg-yellow-400', bg: 'bg-yellow-500/20' },</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const colorConfig = colorMap[color] || colorMap.green;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        statusEl.innerHTML = `</span>
+<span class="cstat-no" title="statement not covered" >            &lt;span class="inline-block w-2 h-2 rounded-full ${colorConfig.dot} ${color === 'yellow' || color === 'blue' ? 'animate-pulse' : ''}"&gt;&lt;/span&gt;</span>
+<span class="cstat-no" title="statement not covered" >            &lt;span&gt;${message}&lt;/span&gt;</span>
+<span class="cstat-no" title="statement not covered" >        `;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Update background color</span>
+<span class="cstat-no" title="statement not covered" >        statusEl.className = `flex items-center gap-2 px-4 py-1.5 rounded-full font-bold text-sm ${colorConfig.bg}`;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get Supabase client instance</span>
+<span class="cstat-no" title="statement not covered" >     * Create URL-friendly slug from text</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    getClient() {</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.client) {</span>
-<span class="cstat-no" title="statement not covered" >            this.init();</span>
+<span class="cstat-no" title="statement not covered" >    slugify(text) {</span>
+<span class="cstat-no" title="statement not covered" >        if (!text) return '';</span>
+<span class="cstat-no" title="statement not covered" >        const trMap = {</span>
+<span class="cstat-no" title="statement not covered" >            ç: 'c',</span>
+<span class="cstat-no" title="statement not covered" >            Ç: 'c',</span>
+<span class="cstat-no" title="statement not covered" >            ğ: 'g',</span>
+<span class="cstat-no" title="statement not covered" >            Ğ: 'g',</span>
+<span class="cstat-no" title="statement not covered" >            ş: 's',</span>
+<span class="cstat-no" title="statement not covered" >            Ş: 's',</span>
+<span class="cstat-no" title="statement not covered" >            ü: 'u',</span>
+<span class="cstat-no" title="statement not covered" >            Ü: 'u',</span>
+<span class="cstat-no" title="statement not covered" >            ı: 'i',</span>
+<span class="cstat-no" title="statement not covered" >            İ: 'i',</span>
+<span class="cstat-no" title="statement not covered" >            ö: 'o',</span>
+<span class="cstat-no" title="statement not covered" >            Ö: 'o',</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" >        return text</span>
+<span class="cstat-no" title="statement not covered" >            .toString()</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/[çÇğĞşŞüÜıİöÖ]/g, (c) =&gt; trMap[c] || c)</span>
+<span class="cstat-no" title="statement not covered" >            .normalize('NFKD')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/[\u0300-\u036F]/g, '')</span>
+<span class="cstat-no" title="statement not covered" >            .toLowerCase()</span>
+<span class="cstat-no" title="statement not covered" >            .trim()</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/[^\w\s-]/g, '')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/[\s_-]+/g, '-')</span>
+<span class="cstat-no" title="statement not covered" >            .replace(/^-+|-+$/g, '');</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
+<span class="cstat-no" title="statement not covered" >    // DATA LOADING (NEW - Supabase-First)</span>
+<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Load list of all courses from Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;Array&gt;} Array of course objects with {id, slug, title, ...}</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async loadCourseList() {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const courses = await SupabaseClient.getCourses(false); // Include unpublished</span>
+<span class="cstat-no" title="statement not covered" >            return courses || [];</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to load course list:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return [];</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        return this.client;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // AUTH METHODS</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign in with email/password</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signIn(email, password) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient().auth.signInWithPassword({</span>
-<span class="cstat-no" title="statement not covered" >            email,</span>
-<span class="cstat-no" title="statement not covered" >            password</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.currentUser = data.user;</span>
-<span class="cstat-no" title="statement not covered" >        await this.checkAdminStatus();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Sign out</span>
+<span class="cstat-no" title="statement not covered" >     * Load full course data from Supabase and convert to legacy format</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} courseSlug - The course slug (e.g., 'arduino')</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;Object|null&gt;} Course data in legacy format or null</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async signOut() {</span>
-<span class="cstat-no" title="statement not covered" >        const { error } = await this.getClient().auth.signOut();</span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
+<span class="cstat-no" title="statement not covered" >    async loadFromSupabase(courseSlug) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            this.updateStatus(`📥 ${courseSlug} yükleniyor...`, 'blue');</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.currentUser = null;</span>
-<span class="cstat-no" title="statement not covered" >        this.isAdmin = false;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >            // Get course by slug</span>
+<span class="cstat-no" title="statement not covered" >            const course = await SupabaseClient.getCourseBySlug(courseSlug);</span>
+<span class="cstat-no" title="statement not covered" >            if (!course) {</span>
+<span class="cstat-no" title="statement not covered" >                console.warn(`[SupabaseSync] Course not found: ${courseSlug}`);</span>
+<span class="cstat-no" title="statement not covered" >                return null;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get current session</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getSession() {</span>
-<span class="cstat-no" title="statement not covered" >        const { data: { session } } = await this.getClient().auth.getSession();</span>
-<span class="cstat-no" title="statement not covered" >        if (session) {</span>
-<span class="cstat-no" title="statement not covered" >            this.currentUser = session.user;</span>
-<span class="cstat-no" title="statement not covered" >            await this.checkAdminStatus();</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        return session;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >            // Get full course data</span>
+<span class="cstat-no" title="statement not covered" >            const fullData = await SupabaseClient.getFullCourseData(course.id);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if current user is admin</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async checkAdminStatus() {</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.currentUser) {</span>
-<span class="cstat-no" title="statement not covered" >            this.isAdmin = false;</span>
-<span class="cstat-no" title="statement not covered" >            return false;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >            // Convert to legacy format</span>
+<span class="cstat-no" title="statement not covered" >            const legacyData = SupabaseClient.convertToLegacyFormat(fullData);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('content_admins')</span>
-<span class="cstat-no" title="statement not covered" >            .select('id')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('user_id', this.currentUser.id)</span>
-<span class="cstat-no" title="statement not covered" >            .maybeSingle();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.isAdmin = !error &amp;&amp; data !== null;</span>
-<span class="cstat-no" title="statement not covered" >        return this.isAdmin;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Listen to auth state changes</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    onAuthStateChange(callback) {</span>
-<span class="cstat-no" title="statement not covered" >        return this.getClient().auth.onAuthStateChange((event, session) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            this.currentUser = session?.user || null;</span>
-<span class="cstat-no" title="statement not covered" >            callback(event, session);</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // COURSES METHODS</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get all courses</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getCourses(publishedOnly = false) {</span>
-<span class="cstat-no" title="statement not covered" >        let query = this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('courses')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .order('created_at', { ascending: true });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (publishedOnly) {</span>
-<span class="cstat-no" title="statement not covered" >            query = query.eq('is_published', true);</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await query;</span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get course by slug</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getCourseBySlug(slug) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('courses')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('slug', slug)</span>
-<span class="cstat-no" title="statement not covered" >            .maybeSingle();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get full course data (with phases, projects, components)</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getFullCourseData(courseId) {</span>
-<span class="cstat-no" title="statement not covered" >        // Get course</span>
-<span class="cstat-no" title="statement not covered" >        const { data: course, error: courseError } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('courses')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (courseError) throw courseError;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Get phases</span>
-<span class="cstat-no" title="statement not covered" >        const { data: phases, error: phasesError } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('phases')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .order('position');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (phasesError) throw phasesError;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Get projects</span>
-<span class="cstat-no" title="statement not covered" >        const { data: projects, error: projectsError } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('projects')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .order('position');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (projectsError) throw projectsError;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Get components</span>
-<span class="cstat-no" title="statement not covered" >        const { data: components, error: componentsError } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('course_components')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (componentsError) throw componentsError;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return { course, phases, projects, components };</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Update course</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async updateCourse(courseId, updates) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('courses')</span>
-<span class="cstat-no" title="statement not covered" >            .update({ ...updates, updated_at: new Date().toISOString() })</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .select()</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // PHASES METHODS</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get phases for course</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getPhases(courseId) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('phases')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .order('position');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Create phase</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async createPhase(phase) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('phases')</span>
-<span class="cstat-no" title="statement not covered" >            .insert(phase)</span>
-<span class="cstat-no" title="statement not covered" >            .select()</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Update phase</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async updatePhase(phaseId, updates) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('phases')</span>
-<span class="cstat-no" title="statement not covered" >            .update({ ...updates, updated_at: new Date().toISOString() })</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', phaseId)</span>
-<span class="cstat-no" title="statement not covered" >            .select()</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Delete phase</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async deletePhase(phaseId) {</span>
-<span class="cstat-no" title="statement not covered" >        const { error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('phases')</span>
-<span class="cstat-no" title="statement not covered" >            .delete()</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', phaseId);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // PROJECTS METHODS</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get projects for course</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getProjects(courseId) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('projects')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .order('position');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Create project</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async createProject(project) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('projects')</span>
-<span class="cstat-no" title="statement not covered" >            .insert(project)</span>
-<span class="cstat-no" title="statement not covered" >            .select()</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Update project</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async updateProject(projectId, updates) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('projects')</span>
-<span class="cstat-no" title="statement not covered" >            .update({ ...updates, updated_at: new Date().toISOString() })</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', projectId)</span>
-<span class="cstat-no" title="statement not covered" >            .select()</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Delete project</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async deleteProject(projectId) {</span>
-<span class="cstat-no" title="statement not covered" >        const { error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('projects')</span>
-<span class="cstat-no" title="statement not covered" >            .delete()</span>
-<span class="cstat-no" title="statement not covered" >            .eq('id', projectId);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // COMPONENTS METHODS</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Get components for course</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async getComponents(courseId) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('course_components')</span>
-<span class="cstat-no" title="statement not covered" >            .select('*')</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Upsert component</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async upsertComponent(component) {</span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('course_components')</span>
-<span class="cstat-no" title="statement not covered" >            .upsert(component, { onConflict: 'course_id,key' })</span>
-<span class="cstat-no" title="statement not covered" >            .select()</span>
-<span class="cstat-no" title="statement not covered" >            .single();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        return data;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Delete component</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async deleteComponent(courseId, key) {</span>
-<span class="cstat-no" title="statement not covered" >        const { error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .from('course_components')</span>
-<span class="cstat-no" title="statement not covered" >            .delete()</span>
-<span class="cstat-no" title="statement not covered" >            .eq('course_id', courseId)</span>
-<span class="cstat-no" title="statement not covered" >            .eq('key', key);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // STORAGE METHODS (Hybrid Image Management)</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // GitHub Pages base URL</span>
-<span class="cstat-no" title="statement not covered" >    GITHUB_PAGES_URL: 'https://nsyasa.github.io/-Yeti-LAB/',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Upload image to Supabase Storage</span>
-<span class="cstat-no" title="statement not covered" >     * @param {File} file - The file to upload</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} folder - Optional folder name (default: 'uploads')</span>
-<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;string&gt;} Public URL of uploaded file</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async uploadImage(file, folder = 'uploads') {</span>
-<span class="cstat-no" title="statement not covered" >        const fileName = `${folder}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const { data, error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .storage</span>
-<span class="cstat-no" title="statement not covered" >            .from('images')  // bucket name</span>
-<span class="cstat-no" title="statement not covered" >            .upload(fileName, file, {</span>
-<span class="cstat-no" title="statement not covered" >                cacheControl: '3600',</span>
-<span class="cstat-no" title="statement not covered" >                upsert: false</span>
+<span class="cstat-no" title="statement not covered" >            // Add Supabase IDs to course data for future updates</span>
+<span class="cstat-no" title="statement not covered" >            legacyData._supabaseId = course.id;</span>
+<span class="cstat-no" title="statement not covered" >            legacyData._position = course.position !== undefined ? course.position : 999;</span>
+<span class="cstat-no" title="statement not covered" >            legacyData._phaseIds = {};</span>
+<span class="cstat-no" title="statement not covered" >            fullData.phases.forEach((phase, idx) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                legacyData._phaseIds[idx] = phase.id;</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >            legacyData._projectIds = {};</span>
+<span class="cstat-no" title="statement not covered" >            fullData.projects.forEach((proj) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                legacyData._projectIds[proj.position] = proj.id;</span>
 <span class="cstat-no" title="statement not covered" >            });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Get public URL</span>
-<span class="cstat-no" title="statement not covered" >        const { data: urlData } = this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .storage</span>
-<span class="cstat-no" title="statement not covered" >            .from('images')</span>
-<span class="cstat-no" title="statement not covered" >            .getPublicUrl(data.path);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return urlData.publicUrl;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Delete image from Supabase Storage</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} path - The file path to delete</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async deleteImage(path) {</span>
-<span class="cstat-no" title="statement not covered" >        const { error } = await this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >            .storage</span>
-<span class="cstat-no" title="statement not covered" >            .from('images')</span>
-<span class="cstat-no" title="statement not covered" >            .remove([path]);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error) throw error;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Smart Image URL Resolver</span>
-<span class="cstat-no" title="statement not covered" >     * Handles: local files, Supabase storage, external URLs</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} imagePath - The image path/URL</span>
-<span class="cstat-no" title="statement not covered" >     * @returns {string} Resolved full URL</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    resolveImageUrl(imagePath) {</span>
-<span class="cstat-no" title="statement not covered" >        if (!imagePath) return '';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Already a full URL (http/https)</span>
-<span class="cstat-no" title="statement not covered" >        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {</span>
-<span class="cstat-no" title="statement not covered" >            return imagePath;</span>
+<span class="cstat-no" title="statement not covered" >            this.updateStatus(`✅ ${courseSlug} yüklendi`, 'green');</span>
+<span class="cstat-no" title="statement not covered" >            return legacyData;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error(`[SupabaseSync] Failed to load ${courseSlug}:`, error);</span>
+<span class="cstat-no" title="statement not covered" >            this.updateStatus(`❌ ${courseSlug} yüklenemedi`, 'red');</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Supabase storage path (starts with 'supabase:' or contains supabase domain)</span>
-<span class="cstat-no" title="statement not covered" >        if (imagePath.startsWith('supabase:')) {</span>
-<span class="cstat-no" title="statement not covered" >            const path = imagePath.replace('supabase:', '');</span>
-<span class="cstat-no" title="statement not covered" >            const { data } = this.getClient()</span>
-<span class="cstat-no" title="statement not covered" >                .storage</span>
-<span class="cstat-no" title="statement not covered" >                .from('images')</span>
-<span class="cstat-no" title="statement not covered" >                .getPublicUrl(path);</span>
-<span class="cstat-no" title="statement not covered" >            return data.publicUrl;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Local file - serve from GitHub Pages</span>
-<span class="cstat-no" title="statement not covered" >        // Remove leading 'img/' if present to avoid duplication</span>
-<span class="cstat-no" title="statement not covered" >        const cleanPath = imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;</span>
-<span class="cstat-no" title="statement not covered" >        return `${this.GITHUB_PAGES_URL}${cleanPath}`;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Check if image source is from Supabase</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} url - The URL to check</span>
-<span class="cstat-no" title="statement not covered" >     * @returns {boolean}</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    isSupabaseImage(url) {</span>
-<span class="cstat-no" title="statement not covered" >        return url &amp;&amp; url.includes('supabase.co/storage');</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // UTILITY METHODS</span>
+<span class="cstat-no" title="statement not covered" >    // REAL-TIME CRUD OPERATIONS</span>
 <span class="cstat-no" title="statement not covered" >    // ==========================================</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Convert Supabase data to legacy format (for backward compatibility)</span>
+<span class="cstat-no" title="statement not covered" >     * Save or update a single project in Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} courseId - UUID of the course</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} project - Project data in legacy format</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} phaseIdMap - Map of phase index to UUID</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;Object|null&gt;} Saved project or null on error</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    convertToLegacyFormat(courseData) {</span>
-<span class="cstat-no" title="statement not covered" >        const { course, phases, projects, components } = courseData;</span>
+<span class="cstat-no" title="statement not covered" >    async saveProjectToSupabase(courseId, project, phaseIdMap) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            // Use position-based slug for consistency with syncProjects</span>
+<span class="cstat-no" title="statement not covered" >            const position = project.id !== undefined ? project.id : 0;</span>
+<span class="cstat-no" title="statement not covered" >            const slug = `p-${position}`;</span>
+<span class="cstat-no" title="statement not covered" >            const phaseId = phaseIdMap[project.phase] || Object.values(phaseIdMap)[0];</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Convert components to object format</span>
-<span class="cstat-no" title="statement not covered" >        const componentInfo = {};</span>
-<span class="cstat-no" title="statement not covered" >        components.forEach(comp =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            componentInfo[comp.key] = comp.data;</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Convert phases to array format with color/title</span>
-<span class="cstat-no" title="statement not covered" >        const phasesArray = phases.map((phase, idx) =&gt; ({</span>
-<span class="cstat-no" title="statement not covered" >            color: phase.meta?.color || 'blue',</span>
-<span class="cstat-no" title="statement not covered" >            title: phase.name,</span>
-<span class="cstat-no" title="statement not covered" >            description: phase.description || ''</span>
-<span class="cstat-no" title="statement not covered" >        }));</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Create phase ID to index mapping</span>
-<span class="cstat-no" title="statement not covered" >        const phaseIdToIndex = {};</span>
-<span class="cstat-no" title="statement not covered" >        phases.forEach((phase, idx) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            phaseIdToIndex[phase.id] = idx;</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Convert projects to legacy format</span>
-<span class="cstat-no" title="statement not covered" >        const projectsArray = projects.map(proj =&gt; ({</span>
-<span class="cstat-no" title="statement not covered" >            id: proj.position,</span>
-<span class="cstat-no" title="statement not covered" >            phase: phaseIdToIndex[proj.phase_id] || 0,</span>
-<span class="cstat-no" title="statement not covered" >            title: proj.title,</span>
-<span class="cstat-no" title="statement not covered" >            icon: proj.component_info?.icon || '📚',</span>
-<span class="cstat-no" title="statement not covered" >            desc: proj.description,</span>
-<span class="cstat-no" title="statement not covered" >            hasGraph: proj.component_info?.hasGraph || false,</span>
-<span class="cstat-no" title="statement not covered" >            hasSim: !!proj.simulation,</span>
-<span class="cstat-no" title="statement not covered" >            simType: proj.simulation,</span>
-<span class="cstat-no" title="statement not covered" >            mission: proj.component_info?.mission || '',</span>
-<span class="cstat-no" title="statement not covered" >            theory: proj.component_info?.theory || '',</span>
-<span class="cstat-no" title="statement not covered" >            materials: proj.materials || [],</span>
-<span class="cstat-no" title="statement not covered" >            mainComponent: proj.component_info?.mainComponent || null,</span>
-<span class="cstat-no" title="statement not covered" >            circuit_desc: proj.circuit,</span>
-<span class="cstat-no" title="statement not covered" >            code: proj.code,</span>
-<span class="cstat-no" title="statement not covered" >            challenge: proj.challenge,</span>
-<span class="cstat-no" title="statement not covered" >            circuitImage: proj.circuit,</span>
-<span class="cstat-no" title="statement not covered" >            hotspots: proj.component_info?.hotspots || null,</span>
-<span class="cstat-no" title="statement not covered" >            quiz: proj.component_info?.quiz || []</span>
-<span class="cstat-no" title="statement not covered" >        }));</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return {</span>
-<span class="cstat-no" title="statement not covered" >            title: course.title,</span>
-<span class="cstat-no" title="statement not covered" >            description: course.description,</span>
-<span class="cstat-no" title="statement not covered" >            icon: course.meta?.icon || '📚',</span>
-<span class="cstat-no" title="statement not covered" >            data: {</span>
-<span class="cstat-no" title="statement not covered" >                componentInfo,</span>
-<span class="cstat-no" title="statement not covered" >                phases: phasesArray,</span>
-<span class="cstat-no" title="statement not covered" >                projects: projectsArray</span>
+<span class="cstat-no" title="statement not covered" >            if (!phaseId) {</span>
+<span class="cstat-no" title="statement not covered" >                throw new Error('No valid phase found for project');</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            const projectData = {</span>
+<span class="cstat-no" title="statement not covered" >                course_id: courseId,</span>
+<span class="cstat-no" title="statement not covered" >                phase_id: phaseId,</span>
+<span class="cstat-no" title="statement not covered" >                slug: slug,</span>
+<span class="cstat-no" title="statement not covered" >                title: typeof project.title === 'object' ? project.title.tr : project.title,</span>
+<span class="cstat-no" title="statement not covered" >                description: typeof project.desc === 'object' ? project.desc.tr : project.desc,</span>
+<span class="cstat-no" title="statement not covered" >                materials: project.materials || [],</span>
+<span class="cstat-no" title="statement not covered" >                circuit: project.circuitImage || null,</span>
+<span class="cstat-no" title="statement not covered" >                code: project.code || null,</span>
+<span class="cstat-no" title="statement not covered" >                simulation: project.simType || null,</span>
+<span class="cstat-no" title="statement not covered" >                challenge: typeof project.challenge === 'object' ? project.challenge.tr : project.challenge,</span>
+<span class="cstat-no" title="statement not covered" >                component_info: {</span>
+<span class="cstat-no" title="statement not covered" >                    id: project.id,</span>
+<span class="cstat-no" title="statement not covered" >                    icon: project.icon,</span>
+<span class="cstat-no" title="statement not covered" >                    phase: project.phase,</span>
+<span class="cstat-no" title="statement not covered" >                    week: project.week,</span>
+<span class="cstat-no" title="statement not covered" >                    mainComponent: project.mainComponent,</span>
+<span class="cstat-no" title="statement not covered" >                    hotspots: project.hotspots,</span>
+<span class="cstat-no" title="statement not covered" >                    hasGraph: project.hasGraph,</span>
+<span class="cstat-no" title="statement not covered" >                    hasSim: project.hasSim,</span>
+<span class="cstat-no" title="statement not covered" >                    mission: project.mission,</span>
+<span class="cstat-no" title="statement not covered" >                    theory: project.theory,</span>
+<span class="cstat-no" title="statement not covered" >                    quiz: project.quiz,</span>
+<span class="cstat-no" title="statement not covered" >                    hiddenTabs: project.hiddenTabs,</span>
+<span class="cstat-no" title="statement not covered" >                    enableHotspots: project.enableHotspots,</span>
+<span class="cstat-no" title="statement not covered" >                    showHotspotsInLab: project.showHotspotsInLab,</span>
+<span class="cstat-no" title="statement not covered" >                    difficulty: project.difficulty,</span>
+<span class="cstat-no" title="statement not covered" >                    duration: project.duration,</span>
+<span class="cstat-no" title="statement not covered" >                    tags: project.tags,</span>
+<span class="cstat-no" title="statement not covered" >                    prerequisites: project.prerequisites,</span>
+<span class="cstat-no" title="statement not covered" >                    // i18n fields</span>
+<span class="cstat-no" title="statement not covered" >                    title_en: typeof project.title === 'object' ? project.title.en : null,</span>
+<span class="cstat-no" title="statement not covered" >                    desc_en: typeof project.desc === 'object' ? project.desc.en : null,</span>
+<span class="cstat-no" title="statement not covered" >                    mission_en: typeof project.mission === 'object' ? project.mission.en : null,</span>
+<span class="cstat-no" title="statement not covered" >                    theory_en: typeof project.theory === 'object' ? project.theory.en : null,</span>
+<span class="cstat-no" title="statement not covered" >                    challenge_en: typeof project.challenge === 'object' ? project.challenge.en : null,</span>
+<span class="cstat-no" title="statement not covered" >                },</span>
+<span class="cstat-no" title="statement not covered" >                is_published: false,</span>
+<span class="cstat-no" title="statement not covered" >                position: project.id || 0,</span>
+<span class="cstat-no" title="statement not covered" >            };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Debug: Log what we're sending</span>
+<span class="cstat-no" title="statement not covered" >            console.log(`[SupabaseSync] Saving project ${slug}:`, projectData.title);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            const { data, error } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('projects')</span>
+<span class="cstat-no" title="statement not covered" >                .upsert(projectData, { onConflict: 'course_id,slug' })</span>
+<span class="cstat-no" title="statement not covered" >                .select();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Debug: Log response</span>
+<span class="cstat-no" title="statement not covered" >            console.log(`[SupabaseSync] Project ${slug} response:`, data?.[0]?.id || 'no data', error || 'success');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (error) throw error;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return data?.[0] || null;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to save project:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Convert legacy format to Supabase format</span>
+<span class="cstat-no" title="statement not covered" >     * Delete a project from Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} projectId - UUID of the project</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;boolean&gt;} Success status</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    convertFromLegacyFormat(legacyData, courseId, phaseIds) {</span>
-<span class="cstat-no" title="statement not covered" >        // This will be used when saving from admin panel</span>
-<span class="cstat-no" title="statement not covered" >        // Implementation depends on specific needs</span>
-<span class="cstat-no" title="statement not covered" >        return legacyData;</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    async deleteProjectFromSupabase(projectId) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            await SupabaseClient.deleteProject(projectId);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to delete project:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Delete a project from Supabase by courseId and position</span>
+<span class="cstat-no" title="statement not covered" >     * This is useful when we don't have the UUID but know the course and position</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} courseId - UUID of the course</span>
+<span class="cstat-no" title="statement not covered" >     * @param {number} position - Project position/id</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;boolean&gt;} Success status</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async deleteProjectByPosition(courseId, position) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const slug = `p-${position}`;</span>
+<span class="cstat-no" title="statement not covered" >            const { error } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('projects')</span>
+<span class="cstat-no" title="statement not covered" >                .delete()</span>
+<span class="cstat-no" title="statement not covered" >                .eq('course_id', courseId)</span>
+<span class="cstat-no" title="statement not covered" >                .eq('slug', slug);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (error) throw error;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to delete project by position:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Save or update a single phase in Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} courseId - UUID of the course</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} phase - Phase data</span>
+<span class="cstat-no" title="statement not covered" >     * @param {number} position - Phase position/index</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;Object|null&gt;} Saved phase or null on error</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async savePhaseToSupabase(courseId, phase, position) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const name = phase.title || `Bölüm ${position}`;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Check if phase exists</span>
+<span class="cstat-no" title="statement not covered" >            const { data: existing } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                .from('phases')</span>
+<span class="cstat-no" title="statement not covered" >                .select('id')</span>
+<span class="cstat-no" title="statement not covered" >                .eq('course_id', courseId)</span>
+<span class="cstat-no" title="statement not covered" >                .eq('name', name)</span>
+<span class="cstat-no" title="statement not covered" >                .maybeSingle();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            let result;</span>
+<span class="cstat-no" title="statement not covered" >            if (existing) {</span>
+<span class="cstat-no" title="statement not covered" >                result = await SupabaseClient.updatePhase(existing.id, {</span>
+<span class="cstat-no" title="statement not covered" >                    description: phase.description,</span>
+<span class="cstat-no" title="statement not covered" >                    position: position,</span>
+<span class="cstat-no" title="statement not covered" >                    meta: { color: phase.color, icon: phase.icon },</span>
+<span class="cstat-no" title="statement not covered" >                });</span>
+<span class="cstat-no" title="statement not covered" >            } else {</span>
+<span class="cstat-no" title="statement not covered" >                result = await SupabaseClient.createPhase({</span>
+<span class="cstat-no" title="statement not covered" >                    course_id: courseId,</span>
+<span class="cstat-no" title="statement not covered" >                    name: name,</span>
+<span class="cstat-no" title="statement not covered" >                    description: phase.description || null,</span>
+<span class="cstat-no" title="statement not covered" >                    position: position,</span>
+<span class="cstat-no" title="statement not covered" >                    meta: { color: phase.color, icon: phase.icon },</span>
+<span class="cstat-no" title="statement not covered" >                });</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return result;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to save phase:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Delete a phase from Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} phaseId - UUID of the phase</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;boolean&gt;} Success status</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async deletePhaseFromSupabase(phaseId) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            await SupabaseClient.deletePhase(phaseId);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to delete phase:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Save course settings to Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} courseId - UUID of the course</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} settings - Course settings (title, description, icon, customTabNames)</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Promise&lt;boolean&gt;} Success status</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async saveCourseSettings(courseId, settings) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            await SupabaseClient.updateCourse(courseId, {</span>
+<span class="cstat-no" title="statement not covered" >                title: settings.title,</span>
+<span class="cstat-no" title="statement not covered" >                description: settings.description,</span>
+<span class="cstat-no" title="statement not covered" >                meta: {</span>
+<span class="cstat-no" title="statement not covered" >                    icon: settings.icon,</span>
+<span class="cstat-no" title="statement not covered" >                    customTabNames: settings.customTabNames || null,</span>
+<span class="cstat-no" title="statement not covered" >                },</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SupabaseSync] Failed to save course settings:', error);</span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Save course data to Supabase</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async saveToSupabase(courseKey, courseData) {</span>
+<span class="cstat-no" title="statement not covered" >        console.log('[SupabaseSync] saveToSupabase called:', courseKey);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            this.updateStatus("☁️ Supabase'e kaydediliyor...", 'yellow');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // 1. Get or create course</span>
+<span class="cstat-no" title="statement not covered" >            // FIX: Always use the stable courseKey as slug, don't generate from title</span>
+<span class="cstat-no" title="statement not covered" >            // This prevents creating duplicate courses when title is updated</span>
+<span class="cstat-no" title="statement not covered" >            const slug = courseKey || this.slugify(courseData.title);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 1: Getting course by slug:', slug);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            let course = await SupabaseClient.getCourseBySlug(slug);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 1 complete: course =', course?.id || 'new');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (!course) {</span>
+<span class="cstat-no" title="statement not covered" >                console.log('[SupabaseSync] Creating new course...');</span>
+<span class="cstat-no" title="statement not covered" >                const { data, error } = await SupabaseClient.getClient()</span>
+<span class="cstat-no" title="statement not covered" >                    .from('courses')</span>
+<span class="cstat-no" title="statement not covered" >                    .insert({</span>
+<span class="cstat-no" title="statement not covered" >                        slug: slug,</span>
+<span class="cstat-no" title="statement not covered" >                        title: courseData.title,</span>
+<span class="cstat-no" title="statement not covered" >                        description: courseData.description || null,</span>
+<span class="cstat-no" title="statement not covered" >                        meta: { icon: courseData.icon || null },</span>
+<span class="cstat-no" title="statement not covered" >                        is_published: false,</span>
+<span class="cstat-no" title="statement not covered" >                    })</span>
+<span class="cstat-no" title="statement not covered" >                    .select('id')</span>
+<span class="cstat-no" title="statement not covered" >                    .single();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                if (error) throw error;</span>
+<span class="cstat-no" title="statement not covered" >                course = { id: data.id };</span>
+<span class="cstat-no" title="statement not covered" >                console.log('[SupabaseSync] New course created:', course.id);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            const courseId = course.id;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // 2. Update course metadata</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 2: Updating course metadata...');</span>
+<span class="cstat-no" title="statement not covered" >            await SupabaseClient.updateCourse(courseId, {</span>
+<span class="cstat-no" title="statement not covered" >                title: courseData.title,</span>
+<span class="cstat-no" title="statement not covered" >                description: courseData.description,</span>
+<span class="cstat-no" title="statement not covered" >                meta: {</span>
+<span class="cstat-no" title="statement not covered" >                    icon: courseData.icon,</span>
+<span class="cstat-no" title="statement not covered" >                    customTabNames: courseData.customTabNames || null,</span>
+<span class="cstat-no" title="statement not covered" >                },</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 2 complete');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // 3. Sync phases</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 3: Syncing phases...');</span>
+<span class="cstat-no" title="statement not covered" >            const phases = courseData.data?.phases || [];</span>
+<span class="cstat-no" title="statement not covered" >            const phaseIdMap = await this.syncPhases(courseId, phases);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 3 complete: phaseIdMap =', phaseIdMap);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // 4. Sync projects</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 4: Syncing projects...');</span>
+<span class="cstat-no" title="statement not covered" >            const projects = courseData.data?.projects || [];</span>
+<span class="cstat-no" title="statement not covered" >            await this.syncProjects(courseId, projects, phaseIdMap);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 4 complete');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // 5. Sync components</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 5: Syncing components...');</span>
+<span class="cstat-no" title="statement not covered" >            const componentInfo = courseData.data?.componentInfo || {};</span>
+<span class="cstat-no" title="statement not covered" >            await this.syncComponents(courseId, componentInfo);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] Step 5 complete');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // 6. Invalidate cache to ensure fresh data on next load (if our Cache module is loaded)</span>
+<span class="cstat-no" title="statement not covered" >            if (typeof Cache !== 'undefined' &amp;&amp; typeof Cache.invalidate === 'function') {</span>
+<span class="cstat-no" title="statement not covered" >                Cache.invalidate('courses');</span>
+<span class="cstat-no" title="statement not covered" >                Cache.invalidate(`course_${slug}`);</span>
+<span class="cstat-no" title="statement not covered" >                console.log('[SupabaseSync] Cache invalidated for courses');</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            console.log('[SupabaseSync] All steps complete!');</span>
+<span class="cstat-no" title="statement not covered" >            this.updateStatus(`☁️ Supabase'e kaydedildi: ${new Date().toLocaleTimeString()}`, 'green');</span>
+<span class="cstat-no" title="statement not covered" >            alert("✅ Değişiklikler Supabase'e kaydedildi!");</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('Supabase save error:', error);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Oturum süresi kontrolü</span>
+<span class="cstat-no" title="statement not covered" >            if (error.code === '401' || error.status === 401 || error.message?.includes('JWT')) {</span>
+<span class="cstat-no" title="statement not covered" >                alert('⚠️ Oturum süreniz dolmuş. Lütfen çıkış yapıp tekrar giriş yapın.');</span>
+<span class="cstat-no" title="statement not covered" >                this.updateStatus('❌ Oturum hatası - Tekrar giriş yapın', 'red');</span>
+<span class="cstat-no" title="statement not covered" >                return false;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            this.updateStatus(`❌ Kaydetme hatası: ${error.message}`, 'red');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Offer fallback download</span>
+<span class="cstat-no" title="statement not covered" >            if (confirm(`Supabase'e kaydedilemedi: ${error.message}\n\nYerel dosya olarak indirmek ister misiniz?`)) {</span>
+<span class="cstat-no" title="statement not covered" >                if (this.config.downloadFallback) {</span>
+<span class="cstat-no" title="statement not covered" >                    this.config.downloadFallback(courseKey, courseData);</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Sync phases to Supabase</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Object} Map of phase index to UUID</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async syncPhases(courseId, phases) {</span>
+<span class="cstat-no" title="statement not covered" >        const phaseIdMap = {};</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Process phases in parallel</span>
+<span class="cstat-no" title="statement not covered" >        const promises = phases.map(async (phase, i) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            // Use existing helper function to save/update phase</span>
+<span class="cstat-no" title="statement not covered" >            const savedPhase = await this.savePhaseToSupabase(courseId, phase, i);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (savedPhase &amp;&amp; savedPhase.id) {</span>
+<span class="cstat-no" title="statement not covered" >                phaseIdMap[i] = savedPhase.id;</span>
+<span class="cstat-no" title="statement not covered" >            } else {</span>
+<span class="cstat-no" title="statement not covered" >                console.warn(`[SupabaseSync] Failed to sync phase index ${i}`);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        await Promise.all(promises);</span>
+<span class="cstat-no" title="statement not covered" >        return phaseIdMap;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Sync projects to Supabase</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async syncProjects(courseId, projects, phaseIdMap) {</span>
+<span class="cstat-no" title="statement not covered" >        // Process in chunks (batches) to ensure stability and avoid timeouts</span>
+<span class="cstat-no" title="statement not covered" >        const CHUNK_SIZE = 4;</span>
+<span class="cstat-no" title="statement not covered" >        const results = [];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        console.log(`[SupabaseSync] Syncing ${projects.length} projects in chunks of ${CHUNK_SIZE}...`);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        for (let i = 0; i &lt; projects.length; i += CHUNK_SIZE) {</span>
+<span class="cstat-no" title="statement not covered" >            const chunk = projects.slice(i, i + CHUNK_SIZE);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Execute chunk in parallel</span>
+<span class="cstat-no" title="statement not covered" >            const chunkPromises = chunk.map((proj) =&gt; this.saveProjectToSupabase(courseId, proj, phaseIdMap));</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Wait for this chunk to finish</span>
+<span class="cstat-no" title="statement not covered" >            const chunkResults = await Promise.all(chunkPromises);</span>
+<span class="cstat-no" title="statement not covered" >            results.push(...chunkResults);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Optional: Update status in console or UI</span>
+<span class="cstat-no" title="statement not covered" >            if (this.updateStatus) {</span>
+<span class="cstat-no" title="statement not covered" >                // Determine color based on progress</span>
+<span class="cstat-no" title="statement not covered" >                const progress = Math.min(i + CHUNK_SIZE, projects.length);</span>
+<span class="cstat-no" title="statement not covered" >                this.updateStatus(`💾 Kaydediliyor... (${progress}/${projects.length})`, 'blue');</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Small delay to release event loop</span>
+<span class="cstat-no" title="statement not covered" >            if (i + CHUNK_SIZE &lt; projects.length) {</span>
+<span class="cstat-no" title="statement not covered" >                await new Promise((r) =&gt; setTimeout(r, 50));</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Log results</span>
+<span class="cstat-no" title="statement not covered" >        const successCount = results.filter((r) =&gt; r !== null).length;</span>
+<span class="cstat-no" title="statement not covered" >        console.log(`[SupabaseSync] Synced ${successCount}/${projects.length} projects`);</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Sync components to Supabase</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    async syncComponents(courseId, componentInfo) {</span>
+<span class="cstat-no" title="statement not covered" >        const promises = Object.entries(componentInfo).map(([key, data]) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >            SupabaseClient.upsertComponent({</span>
+<span class="cstat-no" title="statement not covered" >                course_id: courseId,</span>
+<span class="cstat-no" title="statement not covered" >                key: key,</span>
+<span class="cstat-no" title="statement not covered" >                data: data,</span>
+<span class="cstat-no" title="statement not covered" >            })</span>
+<span class="cstat-no" title="statement not covered" >        );</span>
+<span class="cstat-no" title="statement not covered" >        await Promise.all(promises);</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Make available globally</span>
-<span class="cstat-no" title="statement not covered" >if (typeof window !== 'undefined') {</span>
-<span class="cstat-no" title="statement not covered" >    window.SupabaseClient = SupabaseClient;</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+<span class="cstat-no" title="statement not covered" >window.SupabaseSync = SupabaseSync;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1666,16 +1675,16 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-02T18:54:14.301Z
+                at 2026-01-08T08:38:12.915Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     
