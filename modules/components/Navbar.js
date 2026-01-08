@@ -23,6 +23,13 @@ const Navbar = {
      * @param {string} route - Hedef route (orn: '/', '/admin', '/teacher')
      */
     navigateSPA: (route) => {
+        // Ana sayfaya dönüyorsa query parametrelerini temizle
+        if (route === '/' && window.location.search) {
+            // URL'deki ?course=... gibi parametreleri temizle
+            const cleanUrl = window.location.pathname + '#/';
+            window.history.replaceState(null, '', cleanUrl);
+        }
+
         if (Navbar.isOnSPA()) {
             // index.html içindeyiz, Router kullan
             if (window.Router) {
