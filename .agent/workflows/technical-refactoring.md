@@ -4,61 +4,52 @@ description: Yeti LAB projesini bozmadan modern, esnek, bakımı kolay, güvenli
 
 # 🔧 Teknik Refactoring Yol Haritası
 
-**Son Güncelleme:** 2026-01-06 19:00  
-**Durum:** ✅ İlk Faz Tamamlandı - Proje çalışıyor, tüm testler geçiyor
+**Son Güncelleme:** 2026-01-08 13:45  
+**Durum:** ✅ İkinci Faz Tamamlandı - Auth/Scroll/Helpers Ayrıştırıldı
 
 ---
 
 ## 📊 Mevcut Durum (Güncellenmiş)
 
-| Bileşen          | Durum            | Notlar                                    |
-| ---------------- | ---------------- | ----------------------------------------- |
-| Vite Dev Server  | ✅ Çalışıyor     | `npm run dev` → localhost:3000            |
-| Store (State)    | ✅ Mevcut        | `modules/store/store.js`                  |
-| Router           | ✅ Mevcut        | Hash-based SPA routing                    |
-| Supabase         | ✅ Çalışıyor     | 7 kurs, Singleton pattern                 |
-| Auth             | ✅ İyi           | Kapsamlı modül, UX iyileştirmesi yapıldı  |
-| ThemeManager     | ✅ Temiz         | `app.js`'den ayrıştırıldı                 |
-| Constants        | ✅ Birleştirildi | `constants/index.js` merkezi              |
-| Unit Tests       | ✅ 76/76 geçiyor | Validators, Auth, Progress, UI, Utils     |
-| Env Variables    | ⚠️ Hazır         | `.env.example` var, FAZ 5'te aktif olacak |
-| Global Namespace | ⚠️ Aktif         | FAZ 5'te ES6 modules ile değiştirilecek   |
+| Bileşen          | Durum           | Notlar                                    |
+| ---------------- | --------------- | ----------------------------------------- |
+| Vite Dev Server  | ✅ Çalışıyor    | `npm run dev` → localhost:3000            |
+| Store (State)    | ✅ Mevcut       | `modules/store/store.js`                  |
+| Router           | ✅ Mevcut       | Hash-based SPA routing                    |
+| Supabase         | ✅ Çalışıyor    | 7 kurs, Singleton pattern                 |
+| Auth UI          | ✅ Ayrıştırıldı | `modules/authUI.js`                       |
+| Scroll Logic     | ✅ Ayrıştırıldı | `modules/scrollManager.js`                |
+| ThemeManager     | ✅ Temiz        | `app.js`'den ayrıştırıldı                 |
+| Helpers          | ✅ Taşındı      | `Validators.js` (Validation + Cleaning)   |
+| Unit Tests       | ✅ 386 test     | Integration testlerle kapsam genişletildi |
+| Env Variables    | ⚠️ Hazır        | `.env.example` var, FAZ 5'te aktif olacak |
+| Global Namespace | ⚠️ Aktif        | FAZ 5'te ES6 modules ile değiştirilecek   |
 
 ---
 
-## ✅ TAMAMLANAN ADIMLAR (2026-01-06)
+## ✅ TAMAMLANAN ADIMLAR (2026-01-08)
 
-### FAZ 1: Güvenlik ve Temel Temizlik
+### FAZ 1-3: Temel Modernizasyon (Tamamlandı)
 
-| Adım                    | Durum | Yapılanlar                                             |
-| ----------------------- | ----- | ------------------------------------------------------ |
-| 1.1 Env Variables       | ✅    | `.env.example` güncellendi, VITE\_ prefix'leri eklendi |
-| 1.2 ESLint Sıkılaştırma | ✅    | `prefer-const: error`, `eqeqeq`, `no-shadow` kuralları |
-
-### FAZ 2: Modül Modernizasyonu
-
-| Adım           | Durum | Yapılanlar                                      |
-| -------------- | ----- | ----------------------------------------------- |
-| 2.1 Utils      | ✅    | Global fallback korundu (ES6 export FAZ 5'te)   |
-| 2.2 Constants  | ✅    | `constants/index.js` oluşturuldu, merkezi dosya |
-| 2.3 Validators | ✅    | Test dosyası güncellendi, 14 test geçiyor       |
+- ✅ Env Variables, ESLint, Utils, Constants, Validators modülleri.
 
 ### FAZ 4: app.js Dekompozisyonu
 
-| Adım              | Durum | Yapılanlar                                          |
-| ----------------- | ----- | --------------------------------------------------- |
-| 4.1 State → Store | ✅    | `app.state` artık Proxy ile Store'a senkronize      |
-| 4.3 ThemeManager  | ✅    | `app.theme` state kaldırıldı, ThemeManager'a delege |
-| 4.4 Auth          | ✅    | İncelendi - zaten iyi yapılandırılmış               |
+| Adım                  | Durum | Yapılanlar                                                           |
+| --------------------- | ----- | -------------------------------------------------------------------- |
+| 4.1 Helper Ayrıştırma | ✅    | `escapeHtml`, `sanitizeObject`, `isValidCourseData` → `Validators`'a |
+| 4.2 Scroll Logic      | ✅    | `app.handleScroll` → `ScrollManager` modülüne taşındı                |
+| 4.3 ThemeManager      | ✅    | `app.theme` state kaldırıldı, ThemeManager'a delege                  |
+| 4.4 Auth UI           | ✅    | `initAuth`, `updateUserUI`, `menu` → `AuthUI` modülüne taşındı       |
+| 4.5 State → Store     | 🟡    | Proxy (geçici) çözüm aktif, tam geçiş bekleniyor                     |
 
 ### Bonus Düzeltmeler
 
-| Düzeltme                 | Açıklama                                                |
-| ------------------------ | ------------------------------------------------------- |
-| SupabaseClient Singleton | `Multiple GoTrueClient instances` uyarısı giderildi     |
-| ES6 Export Hatası        | Admin panelindeki `export` syntax error düzeltildi      |
-| Script Duplicate Loading | `CourseLoader`, `TabConfig` için akıllı kontrol eklendi |
-| Auth Kayıt UX            | Kayıt sonrası panel kapanıyor, mesaj hemen görünüyor    |
+| Düzeltme                 | Açıklama                                                      |
+| ------------------------ | ------------------------------------------------------------- |
+| SupabaseClient Singleton | `Multiple GoTrueClient instances` uyarısı giderildi           |
+| Test Coverage Artışı     | Router, ViewManager, Cache ve Store integration testleri      |
+| Script Loading Fix       | Eksik modüller (`utils`, `validators`) `index.html`'e eklendi |
 
 ---
 
