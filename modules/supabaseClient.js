@@ -47,8 +47,28 @@ const SupabaseClient = {
             return false;
         }
 
-        this.client = supabase.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY);
-        return true;
+        try {
+            // Create client with auth options to prevent AbortError
+            this.client = supabase.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY, {
+                auth: {
+                    autoRefreshToken: true,
+                    persistSession: true,
+                    detectSessionInUrl: true,
+                    // Increase timeout for slow connections
+                    flowType: 'pkce',
+                },
+                global: {
+                    headers: {
+                        'x-client-info': 'yeti-lab-web',
+                    },
+                },
+            });
+            console.log('[SupabaseClient] Initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('[SupabaseClient] Init error:', error);
+            return false;
+        }
     },
 
     /**

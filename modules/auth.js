@@ -165,17 +165,37 @@ const Auth = {
      * Check existing session
      */
     async checkSession() {
-        const {
-            data: { session },
-        } = await SupabaseClient.getClient().auth.getSession();
+        try {
+            const {
+                data: { session },
+                error,
+            } = await SupabaseClient.getClient().auth.getSession();
 
-        if (session) {
-            this.currentUser = session.user;
-            if (window.Store) window.Store.setUser(this.currentUser);
-            await this.loadUserProfile();
+            // Handle AbortError gracefully - this happens on page load sometimes
+            if (error) {
+                if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+                    console.warn('[Auth] Session check aborted (network issue), continuing...');
+                    return null;
+                }
+                throw error;
+            }
+
+            if (session) {
+                this.currentUser = session.user;
+                if (window.Store) window.Store.setUser(this.currentUser);
+                await this.loadUserProfile();
+            }
+
+            return session;
+        } catch (error) {
+            // AbortError is common on slow connections or when page is navigating away
+            if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+                console.warn('[Auth] Session check aborted, continuing without session...');
+                return null;
+            }
+            console.error('[Auth] checkSession error:', error);
+            throw error;
         }
-
-        return session;
     },
 
     /**

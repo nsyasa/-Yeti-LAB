@@ -112,7 +112,17 @@ const CourseLoader = {
                 this.manifest = newManifest;
             }
         } catch (e) {
-            console.error('[CourseLoader] Failed to fetch course list:', e);
+            // AbortError is common on page load/navigation - use static manifest
+            if (e.name === 'AbortError' || e.message?.includes('aborted')) {
+                console.warn('[CourseLoader] Request aborted (network issue), using static manifest');
+                return;
+            }
+            console.error('[CourseLoader] Failed to fetch course list:', {
+                message: e.message || e,
+                details: e.toString(),
+                hint: e.hint || '',
+                code: e.code || '',
+            });
         }
     },
 
