@@ -33,7 +33,7 @@ const Footer = {
             </div>
             
             <div class="mt-4 text-center md:text-right">
-             <p class="text-xs text-gray-400">Versiyon 1.2.0 • <span class="text-theme">Beta</span></p>
+             <p class="text-xs text-gray-400">Versiyon 2.0 • <span class="text-theme">Beta</span></p>
             </div>
         </div>
         `;

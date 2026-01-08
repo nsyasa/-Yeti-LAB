@@ -57,15 +57,11 @@ const Navbar = {
                     </div>
                 </div>
 
-                <!-- Desktop Search -->
                 <div class="flex-1 max-w-xl mx-8 hidden lg:block relative group">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <span class="text-gray-400 text-lg group-hover:text-theme transition-colors">🔍</span>
-                    </div>
                     <input type="text" 
                         oninput="window.Search?.handle(this.value)" 
                         placeholder="Ders, konu veya proje ara..."
-                        class="block w-full pl-11 pr-4 py-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 hover:border-gray-200"
+                        class="block w-full pl-4 pr-4 py-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 hover:border-gray-200"
                     >
                     <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 hidden z-50 max-h-96 overflow-y-auto"></div>
                 </div>
