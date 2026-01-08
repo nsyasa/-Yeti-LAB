@@ -1,6 +1,7 @@
 /**
  * TeacherView - Ana teacher panel view container
  * SPA entegrasyonu için mount/unmount lifecycle metodları
+ * (Sidebar kaldırıldı, index header kullanılıyor)
  */
 const TeacherView = {
     isLoaded: false,
@@ -8,27 +9,18 @@ const TeacherView = {
     scriptsLoaded: false,
 
     /**
-     * Template - Ana layout
+     * Template - Ana layout (sidebar yok, main-header kullanılıyor)
      */
     template() {
         return `
             <div id="teacher-view" class="teacher-bg min-h-screen">
-                <!-- Sidebar Overlay (mobile) -->
-                <div id="teacherSidebarOverlay" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden" 
-                     onclick="TeacherView.toggleSidebar()"></div>
+                <!-- Tab Navigation (Sidebar yerine) -->
+                ${TeacherLayout.renderTabNav()}
                 
-                <!-- Sidebar -->
-                <aside id="teacherSidebar" class="teacher-sidebar">
-                    ${TeacherLayout.renderSidebar()}
-                </aside>
-
                 <!-- Main Content -->
-                <div class="teacher-main-content min-h-screen flex flex-col">
-                    <!-- Header -->
-                    ${TeacherLayout.renderHeader()}
-                    
+                <div class="teacher-content max-w-7xl mx-auto px-4 sm:px-6 py-6">
                     <!-- Content Area -->
-                    <div id="teacherContent" class="flex-grow p-6 overflow-auto">
+                    <div id="teacherContent" class="space-y-6">
                         <!-- Loading State -->
                         <div id="teacherLoadingState" class="flex items-center justify-center h-64">
                             <div class="text-center">
@@ -81,16 +73,13 @@ const TeacherView = {
         container.innerHTML = this.template();
         container.classList.remove('hidden');
 
-        // Hide main-header and main-footer for teacher view (has its own layout)
+        // Hide footer and mobile bottom nav (but keep main-header visible!)
         this.hideMainLayout();
 
         // Initialize TeacherManager
         if (window.TeacherManager) {
             await TeacherManager.init();
         }
-
-        // Update user info in sidebar
-        TeacherLayout.updateUserInfo();
 
         // Apply theme
         if (window.ThemeManager) ThemeManager.load();
@@ -258,22 +247,8 @@ const TeacherView = {
             sectionEl.classList.remove('hidden');
         }
 
-        // Update title
-        const titles = {
-            dashboard: 'Kontrol Paneli',
-            classrooms: 'Sınıflarım',
-            students: 'Öğrenciler',
-        };
-        const titleEl = document.getElementById('teacherSectionTitle');
-        if (titleEl) titleEl.textContent = titles[section] || section;
-
-        // Update nav active state
-        document.querySelectorAll('.teacher-nav-item').forEach((item) => {
-            item.classList.remove('bg-theme/10', 'text-theme');
-            if (item.dataset && item.dataset.section === section) {
-                item.classList.add('bg-theme/10', 'text-theme');
-            }
-        });
+        // Update tab active state
+        TeacherLayout.updateActiveTab(section);
 
         // Trigger data load for sections
         if (window.TeacherManager) {
@@ -296,22 +271,12 @@ const TeacherView = {
     },
 
     /**
-     * Sidebar toggle
-     */
-    toggleSidebar() {
-        const sidebar = document.getElementById('teacherSidebar');
-        const overlay = document.getElementById('teacherSidebarOverlay');
-        sidebar?.classList.toggle('open');
-        overlay?.classList.toggle('hidden');
-    },
-
-    /**
-     * Main layout'u gizle (teacher kendi layout'unu kullanıyor)
+     * Hide footer and mobile nav (but keep main-header visible)
      */
     hideMainLayout() {
-        // Hide header
-        const header = document.getElementById('main-header');
-        if (header) header.style.display = 'none';
+        // KEEP main-header visible (index style top bar)
+        // const header = document.getElementById('main-header');
+        // if (header) header.style.display = 'none';
 
         // Hide footer
         const footer = document.getElementById('main-footer');
@@ -333,15 +298,14 @@ const TeacherView = {
     },
 
     /**
-     * Main layout'u göster
+     * Show footer again
      */
     showMainLayout() {
-        const header = document.getElementById('main-header');
-        if (header) header.style.display = '';
-
+        // Footer göster
         const footer = document.getElementById('main-footer');
         if (footer) footer.style.display = '';
 
+        // Mobile nav göster
         const mobileNav = document.getElementById('mobile-bottom-nav');
         if (mobileNav) mobileNav.style.display = '';
     },

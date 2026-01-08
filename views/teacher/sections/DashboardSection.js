@@ -1,61 +1,68 @@
 /**
- * DashboardSection - Teacher dashboard içeriği
+ * DashboardSection - Teacher dashboard içeriği (Kompakt tasarım)
  */
 const DashboardSection = {
     render() {
         return `
             <div class="space-y-6">
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="stat-card animate-fade-in-up">
-                        <p class="text-white/80 text-sm mb-1">Toplam Sınıf</p>
-                        <p id="statClassrooms" class="text-3xl font-bold">0</p>
+                <!-- Stats Bar (Kompakt tek satır) -->
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <div class="px-4 py-2 rounded-xl shadow-md flex items-center gap-2" style="background: linear-gradient(135deg, #14b8a6 0%, #10b981 100%); color: white;">
+                        <span class="text-lg">🏫</span>
+                        <span class="font-bold" id="statClassrooms">0</span>
+                        <span class="text-sm" style="opacity: 0.9;">Sınıf</span>
                     </div>
-                    <div class="stat-card secondary animate-fade-in-up delay-100">
-                        <p class="text-white/80 text-sm mb-1">Toplam Öğrenci</p>
-                        <p id="statStudents" class="text-3xl font-bold">0</p>
+                    <div class="px-4 py-2 rounded-xl shadow-md flex items-center gap-2" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+                        <span class="text-lg">👨‍🎓</span>
+                        <span class="font-bold" id="statStudents">0</span>
+                        <span class="text-sm" style="opacity: 0.9;">Öğrenci</span>
                     </div>
-                    <div class="stat-card warning animate-fade-in-up delay-200">
-                        <p class="text-white/80 text-sm mb-1">Aktif Bugün</p>
-                        <p id="statActiveToday" class="text-3xl font-bold">0</p>
+                    <div class="px-4 py-2 rounded-xl shadow-md flex items-center gap-2" style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: white;">
+                        <span class="text-lg">⚡</span>
+                        <span class="font-bold" id="statActiveToday">0</span>
+                        <span class="text-sm" style="opacity: 0.9;">Aktif Bugün</span>
                     </div>
-                    <div class="stat-card success animate-fade-in-up delay-300">
-                        <p class="text-white/80 text-sm mb-1">Tamamlanan Ders</p>
-                        <p id="statCompletedLessons" class="text-3xl font-bold">0</p>
+                    <div class="px-4 py-2 rounded-xl shadow-md flex items-center gap-2" style="background: linear-gradient(135deg, #22c55e 0%, #10b981 100%); color: white;">
+                        <span class="text-lg">✓</span>
+                        <span class="font-bold" id="statCompletedLessons">0</span>
+                        <span class="text-sm" style="opacity: 0.9;">Tamamlanan</span>
                     </div>
                 </div>
 
-                <!-- Recent Activity -->
-                <div class="glass-card rounded-2xl p-6">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">📋 Son Aktiviteler</h3>
-                    <div id="recentActivity" class="space-y-3">
-                        <div class="empty-state">
-                            <div class="icon">📭</div>
-                            <p>Henüz aktivite yok</p>
+                <!-- Sınıflarım Özet -->
+                <div class="glass-card rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            🏫 Sınıflarım
+                        </h3>
+                        <button onclick="TeacherManager?.openCreateClassroomModal()"
+                            class="text-sm text-theme hover:underline font-semibold">
+                            + Yeni Sınıf
+                        </button>
+                    </div>
+                    <div id="dashboardClassroomsList" class="space-y-2">
+                        <div class="empty-state py-8">
+                            <div class="icon text-4xl mb-2">🏫</div>
+                            <p class="text-gray-500">Henüz sınıf oluşturmadınız</p>
+                            <button onclick="TeacherManager?.openCreateClassroomModal()"
+                                class="mt-3 px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:brightness-110 transition">
+                                İlk Sınıfı Oluştur
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button onclick="TeacherManager?.openCreateClassroomModal()"
-                        class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
-                        <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">🏫</span>
-                        <h4 class="font-bold text-gray-800 dark:text-white">Sınıf Oluştur</h4>
-                        <p class="text-sm text-gray-500 mt-1">Yeni bir sınıf oluştur ve öğrenci ekle</p>
-                    </button>
-                    <button onclick="TeacherView.showSection('students')"
-                        class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
-                        <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">👨‍🎓</span>
-                        <h4 class="font-bold text-gray-800 dark:text-white">Öğrenci Listesi</h4>
-                        <p class="text-sm text-gray-500 mt-1">Tüm öğrencilerinizi görüntüle</p>
-                    </button>
-                    <a href="#/" onclick="Router.navigate('/')"
-                        class="glass-card rounded-2xl p-6 text-left hover:border-theme transition-colors group">
-                        <span class="text-3xl mb-3 block group-hover:scale-110 transition-transform">🎮</span>
-                        <h4 class="font-bold text-gray-800 dark:text-white">Ders Platformu</h4>
-                        <p class="text-sm text-gray-500 mt-1">Ana eğitim platformuna git</p>
-                    </a>
+                <!-- Son Aktiviteler -->
+                <div class="glass-card rounded-2xl p-5">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                        📋 Son Aktiviteler
+                    </h3>
+                    <div id="recentActivity" class="space-y-3">
+                        <div class="empty-state py-6">
+                            <div class="icon text-3xl mb-2">📭</div>
+                            <p class="text-gray-400 text-sm">Henüz aktivite yok</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;

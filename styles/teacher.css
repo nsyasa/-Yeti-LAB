@@ -1,7 +1,6 @@
 /* ===========================================
    TEACHER PANEL STYLES
-   Extracted from teacher.html inline styles
-   For SPA integration - no header offset needed
+   Simplified design - no sidebar, using tab navigation
    =========================================== */
 
 /* Background */
@@ -26,7 +25,7 @@ body.dark-mode .teacher-bg {
 }
 
 .glass-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
@@ -35,56 +34,86 @@ body.dark-mode .glass-card {
     border: 1px solid rgba(71, 85, 105, 0.5);
 }
 
-/* Stat Cards */
-.stat-card {
-    background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark, #0d9488) 100%);
-    color: white;
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-    min-width: 200px;
+/* ===========================================
+   Tab Navigation (Sidebar yerine)
+   =========================================== */
+
+.teacher-tab-nav {
+    backdrop-filter: blur(10px);
 }
 
-.stat-card.secondary {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+.teacher-tab-btn {
+    color: #64748b;
+    background: transparent;
 }
 
-.stat-card.warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+.teacher-tab-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #374151;
 }
 
-.stat-card.success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+body.dark-mode .teacher-tab-btn {
+    color: #94a3b8;
 }
 
-/* Classroom Code Box */
-.code-box {
-    font-family: 'Courier New', monospace;
-    font-size: 2rem;
-    font-weight: bold;
-    letter-spacing: 0.5rem;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border: 3px dashed #10b981;
-    padding: 1rem 2rem;
-    border-radius: 1rem;
-    text-align: center;
-    color: #059669;
-    user-select: all;
-    cursor: pointer;
-    transition: all 0.3s;
+body.dark-mode .teacher-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
 }
 
-.code-box:hover {
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-    transform: scale(1.02);
+.teacher-tab-btn.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--theme-color, #10b981);
 }
 
-body.dark-mode .code-box {
-    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-    border-color: #34d399;
-    color: #6ee7b7;
+body.dark-mode .teacher-tab-btn.active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
 }
 
-/* Student List */
+/* ===========================================
+   Stat Badges (Kompakt istatistikler)
+   =========================================== */
+
+.stat-badge {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.stat-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ===========================================
+   Progress Bar
+   =========================================== */
+
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+    border-radius: 9999px;
+    transition: width 0.5s ease-out;
+}
+
+body.dark-mode .progress-bar {
+    background: #475569;
+}
+
+/* ===========================================
+   Student List
+   =========================================== */
+
 .student-item {
     display: flex;
     align-items: center;
@@ -108,93 +137,10 @@ body.dark-mode .student-item:hover {
     background: #475569;
 }
 
-/* Progress Bar */
-.progress-bar {
-    height: 8px;
-    background: #e2e8f0;
-    border-radius: 9999px;
-    overflow: hidden;
-}
+/* ===========================================
+   Modal
+   =========================================== */
 
-.progress-bar .fill {
-    height: 100%;
-    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-    border-radius: 9999px;
-    transition: width 0.5s ease-out;
-}
-
-body.dark-mode .progress-bar {
-    background: #475569;
-}
-
-/* Tab Navigation */
-.tab-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 1rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    background: transparent;
-    color: #64748b;
-}
-
-.tab-btn:hover {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--theme-color);
-}
-
-.tab-btn.active {
-    background: var(--theme-color);
-    color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-}
-
-/* Sidebar */
-.sidebar {
-    width: 280px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-}
-
-body.dark-mode .sidebar {
-    background: rgba(15, 23, 42, 0.95);
-    border-right-color: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 1024px) {
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 64px !important;
-        bottom: 0;
-        z-index: 50;
-        transform: translateX(-100%);
-        height: calc(100vh - 64px) !important;
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .sidebar-overlay {
-        position: fixed;
-        inset: 0;
-        top: 64px;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 40;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s;
-    }
-
-    .sidebar-overlay.active {
-        opacity: 1;
-        pointer-events: auto;
-    }
-}
-
-/* Modal */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -232,8 +178,43 @@ body.dark-mode .modal-content {
     color: white;
 }
 
-/* Loading Spinner */
-.spinner {
+/* ===========================================
+   Classroom Code Box
+   =========================================== */
+
+.code-box {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.3rem;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 2px dashed #10b981;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    color: #059669;
+    user-select: all;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.code-box:hover {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    transform: scale(1.02);
+}
+
+body.dark-mode .code-box {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    border-color: #34d399;
+    color: #6ee7b7;
+}
+
+/* ===========================================
+   Loading Spinner
+   =========================================== */
+
+.spinner,
+.teacher-spinner {
     width: 40px;
     height: 40px;
     border: 4px solid rgba(16, 185, 129, 0.2);
@@ -248,20 +229,26 @@ body.dark-mode .modal-content {
     }
 }
 
-/* Empty State */
+/* ===========================================
+   Empty State
+   =========================================== */
+
 .empty-state {
     text-align: center;
-    padding: 3rem;
+    padding: 2rem;
     color: #94a3b8;
 }
 
 .empty-state .icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
     opacity: 0.5;
 }
 
-/* Animations */
+/* ===========================================
+   Animations
+   =========================================== */
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -278,104 +265,14 @@ body.dark-mode .modal-content {
     animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.delay-100 {
-    animation-delay: 0.1s;
-}
-
-.delay-200 {
-    animation-delay: 0.2s;
-}
-
-.delay-300 {
-    animation-delay: 0.3s;
-}
-
 /* ===========================================
-   SPA-Specific Teacher Styles
+   Teacher View Container
    =========================================== */
 
-/* Teacher View Container */
 #teacher-view-container {
     min-height: 100vh;
 }
 
-/* Teacher Sidebar (SPA version) */
-.teacher-sidebar {
-    width: 280px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    z-index: 40;
-    display: flex;
-    flex-direction: column;
-}
-
-body.dark-mode .teacher-sidebar {
-    background: rgba(15, 23, 42, 0.95);
-    border-right-color: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 1024px) {
-    .teacher-sidebar {
-        transform: translateX(-100%);
-    }
-
-    .teacher-sidebar.open {
-        transform: translateX(0);
-    }
-}
-
-/* Teacher Main Content Area */
-.teacher-main-content {
-    margin-left: 280px;
-    /* Sidebar width */
-    transition: margin-left 0.3s;
-}
-
-@media (max-width: 1024px) {
-    .teacher-main-content {
-        margin-left: 0;
-        /* Mobile: no margin, sidebar overlays */
-    }
-}
-
-/* Teacher Nav Items */
-.teacher-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    transition: all 0.2s;
-    text-align: left;
-    width: 100%;
-}
-
-.teacher-nav-item:hover {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-body.dark-mode .teacher-nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.teacher-nav-item.active,
-.teacher-nav-item[data-active='true'] {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--theme-color);
-}
-
-/* Teacher Spinner */
-.teacher-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(16, 185, 129, 0.2);
-    border-top-color: #10b981;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+.teacher-content {
+    /* Full width content, no sidebar margin */
 }
