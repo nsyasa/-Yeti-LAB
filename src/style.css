@@ -1,4 +1,13 @@
-/* Tailwind Directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Main CSS Entry Point */
+
+/* Tailwind v4 Setup */
+@import 'tailwindcss';
+
+/* Explicit Sources for Tailwind Scanning */
+@source "../auth.html";
+@source "../index.html";
+@source "../src/**/*.js";
+@source "../modules/**/*.js";
+
+/* Custom CSS Imports */
+/* Note: Vite handles @import inlining */
