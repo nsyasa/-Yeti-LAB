@@ -8,18 +8,16 @@ const AdminView = {
     scriptsLoaded: false,
 
     /**
-     * Template - Ana layout
+     * Template - Ana layout (main-header kullanılıyor, kendi header'ı yok)
      */
     template() {
         return `
-            <div id="admin-view" class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-                <!-- Top Bar -->
-                <nav class="bg-theme text-white shadow-md sticky top-0 z-50 transition-colors duration-500">
-                    ${AdminLayout.renderHeader()}
-                </nav>
-
+            <div id="admin-view" class="admin-bg min-h-screen">
+                <!-- Tab Navigation (main-header altında) -->
+                ${AdminLayout.renderTabNav()}
+                
                 <!-- Main Content -->
-                <div class="max-w-7xl mx-auto w-full px-4 py-8 flex-grow">
+                <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6">
                     <!-- Loading State -->
                     <div id="adminLoadingState" class="flex items-center justify-center h-64">
                         <div class="text-center">
@@ -303,14 +301,7 @@ const AdminView = {
         }
 
         // Update tab active state
-        document.querySelectorAll('.admin-tab-btn').forEach((tab) => {
-            tab.classList.remove('active', 'bg-white/20');
-            tab.classList.add('text-gray-300', 'hover:text-white');
-            if (tab.dataset && tab.dataset.section === section) {
-                tab.classList.add('active', 'bg-white/20');
-                tab.classList.remove('text-gray-300', 'hover:text-white');
-            }
-        });
+        AdminLayout.updateActiveTab(section);
 
         // Trigger content render for sections
         this.renderSectionContent(section);
@@ -361,12 +352,12 @@ const AdminView = {
     },
 
     /**
-     * Main layout'u gizle (admin kendi layout'unu kullanıyor)
+     * Hide footer and mobile nav (but keep main-header visible)
      */
     hideMainLayout() {
-        // Hide header
-        const header = document.getElementById('main-header');
-        if (header) header.style.display = 'none';
+        // KEEP main-header visible (index style top bar)
+        // const header = document.getElementById('main-header');
+        // if (header) header.style.display = 'none';
 
         // Hide footer
         const footer = document.getElementById('main-footer');
@@ -388,15 +379,14 @@ const AdminView = {
     },
 
     /**
-     * Main layout'u göster
+     * Show footer again (main-header is already visible)
      */
     showMainLayout() {
-        const header = document.getElementById('main-header');
-        if (header) header.style.display = '';
-
+        // Footer göster
         const footer = document.getElementById('main-footer');
         if (footer) footer.style.display = '';
 
+        // Mobile nav göster
         const mobileNav = document.getElementById('mobile-bottom-nav');
         if (mobileNav) mobileNav.style.display = '';
     },

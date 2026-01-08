@@ -1,97 +1,81 @@
 /**
  * AdminLayout - Admin panel header ve ortak layout bileşenleri
+ * Sadeleştirilmiş versiyon - index main-header kullanılıyor
  */
 const AdminLayout = {
     /**
-     * Header render - Top navigation bar
+     * Tab Navigation - Sadece tab'lar ve aksiyonlar (header yerine)
      */
-    renderHeader() {
+    renderTabNav() {
         return `
-            <!-- Row 1: Logo, Autosave Status -->
-            <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center border-b border-white/10">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center">
-                        <span class="text-2xl mr-2">🏔️</span>
-                        <h1 class="text-xl font-bold" style="letter-spacing: -0.03em">
-                            Yeti <span style="font-weight: 900">LAB</span>
-                        </h1>
+            <div class="admin-tab-nav bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div class="flex items-center justify-between h-14">
+                        <!-- Admin Label -->
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-bold px-3 py-1 rounded-full" style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white;">
+                                🔧 Yönetim Paneli
+                            </span>
+                            
+                            <!-- Tab Buttons -->
+                            <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                                <button
+                                    onclick="AdminView.showSection('projects')"
+                                    data-section="projects"
+                                    class="admin-tab-btn px-3 py-1.5 rounded-md text-sm font-semibold transition"
+                                >
+                                    📚 Dersler
+                                </button>
+                                <button
+                                    onclick="AdminView.showSection('phases')"
+                                    data-section="phases"
+                                    class="admin-tab-btn px-3 py-1.5 rounded-md text-sm font-semibold transition"
+                                >
+                                    📁 Fazlar
+                                </button>
+                                <button
+                                    onclick="AdminView.showSection('components')"
+                                    data-section="components"
+                                    class="admin-tab-btn px-3 py-1.5 rounded-md text-sm font-semibold transition"
+                                >
+                                    🔧 Devre
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center gap-2">
+                            <!-- Autosave Status -->
+                            <div id="autosave-status" 
+                                 class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold"
+                                 style="background: rgba(16, 185, 129, 0.1); color: #059669;">
+                                <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                <span>Hazır</span>
+                            </div>
+                            
+                            <button onclick="admin.undo()" id="btn-undo"
+                                class="hidden text-sm px-3 py-1.5 rounded-lg font-semibold text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                                title="Son silinen öğeyi geri al">
+                                ↩️
+                            </button>
+                            <button onclick="admin.downloadBackup()"
+                                class="hidden sm:inline-flex text-sm px-3 py-1.5 rounded-lg font-semibold transition"
+                                style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;"
+                                title="Tüm verileri JSON olarak indir">
+                                📥 Yedekle
+                            </button>
+                            <button onclick="admin.saveData()"
+                                class="text-sm px-3 py-1.5 rounded-lg font-semibold transition"
+                                style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white;">
+                                💾 Kaydet
+                            </button>
+                            <button onclick="AdminView.handleLogout()"
+                                class="text-sm p-1.5 rounded-lg font-semibold transition text-gray-500 hover:bg-red-100 hover:text-red-600"
+                                title="Çıkış Yap">
+                                🚪
+                            </button>
+                        </div>
                     </div>
-                    <span class="text-gray-300">|</span>
-                    <span class="font-medium">Yönetim Paneli</span>
-                </div>
-
-                <!-- Kayıt Durumu & Kullanıcı -->
-                <div class="flex items-center gap-4">
-                    <div
-                        id="autosave-status"
-                        class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 font-bold text-sm"
-                    >
-                        <span class="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                        <span>Hazır</span>
-                    </div>
-                    <span id="admin-user-email" class="text-gray-300 text-sm"></span>
-                    <a href="#/" onclick="AdminView.unmount(); Router.navigate('/');" 
-                       class="text-gray-300 hover:text-white transition text-sm">← Siteye Dön</a>
-                </div>
-            </div>
-
-            <!-- Row 2: Tabs & Actions -->
-            <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
-                <!-- Sekmeler -->
-                <div class="flex bg-white/10 rounded-lg p-1 gap-1">
-                    <button
-                        onclick="AdminView.showSection('projects')"
-                        data-section="projects"
-                        class="admin-tab-btn px-4 py-1.5 rounded-md text-sm font-bold transition active bg-white/20"
-                    >
-                        📚 Dersler
-                    </button>
-                    <button
-                        onclick="AdminView.showSection('phases')"
-                        data-section="phases"
-                        class="admin-tab-btn px-4 py-1.5 rounded-md text-sm font-bold transition text-gray-300 hover:text-white"
-                    >
-                        📁 Fazlar
-                    </button>
-                    <button
-                        onclick="AdminView.showSection('components')"
-                        data-section="components"
-                        class="admin-tab-btn px-4 py-1.5 rounded-md text-sm font-bold transition text-gray-300 hover:text-white"
-                    >
-                        🔧 Devre Elemanları
-                    </button>
-                </div>
-
-                <!-- Aksiyonlar -->
-                <div class="flex items-center gap-2">
-                    <button
-                        onclick="admin.undo()"
-                        id="btn-undo"
-                        class="hidden bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded font-bold transition text-sm"
-                        title="Son silinen öğeyi geri al"
-                    >
-                        ↩️ Geri Al
-                    </button>
-                    <button
-                        onclick="admin.downloadBackup()"
-                        class="bg-blue-500 hover:bg-blue-600 px-4 py-1.5 rounded font-bold transition text-sm"
-                        title="Tüm verileri JSON olarak indir"
-                    >
-                        📥 Yedekle
-                    </button>
-                    <button
-                        onclick="admin.saveData()"
-                        class="bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded font-bold transition text-sm"
-                    >
-                        💾 Kaydet
-                    </button>
-                    <button
-                        onclick="AdminView.handleLogout()"
-                        class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded font-bold transition text-sm"
-                        title="Çıkış Yap"
-                    >
-                        🚪
-                    </button>
                 </div>
             </div>
         `;
@@ -253,10 +237,30 @@ const AdminLayout = {
      * Kullanıcı bilgisini güncelle
      */
     updateUserInfo() {
-        const emailEl = document.getElementById('admin-user-email');
-        if (emailEl && window.Auth && Auth.currentUser) {
-            emailEl.textContent = Auth.currentUser.email;
-        }
+        // Main header'daki kullanıcı bilgileri Navbar tarafından yönetiliyor
+        console.log('[AdminLayout] User info managed by main navbar');
+    },
+
+    /**
+     * Tab aktif durumunu güncelle
+     */
+    updateActiveTab(section) {
+        document.querySelectorAll('.admin-tab-btn').forEach((tab) => {
+            // Reset all tabs
+            tab.classList.remove('bg-theme', 'text-white');
+            tab.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-600');
+
+            // Activate current tab
+            if (tab.dataset && tab.dataset.section === section) {
+                tab.classList.add('bg-theme', 'text-white');
+                tab.classList.remove(
+                    'text-gray-600',
+                    'dark:text-gray-300',
+                    'hover:bg-gray-200',
+                    'dark:hover:bg-gray-600'
+                );
+            }
+        });
     },
 
     /**
@@ -276,8 +280,5 @@ const AdminLayout = {
         }
     },
 };
-
-// NOT: AdminView.handleLogout bağlaması AdminView.js içinde yapılıyor
-// Çünkü AdminLayout, AdminView'den önce yükleniyor
 
 window.AdminLayout = AdminLayout;

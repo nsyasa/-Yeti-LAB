@@ -1,3 +1,45 @@
+/* ===========================================
+   ADMIN PANEL STYLES
+   Simplified design - uses main-header, has tab navigation
+   =========================================== */
+
+/* Admin Background */
+.admin-bg {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+body.dark-mode .admin-bg {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+/* Admin Tab Navigation */
+.admin-tab-nav {
+    backdrop-filter: blur(10px);
+}
+
+.admin-tab-btn {
+    color: #64748b;
+    background: transparent;
+}
+
+.admin-tab-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .admin-tab-btn {
+    color: #94a3b8;
+}
+
+body.dark-mode .admin-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-tab-btn.bg-theme {
+    background: var(--theme-color, #14b8a6) !important;
+    color: white !important;
+}
+
 body {
     font-family:
         'Nunito',
