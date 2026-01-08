@@ -12,7 +12,7 @@ const PhaseManager = {
         // NEW: Supabase IDs for real-time sync
         getCourseId: () => null, // Function to get Supabase course UUID
         getPhaseIdMap: () => ({}), // Function to get phase index to UUID map
-        setPhaseId: (index, id) => {}, // Function to set phase UUID after creation
+        setPhaseId: (_index, _id) => {}, // Function to set phase UUID after creation
     },
 
     // Save timer for debounced Supabase sync

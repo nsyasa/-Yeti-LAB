@@ -1,4 +1,4 @@
-/* global admin */
+/* global EL */
 /**
  * Course Settings Module for Admin Panel
  * Handles course metadata (icon, title, description) editing and preview.
@@ -120,7 +120,7 @@ const CourseSettings = {
 
         container.innerHTML = '';
 
-        courseConfig.forEach((tab, index) => {
+        courseConfig.forEach((tab, _index) => {
             // Get current label (custom or default)
             const currentLabel = customTabNames[tab.id] || tab.label;
 

@@ -206,7 +206,7 @@ const ProjectManager = {
 
         // Code Mode Logic
         const codeVal = p.code || '';
-        const isImg = codeVal.match(/\.(jpeg|jpg|gif|png)$/) != null;
+        const isImg = codeVal.match(/\.(jpeg|jpg|gif|png)$/) !== null;
         const codeModeEl = document.getElementById('p-code-mode');
         if (codeModeEl) {
             codeModeEl.value = isImg ? 'image' : 'text';
@@ -352,7 +352,7 @@ const ProjectManager = {
                 const hs = hotspotsEl.value;
                 p.hotspots = hs ? JSON.parse(hs) : null;
             }
-        } catch (e) {
+        } catch (_e) {
             // Error parsing hotspots JSON
         }
 

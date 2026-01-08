@@ -394,8 +394,8 @@ const admin = {
         if (typeof ComponentManager !== 'undefined') {
             ComponentManager.init(admin.currentData.componentInfo, {
                 onUpdate: admin.triggerAutoSave,
-                onLoad: (key) => {
-                    admin.currentComponentKey = key;
+                onLoad: (componentKey) => {
+                    admin.currentComponentKey = componentKey;
                 }, // Sync active key
             });
         }
@@ -775,7 +775,7 @@ const admin = {
         const phases = admin.currentData.phases || [];
         const ids = new Set();
 
-        projects.forEach((p, index) => {
+        projects.forEach((p, _index) => {
             // 1. ID Kontrolü
             if (ids.has(p.id)) {
                 errors.push(`HATA: Ders ID çakışması! ID: ${p.id} (Ders: ${p.title})`);

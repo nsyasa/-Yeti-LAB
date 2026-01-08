@@ -231,7 +231,7 @@ const app = {
             app.updateUserUI(Auth.getUserInfo());
 
             // Auth değişikliklerini dinle
-            Auth.onAuthStateChange(async (event, session, role) => {
+            Auth.onAuthStateChange(async (event, _session, _role) => {
                 app.updateUserUI(Auth.getUserInfo());
 
                 // Yeni giriş yapıldıysa profil kontrolü ve progress yeniden yükle
@@ -610,7 +610,7 @@ const app = {
             route === 'admin' || route === 'admin-projects' || route === 'admin-phases' || route === 'admin-components';
         const isProfileRoute = route === 'profile' || route === 'profile-wizard';
         const isStudentDashboardRoute = route === 'student-dashboard';
-        const isHomeRoute = route === 'home' || route === 'course' || route === 'project';
+        const _isHomeRoute = route === 'home' || route === 'course' || route === 'project';
 
         // ===== ViewManager ile akıllı unmount =====
         // Sadece farklı bir view grubuna geçerken unmount et
@@ -1187,8 +1187,8 @@ const app = {
         document.getElementById('project-icon').innerText = p.icon;
 
         // Reset UI
-        ['simCanvas', 'interactive-area', 'interactive-info', 'chart-card'].forEach((id) =>
-            document.getElementById(id).classList.add('hidden')
+        ['simCanvas', 'interactive-area', 'interactive-info', 'chart-card'].forEach((elementId) =>
+            document.getElementById(elementId).classList.add('hidden')
         );
         document.getElementById('simControls').innerHTML = '';
 
