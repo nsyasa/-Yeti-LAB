@@ -30,21 +30,38 @@ const app = {
     },
 
     currentProject: null,
-    chartInstance: null,
-    simLoop: null,
+
+    // Simulation state & control (delegated to modules/simulation/simController.js)
+    get chartInstance() {
+        return window.SimController?.chartInstance || null;
+    },
+    get simLoop() {
+        return window.SimController?.loop || null;
+    },
+    get simState() {
+        return (
+            window.SimController?.state || {
+                val1: 0,
+                val2: 0,
+                active: false,
+                timer: 0,
+                angle: 0,
+                dir: 2,
+                lastTick: Date.now(),
+            }
+        );
+    },
     lastFrameTime: 0,
-    targetFPS: 30, // Frame limit for performance
-    simState: { val1: 0, val2: 0, active: false, timer: 0, angle: 0, dir: 2, lastTick: Date.now() },
+    targetFPS: 30,
 
     // Performance: Stop simulation loop
     stopSimulation: () => {
+        if (window.SimController?.stop) {
+            return window.SimController.stop();
+        }
+        // Fallback
         if (app.simLoop) {
             cancelAnimationFrame(app.simLoop);
-            app.simLoop = null;
-        }
-        if (app.chartInstance) {
-            app.chartInstance.destroy();
-            app.chartInstance = null;
         }
     },
 
@@ -704,75 +721,39 @@ const app = {
         UI.renderTabs(project, app.state.componentInfo, app.state.currentCourseKey, app.progress);
     },
 
+    // Simulation setup & loop (delegated to modules/simulation/simController.js)
     setupSimulation: (type) => {
+        if (window.SimController?.setup) {
+            // Set current project for chart decision
+            window.SimController.setProject(app.currentProject);
+            return window.SimController.setup(type);
+        }
+        // Fallback: basic setup
+        console.warn('[App] SimController not loaded, using fallback');
         const cvs = document.getElementById('simCanvas');
-        const ctx = cvs.getContext('2d');
+        if (!cvs) return;
         cvs.width = 500;
         cvs.height = 350;
-
-        // Get Current Theme Color from CSS
-        const themeColor =
-            getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim() || '#00979C';
-        app.simState.themeColor = themeColor;
-
-        const chartCtx = document.getElementById('dataChart').getContext('2d');
-        if (app.chartInstance) app.chartInstance.destroy();
-        if (app.currentProject.hasGraph) {
-            app.chartInstance = new Chart(chartCtx, {
-                type: 'line',
-                data: {
-                    labels: Array(20).fill(''),
-                    datasets: [{ data: Array(20).fill(0), borderColor: themeColor, tension: 0.3 }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { display: true } },
-                },
-            });
-        }
-
-        // Helper functions for Simulations
-        app.setControls = (html) => (document.getElementById('simControls').innerHTML = html);
-
-        // Modüler Yapı Çağrısı
-        if (window.Simulations && window.Simulations[type] && window.Simulations[type].setup) {
+        if (window.Simulations?.[type]?.setup) {
             window.Simulations[type].setup(app);
-        } else {
-            app.setControls('<div class="text-red-500 text-xs">Simülasyon Bulunamadı: ' + type + '</div>');
         }
-
-        app.simLoop = requestAnimationFrame(() => app.runSimLoop(ctx, type));
     },
 
-    runSimLoop: (ctx, type) => {
-        const now = Date.now();
-        const frameInterval = 1000 / app.targetFPS;
-
-        // Throttle to target FPS
-        if (now - app.lastFrameTime < frameInterval) {
-            app.simLoop = requestAnimationFrame(() => app.runSimLoop(ctx, type));
-            return;
+    runSimLoop: (_ctx, type) => {
+        // This is now handled by SimController internally
+        // Kept for backward compatibility if called directly
+        if (window.SimController?._runLoop) {
+            return window.SimController._runLoop(_ctx, type);
         }
-        app.lastFrameTime = now;
+    },
 
-        ctx.clearRect(0, 0, 500, 350);
-        let val = 0;
-
-        // Modüler Çizim Çağrısı
-        if (window.Simulations && window.Simulations[type] && window.Simulations[type].draw) {
-            val = window.Simulations[type].draw(ctx, app, now);
+    // Helper for simulations to set controls
+    setControls: (html) => {
+        if (window.SimController?.setControls) {
+            return window.SimController.setControls(html);
         }
-
-        if (app.currentProject && app.currentProject.hasGraph && app.chartInstance && val !== undefined) {
-            const d = app.chartInstance.data.datasets[0].data;
-            d.shift();
-            d.push(val);
-            app.chartInstance.update('none');
-        }
-        app.simLoop = requestAnimationFrame(() => app.runSimLoop(ctx, type));
+        const el = document.getElementById('simControls');
+        if (el) el.innerHTML = html;
     },
 
     toggleSidebar: () => UI.toggleSidebar(),
