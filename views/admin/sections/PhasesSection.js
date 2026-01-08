@@ -70,8 +70,8 @@ const PhasesSection = {
                 <div class="flex-grow">
                     <input
                         type="text"
-                        value="${this.escapeHtml(phase.name || '')}"
-                        onchange="PhaseManager.updateName(${phase.id}, this.value)"
+                        value="${this.escapeHtml(phase.name || phase.title || '')}"
+                        onchange="PhaseManager.updateName(${index}, this.value)"
                         class="font-bold text-lg bg-transparent border-b border-transparent hover:border-gray-300 focus:border-theme focus:outline-none transition w-full"
                         placeholder="Faz adı..."
                     />
@@ -102,7 +102,7 @@ const PhasesSection = {
                     `
                             : ''
                     }
-                    <button onclick="PhaseManager.delete(${phase.id})" 
+                    <button onclick="PhaseManager.deleteByIndex(${index})" 
                             class="p-2 hover:bg-red-100 text-red-500 rounded" title="Sil">
                         🗑️
                     </button>

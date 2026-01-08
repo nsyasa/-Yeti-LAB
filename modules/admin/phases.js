@@ -60,26 +60,39 @@ const PhaseManager = {
 
         try {
             phases.forEach((phase, index) => {
-                const activeClass =
-                    index === this.currentPhaseIndex
-                        ? 'bg-amber-50 border-amber-500'
-                        : 'hover:bg-gray-50 border-transparent';
+                // SPA Mode: Use PhasesSection card renderer if available
+                if (window.PhasesSection && PhasesSection.renderPhaseCard) {
+                    const phaseData = {
+                        id: index, // Use index as ID
+                        name: phase?.title || `Bölüm ${index}`,
+                        title: phase?.title || `Bölüm ${index}`,
+                        icon: phase?.icon || '📁',
+                        color: phase?.color || 'gray',
+                        projectCount: 0, // TODO: Calculate from projects
+                    };
+                    list.innerHTML += PhasesSection.renderPhaseCard(phaseData, index, phases.length);
+                } else {
+                    // Legacy Mode: Old rendering for admin.html
+                    const activeClass =
+                        index === this.currentPhaseIndex
+                            ? 'bg-amber-50 border-amber-500'
+                            : 'hover:bg-gray-50 border-transparent';
 
-                // Get display values with fallbacks
-                const icon = phase?.icon || '📁';
-                const title = phase?.title || `Bölüm ${index}`;
-                const desc = phase?.description || '';
+                    const icon = phase?.icon || '📁';
+                    const title = phase?.title || `Bölüm ${index}`;
+                    const desc = phase?.description || '';
 
-                list.innerHTML += `
-                    <div onclick="PhaseManager.load(${index})" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
-                        <div class="flex items-center">
-                            <span class="w-3 h-3 rounded-full bg-${phase?.color || 'gray'}-500 mr-3"></span>
-                            <div>
-                                <div class="font-bold text-sm text-gray-700">${icon} ${title}</div>
-                                <div class="text-xs text-gray-400">${desc}</div>
+                    list.innerHTML += `
+                        <div onclick="PhaseManager.load(${index})" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
+                            <div class="flex items-center">
+                                <span class="w-3 h-3 rounded-full bg-${phase?.color || 'gray'}-500 mr-3"></span>
+                                <div>
+                                    <div class="font-bold text-sm text-gray-700">${icon} ${title}</div>
+                                    <div class="text-xs text-gray-400">${desc}</div>
+                                </div>
                             </div>
-                        </div>
-                    </div>`;
+                        </div>`;
+                }
             });
         } catch (e) {
             console.error('Error rendering phase list:', e);
@@ -248,6 +261,110 @@ const PhaseManager = {
     // --- GET CURRENT INDEX (for external access) ---
     getCurrentIndex() {
         return this.currentPhaseIndex;
+    },
+
+    // === SPA-COMPATIBLE API METHODS ===
+    // These methods are called by PhasesSection.js inline editor
+
+    /**
+     * Update phase name by index (called from inline input)
+     * @param {number} indexOrId - Phase index (in SPA, phase.id is the index)
+     * @param {string} newName - New phase name
+     */
+    updateName(indexOrId, newName) {
+        const phases = this.config.getPhases();
+        if (!phases || !phases[indexOrId]) return;
+
+        phases[indexOrId].title = newName;
+        // Don't re-render to avoid losing focus on input
+
+        if (this.config.onUpdate) this.config.onUpdate();
+        this.scheduleSaveToSupabase(indexOrId, phases[indexOrId]);
+    },
+
+    /**
+     * Move phase up (swap with previous)
+     */
+    async moveUp(index) {
+        const phases = this.config.getPhases();
+        if (!phases || index <= 0) return;
+
+        // Swap phases
+        [phases[index - 1], phases[index]] = [phases[index], phases[index - 1]];
+
+        this.renderList();
+        if (this.config.onUpdate) this.config.onUpdate();
+
+        // Save both phases to Supabase
+        await Promise.all([
+            this.savePhaseToSupabase(index - 1, phases[index - 1]),
+            this.savePhaseToSupabase(index, phases[index]),
+        ]);
+    },
+
+    /**
+     * Move phase down (swap with next)
+     */
+    async moveDown(index) {
+        const phases = this.config.getPhases();
+        if (!phases || index >= phases.length - 1) return;
+
+        // Swap phases
+        [phases[index], phases[index + 1]] = [phases[index + 1], phases[index]];
+
+        this.renderList();
+        if (this.config.onUpdate) this.config.onUpdate();
+
+        // Save both phases to Supabase
+        await Promise.all([
+            this.savePhaseToSupabase(index, phases[index]),
+            this.savePhaseToSupabase(index + 1, phases[index + 1]),
+        ]);
+    },
+
+    /**
+     * Delete phase by index (SPA-compatible version)
+     * Overloaded: if called with number, treats it as index
+     */
+    async deleteByIndex(index) {
+        const phases = this.config.getPhases();
+        const projects = this.config.getProjects();
+
+        if (!phases || index < 0 || index >= phases.length) return null;
+
+        const projectsInPhase = projects ? projects.filter((p) => p.phase === index).length : 0;
+
+        if (projectsInPhase > 0) {
+            if (
+                !confirm(
+                    `Bu fazda ${projectsInPhase} ders var! Silmek, bu derslerin görünmez olmasına neden olur. Devam?`
+                )
+            ) {
+                return null;
+            }
+        } else {
+            if (!confirm('Bu fazı silmek istediğinize emin misiniz?')) return null;
+        }
+
+        // Delete from Supabase if we have the UUID
+        const phaseIdMap = this.config.getPhaseIdMap?.();
+        const phaseId = phaseIdMap?.[index];
+        if (phaseId && typeof SupabaseSync !== 'undefined') {
+            const deleted = await SupabaseSync.deletePhaseFromSupabase(phaseId);
+            if (!deleted) {
+                alert('Supabase silme hatası. Yerel veri silinmedi.');
+                return null;
+            }
+        }
+
+        const deletedPhase = phases[index];
+        phases.splice(index, 1);
+        this.currentPhaseIndex = null;
+
+        this.renderList();
+        if (this.config.onUpdate) this.config.onUpdate();
+
+        return deletedPhase;
     },
 };
 

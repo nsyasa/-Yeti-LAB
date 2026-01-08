@@ -95,7 +95,7 @@ const ComponentsSection = {
                             class="p-1.5 hover:bg-gray-200 rounded text-sm" title="Düzenle">
                         ✏️
                     </button>
-                    <button onclick="event.stopPropagation(); ComponentManager.delete('${comp.id}')" 
+                    <button onclick="event.stopPropagation(); ComponentManager.deleteById('${comp.id}')" 
                             class="p-1.5 hover:bg-red-100 text-red-500 rounded text-sm" title="Sil">
                         🗑️
                     </button>
