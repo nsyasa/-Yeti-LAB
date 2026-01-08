@@ -158,9 +158,17 @@ const TeacherView = {
 
     /**
      * Teacher modül bağımlılıklarını yükle
+     * In production (Vite bundle), these are already loaded via main.js imports
      */
     async loadDependencies() {
         console.log('[TeacherView] Loading dependencies...');
+
+        // Check if already bundled (Vite production build)
+        // If TeacherLayout exists, scripts are already loaded via bundle
+        if (window.TeacherLayout && window.TeacherManager) {
+            console.log('[TeacherView] Dependencies already bundled, skipping dynamic load');
+            return;
+        }
 
         const scripts = [
             'views/teacher/TeacherLayout.js',

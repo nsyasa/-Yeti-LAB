@@ -165,9 +165,16 @@ const ViewLoader = {
 
     /**
      * Load admin-related scripts
+     * In production (Vite bundle), these are already loaded via main.js
      */
     loadAdminScripts: async () => {
         console.log('[ViewLoader] Loading admin scripts...');
+
+        // Check if already bundled (Vite production build)
+        if (window.AdminView && window.AdminLayout && window.ProjectManager) {
+            console.log('[ViewLoader] Admin scripts already bundled, skipping');
+            return;
+        }
 
         const scripts = [
             // Constants
@@ -263,9 +270,16 @@ const ViewLoader = {
 
     /**
      * Load teacher-related scripts
+     * In production (Vite bundle), these are already loaded via main.js
      */
     loadTeacherScripts: async () => {
         console.log('[ViewLoader] Loading teacher scripts...');
+
+        // Check if already bundled (Vite production build)
+        if (window.TeacherView && window.TeacherLayout && window.TeacherManager) {
+            console.log('[ViewLoader] Teacher scripts already bundled, skipping');
+            return;
+        }
 
         const scripts = [
             'views/teacher/TeacherLayout.js',
@@ -314,9 +328,16 @@ const ViewLoader = {
 
     /**
      * Load profile-related scripts
+     * In production (Vite bundle), these are already loaded via main.js
      */
     loadProfileScripts: async () => {
         console.log('[ViewLoader] Loading profile scripts...');
+
+        // Check if already bundled (Vite production build)
+        if (window.ProfileView && window.Profile && window.turkeyData) {
+            console.log('[ViewLoader] Profile scripts already bundled, skipping');
+            return;
+        }
 
         const scripts = [
             'modules/constants.js',

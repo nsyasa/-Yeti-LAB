@@ -168,9 +168,17 @@ const AdminView = {
 
     /**
      * Admin modül bağımlılıklarını yükle
+     * In production (Vite bundle), these are already loaded via main.js imports
      */
     async loadDependencies() {
         console.log('[AdminView] Loading dependencies...');
+
+        // Check if already bundled (Vite production build)
+        // If AdminLayout exists, scripts are already loaded via bundle
+        if (window.AdminLayout && window.CourseManager && window.ProjectManager) {
+            console.log('[AdminView] Dependencies already bundled, skipping dynamic load');
+            return;
+        }
 
         const scripts = [
             // Core admin modules (already exist)

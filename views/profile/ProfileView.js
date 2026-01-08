@@ -41,9 +41,18 @@ const ProfileView = {
 
     /**
      * Load required dependencies (scripts)
+     * In production (Vite bundle), these are already loaded via main.js imports
      */
     async loadDependencies() {
         if (this.scriptsLoaded) return;
+
+        // Check if already bundled (Vite production build)
+        // If Profile and turkeyData exist, scripts are already loaded via bundle
+        if (window.Profile && window.turkeyData && window.Validators) {
+            console.log('[ProfileView] Dependencies already bundled, skipping dynamic load');
+            this.scriptsLoaded = true;
+            return;
+        }
 
         const scripts = [
             'modules/constants.js',
