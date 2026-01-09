@@ -921,3 +921,17 @@ body.dark-mode .course-card.is-loading::after {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* Neuro-UX Enhancements */
+.bg-pattern-tech {
+    background-color: #ffffff;
+    background-image: radial-gradient(#f3f4f6 2px, transparent 2px), radial-gradient(#f3f4f6 2px, transparent 2px);
+    background-size: 24px 24px;
+    background-position:
+        0 0,
+        12px 12px;
+}
+
+.course-card:hover .bg-pattern-tech {
+    background-image: radial-gradient(#e5e7eb 2px, transparent 2px), radial-gradient(#e5e7eb 2px, transparent 2px);
+}

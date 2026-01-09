@@ -178,7 +178,7 @@ const UI = {
             // CTA button with dynamic text
             const ctaHtml = `
                 <div class="mt-auto pt-4 w-full relative z-10">
-                    <span class="card-btn block w-full py-3 px-4 ${percentage > 0 ? 'bg-theme text-white' : 'bg-theme/10 text-theme'} rounded-lg font-bold border-2 ${percentage > 0 ? 'border-theme' : 'border-theme/20'} group-hover:bg-theme group-hover:text-white group-hover:border-theme transition-all text-center">
+                    <span class="card-btn block w-full py-3 px-4 ${percentage > 0 ? 'bg-theme text-white border-2 border-theme' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 border-0'} rounded-lg font-bold group-hover:opacity-90 transition-all text-center">
                         ${ctaText} ${percentage > 0 ? '→' : '🚀'}
                     </span>
                 </div>
@@ -194,7 +194,7 @@ const UI = {
             `;
 
             container.innerHTML += `
-                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-xl transition-shadow" data-course="${key}">
+                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white bg-pattern-tech rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-xl transition-shadow" data-course="${key}">
                     ${levelBadgeHtml}
                     ${peekYetiHtml}
                     <div class="card-icon text-5xl mb-4 bg-gray-50 p-5 rounded-full group-hover:scale-110 transition-transform">
