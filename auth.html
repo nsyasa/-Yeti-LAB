@@ -267,17 +267,20 @@
 
             <!-- Main Content -->
             <div class="flex-grow flex items-center justify-center px-3 py-2 relative z-10">
-                <!-- Yeti Mascot - Desktop only, pointing at form -->
-                <div class="hidden lg:block absolute left-8 xl:left-16 bottom-1/4 pointer-events-none">
+                <!-- Yeti Mascot - Points at login button -->
+                <!-- Mobile: Bottom right fixed/absolute | Desktop: Center right absolute -->
+                <div
+                    class="absolute z-0 right-2 bottom-2 w-24 opacity-80 md:opacity-100 md:w-auto md:right-8 xl:right-16 md:top-1/2 md:bottom-auto md:-translate-y-1/2 pointer-events-none"
+                >
                     <div class="relative">
-                        <!-- Circular background to hide checkered pattern -->
+                        <!-- Circular background -->
                         <div
                             class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full scale-75"
                         ></div>
                         <img
                             src="img/yeti-pointing.png"
                             alt="Yeti"
-                            class="w-32 xl:w-40 h-auto animate-bounce-slow relative z-10"
+                            class="w-full md:w-28 lg:w-36 xl:w-40 h-auto animate-bounce-slow relative z-10 transform -scale-x-100"
                         />
                     </div>
                 </div>
