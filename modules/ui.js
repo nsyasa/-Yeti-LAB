@@ -87,6 +87,53 @@ const UI = {
         const isStudent = typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent;
         const progressData = typeof Progress !== 'undefined' ? Progress.data : {};
 
+        // Dynamic CTA texts based on course type
+        const ctaTexts = {
+            default: ['Keşfet', 'Başla', 'Hadi Başla!'],
+            robot: ['Robotunu Kodla!', 'Maceraya Atıl', 'İlk Robotunu Yap'],
+            scratch: ['Oyun Yapmaya Başla!', 'Hayal Et & Kodla', 'Yaratıcılığını Göster'],
+            web: ['İlk Siteni Yap!', 'Tasarlamaya Başla', 'Kodlamaya Başla'],
+            python: ['Python Yolculuğu', 'Kodlamaya Başla', 'Programcı Ol'],
+            inProgress: ['Kaldığın Yerden Devam Et', 'Devam Et →', 'Hadi Bitir!'],
+            completed: ['Tekrar Çöz', 'Ustalaş', 'Pekiştir'],
+        };
+
+        // Get appropriate CTA based on course key and progress
+        const getCTA = (key, percentage) => {
+            if (percentage >= 100) {
+                return ctaTexts.completed[Math.floor(Math.random() * ctaTexts.completed.length)];
+            }
+            if (percentage > 0) {
+                return ctaTexts.inProgress[Math.floor(Math.random() * ctaTexts.inProgress.length)];
+            }
+
+            // Match course type
+            const keyLower = key.toLowerCase();
+            if (keyLower.includes('mbot') || keyLower.includes('robot') || keyLower.includes('arduino')) {
+                return ctaTexts.robot[Math.floor(Math.random() * ctaTexts.robot.length)];
+            }
+            if (keyLower.includes('scratch') || keyLower.includes('oyun')) {
+                return ctaTexts.scratch[Math.floor(Math.random() * ctaTexts.scratch.length)];
+            }
+            if (keyLower.includes('web') || keyLower.includes('html') || keyLower.includes('css')) {
+                return ctaTexts.web[Math.floor(Math.random() * ctaTexts.web.length)];
+            }
+            if (keyLower.includes('python') || keyLower.includes('kod')) {
+                return ctaTexts.python[Math.floor(Math.random() * ctaTexts.python.length)];
+            }
+            return ctaTexts.default[Math.floor(Math.random() * ctaTexts.default.length)];
+        };
+
+        // Get level based on progress
+        const getLevel = (percentage) => {
+            if (percentage === 0) return { level: 1, label: 'Başlangıç', color: 'gray', icon: '🌱' };
+            if (percentage < 25) return { level: 1, label: 'Çaylak', color: 'green', icon: '🌿' };
+            if (percentage < 50) return { level: 2, label: 'Öğrenci', color: 'blue', icon: '📚' };
+            if (percentage < 75) return { level: 3, label: 'Yetenekli', color: 'purple', icon: '⭐' };
+            if (percentage < 100) return { level: 4, label: 'Uzman', color: 'orange', icon: '🔥' };
+            return { level: 5, label: 'Usta', color: 'yellow', icon: '👑' };
+        };
+
         Object.entries(manifest).forEach(([key, manifestCourse]) => {
             // Prefer actual courseData values if loaded (reflects admin changes)
             const loadedCourse = window.courseData && window.courseData[key];
@@ -95,41 +142,58 @@ const UI = {
             const icon = loadedCourse?.icon || manifestCourse.icon || '🤖';
 
             // Calculate progress for this course
-            let progressHtml = '';
-            if (isStudent) {
-                const completed = progressData[key] ? progressData[key].length : 0;
-                const total = loadedCourse?.data?.projects?.length || manifestCourse.projectCount || 10;
-                const percentage = Math.round((completed / total) * 100);
+            const completed = progressData[key] ? progressData[key].length : 0;
+            const total = loadedCourse?.data?.projects?.length || manifestCourse.projectCount || 10;
+            const percentage = Math.round((completed / total) * 100);
 
-                if (completed > 0) {
-                    progressHtml = `
-                        <div class="mt-4 w-full">
-                            <div class="flex justify-between text-sm text-gray-500 mb-1">
-                                <span>İlerleme</span>
-                                <span class="font-bold text-theme">${percentage}%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="h-2 rounded-full bg-theme transition-all duration-500" style="width: ${percentage}%"></div>
-                            </div>
-                            <p class="text-xs text-gray-400 mt-1">${completed}/${total} ders tamamlandı</p>
-                        </div>
-                    `;
-                }
-            }
+            // Get level info
+            const levelInfo = getLevel(percentage);
+            const ctaText = getCTA(key, percentage);
+
+            // Level badge HTML
+            const levelBadgeHtml = `
+                <div class="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-${levelInfo.color}-100 text-${levelInfo.color}-700 rounded-full text-xs font-bold">
+                    <span>${levelInfo.icon}</span>
+                    <span>Lv.${levelInfo.level}</span>
+                </div>
+            `;
+
+            // Progress bar HTML - always show
+            const progressHtml = `
+                <div class="mt-4 w-full">
+                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                        <span class="flex items-center gap-1">
+                            <span class="text-${levelInfo.color}-500">${levelInfo.icon}</span>
+                            <span class="font-medium text-${levelInfo.color}-600">${levelInfo.label}</span>
+                        </span>
+                        <span class="font-bold ${percentage > 0 ? 'text-theme' : 'text-gray-400'}">%${percentage}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div class="h-2 rounded-full ${percentage > 0 ? 'bg-theme' : 'bg-gray-300'} transition-all duration-500" style="width: ${percentage}%"></div>
+                    </div>
+                    ${completed > 0 ? `<p class="text-xs text-gray-400 mt-1">${completed}/${total} ders tamamlandı</p>` : '<p class="text-xs text-gray-400 mt-1">Henüz başlamadın</p>'}
+                </div>
+            `;
+
+            // CTA button with dynamic text
+            const ctaHtml = `
+                <div class="mt-auto pt-4 w-full relative z-10">
+                    <span class="card-btn block w-full py-3 px-4 ${percentage > 0 ? 'bg-theme text-white' : 'bg-theme/10 text-theme'} rounded-lg font-bold border-2 ${percentage > 0 ? 'border-theme' : 'border-theme/20'} group-hover:bg-theme group-hover:text-white group-hover:border-theme transition-all text-center">
+                        ${ctaText} ${percentage > 0 ? '→' : '🚀'}
+                    </span>
+                </div>
+            `;
 
             container.innerHTML += `
-                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-8 cursor-pointer group flex flex-col items-center text-center h-full" data-course="${key}">
-                    <div class="card-icon text-6xl mb-6 bg-gray-50 p-6 rounded-full">
+                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-hidden hover:shadow-xl transition-shadow" data-course="${key}">
+                    ${levelBadgeHtml}
+                    <div class="card-icon text-5xl mb-4 bg-gray-50 p-5 rounded-full group-hover:scale-110 transition-transform">
                         ${icon}
                     </div>
-                    <h3 class="card-title text-2xl text-gray-800 mb-2 group-hover:text-theme transition-colors">${title}</h3>
-                    <p class="text-gray-500 relative z-10">${description}</p>
+                    <h3 class="card-title text-xl text-gray-800 mb-2 group-hover:text-theme transition-colors font-bold">${title}</h3>
+                    <p class="text-gray-500 text-sm relative z-10 line-clamp-2">${description}</p>
                     ${progressHtml}
-                    <div class="mt-auto pt-6 w-full relative z-10">
-                        <span class="card-btn block w-full py-3 px-4 bg-theme/10 text-theme rounded-lg font-bold border-2 border-theme/20 group-hover:bg-theme group-hover:text-white group-hover:border-theme transition-all">
-                            ${I18n.t('start')}
-                        </span>
-                    </div>
+                    ${ctaHtml}
                 </div>`;
         });
     },
