@@ -232,16 +232,36 @@
 
     <body class="bg-gray-50 text-gray-800 overflow-x-hidden">
         <div class="auth-bg flex flex-col min-h-screen">
-            <!-- Minimalist Top Bar -->
-            <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
-                <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between">
-                    <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                        <img src="img/logo.svg" alt="Yeti LAB" class="w-8 h-8" />
-                        <span class="font-bold text-gray-800">Yeti <span class="text-theme">LAB</span></span>
-                    </a>
-                    <a href="index.html" class="text-sm text-gray-500 hover:text-theme transition-colors">
-                        ← Ana Sayfa
-                    </a>
+            <!-- Header (Same style as index.html but compact, no search) -->
+            <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div class="flex justify-between h-14 items-center">
+                        <!-- Logo -->
+                        <a href="index.html" class="flex items-center gap-2 group">
+                            <div class="relative w-9 h-9 transition-transform group-hover:scale-105">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-tr from-theme to-cyan-300 rounded-lg rotate-3 group-hover:rotate-6 transition-transform opacity-20"
+                                ></div>
+                                <div
+                                    class="absolute inset-0 bg-white rounded-lg shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden"
+                                >
+                                    <img src="img/logo.svg" alt="YetiLAB" class="w-7 h-7" />
+                                </div>
+                            </div>
+                            <span class="text-xl font-bold text-gray-800 group-hover:text-theme transition-colors"
+                                >Yeti<span class="text-theme">LAB</span></span
+                            >
+                        </a>
+
+                        <!-- Right: Home Button -->
+                        <a
+                            href="index.html"
+                            class="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-theme hover:bg-gray-50 rounded-lg transition-all text-sm font-medium"
+                        >
+                            <span>←</span>
+                            <span class="hidden sm:inline">Ana Sayfa</span>
+                        </a>
+                    </div>
                 </div>
             </header>
 
