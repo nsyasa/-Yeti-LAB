@@ -156,9 +156,12 @@ const Assistant = {
         div.innerHTML = `
             <!-- Chat Button -->
             <button id="chat-btn" onclick="Assistant.toggle()" 
-                class="fixed bottom-6 right-6 w-14 h-14 bg-theme text-white rounded-full shadow-2xl flex items-center justify-center transform hover:scale-110 transition z-50"
-                style="animation: pulse 2s infinite;">
-                <span class="text-3xl">🏔️</span>
+                class="fixed bottom-6 right-6 bg-theme text-white rounded-full shadow-2xl flex items-center gap-2 px-5 py-3 transform hover:scale-105 transition z-50 border-2 border-white/20"
+                style="animation: pulse 3s infinite;">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+                     <img src="img/yeti-peek.png" class="w-full h-full object-cover transform translate-y-1">
+                </div>
+                <span class="font-bold tracking-wide text-sm">BANA SOR</span>
             </button>
 
             <!-- Chat Window -->
@@ -167,7 +170,7 @@ const Assistant = {
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-teal-500 to-teal-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
                     <div class="flex items-center">
-                        <span class="text-2xl mr-2">🏔️</span>
+                         <img src="img/yeti-peek.png" class="w-10 h-10 object-contain mr-2 bg-white/10 rounded-full p-1">
                         <div>
                             <h3 class="font-bold">Yeti Asistan</h3>
                             <p class="text-xs text-teal-100" id="assistant-status">Sana yardımcı olmaya hazırım</p>
