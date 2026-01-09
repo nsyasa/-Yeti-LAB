@@ -92,6 +92,7 @@ const Toast = {
                         : ''
                 }
             </div>
+            ${type === 'success' ? '<img src="img/yeti-celebrating.png" alt="" class="w-10 h-10 object-contain flex-shrink-0 animate-bounce" />' : ''}
             ${
                 type !== 'loading'
                     ? `

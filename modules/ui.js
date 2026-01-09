@@ -183,10 +183,17 @@ const UI = {
                     </span>
                 </div>
             `;
+            // Peek Yeti HTML - appears on hover
+            const peekYetiHtml = `
+                <div class="absolute -bottom-2 -right-2 w-16 h-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none transform translate-x-2 group-hover:translate-x-0 transition-transform">
+                    <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain" />
+                </div>
+            `;
 
             container.innerHTML += `
                 <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-hidden hover:shadow-xl transition-shadow" data-course="${key}">
                     ${levelBadgeHtml}
+                    ${peekYetiHtml}
                     <div class="card-icon text-5xl mb-4 bg-gray-50 p-5 rounded-full group-hover:scale-110 transition-transform">
                         ${icon}
                     </div>
