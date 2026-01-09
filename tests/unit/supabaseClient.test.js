@@ -76,9 +76,13 @@ describe('SupabaseClient Module', () => {
                 ö: 'o',
                 Ö: 'o',
             };
-            return text
-                .toString()
-                .replace(/[çÇğĞşŞüÜıİöÖ]/g, (c) => trMap[c] || c)
+            // First convert Turkish chars, then normalize
+            let result = text.toString();
+            // Replace Turkish chars before any other processing
+            for (const [key, value] of Object.entries(trMap)) {
+                result = result.split(key).join(value);
+            }
+            return result
                 .normalize('NFKD')
                 .replace(/[\u0300-\u036F]/g, '')
                 .toLowerCase()
