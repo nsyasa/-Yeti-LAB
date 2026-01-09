@@ -232,35 +232,24 @@
 
     <body class="bg-gray-50 text-gray-800 overflow-x-hidden">
         <div class="auth-bg flex flex-col min-h-screen">
-            <!-- Floating decorations -->
-            <div class="fixed inset-0 pointer-events-none overflow-hidden">
-                <div class="floating-icon absolute text-6xl opacity-20" style="top: 10%; left: 10%">🤖</div>
-                <div class="floating-icon absolute text-6xl opacity-20" style="top: 20%; right: 15%">💡</div>
-                <div class="floating-icon absolute text-6xl opacity-20" style="bottom: 20%; left: 20%">⚡</div>
-                <div class="floating-icon absolute text-6xl opacity-20" style="bottom: 30%; right: 10%">🔧</div>
-            </div>
+            <!-- Minimalist Top Bar -->
+            <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+                <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between">
+                    <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <img src="img/logo.svg" alt="Yeti LAB" class="w-8 h-8" />
+                        <span class="font-bold text-gray-800">Yeti <span class="text-theme">LAB</span></span>
+                    </a>
+                    <a href="index.html" class="text-sm text-gray-500 hover:text-theme transition-colors">
+                        ← Ana Sayfa
+                    </a>
+                </div>
+            </header>
 
             <!-- Main Content -->
-            <div class="flex-grow flex items-center justify-center px-4 py-8 relative z-10">
+            <div class="flex-grow flex items-center justify-center px-4 py-4 relative z-10">
                 <div class="w-full max-w-md">
-                    <!-- Logo -->
-                    <div class="text-center mb-8">
-                        <div
-                            class="flex items-center justify-center mb-4 cursor-pointer"
-                            onclick="Router.redirectTo('index.html')"
-                        >
-                            <img src="img/logo.svg" alt="Yeti LAB" class="w-16 h-16 mr-3" />
-                            <div class="brand-logo">
-                                <h1 class="text-3xl text-gray-800 leading-tight flex items-baseline gap-1">
-                                    <span>Yeti</span><span class="brand-lab text-theme">LAB</span>
-                                </h1>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 text-lg">Kodlama ve Robotik Eğitim Platformu</p>
-                    </div>
-
                     <!-- Auth Card -->
-                    <div class="auth-card rounded-2xl p-8">
+                    <div class="auth-card rounded-2xl p-6">
                         <!-- Decorative Background Element (hidden on mobile to prevent overflow) -->
                         <div
                             class="hidden sm:block absolute top-0 right-0 w-32 h-32 bg-theme/5 rounded-full -mr-16 -mt-16 pointer-events-none"
@@ -588,20 +577,9 @@
                 </div>
             </div>
 
-            <!-- Guest/Back Link (Outside Card) -->
-            <div class="mt-8 text-center">
-                <a href="index.html" class="text-gray-500 hover:text-gray-800 text-sm font-medium transition-colors">
-                    ← Misafir olarak devam et
-                </a>
-            </div>
-
-            <!-- Footer -->
-            <footer class="bg-gray-800 text-white py-6 text-center text-sm pb-20 md:pb-6">
-                <div class="flex items-center justify-center gap-2 mb-2">
-                    <img src="img/favicon.svg" alt="Yeti LAB" class="w-6 h-6" />
-                    <span class="font-bold">Yeti <span class="text-theme">LAB</span></span>
-                </div>
-                <p class="text-gray-400">© 2026 Yeti LAB - İçindeki Yeti'leri Keşfet</p>
+            <!-- Compact Footer -->
+            <footer class="bg-gray-800 text-white py-3 text-center text-xs">
+                <span class="text-gray-400">© 2026 Yeti LAB</span>
             </footer>
         </div>
 
