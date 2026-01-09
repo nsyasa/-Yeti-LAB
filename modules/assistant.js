@@ -156,12 +156,9 @@ const Assistant = {
         div.innerHTML = `
             <!-- Chat Button -->
             <button id="chat-btn" onclick="Assistant.toggle()" 
-                class="fixed bottom-6 right-6 bg-theme text-white rounded-full shadow-2xl flex items-center gap-2 px-5 py-3 transform hover:scale-105 transition z-50 border-2 border-white/20"
-                style="animation: pulse 3s infinite;">
-                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
-                     <img src="img/yeti-peek.png" class="w-full h-full object-cover transform translate-y-1">
-                </div>
-                <span class="font-bold tracking-wide text-sm">BANA SOR</span>
+                class="fixed bottom-4 right-4 w-32 h-auto transform hover:scale-110 active:scale-95 transition z-50 drop-shadow-2xl cursor-pointer hover:drop-shadow-3xl"
+                style="animation: pulse-glow 3s infinite;">
+                <img src="img/yeti-ask.png" class="w-full h-full object-contain filter drop-shadow-lg" alt="Bana Sor">
             </button>
 
             <!-- Chat Window -->
@@ -213,9 +210,9 @@ const Assistant = {
         // Add pulse animation CSS
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes pulse {
-                0%, 100% { box-shadow: 0 0 0 0 rgba(0, 151, 156, 0.7); }
-                50% { box-shadow: 0 0 0 10px rgba(0, 151, 156, 0); }
+            @keyframes pulse-glow {
+                0%, 100% { filter: drop-shadow(0 0 2px rgba(0, 151, 156, 0.5)); transform: scale(1); }
+                50% { filter: drop-shadow(0 0 10px rgba(0, 151, 156, 0.8)); transform: scale(1.05); }
             }
         `;
         document.head.appendChild(style);
