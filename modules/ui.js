@@ -83,6 +83,9 @@ const UI = {
         const container = document.getElementById('course-list');
         container.innerHTML = '';
 
+        // Remove any existing "Show All" buttons (prevent duplicates)
+        document.querySelectorAll('#show-all-courses-btn').forEach((el) => el.remove());
+
         // Check if user is logged in as student for progress display
         const isStudent = typeof Auth !== 'undefined' && Auth.isStudent() && Auth.currentStudent;
         const progressData = typeof Progress !== 'undefined' ? Progress.data : {};
@@ -210,11 +213,11 @@ const UI = {
             container.innerHTML += renderCourseCard(key, manifestCourse, index, isHidden);
         });
 
-        // Add "Show All" button for mobile
+        // Add "Show All" button for mobile (inside grid)
         if (isMobile && courses.length > initialCount) {
             const showAllBtn = document.createElement('div');
             showAllBtn.id = 'show-all-courses-btn';
-            showAllBtn.className = 'col-span-2 mt-4 md:hidden';
+            showAllBtn.className = 'col-span-2 flex items-center justify-center';
             showAllBtn.innerHTML = `
                 <button onclick="UI.toggleAllCourses()" 
                         class="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
@@ -222,7 +225,7 @@ const UI = {
                     <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs">${courses.length - initialCount} daha</span>
                 </button>
             `;
-            container.after(showAllBtn);
+            container.appendChild(showAllBtn);
         }
     },
 

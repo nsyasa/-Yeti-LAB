@@ -270,111 +270,91 @@ const ProfileView = {
                             </a>
                         </div>
 
-                        <!-- Kişisel Bilgiler Card -->
-                        <div class="profile-card mb-4" id="card-personal">
-                            <div class="profile-card-header">
-                                <div class="profile-card-title"><span>📋</span> Kişisel Bilgiler</div>
-                                <button class="edit-btn" onclick="ProfileEditor.toggleEdit('personal')" title="Düzenle">✏️</button>
-                            </div>
-                            <div class="profile-card-body">
-                                <!-- View Mode -->
-                                <div class="view-mode">
-                                    <div class="inline-field">
-                                        <span class="inline-field-label">Ad Soyad</span>
-                                        <span class="inline-field-value" id="view-name">—</span>
-                                    </div>
-                                    <div class="inline-field">
-                                        <span class="inline-field-label">Okul</span>
-                                        <span class="inline-field-value" id="view-school">—</span>
-                                    </div>
-                                    <div class="inline-field">
-                                        <span class="inline-field-label">İl</span>
-                                        <span class="inline-field-value" id="view-city">—</span>
-                                    </div>
-                                    <div class="inline-field">
-                                        <span class="inline-field-label">İlçe</span>
-                                        <span class="inline-field-value" id="view-district">—</span>
-                                    </div>
+                        <!-- Ayarlar Akordeon (varsayılan kapalı) -->
+                        <div class="mb-4">
+                            <button onclick="ProfileView.toggleSettings()" id="settings-accordion-btn" 
+                                class="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">⚙️</span>
+                                    <span class="font-bold text-gray-700 dark:text-gray-200">Hesap Ayarları</span>
                                 </div>
-                                <!-- Edit Mode -->
-                                <div class="edit-mode space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
-                                        <input type="text" id="edit-name" class="inline-field-input" placeholder="Adınız Soyadınız" />
+                                <span id="settings-accordion-icon" class="text-gray-400 transition-transform duration-300">▼</span>
+                            </button>
+                            
+                            <div id="settings-accordion-content" class="hidden mt-2 space-y-3 animate-fade-in">
+                                <!-- Kişisel Bilgiler Card (Kompakt) -->
+                                <div class="profile-card" id="card-personal">
+                                    <div class="profile-card-header py-2 px-4">
+                                        <div class="profile-card-title text-sm"><span>📋</span> Kişisel Bilgiler</div>
+                                        <button class="edit-btn text-xs" onclick="ProfileEditor.toggleEdit('personal')" title="Düzenle">✏️</button>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Okul</label>
-                                        <input type="text" id="edit-school" class="inline-field-input" placeholder="Okul adı (opsiyonel)" />
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">İl</label>
-                                            <select id="edit-city" class="inline-field-input" onchange="ProfileEditor.loadDistricts()">
-                                                <option value="">Seçiniz</option>
-                                            </select>
+                                    <div class="profile-card-body py-2 px-4">
+                                        <!-- View Mode (Kompakt - tek satır) -->
+                                        <div class="view-mode">
+                                            <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                                                <span><span class="text-gray-400">Ad:</span> <span id="view-name" class="font-medium">—</span></span>
+                                                <span><span class="text-gray-400">Okul:</span> <span id="view-school" class="font-medium">—</span></span>
+                                                <span><span class="text-gray-400">Konum:</span> <span id="view-city" class="font-medium">—</span>, <span id="view-district">—</span></span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">İlçe</label>
-                                            <select id="edit-district" class="inline-field-input">
-                                                <option value="">Önce il seçin</option>
-                                            </select>
+                                        <!-- Edit Mode -->
+                                        <div class="edit-mode space-y-3 pt-2">
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <input type="text" id="edit-name" class="inline-field-input text-sm" placeholder="Ad Soyad" />
+                                                <input type="text" id="edit-school" class="inline-field-input text-sm" placeholder="Okul (opsiyonel)" />
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <select id="edit-city" class="inline-field-input text-sm" onchange="ProfileEditor.loadDistricts()">
+                                                    <option value="">İl Seçin</option>
+                                                </select>
+                                                <select id="edit-district" class="inline-field-input text-sm">
+                                                    <option value="">İlçe</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button class="btn-save text-sm py-1.5" onclick="ProfileEditor.savePersonal()">💾 Kaydet</button>
+                                                <button class="btn-cancel text-sm py-1.5" onclick="ProfileEditor.cancelEdit('personal')">İptal</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="flex gap-2 pt-2">
-                                        <button class="btn-save" onclick="ProfileEditor.savePersonal()">💾 Kaydet</button>
-                                        <button class="btn-cancel" onclick="ProfileEditor.cancelEdit('personal')">İptal</button>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Güvenlik Card -->
-                        <div class="profile-card mb-4" id="card-security">
-                            <div class="profile-card-header">
-                                <div class="profile-card-title"><span>🔐</span> Güvenlik</div>
-                                <button class="edit-btn" onclick="ProfileEditor.toggleEdit('security')" title="Şifre Değiştir">✏️</button>
-                            </div>
-                            <div class="profile-card-body">
-                                <!-- View Mode -->
-                                <div class="view-mode">
-                                    <div class="inline-field">
-                                        <span class="inline-field-label">Şifre</span>
-                                        <span class="inline-field-value">••••••••</span>
+                                <!-- Güvenlik Card (Kompakt) -->
+                                <div class="profile-card" id="card-security">
+                                    <div class="profile-card-header py-2 px-4">
+                                        <div class="profile-card-title text-sm"><span>🔐</span> Güvenlik</div>
+                                        <button class="edit-btn text-xs" onclick="ProfileEditor.toggleEdit('security')" title="Şifre Değiştir">✏️</button>
                                     </div>
-                                    <div class="inline-field">
-                                        <span class="inline-field-label">Bağlı Hesaplar</span>
-                                        <span class="inline-field-value" id="view-connections">—</span>
-                                    </div>
-                                </div>
-                                <!-- Edit Mode -->
-                                <div class="edit-mode space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Yeni Şifre</label>
-                                        <input type="password" id="new-password" class="inline-field-input" placeholder="En az 6 karakter" minlength="6" />
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Yeni Şifre (Tekrar)</label>
-                                        <input type="password" id="new-password-confirm" class="inline-field-input" placeholder="Şifreyi tekrar girin" minlength="6" />
-                                    </div>
-                                    <div class="flex gap-2 pt-2">
-                                        <button class="btn-save" onclick="ProfileEditor.savePassword()">🔒 Şifreyi Güncelle</button>
-                                        <button class="btn-cancel" onclick="ProfileEditor.cancelEdit('security')">İptal</button>
+                                    <div class="profile-card-body py-2 px-4">
+                                        <div class="view-mode">
+                                            <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                                                <span><span class="text-gray-400">Şifre:</span> <span class="font-medium">••••••••</span></span>
+                                                <span><span class="text-gray-400">Bağlı:</span> <span id="view-connections" class="font-medium">—</span></span>
+                                            </div>
+                                        </div>
+                                        <div class="edit-mode space-y-3 pt-2">
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <input type="password" id="new-password" class="inline-field-input text-sm" placeholder="Yeni şifre" minlength="6" />
+                                                <input type="password" id="new-password-confirm" class="inline-field-input text-sm" placeholder="Tekrar" minlength="6" />
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button class="btn-save text-sm py-1.5" onclick="ProfileEditor.savePassword()">🔒 Güncelle</button>
+                                                <button class="btn-cancel text-sm py-1.5" onclick="ProfileEditor.cancelEdit('security')">İptal</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Tercihler Card -->
-                        <div class="profile-card mb-4" id="card-preferences">
-                            <div class="profile-card-header">
-                                <div class="profile-card-title"><span>⚙️</span> Tercihler</div>
-                            </div>
-                            <div class="profile-card-body">
-                                <div class="inline-field">
-                                    <span class="inline-field-label">Tema</span>
-                                    <div class="flex gap-2">
-                                        <button onclick="ProfileEditor.setTheme('light')" id="theme-light-btn" class="px-3 py-1 rounded-lg text-sm font-medium bg-gray-100">☀️ Açık</button>
-                                        <button onclick="ProfileEditor.setTheme('dark')" id="theme-dark-btn" class="px-3 py-1 rounded-lg text-sm font-medium bg-gray-100">🌙 Koyu</button>
+                                <!-- Tema Seçimi (Kompakt - inline) -->
+                                <div class="profile-card" id="card-preferences">
+                                    <div class="profile-card-body py-3 px-4">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">🎨 Tema</span>
+                                            <div class="flex gap-2">
+                                                <button onclick="ProfileEditor.setTheme('light')" id="theme-light-btn" class="px-3 py-1 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 transition">☀️ Açık</button>
+                                                <button onclick="ProfileEditor.setTheme('dark')" id="theme-dark-btn" class="px-3 py-1 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 transition">🌙 Koyu</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -475,6 +455,22 @@ const ProfileView = {
         this.isLoaded = false;
         this.container = null;
         console.log('[ProfileView] Unmounted');
+    },
+
+    /**
+     * Toggle settings accordion
+     */
+    toggleSettings() {
+        const content = document.getElementById('settings-accordion-content');
+        const icon = document.getElementById('settings-accordion-icon');
+
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            content.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
     },
 
     /**
