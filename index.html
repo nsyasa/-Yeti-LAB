@@ -137,17 +137,31 @@
             <!-- DERS SEÇİM EKRANI (Ana Sayfa) -->
 
             <div id="course-selection-view" class="fade-in pb-10">
-                <div class="text-center max-w-4xl mx-auto mb-8 mt-8 space-y-4">
-                    <h2 class="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight">
-                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                            İçindeki Yeti'yi
-                        </span>
-                        <br />Keşfetmeye Hazır Mısın? 🚀
-                    </h2>
-                    <p class="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-                        Sadece video izleme, yaparak öğren. Kendi hızında ilerle, simülasyonlarla dene ve rozetleri
-                        topla.
-                    </p>
+                <div class="flex flex-col lg:flex-row items-center justify-center gap-6 max-w-5xl mx-auto mb-8 mt-4">
+                    <!-- Yeti Mascot (desktop: left, mobile: top) -->
+                    <div class="flex-shrink-0 hidden sm:block">
+                        <img
+                            src="img/yeti-mascot.png"
+                            alt="Yeti Maskot"
+                            class="w-32 lg:w-48 h-auto object-contain animate-bounce-slow"
+                        />
+                    </div>
+
+                    <!-- Title Section -->
+                    <div class="text-center lg:text-left space-y-4">
+                        <h2
+                            class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight"
+                        >
+                            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                                İçindeki Yeti'yi
+                            </span>
+                            <br />Keşfetmeye Hazır Mısın? 🚀
+                        </h2>
+                        <p class="text-lg md:text-xl text-gray-500 max-w-2xl leading-relaxed">
+                            Sadece video izleme, yaparak öğren. Kendi hızında ilerle, simülasyonlarla dene ve rozetleri
+                            topla.
+                        </p>
+                    </div>
                 </div>
                 <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- SKELETON LOADER (JS yüklenene kadar görünür) -->
