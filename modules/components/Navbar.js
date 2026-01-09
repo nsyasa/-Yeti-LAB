@@ -75,22 +75,16 @@ const Navbar = {
                     </div>
                 </a>
 
-                <div class="flex-1 max-w-xl mx-8 hidden lg:block relative group">
-                    <input type="text" 
-                        oninput="window.Search?.handle(this.value)" 
-                        placeholder="Ders, konu veya proje ara..."
-                        class="block w-full pl-4 pr-4 py-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 hover:border-gray-200"
-                    >
-                    <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 hidden z-50 max-h-96 overflow-y-auto"></div>
-                </div>
-
                 <!-- Right Menu -->
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
                     
-                    <!-- Mobile Search Toggle -->
+                    <!-- Search Icon (All screens) -->
                     <button onclick="UI.toggleMobileSearch()" 
-                        class="lg:hidden p-2 text-gray-500 hover:text-theme hover:bg-gray-50 rounded-lg transition-colors">
-                        <span class="text-xl">🔍</span>
+                        class="p-2.5 text-gray-500 hover:text-theme hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all"
+                        title="Ara">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                     </button>
 
                     <!-- Themes -->
