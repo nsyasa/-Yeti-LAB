@@ -156,7 +156,7 @@ const Assistant = {
         div.innerHTML = `
             <!-- Chat Button -->
             <button id="chat-btn" onclick="Assistant.toggle()" 
-                class="fixed bottom-4 right-4 w-32 h-auto transform hover:scale-110 active:scale-95 transition z-50 drop-shadow-2xl cursor-pointer hover:drop-shadow-3xl"
+                class="fixed bottom-20 md:bottom-4 right-4 w-20 md:w-32 h-auto transform hover:scale-110 active:scale-95 transition z-40 drop-shadow-2xl cursor-pointer hover:drop-shadow-3xl"
                 style="animation: pulse-glow 3s infinite;">
                 <img src="img/yeti-ask.png" class="w-full h-full object-contain filter drop-shadow-lg" alt="Bana Sor">
             </button>

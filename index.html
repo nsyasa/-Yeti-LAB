@@ -138,19 +138,14 @@
 
             <div id="course-selection-view" class="fade-in pb-10">
                 <div class="flex flex-col lg:flex-row items-center justify-center gap-6 max-w-5xl mx-auto mb-8 mt-4">
-                    <!-- Yeti Mascot (desktop: left, mobile: top) -->
-                    <div class="flex-shrink-0 block mb-6 lg:mb-0">
-                        <div class="relative">
-                            <!-- White circular background to hide checkered pattern -->
-                            <div
-                                class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full scale-90"
-                            ></div>
-                            <img
-                                src="img/yeti-mascot.png"
-                                alt="Yeti Maskot"
-                                class="w-32 lg:w-48 h-auto object-contain animate-bounce-slow relative z-10"
-                            />
-                        </div>
+                    <!-- Yeti Mascot (decorative, not clickable avatar) -->
+                    <div class="flex-shrink-0 hidden lg:block">
+                        <img
+                            src="img/yeti-mascot.png"
+                            alt="Yeti Maskot"
+                            class="w-32 lg:w-40 h-auto object-contain animate-bounce-slow opacity-90 drop-shadow-lg"
+                            style="pointer-events: none"
+                        />
                     </div>
 
                     <!-- Title Section -->
@@ -169,7 +164,7 @@
                         </p>
                     </div>
                 </div>
-                <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div id="course-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                     <!-- SKELETON LOADER (JS yüklenene kadar görünür) -->
                     <div
                         class="course-skeleton animate-pulse bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-64 flex flex-col items-center justify-center"

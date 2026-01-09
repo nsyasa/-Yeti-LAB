@@ -11,7 +11,7 @@ const Store = {
         currentCourse: null, // Currently selected course object
         currentCourseKey: null, // Course key (e.g., 'arduino', 'microbit')
         activeProject: null, // Currently active project
-        theme: 'light', // Current theme (light/dark)
+        theme: 'dark', // Current theme (light/dark) - Default is dark
         notifications: [], // System notifications
 
         // Course-specific data (FAZ 4.1 - app.state'den taşındı)
@@ -25,10 +25,18 @@ const Store = {
     // Initialize store
     init() {
         // Load initial state from local storage if needed
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        this.setState({ theme: savedTheme });
+        // Default theme is 'dark' - users can switch to light in profile settings
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        this.state.theme = savedTheme;
 
-        console.log('📦 Store initialized');
+        // Apply theme to DOM immediately (before setState to avoid double render)
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+
+        console.log('📦 Store initialized with theme:', savedTheme);
     },
 
     // Get current state (immutable-ish)

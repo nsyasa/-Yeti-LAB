@@ -18,9 +18,9 @@ const ThemeManager = {
             // User has a saved preference
             this.applyTheme(savedTheme);
         } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            this.applyTheme(prefersDark ? 'dark' : 'light');
+            // Default: Dark mode (users can switch to light in profile settings)
+            // System preference is secondary now
+            this.applyTheme('dark');
         }
 
         // Listen for system theme changes (only if no user preference)

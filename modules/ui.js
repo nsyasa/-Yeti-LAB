@@ -134,7 +134,12 @@ const UI = {
             return { level: 5, label: 'Usta', color: 'yellow', icon: '👑' };
         };
 
-        Object.entries(manifest).forEach(([key, manifestCourse]) => {
+        const courses = Object.entries(manifest);
+        const isMobile = window.innerWidth < 768;
+        const initialCount = isMobile ? 4 : courses.length; // Mobile: show first 4, Desktop: show all
+        const showingAll = !isMobile;
+
+        const renderCourseCard = (key, manifestCourse, index, isHidden = false) => {
             // Prefer actual courseData values if loaded (reflects admin changes)
             const loadedCourse = window.courseData && window.courseData[key];
             const title = loadedCourse?.title || manifestCourse.title;
@@ -150,59 +155,118 @@ const UI = {
             const levelInfo = getLevel(percentage);
             const ctaText = getCTA(key, percentage);
 
-            // Level badge HTML
-            const levelBadgeHtml = `
-                <div class="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-${levelInfo.color}-100 text-${levelInfo.color}-700 rounded-full text-xs font-bold">
-                    <span>${levelInfo.icon}</span>
-                    <span>Lv.${levelInfo.level}</span>
-                </div>
-            `;
+            // Mobile: Compact card (icon + title only)
+            // Desktop: Full card with description, progress, CTA
+            const hiddenClass = isHidden ? 'hidden md:flex' : '';
 
-            // Progress bar HTML - always show
-            const progressHtml = `
-                <div class="mt-4 w-full">
-                    <div class="flex justify-between text-xs text-gray-500 mb-1">
-                        <span class="flex items-center gap-1">
-                            <span class="text-${levelInfo.color}-500">${levelInfo.icon}</span>
-                            <span class="font-medium text-${levelInfo.color}-600">${levelInfo.label}</span>
-                        </span>
-                        <span class="font-bold ${percentage > 0 ? 'text-theme' : 'text-gray-400'}">%${percentage}</span>
+            return `
+                <div onclick="app.selectCourse('${key}', event)" 
+                     class="course-card bg-white rounded-xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-lg transition-all hover:-translate-y-1 ${hiddenClass}" 
+                     data-course="${key}"
+                     data-index="${index}">
+                    
+                    <!-- Level Badge (compact on mobile) -->
+                    <div class="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 lg:px-2 lg:py-1 bg-${levelInfo.color}-100 text-${levelInfo.color}-700 rounded-full text-xs font-bold">
+                        <span class="hidden lg:inline">${levelInfo.icon}</span>
+                        <span>Lv.${levelInfo.level}</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div class="h-2 rounded-full ${percentage > 0 ? 'bg-theme' : 'bg-gray-300'} transition-all duration-500" style="width: ${percentage}%"></div>
-                    </div>
-                    ${completed > 0 ? `<p class="text-xs text-gray-400 mt-1">${completed}/${total} ders tamamlandı</p>` : '<p class="text-xs text-gray-400 mt-1">Henüz başlamadın</p>'}
-                </div>
-            `;
-
-            // CTA button with dynamic text
-            const ctaHtml = `
-                <div class="mt-auto pt-4 w-full relative z-10">
-                    <span class="card-btn block w-full py-3 px-4 ${percentage > 0 ? 'bg-theme text-white border-2 border-theme' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 border-0'} rounded-lg font-bold group-hover:opacity-90 transition-all text-center">
-                        ${ctaText} ${percentage > 0 ? '→' : '🚀'}
-                    </span>
-                </div>
-            `;
-            // Peek Yeti HTML - appears on hover (inside card bounds)
-            const peekYetiHtml = `
-                <div class="absolute -bottom-4 -right-6 w-28 h-28 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px]">
-                    <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain drop-shadow-lg" />
-                </div>
-            `;
-
-            container.innerHTML += `
-                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white bg-pattern-tech rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-xl transition-shadow" data-course="${key}">
-                    ${levelBadgeHtml}
-                    ${peekYetiHtml}
-                    <div class="card-icon text-5xl mb-4 bg-gray-50 p-5 rounded-full group-hover:scale-110 transition-transform">
+                    
+                    <!-- Icon -->
+                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-gray-50 p-3 lg:p-4 rounded-full group-hover:scale-110 transition-transform">
                         ${icon}
                     </div>
-                    <h3 class="card-title text-xl text-gray-800 mb-2 group-hover:text-theme transition-colors font-bold">${title}</h3>
-                    <p class="text-gray-500 text-sm relative z-10 line-clamp-2">${description}</p>
-                    ${progressHtml}
-                    ${ctaHtml}
+                    
+                    <!-- Title -->
+                    <h3 class="text-sm lg:text-lg text-gray-800 mb-1 lg:mb-2 group-hover:text-theme transition-colors font-bold line-clamp-2">${title}</h3>
+                    
+                    <!-- Description (hidden on mobile) -->
+                    <p class="hidden lg:block text-gray-500 text-xs leading-relaxed line-clamp-2">${description}</p>
+                    
+                    <!-- Progress Bar (compact on mobile) -->
+                    <div class="mt-auto pt-2 lg:pt-3 w-full">
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 lg:h-2 overflow-hidden">
+                            <div class="h-full rounded-full ${percentage > 0 ? 'bg-theme' : 'bg-gray-300'} transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1 hidden lg:block">${completed > 0 ? `${completed}/${total} ders` : 'Henüz başlamadın'}</p>
+                    </div>
+                    
+                    <!-- Peek Yeti (desktop only, appears on hover) -->
+                    <div class="absolute -bottom-4 -right-4 w-20 h-20 lg:w-24 lg:h-24 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px] hidden lg:block">
+                        <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain drop-shadow-lg" />
+                    </div>
+                    
+                    <!-- CTA Button (hidden on mobile for compactness) -->
+                    <div class="hidden lg:block mt-3 w-full">
+                        <span class="block w-full py-2 px-3 ${percentage > 0 ? 'bg-theme text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white'} rounded-lg font-bold text-sm group-hover:opacity-90 transition-all text-center">
+                            ${ctaText} ${percentage > 0 ? '→' : '🚀'}
+                        </span>
+                    </div>
                 </div>`;
+        };
+
+        // Render courses
+        courses.forEach(([key, manifestCourse], index) => {
+            const isHidden = isMobile && index >= initialCount;
+            container.innerHTML += renderCourseCard(key, manifestCourse, index, isHidden);
         });
+
+        // Add "Show All" button for mobile
+        if (isMobile && courses.length > initialCount) {
+            const showAllBtn = document.createElement('div');
+            showAllBtn.id = 'show-all-courses-btn';
+            showAllBtn.className = 'col-span-2 mt-4 md:hidden';
+            showAllBtn.innerHTML = `
+                <button onclick="UI.toggleAllCourses()" 
+                        class="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                    <span>📚 Tüm Kursları Gör</span>
+                    <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs">${courses.length - initialCount} daha</span>
+                </button>
+            `;
+            container.after(showAllBtn);
+        }
+    },
+
+    // Toggle show all courses (for mobile)
+    toggleAllCourses: () => {
+        const hiddenCards = document.querySelectorAll('.course-card.hidden');
+        const showAllBtn = document.getElementById('show-all-courses-btn');
+
+        if (hiddenCards.length > 0) {
+            // Show all
+            hiddenCards.forEach((card) => {
+                card.classList.remove('hidden');
+                card.classList.add('fade-in');
+            });
+            if (showAllBtn) {
+                showAllBtn.innerHTML = `
+                    <button onclick="UI.toggleAllCourses()" 
+                            class="w-full py-3 px-4 bg-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-300 transition-all flex items-center justify-center gap-2">
+                        <span>↑ Daha Az Göster</span>
+                    </button>
+                `;
+            }
+        } else {
+            // Hide extra cards
+            const allCards = document.querySelectorAll('.course-card');
+            allCards.forEach((card, index) => {
+                if (index >= 4) {
+                    card.classList.add('hidden');
+                    card.classList.remove('fade-in');
+                }
+            });
+            if (showAllBtn) {
+                const remainingCount = allCards.length - 4;
+                showAllBtn.innerHTML = `
+                    <button onclick="UI.toggleAllCourses()" 
+                            class="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                        <span>📚 Tüm Kursları Gör</span>
+                        <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs">${remainingCount} daha</span>
+                    </button>
+                `;
+            }
+            // Scroll to top of course list
+            document.getElementById('course-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     },
 
     // --- Loading State Management ---

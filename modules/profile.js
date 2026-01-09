@@ -179,6 +179,9 @@ const Profile = {
                 Profile.Editor.loadCities();
                 Profile.Editor.renderAvatars();
 
+                // Update theme buttons to reflect current theme
+                Profile.Editor.updateThemeButtons();
+
                 // Load Stats async (don't block UI)
                 Profile.Editor.loadStats().catch((e) => console.warn('Stats load error:', e));
             } catch (err) {
@@ -548,12 +551,27 @@ const Profile = {
 
         setTheme(theme) {
             if (window.ThemeManager) ThemeManager.setTheme(theme);
-            // Update UI buttons
-            const isLight = theme === 'light';
-            document.getElementById('theme-light-btn').classList.toggle('bg-theme', isLight);
-            document.getElementById('theme-light-btn').classList.toggle('text-white', isLight);
-            document.getElementById('theme-dark-btn').classList.toggle('bg-theme', !isLight);
-            document.getElementById('theme-dark-btn').classList.toggle('text-white', !isLight);
+            this.updateThemeButtons(theme);
+        },
+
+        updateThemeButtons(theme) {
+            // Get current theme if not provided
+            const currentTheme = theme || (window.ThemeManager ? ThemeManager.getCurrentTheme() : 'dark');
+            const isLight = currentTheme === 'light';
+
+            const lightBtn = document.getElementById('theme-light-btn');
+            const darkBtn = document.getElementById('theme-dark-btn');
+
+            if (lightBtn) {
+                lightBtn.classList.toggle('bg-theme', isLight);
+                lightBtn.classList.toggle('text-white', isLight);
+                lightBtn.classList.toggle('bg-gray-100', !isLight);
+            }
+            if (darkBtn) {
+                darkBtn.classList.toggle('bg-theme', !isLight);
+                darkBtn.classList.toggle('text-white', !isLight);
+                darkBtn.classList.toggle('bg-gray-100', isLight);
+            }
         },
     },
 
