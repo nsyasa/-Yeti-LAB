@@ -1,3 +1,4 @@
+/* global Services */
 /**
  * UI Module
  * Handles all DOM manipulation and HTML generation.
@@ -262,19 +263,19 @@ const UI = {
         const container = document.getElementById(containerId);
         const errorMessage = msg || I18n.t('error_loading');
 
-        // Show toast notification
-        if (window.Toast) {
-            if (retryAction) {
-                Toast.errorWithRetry(errorMessage, () => {
-                    try {
-                        eval(retryAction);
-                    } catch (e) {
-                        console.error(e);
-                    }
-                });
-            } else {
-                Toast.error(errorMessage);
-            }
+        // Show toast notification via Services wrapper (Step 6 refactoring)
+        // Services.toast has built-in fallback to console if Toast is unavailable
+        if (retryAction && window.Toast?.errorWithRetry) {
+            // Keep errorWithRetry for now as Services doesn't wrap it yet
+            Toast.errorWithRetry(errorMessage, () => {
+                try {
+                    eval(retryAction);
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+        } else {
+            Services.toast.error(errorMessage);
         }
 
         // Also show inline error in container
