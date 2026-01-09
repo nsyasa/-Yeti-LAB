@@ -6,8 +6,14 @@
 /* Explicit Sources for Tailwind Scanning */
 @source "../auth.html";
 @source "../index.html";
+@source "../profile.html";
+@source "../teacher.html";
+@source "../admin.html";
+@source "../student-dashboard.html";
 @source "../src/**/*.js";
 @source "../modules/**/*.js";
+@source "../views/**/*.js";
+@source "../data/**/*.js";
 
 /* Custom CSS Imports */
 /* Note: Vite handles @import inlining */
