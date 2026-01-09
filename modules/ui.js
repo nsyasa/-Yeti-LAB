@@ -183,15 +183,18 @@ const UI = {
                     </span>
                 </div>
             `;
-            // Peek Yeti HTML - appears on hover
+            // Peek Yeti HTML - appears on hover (inside card bounds)
             const peekYetiHtml = `
-                <div class="absolute -bottom-2 -right-2 w-16 h-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none transform translate-x-2 group-hover:translate-x-0 transition-transform">
-                    <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain" />
+                <div class="absolute bottom-2 right-2 w-12 h-12 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20">
+                    <div class="relative w-full h-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-100 rounded-full scale-110"></div>
+                        <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain relative z-10" />
+                    </div>
                 </div>
             `;
 
             container.innerHTML += `
-                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-hidden hover:shadow-xl transition-shadow" data-course="${key}">
+                <div onclick="app.selectCourse('${key}', event)" class="course-card bg-white rounded-xl shadow-lg p-6 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-xl transition-shadow" data-course="${key}">
                     ${levelBadgeHtml}
                     ${peekYetiHtml}
                     <div class="card-icon text-5xl mb-4 bg-gray-50 p-5 rounded-full group-hover:scale-110 transition-transform">
