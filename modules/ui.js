@@ -185,7 +185,7 @@ const UI = {
             `;
             // Peek Yeti HTML - appears on hover (inside card bounds)
             const peekYetiHtml = `
-                <div class="absolute -bottom-2 -right-4 w-20 h-20 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px]">
+                <div class="absolute -bottom-4 -right-6 w-28 h-28 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px]">
                     <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain drop-shadow-lg" />
                 </div>
             `;
