@@ -272,7 +272,7 @@
                     <div class="auth-card rounded-2xl p-4 sm:p-6 relative">
                         <!-- Yeti Mascot - Points at login button (Positioned relative to card) -->
                         <div
-                            class="absolute z-20 -right-4 bottom-24 w-24 sm:w-28 md:w-32 md:-right-20 md:top-48 md:bottom-auto pointer-events-none transform translate-x-0"
+                            class="hidden md:block absolute z-20 right-[15px] top-[180px] w-28 pointer-events-none transform translate-x-0"
                         >
                             <div class="relative">
                                 <!-- Circular background -->
@@ -282,7 +282,21 @@
                                 <img
                                     src="img/yeti-pointing.png"
                                     alt="Yeti"
-                                    class="w-full h-auto animate-bounce-slow relative z-10 transform -scale-x-100 rotate-12"
+                                    class="w-full h-auto animate-bounce-slow relative z-10 transform -scale-x-100 rotate-0"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Mobile Version (Bottom Right) -->
+                        <div class="md:hidden absolute z-20 -right-2 bottom-20 w-24 pointer-events-none">
+                            <div class="relative">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full scale-75"
+                                ></div>
+                                <img
+                                    src="img/yeti-pointing.png"
+                                    alt="Yeti"
+                                    class="w-full h-auto animate-bounce-slow relative z-10 transform -scale-x-100"
                                 />
                             </div>
                         </div>
