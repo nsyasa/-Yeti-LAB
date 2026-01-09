@@ -58,6 +58,7 @@ import '../modules/store/store.js';
 import '../modules/cache.js';
 import '../modules/metrics.js';
 import '../modules/api.js';
+import '../modules/core/services.js'; // Services Wrapper (Step 1)
 
 // ==========================================
 // PHASE 5: Supabase & Auth
@@ -107,6 +108,7 @@ import '../modules/assistant.js';
 
 // Admin View & Modules
 import '../constants/elements.js';
+import '../constants/selectors.js'; // DOM Selectors (Step 2)
 import '../modules/admin/storage.js';
 import '../modules/admin/courses.js';
 import '../modules/admin/phases.js';
