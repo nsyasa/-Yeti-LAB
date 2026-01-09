@@ -193,8 +193,8 @@ const UI = {
                         <p class="text-xs text-gray-400 mt-1 hidden lg:block">${completed > 0 ? `${completed}/${total} ders` : 'Henüz başlamadın'}</p>
                     </div>
                     
-                    <!-- Peek Yeti (desktop only, appears on hover) -->
-                    <div class="absolute -bottom-4 -right-4 w-20 h-20 lg:w-24 lg:h-24 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px] hidden lg:block">
+                    <!-- Peek Yeti (appears on hover, smaller on mobile) -->
+                    <div class="absolute -bottom-2 -right-2 lg:-bottom-4 lg:-right-4 w-12 h-12 lg:w-24 lg:h-24 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px]">
                         <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain drop-shadow-lg" />
                     </div>
                     
