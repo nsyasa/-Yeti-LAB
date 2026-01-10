@@ -164,18 +164,19 @@ const Auth = {
     /**
      * Check existing session
      */
-    async checkSession() {
+    async checkSession(retries = 3) {
         try {
             const {
                 data: { session },
                 error,
             } = await SupabaseClient.getClient().auth.getSession();
 
-            // Handle AbortError gracefully - this happens on page load sometimes
+            // Handle AbortError gracefully - retry if possible
             if (error) {
-                if (error.name === 'AbortError' || error.message?.includes('aborted')) {
-                    console.warn('[Auth] Session check aborted (network issue), continuing...');
-                    return null;
+                if ((error.name === 'AbortError' || error.message?.includes('aborted')) && retries > 0) {
+                    console.warn(`[Auth] Session check aborted, retrying... (${retries} attempts left)`);
+                    await new Promise((r) => setTimeout(r, 500)); // Wait 500ms
+                    return this.checkSession(retries - 1);
                 }
                 throw error;
             }
@@ -188,13 +189,16 @@ const Auth = {
 
             return session;
         } catch (error) {
-            // AbortError is common on slow connections or when page is navigating away
+            // If all retries failed
             if (error.name === 'AbortError' || error.message?.includes('aborted')) {
-                console.warn('[Auth] Session check aborted, continuing without session...');
+                console.warn(
+                    '[Auth] Session check failed after retries (network/abort). Continuing without session updates.'
+                );
                 return null;
             }
             console.error('[Auth] checkSession error:', error);
-            throw error;
+            // Don't throw for session check, just return null to allow app to load in guest mode
+            return null;
         }
     },
 
