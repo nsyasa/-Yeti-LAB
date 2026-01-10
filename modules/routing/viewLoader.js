@@ -294,6 +294,13 @@ const ViewLoader = {
         }
 
         try {
+            // Modules
+            await import('../../modules/teacher/classrooms.js');
+            await import('../../modules/teacher/students.js');
+            await import('../../modules/teacher/analytics.js');
+            await import('../../modules/teacher-manager.js');
+
+            // View Components
             await import('../../views/teacher/TeacherLayout.js');
             await import('../../views/teacher/sections/DashboardSection.js');
             await import('../../views/teacher/sections/ClassroomsSection.js');
