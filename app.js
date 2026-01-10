@@ -138,12 +138,8 @@ const app = {
                         app.renderCourseSelection();
 
                         // ===== FAZ 3: Route Change Event Handler =====
-                        // Store'un route:change eventini dinle
-                        if (window.Store && Store.on) {
-                            Store.on('route:change', (routeInfo) => {
-                                app.handleRouteChange(routeInfo);
-                            });
-                        }
+                        // Store'un route:change eventini dinlemeye GEREK YOK
+                        // Router.js artık doğrudan yönetiyor.
 
                         // Router Init: URL parametrelerini kontrol et ve yönlendir
                         if (window.Router) {
@@ -243,60 +239,17 @@ const app = {
         window.location.reload();
     },
 
-    // ===== FAZ 3: Route Change Handler =====
-    // Hash route değişikliklerini mevcut view'lara bağlar
-    handleRouteChange: async (routeInfo) => {
-        const { route, params } = routeInfo;
-        console.log(`[App] Route change: ${route}`, params);
+    // ===== FAZ 3: Legacy Route Handler =====
+    // Sadece Home, Course ve Project route'larını yönetir
+    // SPA route'ları (Admin, Teacher vb.) Router.js tarafından yönetilir
+    handleLegacyRoute: async (route, params) => {
+        console.log(`[App] Legacy Route: ${route}`, params);
 
-        // Route tipini belirle
-        const isTeacherRoute = route === 'teacher' || route === 'teacher-classrooms' || route === 'teacher-students';
-        const isAdminRoute =
-            route === 'admin' || route === 'admin-projects' || route === 'admin-phases' || route === 'admin-components';
-        const isProfileRoute = route === 'profile' || route === 'profile-wizard';
-        const isStudentDashboardRoute = route === 'student-dashboard';
-        const _isHomeRoute = route === 'home' || route === 'course' || route === 'project';
-
-        // ===== ViewManager ile akıllı unmount =====
-        // Sadece farklı bir view grubuna geçerken unmount et
-        // Admin route'ları arasında geçişte yeniden mount ETME!
+        // SPA View'larından çıkış yapılıyorsa unmount et
         const currentView = window.ViewManager?.getCurrentView?.();
-
-        // Sadece view grup değişimlerinde unmount
         if (currentView) {
-            const isLeavingAdmin = currentView === window.AdminView && !isAdminRoute;
-            const isLeavingTeacher = currentView === window.TeacherView && !isTeacherRoute;
-            const isLeavingProfile = currentView === window.ProfileView && !isProfileRoute;
-            const isLeavingStudentDashboard = currentView === window.StudentDashboardView && !isStudentDashboardRoute;
-
-            if (isLeavingAdmin || isLeavingTeacher || isLeavingProfile || isLeavingStudentDashboard) {
-                console.log('[App] Leaving current view, unmounting...');
-                ViewManager.unmountCurrent();
-            }
-        }
-
-        // Teacher view'dan çıkış kontrolü (fallback)
-        if (!isTeacherRoute && window.TeacherView?.isLoaded) {
-            console.log('[App] Leaving teacher view, unmounting...');
-            TeacherView.unmount();
-        }
-
-        // Admin view'dan çıkış kontrolü (fallback)
-        if (!isAdminRoute && window.AdminView?.isLoaded) {
-            console.log('[App] Leaving admin view, unmounting...');
-            AdminView.unmount();
-        }
-
-        // Profile view'dan çıkış kontrolü (fallback)
-        if (!isProfileRoute && window.ProfileView?.isLoaded) {
-            console.log('[App] Leaving profile view, unmounting...');
-            ProfileView.unmount();
-        }
-
-        // Student Dashboard view'dan çıkış kontrolü (fallback)
-        if (!isStudentDashboardRoute && window.StudentDashboardView?.isLoaded) {
-            console.log('[App] Leaving student dashboard view, unmounting...');
-            StudentDashboardView.unmount();
+            console.log('[App] Switching to legacy view, unmounting SPA view...');
+            ViewManager.unmountCurrent();
         }
 
         switch (route) {
@@ -337,121 +290,10 @@ const app = {
                 }
                 break;
 
-            // ===== TEACHER PANEL ROUTES (SPA) =====
-            case 'teacher':
-            case 'teacher-classrooms':
-            case 'teacher-students':
-                await app.loadTeacherView(route);
-                break;
-
-            // ===== ADMIN PANEL ROUTES (SPA) =====
-            case 'admin':
-            case 'admin-projects':
-            case 'admin-phases':
-            case 'admin-components':
-                await app.loadAdminView(route);
-                break;
-
-            // ===== PROFILE ROUTES (SPA) =====
-            case 'profile':
-            case 'profile-wizard':
-                await app.loadProfileView(route);
-                break;
-
-            // ===== STUDENT DASHBOARD ROUTE (SPA) =====
-            case 'student-dashboard':
-                await app.loadStudentDashboardView();
-                break;
-
             default:
-                console.warn(`[App] Unknown route: ${route}`);
+                console.warn(`[App] Unknown legacy route: ${route}`);
                 app.renderCourseSelection(false);
         }
-    },
-
-    // ===== View Loaders (Delegated to modules/routing/viewLoader.js) =====
-    // Admin View Loader (SPA)
-    loadAdminView: async (route) => {
-        if (window.ViewLoader?.loadAdminView) {
-            return window.ViewLoader.loadAdminView(route);
-        }
-        console.error('[App] ViewLoader module not loaded');
-    },
-
-    // Admin script'lerini lazy load et
-    loadAdminScripts: async () => {
-        if (window.ViewLoader?.loadAdminScripts) {
-            return window.ViewLoader.loadAdminScripts();
-        }
-    },
-
-    // Teacher View Loader (SPA)
-    loadTeacherView: async (route) => {
-        if (window.ViewLoader?.loadTeacherView) {
-            return window.ViewLoader.loadTeacherView(route);
-        }
-        console.error('[App] ViewLoader module not loaded');
-    },
-
-    // Teacher script'lerini lazy load et
-    loadTeacherScripts: async () => {
-        if (window.ViewLoader?.loadTeacherScripts) {
-            return window.ViewLoader.loadTeacherScripts();
-        }
-    },
-
-    // Profile View Loader (SPA)
-    loadProfileView: async (route) => {
-        if (window.ViewLoader?.loadProfileView) {
-            return window.ViewLoader.loadProfileView(route);
-        }
-        console.error('[App] ViewLoader module not loaded');
-    },
-
-    // Profile script'lerini lazy load et
-    loadProfileScripts: async () => {
-        if (window.ViewLoader?.loadProfileScripts) {
-            return window.ViewLoader.loadProfileScripts();
-        }
-    },
-
-    // Student Dashboard View Loader (SPA)
-    loadStudentDashboardView: async () => {
-        if (window.ViewLoader?.loadStudentDashboardView) {
-            return window.ViewLoader.loadStudentDashboardView();
-        }
-        console.error('[App] ViewLoader module not loaded');
-    },
-
-    // Student Dashboard script'lerini lazy load et
-    loadStudentDashboardScripts: async () => {
-        if (window.ViewLoader?.loadStudentDashboardScripts) {
-            return window.ViewLoader.loadStudentDashboardScripts();
-        }
-    },
-
-    // Script loader helper (delegated to ViewLoader)
-    _loadedScripts: new Set(),
-
-    loadScript: (src) => {
-        if (window.ViewLoader?.loadScript) {
-            return window.ViewLoader.loadScript(src);
-        }
-        // Fallback: basic script loader
-        return new Promise((resolve, reject) => {
-            if (app._loadedScripts.has(src)) {
-                resolve();
-                return;
-            }
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = () => {
-                app._loadedScripts.add(src);
-                resolve();
-            };
-            script.onerror = () => reject(new Error(`Failed to load ${src}`));
-            document.body.appendChild(script);
-        });
     },
 
     renderCourseSelection: (updateHistory = true) => {

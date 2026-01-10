@@ -139,11 +139,78 @@ const Router = {
 
         console.log(`[Router] Route: ${route}`, params);
 
-        // Store event sistemi varsa kullan
         if (window.Store && Store.emit) {
             Store.emit('route:change', this.currentRoute);
         }
+
+        // ===== FAZ 2: Centralized Route Logic =====
+        this.handleRouteLogic(route, params);
     },
+
+    /**
+     * Merkezi Route Mantığı
+     * View geçişlerini ve yüklemelerini yönetir.
+     * @param {string} route
+     * @param {Object} params
+     */
+    async handleRouteLogic(route, params) {
+        // 1. SPA View Grupları
+        const isTeacherRoute = route.startsWith('teacher');
+        const isAdminRoute = route.startsWith('admin');
+        const isProfileRoute = route.startsWith('profile');
+        const isStudentDashboardRoute = route === 'student-dashboard';
+
+        // 2. ViewManager ile temizlik (Opsiyonel - ViewLoader zaten yapıyor olabilir ama garanti olsun)
+        // Router artık ViewManager'ı doğrudan kullanmıyor, ViewLoader'a bırakıyor.
+        // Ancak ViewLoader'ın "unmountOthers" yapması lazım.
+        // Şimdilik ViewLoader her view için "switchView" yapıyor, bu da CSS ile gizliyor.
+        // ViewManager entegrasyonu ViewLoader içinde.
+
+        // 3. Route Switch
+        switch (route) {
+            // --- SPA ROUTES ---
+            case 'teacher':
+            case 'teacher-classrooms':
+            case 'teacher-students':
+                if (window.ViewLoader) await window.ViewLoader.loadTeacherView(route);
+                break;
+
+            case 'admin':
+            case 'admin-projects':
+            case 'admin-phases':
+            case 'admin-components':
+                if (window.ViewLoader) await window.ViewLoader.loadAdminView(route);
+                break;
+
+            case 'profile':
+            case 'profile-wizard':
+                if (window.ViewLoader) await window.ViewLoader.loadProfileView(route);
+                break;
+
+            case 'student-dashboard':
+                if (window.ViewLoader) await window.ViewLoader.loadStudentDashboardView();
+                break;
+
+            // --- LEGACY ROUTES (App.js'e delege et) ---
+            case 'home':
+            case 'course':
+            case 'project':
+            default:
+                // App instance varsa oraya bildir (App.js'deki handleLegacyRoute vb.)
+                if (this.appInstance && this.appInstance.handleLegacyRoute) {
+                    this.appInstance.handleLegacyRoute(route, params);
+                } else if (this.appInstance && this.appInstance.handleRouteChange) {
+                    // Geçici: Henüz App.js refactor edilmediyse eski metoda düşmesin diye
+                    // App.js'deki handleRouteChange'i modifiye edeceğiz.
+                    // Şimdilik boş bırakıyorum, App.js'i güncelleyince burayı bağlayacağım.
+                    console.log('[Router] Legacy route delegated to App');
+                }
+                break;
+        }
+    },
+
+    // App instance referansı (init'te set edilir)
+    appInstance: null,
 
     // ===== MEVCUT: Query String Desteği (Backward Compat) =====
     // URL parametrelerini oku
@@ -199,6 +266,8 @@ const Router = {
 
     // Başlangıç durumunu yükle
     init: async (appInstance) => {
+        this.appInstance = appInstance; // Save reference for legacy delegation
+
         if (window.Performance) window.Performance.mark('router_init');
         console.log('[Router] Initializing...');
 

@@ -53,15 +53,15 @@ Aşağıdaki sırayla ilerlenmesi önerilir:
 
 ### 🛑 Faz 1: Acil Güvenlik & Stabilite (Hemen)
 
-- [ ] `supabaseClient.js` temizliği: Hardcoded key'lerin silinmesi.
-- [ ] `.env` yapılandırmasının doğrulanması.
-- [ ] `Auth` modülündeki `AbortError` yaması yerine kök neden (retry logic) çözümü.
-- [ ] Admin Panel `AutoSave` için `debounce` (3sn) eklenmesi.
+- [x] `supabaseClient.js` temizliği: Hardcoded key'lerin silinmesi.
+- [x] `.env` yapılandırmasının doğrulanması.
+- [x] `Auth` modülündeki `AbortError` yaması yerine kök neden (retry logic) çözümü.
+- [x] Admin Panel `AutoSave` için `debounce` (3sn) eklenmesi.
 
 ### 🏗️ Faz 2: Mimari Temizlik (Refactoring)
 
-- [ ] `app.js` diyeti: Routing mantığının `Router` ve `ViewManager`'a taşınması.
-- [ ] `modules/admin.js` dosyasının parçalanması (`AdminController`, `AdminState` vb.).
+- [x] `app.js` diyeti: Routing mantığının `Router` ve `ViewManager`'a taşınması.
+- [x] `modules/admin.js` dosyasının parçalanması (`AdminController`, `AdminState` vb.).
 - [ ] CSS temizliği: `styles/*.css` dosyalarındaki çakışan stillerin Tailwind'e taşınması.
 
 ### 🧪 Faz 3: Güven Ağı (Testing)
