@@ -59,6 +59,13 @@
     body {
         @apply font-sans bg-gray-50 text-gray-900 transition-colors duration-300;
     }
+
+    /* Dark mode base styles */
+    body.dark-mode,
+    html.dark body,
+    html.dark-mode body {
+        @apply bg-gray-900 text-gray-100;
+    }
 }
 
 @layer components {
@@ -112,7 +119,9 @@
         animation: skeleton-shimmer 1.5s infinite ease-in-out;
     }
 
-    body.dark-mode .skeleton {
+    body.dark-mode .skeleton,
+    html.dark .skeleton,
+    html.dark-mode .skeleton {
         background-image: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
     }
 
@@ -212,7 +221,11 @@
     }
 
     body.dark-mode .teacher-bg,
-    body.dark-mode .admin-bg {
+    body.dark-mode .admin-bg,
+    html.dark .teacher-bg,
+    html.dark .admin-bg,
+    html.dark-mode .teacher-bg,
+    html.dark-mode .admin-bg {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     }
 
@@ -225,7 +238,9 @@
         @apply -translate-y-0.5 shadow-xl;
     }
 
-    body.dark-mode .glass-card {
+    body.dark-mode .glass-card,
+    html.dark .glass-card,
+    html.dark-mode .glass-card {
         @apply bg-slate-900/90 border-slate-700/50;
     }
 
@@ -240,7 +255,9 @@
         user-select: all;
     }
 
-    body.dark-mode .code-box-display {
+    body.dark-mode .code-box-display,
+    html.dark .code-box-display,
+    html.dark-mode .code-box-display {
         @apply bg-emerald-950/40 border-emerald-400 text-emerald-300 hover:bg-emerald-900/60;
     }
 }

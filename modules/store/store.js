@@ -25,15 +25,30 @@ const Store = {
     // Initialize store
     init() {
         // Load initial state from local storage if needed
+        // Sync with ThemeManager: check both 'theme' and 'yeti_theme' keys
         // Default theme is 'dark' - users can switch to light in profile settings
-        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedTheme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme') || 'dark';
         this.state.theme = savedTheme;
 
+        // Sync localStorage keys
+        if (savedTheme) {
+            localStorage.setItem('theme', savedTheme);
+            localStorage.setItem('yeti_theme', savedTheme);
+        }
+
         // Apply theme to DOM immediately (before setState to avoid double render)
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
+        // Use ThemeManager if available, otherwise apply directly
+        if (window.ThemeManager && window.ThemeManager.applyTheme) {
+            window.ThemeManager.applyTheme(savedTheme);
         } else {
-            document.body.classList.remove('dark-mode');
+            // Fallback: apply directly to both body and html
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.documentElement.classList.remove('dark');
+            }
         }
 
         console.log('📦 Store initialized with theme:', savedTheme);
@@ -189,13 +204,23 @@ const Store = {
     // UI Actions
     setTheme(theme) {
         this.setState({ theme });
-        // Side effect: Save to local storage
+        // Sync with ThemeManager: save to both localStorage keys
         localStorage.setItem('theme', theme);
-        // Side effect: Update DOM
-        if (theme === 'dark') {
-            document.body.classList.add('dark-mode');
+        localStorage.setItem('yeti_theme', theme);
+
+        // Use ThemeManager if available, otherwise apply directly
+        if (window.ThemeManager && window.ThemeManager.applyTheme) {
+            window.ThemeManager.applyTheme(theme);
         } else {
-            document.body.classList.remove('dark-mode');
+            // Fallback: apply directly to both body and html (for Tailwind dark mode)
+            // Add both 'dark' and 'dark-mode' classes to support all CSS selectors
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark', 'dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.documentElement.classList.remove('dark', 'dark-mode');
+            }
         }
     },
 };

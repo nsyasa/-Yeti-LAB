@@ -9,23 +9,31 @@ const ThemeManager = {
 
     /**
      * Initialize theme on page load
-     * Priority: 1. User preference  2. System preference  3. Light
+     * Priority: 1. User preference  2. Default dark mode
      */
     init() {
-        const savedTheme = localStorage.getItem(this.STORAGE_KEY);
+        // Sync with Store: check both localStorage keys
+        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme') || 'dark';
 
-        if (savedTheme) {
-            // User has a saved preference
-            this.applyTheme(savedTheme);
-        } else {
-            // Default: Dark mode (users can switch to light in profile settings)
-            // System preference is secondary now
-            this.applyTheme('dark');
+        // Sync localStorage keys and ensure default is dark
+        const theme = savedTheme || 'dark';
+        localStorage.setItem(this.STORAGE_KEY, theme);
+        localStorage.setItem('theme', theme);
+
+        // Apply theme
+        this.applyTheme(theme);
+
+        // Sync with Store if available
+        if (window.Store && window.Store.setState) {
+            window.Store.setState({ theme });
         }
 
-        // Listen for system theme changes (only if no user preference)
+        // Listen for system theme changes (only if no user preference - but we always use dark by default)
+        // This listener is kept for future system preference support
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem(this.STORAGE_KEY)) {
+            const currentTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme');
+            if (!currentTheme) {
+                // Only use system preference if no saved preference exists
                 this.applyTheme(e.matches ? 'dark' : 'light');
             }
         });
@@ -37,11 +45,13 @@ const ThemeManager = {
      */
     applyTheme(theme) {
         if (theme === 'dark') {
+            // Add both class names to support all CSS selectors
             document.body.classList.add('dark-mode');
-            document.documentElement.classList.add('dark');
+            document.documentElement.classList.add('dark', 'dark-mode');
         } else {
+            // Remove all dark mode classes
             document.body.classList.remove('dark-mode');
-            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.remove('dark', 'dark-mode');
         }
 
         // Update meta theme-color for mobile browsers
@@ -57,14 +67,27 @@ const ThemeManager = {
      */
     setTheme(theme) {
         if (theme === 'system') {
-            // Remove saved preference, use system
+            // Remove saved preference, use system (but default to dark)
             localStorage.removeItem(this.STORAGE_KEY);
+            localStorage.removeItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            this.applyTheme(prefersDark ? 'dark' : 'light');
+            const systemTheme = prefersDark ? 'dark' : 'light';
+            this.applyTheme(systemTheme);
+
+            // Sync with Store
+            if (window.Store && window.Store.setState) {
+                window.Store.setState({ theme: systemTheme });
+            }
         } else {
-            // Save user preference
+            // Save user preference to both localStorage keys
             localStorage.setItem(this.STORAGE_KEY, theme);
+            localStorage.setItem('theme', theme);
             this.applyTheme(theme);
+
+            // Sync with Store
+            if (window.Store && window.Store.setState) {
+                window.Store.setState({ theme });
+            }
         }
     },
 

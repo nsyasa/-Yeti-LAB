@@ -7,6 +7,7 @@ module.exports = {
         './modules/**/*.js',
         './data/*.js',
     ],
+    darkMode: 'class', // Enable class-based dark mode
     theme: {
         extend: {
             colors: {

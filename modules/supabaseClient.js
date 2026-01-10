@@ -15,15 +15,15 @@
 // Bu değerler production'da kullanılır
 // Vite build zamanında .env dosyasından override edilebilir
 // Vite build sırasında .env'den al, fallback olarak default kullan
-// Environment variables checking
-const DEFAULT_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const DEFAULT_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Environment variables checking with fallback values
+const DEFAULT_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://zuezvfojutlefdvqrica.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY =
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8';
 
-if (!DEFAULT_SUPABASE_URL || !DEFAULT_SUPABASE_ANON_KEY) {
-    console.error('🚨 Supabase environment variables are missing! Please check your .env file.');
-    if (typeof window !== 'undefined') {
-        console.warn('Yeti LAB: .env dosyası eksik veya VITE_SUPABASE_URL tanımlanmamış.');
-    }
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    console.warn('🚨 Supabase environment variables are missing! Using fallback values.');
+    console.warn('Yeti LAB: .env dosyası oluşturup VITE_SUPABASE_URL ve VITE_SUPABASE_ANON_KEY tanımlamanız önerilir.');
 }
 
 // NOT: Environment variables desteği için Vite build pipeline'ı gereklidir

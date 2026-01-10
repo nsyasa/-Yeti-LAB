@@ -18,7 +18,41 @@
             body {
                 font-family: 'Outfit', sans-serif;
             }
+            /* Dark mode varsayılan - JavaScript yüklenmeden önce */
+            html {
+                color-scheme: dark light;
+            }
+            /* Default: Dark mode */
+            body {
+                background-color: #0f172a;
+                color: #f1f5f9;
+            }
+            /* Light mode override (only if explicitly set) */
+            html.light body,
+            html[data-theme='light'] body {
+                background-color: #f9fafb;
+                color: #111827;
+            }
         </style>
+
+        <!-- Dark mode initialization - CRITICAL: Must run before body renders -->
+        <script>
+            // Apply dark mode immediately to prevent flash of light mode
+            (function () {
+                const theme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme') || 'dark';
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark', 'dark-mode');
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                } else {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark', 'dark-mode');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.style.colorScheme = 'light';
+                }
+            })();
+        </script>
 
         <!-- Performance Monitor (Critical - Must be first) -->
         <script>
@@ -62,7 +96,9 @@
         </style>
     </head>
 
-    <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+    <body
+        class="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300"
+    >
         <!-- Sidebar Overlay -->
         <div
             id="sidebar-overlay"
@@ -73,7 +109,7 @@
         <!-- Sidebar (Ders Gezgini) -->
         <div
             id="lesson-sidebar"
-            class="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl overflow-y-auto border-r border-gray-200 flex flex-col pb-10"
+            class="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl overflow-y-auto border-r border-gray-200 dark:border-gray-700 flex flex-col pb-10"
         >
             <div class="p-4 bg-theme text-white flex justify-between items-center sticky top-0 z-10 shadow-md">
                 <h2 class="font-bold text-lg">Ders Listesi</h2>
@@ -92,7 +128,7 @@
         ></header>
 
         <!-- Mobile Search Overlay -->
-        <div id="mobile-search-overlay" class="fixed inset-0 bg-white z-50 hidden md:hidden">
+        <div id="mobile-search-overlay" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 hidden md:hidden">
             <div class="p-4">
                 <div class="flex items-center gap-3">
                     <button onclick="app.toggleMobileSearch()" class="p-2 text-gray-500 hover:text-gray-700">
@@ -150,14 +186,14 @@
                     <!-- Title Section -->
                     <div class="text-center lg:text-left space-y-4">
                         <h2
-                            class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight"
+                            class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
                         >
                             <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                                 İçindeki Yeti'yi
                             </span>
                             <br />Keşfetmeye Hazır Mısın? 🚀
                         </h2>
-                        <p class="text-lg md:text-xl text-gray-500 max-w-2xl leading-relaxed">
+                        <p class="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
                             Sadece video izleme, yaparak öğren. Kendi hızında ilerle, simülasyonlarla dene ve rozetleri
                             topla.
                         </p>
@@ -166,21 +202,21 @@
                 <div id="course-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                     <!-- SKELETON LOADER (JS yüklenene kadar görünür) -->
                     <div
-                        class="course-skeleton animate-pulse bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-64 flex flex-col items-center justify-center"
+                        class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center"
                     >
                         <div class="w-16 h-16 bg-gray-200 rounded-full mb-4"></div>
                         <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                         <div class="h-3 bg-gray-200 rounded w-1/2"></div>
                     </div>
                     <div
-                        class="course-skeleton animate-pulse bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-64 flex flex-col items-center justify-center hidden md:flex"
+                        class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center hidden md:flex"
                     >
                         <div class="w-16 h-16 bg-gray-200 rounded-full mb-4"></div>
                         <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                         <div class="h-3 bg-gray-200 rounded w-1/2"></div>
                     </div>
                     <div
-                        class="course-skeleton animate-pulse bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-64 flex flex-col items-center justify-center hidden lg:flex"
+                        class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center hidden lg:flex"
                     >
                         <div class="w-16 h-16 bg-gray-200 rounded-full mb-4"></div>
                         <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -195,7 +231,7 @@
                     <div class="flex items-center justify-between mb-8 mt-4">
                         <button
                             onclick="app.renderCourseSelection()"
-                            class="text-gray-700 hover:text-white hover:bg-theme font-bold flex items-center gap-2 px-6 py-3 rounded-xl bg-white shadow-md border border-gray-100 transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                            class="text-gray-700 dark:text-gray-200 hover:text-white hover:bg-theme font-bold flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 transform hover:scale-105 active:scale-95 group"
                         >
                             <span class="text-xl group-hover:-translate-x-1 transition-transform duration-300">←</span>
                             <span>Ders Seçimine Dön</span>
@@ -216,7 +252,7 @@
                         ></div>
                         <span
                             id="course-progress-text"
-                            class="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 group-hover:text-white transition-colors duration-200"
+                            class="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-200"
                             >%0 Tamamlandı</span
                         >
                     </div>
@@ -233,7 +269,7 @@
                     <div class="flex gap-2 mb-2">
                         <button
                             onclick="app.renderDashboard()"
-                            class="text-sm text-gray-700 hover:text-white hover:bg-theme flex items-center gap-2 font-bold bg-white px-5 py-2.5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                            class="text-sm text-gray-700 dark:text-gray-200 hover:text-white hover:bg-theme flex items-center gap-2 font-bold bg-white dark:bg-gray-800 px-5 py-2.5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 group"
                         >
                             <span class="group-hover:-translate-x-1 transition-transform duration-300">←</span> Geri
                         </button>
@@ -248,7 +284,7 @@
                     <!-- Simülatör / İnteraktif Kart -->
                     <div
                         id="sim-container"
-                        class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col relative"
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col relative"
                         style="min-height: 450px"
                     >
                         <div class="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
@@ -273,7 +309,7 @@
                             <!-- Kontrol Paneli (Butonlar/Sliderlar) -->
                             <div
                                 id="simControls"
-                                class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur p-3 border-t border-gray-200 shadow-inner z-30"
+                                class="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur p-3 border-t border-gray-200 dark:border-gray-700 shadow-inner z-30"
                             ></div>
                         </div>
 
@@ -288,7 +324,10 @@
                     </div>
 
                     <!-- Grafik Kartı -->
-                    <div id="chart-card" class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 hidden">
+                    <div
+                        id="chart-card"
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 hidden"
+                    >
                         <h4 class="text-xs font-bold text-gray-500 uppercase mb-2 flex justify-between items-center">
                             <span>📊 Veri Grafiği (Serial Plotter)</span>
                         </h4>
@@ -300,7 +339,7 @@
 
                 <!-- SAĞ KOLON: İçerik (Sekmeler) -->
                 <div
-                    class="w-full lg:w-7/12 flex flex-col bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+                    class="w-full lg:w-7/12 flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
                     style="min-height: 600px"
                 >
                     <div class="p-6 border-b border-gray-100 bg-gray-50">
@@ -311,23 +350,29 @@
                                     class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 uppercase tracking-wider text-white bg-theme shadow-sm"
                                     >Giriş</span
                                 >
-                                <h2 id="project-title" class="text-2xl font-bold text-gray-900 leading-tight">
+                                <h2
+                                    id="project-title"
+                                    class="text-2xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
+                                >
                                     Başlık
                                 </h2>
                             </div>
                             <div class="text-5xl cursor-default" id="project-icon">⚡</div>
                         </div>
-                        <p id="project-desc" class="mt-2 text-gray-600">Açıklama...</p>
+                        <p id="project-desc" class="mt-2 text-gray-600 dark:text-gray-300">Açıklama...</p>
                     </div>
 
                     <div
                         id="project-tabs-container"
-                        class="flex border-b border-gray-200 overflow-x-auto bg-white sticky top-0 z-10"
+                        class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto bg-white dark:bg-gray-800 sticky top-0 z-10"
                     >
                         <!-- Tab buttons are dynamically generated by UI.renderTabs() -->
                     </div>
 
-                    <div class="p-6 overflow-y-auto flex-grow h-[500px] bg-white relative" id="tab-content-area"></div>
+                    <div
+                        class="p-6 overflow-y-auto flex-grow h-[500px] bg-white dark:bg-gray-800 relative"
+                        id="tab-content-area"
+                    ></div>
                 </div>
             </div>
         </main>
@@ -335,7 +380,7 @@
         <!-- Mobile Bottom Navigation -->
         <nav
             id="mobile-bottom-nav"
-            class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 md:hidden"
+            class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40 md:hidden"
         >
             <div class="grid grid-cols-4 h-16">
                 <button
