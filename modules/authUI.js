@@ -196,15 +196,23 @@ const AuthUI = {
         }
 
         try {
+            // Attempt server-side sign out
             await Auth.signOut();
+        } catch (err) {
+            // Log but continue cleanup - if session is missing, we still want to clear local state
+            console.warn('[AuthUI] Server logout warning (continuing local cleanup):', err);
+        }
+
+        try {
             // Also clear student session if any
             if (Auth.studentLogout) Auth.studentLogout();
 
             AuthUI.updateUserUI(null);
             window.location.reload();
         } catch (err) {
-            console.error('[AuthUI] Logout error:', err);
-            alert('Çıkış yapılırken hata oluştu');
+            console.error('[AuthUI] Local cleanup error:', err);
+            // Fallback redirect
+            window.location.href = 'auth.html';
         }
     },
 };
