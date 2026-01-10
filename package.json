@@ -4,8 +4,6 @@
     "description": "Yeti LAB - İnteraktif Robotik ve Kodlama Eğitim Platformu",
     "main": "app.js",
     "scripts": {
-        "build:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i styles/input.css -o styles/output.css --minify",
-        "watch:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i styles/input.css -o styles/output.css --watch",
         "convert": "node --experimental-vm-modules scripts/convert-js-to-json.js",
         "import": "node scripts/import-to-supabase.js",
         "migrate": "npm run convert && npm run import",
