@@ -38,8 +38,8 @@
     --radius-2xl: 1rem;
 
     /* Letter Spacing */
-    --letter-spacing-tighter: -0.02em;
-    --letter-spacing-tightest: -0.05em;
+    --tracking-tighter: -0.02em;
+    --tracking-tightest: -0.05em;
 }
 
 /* Explicit Sources for Tailwind Scanning */
