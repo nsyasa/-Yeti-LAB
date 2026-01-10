@@ -18,7 +18,7 @@
 const DEFAULT_SUPABASE_URL = import.meta?.env?.VITE_SUPABASE_URL || 'https://zuezvfojutlefdvqrica.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY =
     import.meta?.env?.VITE_SUPABASE_ANON_KEY ||
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEwOTQwNjEsImV4cCI6MjAyNjY2OTY2MX0.s7rS_C8yq_D-i4N7U-P9P7Q_r';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8';
 
 // NOT: Environment variables desteği için Vite build pipeline'ı gereklidir
 // Şu an klasik <script> tag'leri kullanıldığı için doğrudan değerler kullanılıyor
