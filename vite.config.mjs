@@ -24,8 +24,8 @@ export default defineConfig({
                 // Define global variables for external dependencies
                 globals: {
                     '@supabase/supabase-js': 'supabase', // Global variable name from CDN
-                    'chart.js': 'Chart'
-                }
+                    'chart.js': 'Chart',
+                },
             },
             // External dependencies (loaded from CDN)
             // Prevent bundling if accidentally imported
