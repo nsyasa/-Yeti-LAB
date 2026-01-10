@@ -55,6 +55,11 @@ const SupabaseClient = {
             return false;
         }
 
+        if (!this.SUPABASE_URL || !this.SUPABASE_ANON_KEY) {
+            console.warn('[SupabaseClient] Missing credentials. Skipping initialization.');
+            return false;
+        }
+
         try {
             // Create client with auth options to prevent AbortError
             this.client = supabase.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY, {
