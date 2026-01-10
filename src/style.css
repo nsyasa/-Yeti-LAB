@@ -3,6 +3,41 @@
 /* Tailwind v4 Setup */
 @import 'tailwindcss';
 
+@theme {
+    /* Brand Colors */
+    --color-primary-50: #f0fdfa;
+    --color-primary-100: #ccfbf1;
+    --color-primary-200: #99f6e4;
+    --color-primary-300: #5eead4;
+    --color-primary-400: #2dd4bf;
+    --color-primary-500: #00979c;
+    --color-primary-600: #0d9488;
+    --color-primary-700: #0f766e;
+    --color-primary-800: #115e59;
+    --color-primary-900: #134e4a;
+    --color-primary-950: #042f2e;
+
+    /* Theme Semantic Aliases */
+    --color-theme: var(--color-primary-500);
+    --color-theme-light: var(--color-primary-50);
+
+    /* Spacing (Tailwind v4 already has a great default spacing scale, 
+     but we'll define our specific aliases if needed) */
+    --spacing-px: 1px;
+
+    /* Typography */
+    --font-sans: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    /* Shadows */
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-card-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-primary: 0 4px 14px 0 rgba(0, 151, 156, 0.3);
+
+    /* Radius */
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+}
+
 /* Explicit Sources for Tailwind Scanning */
 @source "../auth.html";
 @source "../index.html";
@@ -15,5 +50,193 @@
 @source "../views/**/*.js";
 @source "../data/**/*.js";
 
-/* Custom CSS Imports */
-/* Note: Vite handles @import inlining */
+/* Custom CSS Layers */
+@layer base {
+    body {
+        @apply font-sans bg-gray-50 text-gray-900 transition-colors duration-300;
+    }
+}
+
+@layer components {
+    /* ============================================
+     COURSE CARDS - Premium Hover Effects
+     ============================================ */
+    .course-card {
+        @apply relative overflow-hidden transition-all duration-300 border border-black/10 rounded-2xl bg-white;
+        transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .course-card::before {
+        content: '';
+        @apply absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none z-0;
+        background: linear-gradient(135deg, transparent 0%, rgba(var(--color-primary-rgb), 0.05) 100%);
+    }
+
+    .course-card:hover {
+        @apply -translate-y-2 scale-[1.02] border-theme shadow-card-hover;
+    }
+
+    .course-card:hover::before {
+        @apply opacity-100;
+    }
+
+    /* Shimmer Effect on Hover */
+    .course-card::after {
+        content: '';
+        @apply absolute -inset-[50%] w-[200%] h-[200%] transition-transform duration-700 pointer-events-none z-10;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(45deg) translateX(-100%);
+    }
+
+    .course-card:hover::after {
+        transform: rotate(45deg) translateX(100%);
+    }
+
+    /* Hotspots */
+    .hotspot {
+        @apply absolute w-6 h-6 bg-theme/80 border-2 border-white rounded-full cursor-pointer z-20 shadow-md flex items-center justify-center text-white font-bold text-sm transition-all duration-300;
+    }
+
+    .hotspot:hover {
+        @apply scale-150 bg-orange-500;
+    }
+
+    /* Skeleton Loading */
+    .skeleton {
+        @apply bg-slate-200 bg-[length:200%_100%] rounded-lg;
+        background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+        animation: skeleton-shimmer 1.5s infinite ease-in-out;
+    }
+
+    body.dark-mode .skeleton {
+        background-image: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    }
+
+    @keyframes skeleton-shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    /* ============================================
+     LAYOUT TRANSITIONS & OVERLAYS
+     ============================================ */
+
+    /* Header Base State */
+    #main-header {
+        @apply transition-transform duration-300 ease-in-out bg-white/95 backdrop-blur-md;
+        will-change: transform;
+        transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #main-header.nav-hidden {
+        @apply -translate-y-full pointer-events-none;
+    }
+
+    #main-header.header-scrolled {
+        @apply shadow-md;
+    }
+
+    /* Bottom Nav */
+    #mobile-bottom-nav {
+        @apply transition-transform duration-300 ease-in-out border-t border-black/5 bg-white/95 backdrop-blur-md;
+        will-change: transform;
+        transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #mobile-bottom-nav.nav-hidden {
+        @apply translate-y-full pointer-events-none;
+    }
+
+    /* Sidebar */
+    #lesson-sidebar {
+        @apply -translate-x-full transition-transform duration-300 ease-in-out z-[60];
+    }
+
+    #lesson-sidebar.open {
+        @apply translate-x-0;
+    }
+
+    .sidebar-overlay {
+        @apply fixed inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 z-[55];
+    }
+
+    .sidebar-overlay.open {
+        @apply opacity-100 pointer-events-auto;
+    }
+
+    .active-lesson {
+        @apply bg-theme-light text-theme border-r-4 border-theme;
+    }
+
+    /* ============================================
+       BRANDING & TYPOGRAPHY
+       ============================================ */
+    .brand-logo {
+        @apply font-bold leading-none tracking-tighter;
+    }
+
+    .brand-logo .brand-lab {
+        @apply font-black tracking-tightest text-[1.1em];
+    }
+
+    .brand-slogan {
+        @apply font-semibold opacity-85 text-[0.8rem] tracking-tight;
+    }
+
+    .text-display {
+        @apply font-extrabold tracking-tightest leading-[1.05];
+    }
+
+    .card-title {
+        @apply font-bold tracking-tight;
+    }
+
+    /* ============================================
+       PANEL SPECIFIC COMPONENTS
+       ============================================ */
+
+    /* Panel Backgrounds */
+    .teacher-bg,
+    .admin-bg {
+        @apply min-h-screen transition-colors duration-500;
+        background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+    }
+
+    body.dark-mode .teacher-bg,
+    body.dark-mode .admin-bg {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    /* Glass Cards */
+    .glass-card {
+        @apply bg-white/90 backdrop-blur-xl border border-white/80 shadow-lg transition-all duration-300 rounded-2xl p-6;
+    }
+
+    .glass-card:hover {
+        @apply -translate-y-0.5 shadow-xl;
+    }
+
+    body.dark-mode .glass-card {
+        @apply bg-slate-900/90 border-slate-700/50;
+    }
+
+    /* Stat Badges */
+    .stat-badge {
+        @apply text-sm leading-tight transition-all duration-200 rounded-xl p-4 shadow-sm hover:-translate-y-0.5 hover:shadow-md;
+    }
+
+    /* Classroom Code Box */
+    .code-box-display {
+        @apply font-mono text-2xl font-bold tracking-widest bg-emerald-50 border-2 border-dashed border-emerald-500 p-3 rounded-xl text-center text-emerald-600 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-emerald-100;
+        user-select: all;
+    }
+
+    body.dark-mode .code-box-display {
+        @apply bg-emerald-950/40 border-emerald-400 text-emerald-300 hover:bg-emerald-900/60;
+    }
+}

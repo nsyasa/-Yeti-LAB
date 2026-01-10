@@ -13,17 +13,6 @@
 // 1. Tailwind (Base + Components + Utilities)
 import './style.css';
 
-// 2. Core Styles (Overrides & Custom)
-import '../styles/tokens.css';
-import '../styles/components.css';
-import '../styles/main.css';
-
-// 3. Panel Styles
-import '../styles/teacher.css';
-import '../styles/admin.css';
-import '../styles/profile.css';
-import '../styles/student.css';
-
 // ==========================================
 // PHASE 1: Core Utilities (No dependencies)
 // ==========================================
