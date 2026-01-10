@@ -51,6 +51,13 @@ const CourseLoader = {
             color: '#7CB342',
             file: 'data/appinventor.js',
         },
+        'minecraft-edu': {
+            title: 'Minecraft Education',
+            description: 'Minecraft Education İle Kodlamayı Keşfedin',
+            icon: '⛏️',
+            color: '#4CAF50',
+            file: 'data/minecraft-edu.js',
+        },
     },
 
     /**
