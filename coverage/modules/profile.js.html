@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/586</span>
+                <span class='fraction'>0/604</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/586</span>
+                <span class='fraction'>0/604</span>
             </div>
         
             
@@ -649,7 +649,43 @@
 <a name='L584'></a><a href='#L584'>584</a>
 <a name='L585'></a><a href='#L585'>585</a>
 <a name='L586'></a><a href='#L586'>586</a>
-<a name='L587'></a><a href='#L587'>587</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L587'></a><a href='#L587'>587</a>
+<a name='L588'></a><a href='#L588'>588</a>
+<a name='L589'></a><a href='#L589'>589</a>
+<a name='L590'></a><a href='#L590'>590</a>
+<a name='L591'></a><a href='#L591'>591</a>
+<a name='L592'></a><a href='#L592'>592</a>
+<a name='L593'></a><a href='#L593'>593</a>
+<a name='L594'></a><a href='#L594'>594</a>
+<a name='L595'></a><a href='#L595'>595</a>
+<a name='L596'></a><a href='#L596'>596</a>
+<a name='L597'></a><a href='#L597'>597</a>
+<a name='L598'></a><a href='#L598'>598</a>
+<a name='L599'></a><a href='#L599'>599</a>
+<a name='L600'></a><a href='#L600'>600</a>
+<a name='L601'></a><a href='#L601'>601</a>
+<a name='L602'></a><a href='#L602'>602</a>
+<a name='L603'></a><a href='#L603'>603</a>
+<a name='L604'></a><a href='#L604'>604</a>
+<a name='L605'></a><a href='#L605'>605</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1416,6 +1452,9 @@
 <span class="cstat-no" title="statement not covered" >                Profile.Editor.loadCities();</span>
 <span class="cstat-no" title="statement not covered" >                Profile.Editor.renderAvatars();</span>
 <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Update theme buttons to reflect current theme</span>
+<span class="cstat-no" title="statement not covered" >                Profile.Editor.updateThemeButtons();</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >                // Load Stats async (don't block UI)</span>
 <span class="cstat-no" title="statement not covered" >                Profile.Editor.loadStats().catch((e) =&gt; console.warn('Stats load error:', e));</span>
 <span class="cstat-no" title="statement not covered" >            } catch (err) {</span>
@@ -1785,12 +1824,27 @@
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        setTheme(theme) {</span>
 <span class="cstat-no" title="statement not covered" >            if (window.ThemeManager) ThemeManager.setTheme(theme);</span>
-<span class="cstat-no" title="statement not covered" >            // Update UI buttons</span>
-<span class="cstat-no" title="statement not covered" >            const isLight = theme === 'light';</span>
-<span class="cstat-no" title="statement not covered" >            document.getElementById('theme-light-btn').classList.toggle('bg-theme', isLight);</span>
-<span class="cstat-no" title="statement not covered" >            document.getElementById('theme-light-btn').classList.toggle('text-white', isLight);</span>
-<span class="cstat-no" title="statement not covered" >            document.getElementById('theme-dark-btn').classList.toggle('bg-theme', !isLight);</span>
-<span class="cstat-no" title="statement not covered" >            document.getElementById('theme-dark-btn').classList.toggle('text-white', !isLight);</span>
+<span class="cstat-no" title="statement not covered" >            this.updateThemeButtons(theme);</span>
+<span class="cstat-no" title="statement not covered" >        },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        updateThemeButtons(theme) {</span>
+<span class="cstat-no" title="statement not covered" >            // Get current theme if not provided</span>
+<span class="cstat-no" title="statement not covered" >            const currentTheme = theme || (window.ThemeManager ? ThemeManager.getCurrentTheme() : 'dark');</span>
+<span class="cstat-no" title="statement not covered" >            const isLight = currentTheme === 'light';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            const lightBtn = document.getElementById('theme-light-btn');</span>
+<span class="cstat-no" title="statement not covered" >            const darkBtn = document.getElementById('theme-dark-btn');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (lightBtn) {</span>
+<span class="cstat-no" title="statement not covered" >                lightBtn.classList.toggle('bg-theme', isLight);</span>
+<span class="cstat-no" title="statement not covered" >                lightBtn.classList.toggle('text-white', isLight);</span>
+<span class="cstat-no" title="statement not covered" >                lightBtn.classList.toggle('bg-gray-100', !isLight);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >            if (darkBtn) {</span>
+<span class="cstat-no" title="statement not covered" >                darkBtn.classList.toggle('bg-theme', !isLight);</span>
+<span class="cstat-no" title="statement not covered" >                darkBtn.classList.toggle('text-white', !isLight);</span>
+<span class="cstat-no" title="statement not covered" >                darkBtn.classList.toggle('bg-gray-100', isLight);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" >        },</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -1828,7 +1882,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-08T09:13:35.238Z
+                at 2026-01-10T11:48:30.211Z
             </div>
         <script src="../prettify.js"></script>
         <script>

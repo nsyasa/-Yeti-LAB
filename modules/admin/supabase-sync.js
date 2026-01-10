@@ -421,10 +421,11 @@ const SupabaseSync = {
             await this.syncComponents(courseId, componentInfo);
             console.log('[SupabaseSync] Step 5 complete');
 
-            // 6. Invalidate cache to ensure fresh data on next load (if our Cache module is loaded)
-            if (typeof Cache !== 'undefined' && typeof Cache.invalidate === 'function') {
-                Cache.invalidate('courses');
-                Cache.invalidate(`course_${slug}`);
+            // 6. Invalidate cache to ensure fresh data on next load
+            if (typeof Cache !== 'undefined') {
+                Cache.clear('courses_true');
+                Cache.clear('courses_false');
+                Cache.clear(`course_${slug}`);
                 console.log('[SupabaseSync] Cache invalidated for courses');
             }
 

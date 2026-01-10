@@ -14,9 +14,11 @@
 // Default credentials (public - anon key)
 // Bu değerler production'da kullanılır
 // Vite build zamanında .env dosyasından override edilebilir
-const DEFAULT_SUPABASE_URL = 'https://zuezvfojutlefdvqrica.supabase.co';
+// Vite build sırasında .env'den al, fallback olarak default kullan
+const DEFAULT_SUPABASE_URL = import.meta?.env?.VITE_SUPABASE_URL || 'https://zuezvfojutlefdvqrica.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MTI1OTksImV4cCI6MjA4MjQ4ODU5OX0.dyv-C23_w6B3spF-FgB0Gp3hwA82aJdDbUlBOnGFxW8';
+    import.meta?.env?.VITE_SUPABASE_ANON_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZXp2Zm9qdXRsZWZkdnFyaWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEwOTQwNjEsImV4cCI6MjAyNjY2OTY2MX0.s7rS_C8yq_D-i4N7U-P9P7Q_r';
 
 // NOT: Environment variables desteği için Vite build pipeline'ı gereklidir
 // Şu an klasik <script> tag'leri kullanıldığı için doğrudan değerler kullanılıyor
@@ -89,61 +91,97 @@ const SupabaseClient = {
      * Sign in with email/password
      */
     async signIn(email, password) {
-        const { data, error } = await this.getClient().auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            const { data, error } = await this.getClient().auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        if (error) throw error;
+            if (error) throw error;
 
-        this.currentUser = data.user;
-        await this.checkAdminStatus();
+            this.currentUser = data.user;
+            await this.checkAdminStatus();
 
-        return data;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.signIn');
+            }
+            throw error;
+        }
     },
 
     /**
      * Sign out
      */
     async signOut() {
-        const { error } = await this.getClient().auth.signOut();
-        if (error) throw error;
+        try {
+            const { error } = await this.getClient().auth.signOut();
+            if (error) throw error;
 
-        this.currentUser = null;
-        this.isAdmin = false;
+            this.currentUser = null;
+            this.isAdmin = false;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.signOut');
+            }
+            throw error;
+        }
     },
 
     /**
      * Get current session
      */
     async getSession() {
-        const {
-            data: { session },
-        } = await this.getClient().auth.getSession();
-        if (session) {
-            this.currentUser = session.user;
-            await this.checkAdminStatus();
+        try {
+            const {
+                data: { session },
+                error,
+            } = await this.getClient().auth.getSession();
+
+            if (error) throw error;
+
+            if (session) {
+                this.currentUser = session.user;
+                await this.checkAdminStatus();
+            }
+            return session;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getSession');
+            }
+            // Silent fail for session check to avoid spamming on load
+            return null;
         }
-        return session;
     },
 
     /**
      * Check if current user is admin
      */
     async checkAdminStatus() {
-        if (!this.currentUser) {
+        try {
+            if (!this.currentUser) {
+                this.isAdmin = false;
+                return false;
+            }
+
+            const { data, error } = await this.getClient()
+                .from('content_admins')
+                .select('id')
+                .eq('user_id', this.currentUser.id)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            this.isAdmin = data !== null;
+            return this.isAdmin;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.checkAdminStatus');
+            }
             this.isAdmin = false;
             return false;
         }
-
-        const { data, error } = await this.getClient()
-            .from('content_admins')
-            .select('id')
-            .eq('user_id', this.currentUser.id)
-            .maybeSingle();
-
-        this.isAdmin = !error && data !== null;
-        return this.isAdmin;
     },
 
     /**
@@ -165,11 +203,16 @@ const SupabaseClient = {
      * @param {boolean} publishedOnly - Only return published courses
      * @param {boolean} forceRefresh - Bypass cache and fetch fresh data
      */
+    /**
+     * Get all courses
+     * @param {boolean} publishedOnly - Only return published courses
+     * @param {boolean} forceRefresh - Bypass cache and fetch fresh data
+     */
     async getCourses(publishedOnly = false, forceRefresh = false) {
         const cacheKey = `courses_${publishedOnly}`;
 
-        // Use Cache module if available (NOT browser's Cache API)
-        if (typeof Cache !== 'undefined' && typeof Cache.getOrFetch === 'function' && !forceRefresh) {
+        // Use Cache module if available
+        if (typeof Cache !== 'undefined' && !forceRefresh) {
             return Cache.getOrFetch(
                 cacheKey,
                 async () => {
@@ -212,12 +255,10 @@ const SupabaseClient = {
      * @param {boolean} forceRefresh - Bypass cache
      */
     async getCourseBySlug(slug, forceRefresh = false) {
-        console.log('[SupabaseClient] getCourseBySlug called:', slug);
         const cacheKey = `course_${slug}`;
 
-        // Use Cache module if available (NOT browser's Cache API)
-        if (typeof Cache !== 'undefined' && typeof Cache.getOrFetch === 'function' && !forceRefresh) {
-            console.log('[SupabaseClient] Using cache...');
+        // Use Cache module if available
+        if (typeof Cache !== 'undefined' && !forceRefresh) {
             return Cache.getOrFetch(
                 cacheKey,
                 async () => {
@@ -227,10 +268,7 @@ const SupabaseClient = {
             );
         }
 
-        console.log('[SupabaseClient] Fetching directly...');
-        const result = await this._fetchCourseBySlug(slug);
-        console.log('[SupabaseClient] getCourseBySlug result:', result?.id || 'null');
-        return result;
+        return this._fetchCourseBySlug(slug);
     },
 
     /**
@@ -238,15 +276,12 @@ const SupabaseClient = {
      * @private
      */
     async _fetchCourseBySlug(slug) {
-        console.log('[SupabaseClient] _fetchCourseBySlug:', slug);
         try {
             const { data, error } = await this.getClient().from('courses').select('*').eq('slug', slug).maybeSingle();
-            console.log('[SupabaseClient] _fetchCourseBySlug result:', data?.id || 'null', error || 'no error');
 
             if (error) throw error;
             return data;
         } catch (error) {
-            console.error('[SupabaseClient] _fetchCourseBySlug error:', error);
             if (typeof API !== 'undefined' && API.logError) {
                 API.logError(error, 'SupabaseClient.getCourseBySlug');
             }
@@ -325,47 +360,75 @@ const SupabaseClient = {
      * Get phases for course
      */
     async getPhases(courseId) {
-        const { data, error } = await this.getClient()
-            .from('phases')
-            .select('*')
-            .eq('course_id', courseId)
-            .order('position');
+        try {
+            const { data, error } = await this.getClient()
+                .from('phases')
+                .select('*')
+                .eq('course_id', courseId)
+                .order('position');
 
-        if (error) throw error;
-        return data;
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getPhases');
+            }
+            throw error;
+        }
     },
 
     /**
      * Create phase
      */
     async createPhase(phase) {
-        const { data, error } = await this.getClient().from('phases').insert(phase).select().single();
+        try {
+            const { data, error } = await this.getClient().from('phases').insert(phase).select().single();
 
-        if (error) throw error;
-        return data;
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.createPhase');
+            }
+            throw error;
+        }
     },
 
     /**
      * Update phase
      */
     async updatePhase(phaseId, updates) {
-        const { data, error } = await this.getClient()
-            .from('phases')
-            .update({ ...updates, updated_at: new Date().toISOString() })
-            .eq('id', phaseId)
-            .select();
+        try {
+            const { data, error } = await this.getClient()
+                .from('phases')
+                .update({ ...updates, updated_at: new Date().toISOString() })
+                .eq('id', phaseId)
+                .select();
 
-        if (error) throw error;
-        return data?.[0] || null;
+            if (error) throw error;
+            return data?.[0] || null;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.updatePhase');
+            }
+            throw error;
+        }
     },
 
     /**
      * Delete phase
      */
     async deletePhase(phaseId) {
-        const { error } = await this.getClient().from('phases').delete().eq('id', phaseId);
+        try {
+            const { error } = await this.getClient().from('phases').delete().eq('id', phaseId);
 
-        if (error) throw error;
+            if (error) throw error;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.deletePhase');
+            }
+            throw error;
+        }
     },
 
     // ==========================================
@@ -376,47 +439,75 @@ const SupabaseClient = {
      * Get projects for course
      */
     async getProjects(courseId) {
-        const { data, error } = await this.getClient()
-            .from('projects')
-            .select('*')
-            .eq('course_id', courseId)
-            .order('position');
+        try {
+            const { data, error } = await this.getClient()
+                .from('projects')
+                .select('*')
+                .eq('course_id', courseId)
+                .order('position');
 
-        if (error) throw error;
-        return data;
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getProjects');
+            }
+            throw error;
+        }
     },
 
     /**
      * Create project
      */
     async createProject(project) {
-        const { data, error } = await this.getClient().from('projects').insert(project).select().single();
+        try {
+            const { data, error } = await this.getClient().from('projects').insert(project).select().single();
 
-        if (error) throw error;
-        return data;
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.createProject');
+            }
+            throw error;
+        }
     },
 
     /**
      * Update project
      */
     async updateProject(projectId, updates) {
-        const { data, error } = await this.getClient()
-            .from('projects')
-            .update({ ...updates, updated_at: new Date().toISOString() })
-            .eq('id', projectId)
-            .select();
+        try {
+            const { data, error } = await this.getClient()
+                .from('projects')
+                .update({ ...updates, updated_at: new Date().toISOString() })
+                .eq('id', projectId)
+                .select();
 
-        if (error) throw error;
-        return data?.[0] || null;
+            if (error) throw error;
+            return data?.[0] || null;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.updateProject');
+            }
+            throw error;
+        }
     },
 
     /**
      * Delete project
      */
     async deleteProject(projectId) {
-        const { error } = await this.getClient().from('projects').delete().eq('id', projectId);
+        try {
+            const { error } = await this.getClient().from('projects').delete().eq('id', projectId);
 
-        if (error) throw error;
+            if (error) throw error;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.deleteProject');
+            }
+            throw error;
+        }
     },
 
     // ==========================================
@@ -427,36 +518,60 @@ const SupabaseClient = {
      * Get components for course
      */
     async getComponents(courseId) {
-        const { data, error } = await this.getClient().from('course_components').select('*').eq('course_id', courseId);
+        try {
+            const { data, error } = await this.getClient()
+                .from('course_components')
+                .select('*')
+                .eq('course_id', courseId);
 
-        if (error) throw error;
-        return data;
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.getComponents');
+            }
+            throw error;
+        }
     },
 
     /**
      * Upsert component
      */
     async upsertComponent(component) {
-        const { data, error } = await this.getClient()
-            .from('course_components')
-            .upsert(component, { onConflict: 'course_id,key' })
-            .select();
+        try {
+            const { data, error } = await this.getClient()
+                .from('course_components')
+                .upsert(component, { onConflict: 'course_id,key' })
+                .select();
 
-        if (error) throw error;
-        return data?.[0] || null;
+            if (error) throw error;
+            return data?.[0] || null;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.upsertComponent');
+            }
+            throw error;
+        }
     },
 
     /**
      * Delete component
      */
     async deleteComponent(courseId, key) {
-        const { error } = await this.getClient()
-            .from('course_components')
-            .delete()
-            .eq('course_id', courseId)
-            .eq('key', key);
+        try {
+            const { error } = await this.getClient()
+                .from('course_components')
+                .delete()
+                .eq('course_id', courseId)
+                .eq('key', key);
 
-        if (error) throw error;
+            if (error) throw error;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.deleteComponent');
+            }
+            throw error;
+        }
     },
 
     // ==========================================
@@ -473,21 +588,28 @@ const SupabaseClient = {
      * @returns {Promise<string>} Public URL of uploaded file
      */
     async uploadImage(file, folder = 'uploads') {
-        const fileName = `${folder}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        try {
+            const fileName = `${folder}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
 
-        const { data, error } = await this.getClient()
-            .storage.from('images') // bucket name
-            .upload(fileName, file, {
-                cacheControl: '3600',
-                upsert: false,
-            });
+            const { data, error } = await this.getClient()
+                .storage.from('images') // bucket name
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: false,
+                });
 
-        if (error) throw error;
+            if (error) throw error;
 
-        // Get public URL
-        const { data: urlData } = this.getClient().storage.from('images').getPublicUrl(data.path);
+            // Get public URL
+            const { data: urlData } = this.getClient().storage.from('images').getPublicUrl(data.path);
 
-        return urlData.publicUrl;
+            return urlData.publicUrl;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.uploadImage');
+            }
+            throw error;
+        }
     },
 
     /**
@@ -495,9 +617,16 @@ const SupabaseClient = {
      * @param {string} path - The file path to delete
      */
     async deleteImage(path) {
-        const { error } = await this.getClient().storage.from('images').remove([path]);
+        try {
+            const { error } = await this.getClient().storage.from('images').remove([path]);
 
-        if (error) throw error;
+            if (error) throw error;
+        } catch (error) {
+            if (typeof API !== 'undefined' && API.logError) {
+                API.logError(error, 'SupabaseClient.deleteImage');
+            }
+            throw error;
+        }
     },
 
     /**

@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for modules/i18n.js</title>
+    <title>Code coverage report for modules/core/localStorage.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../prettify.css" />
-    <link rel="stylesheet" href="../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">modules</a> i18n.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/core</a> localStorage.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/163</span>
+                <span class='fraction'>0/157</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/163</span>
+                <span class='fraction'>0/157</span>
             </div>
         
             
@@ -220,19 +220,7 @@
 <a name='L155'></a><a href='#L155'>155</a>
 <a name='L156'></a><a href='#L156'>156</a>
 <a name='L157'></a><a href='#L157'>157</a>
-<a name='L158'></a><a href='#L158'>158</a>
-<a name='L159'></a><a href='#L159'>159</a>
-<a name='L160'></a><a href='#L160'>160</a>
-<a name='L161'></a><a href='#L161'>161</a>
-<a name='L162'></a><a href='#L162'>162</a>
-<a name='L163'></a><a href='#L163'>163</a>
-<a name='L164'></a><a href='#L164'>164</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L158'></a><a href='#L158'>158</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -390,168 +378,162 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Internationalization (i18n) Module</span>
-<span class="cstat-no" title="statement not covered" > * Handles translations for the application.</span>
+<span class="cstat-no" title="statement not covered" > * LocalStorage Manager Module</span>
+<span class="cstat-no" title="statement not covered" > * Admin paneli autosave verilerini güvenli şekilde yönetir</span>
+<span class="cstat-no" title="statement not covered" > * XSS koruması ve veri doğrulama içerir</span>
+<span class="cstat-no" title="statement not covered" > *</span>
+<span class="cstat-no" title="statement not covered" > * @module modules/core/localStorage</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >const I18n = {</span>
-<span class="cstat-no" title="statement not covered" >    // Current Language</span>
-<span class="cstat-no" title="statement not covered" >    get lang() {</span>
-<span class="cstat-no" title="statement not covered" >        return window.Settings?.get('language') || 'tr';</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >const LocalStorageManager = {</span>
+<span class="cstat-no" title="statement not covered" >    // Storage key for autosave data</span>
+<span class="cstat-no" title="statement not covered" >    AUTOSAVE_KEY: 'mucit_atolyesi_autosave',</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // Dictionary</span>
-<span class="cstat-no" title="statement not covered" >    translations: {</span>
-<span class="cstat-no" title="statement not covered" >        tr: {</span>
-<span class="cstat-no" title="statement not covered" >            // General</span>
-<span class="cstat-no" title="statement not covered" >            loading: 'Yükleniyor...',</span>
-<span class="cstat-no" title="statement not covered" >            error_loading: 'Veri Yüklenemedi',</span>
-<span class="cstat-no" title="statement not covered" >            back: 'Geri Dön',</span>
-<span class="cstat-no" title="statement not covered" >            start: 'Başla →',</span>
-<span class="cstat-no" title="statement not covered" >            completed: '✅ Tamamlandı',</span>
-<span class="cstat-no" title="statement not covered" >            percent_completed: '%{rate} Tamamlandı',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Dashboard &amp; Navigation</span>
-<span class="cstat-no" title="statement not covered" >            course_selection_title: 'Hangi Maceraya Atılmak İstersin? 🚀',</span>
-<span class="cstat-no" title="statement not covered" >            course_selection_desc: 'İlgi alanına uygun eğitim setini seç ve hemen öğrenmeye başla.',</span>
-<span class="cstat-no" title="statement not covered" >            no_content: 'Bu ders için henüz içerik eklenmemiş.',</span>
-<span class="cstat-no" title="statement not covered" >            intro: 'Başlangıç',</span>
-<span class="cstat-no" title="statement not covered" >            episode: 'Bölüm',</span>
-<span class="cstat-no" title="statement not covered" >            simulation_badge: 'Simülasyonlu',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Project Tabs</span>
-<span class="cstat-no" title="statement not covered" >            tab_mission: '🎯 Amaç',</span>
-<span class="cstat-no" title="statement not covered" >            tab_materials: 'Devre Elemanları',</span>
-<span class="cstat-no" title="statement not covered" >            tab_circuit: '🔌 Devre',</span>
-<span class="cstat-no" title="statement not covered" >            tab_code: '💻 Kod',</span>
-<span class="cstat-no" title="statement not covered" >            tab_challenge: '🏆 Görev',</span>
-<span class="cstat-no" title="statement not covered" >            tab_quiz: '📝 Test',</span>
-<span class="cstat-no" title="statement not covered" >            tab_blocks: 'Blok Kodları',</span>
-<span class="cstat-no" title="statement not covered" >            tab_design: 'Tasarım',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Content Headers</span>
-<span class="cstat-no" title="statement not covered" >            header_mission: 'Amaç',</span>
-<span class="cstat-no" title="statement not covered" >            header_circuit: 'Bağlantı Şeması',</span>
-<span class="cstat-no" title="statement not covered" >            header_challenge: 'Meydan Okuma',</span>
-<span class="cstat-no" title="statement not covered" >            header_quiz: 'Kendini Test Et',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Interaction</span>
-<span class="cstat-no" title="statement not covered" >            btn_complete: '🏆 Dersi Tamamla',</span>
-<span class="cstat-no" title="statement not covered" >            btn_copy_code: 'Kodu Kopyala',</span>
-<span class="cstat-no" title="statement not covered" >            msg_copied: 'Kopyalandı',</span>
-<span class="cstat-no" title="statement not covered" >            msg_progress_saved: 'Dersi tamamladığınızda ilerleme kaydedilir.',</span>
-<span class="cstat-no" title="statement not covered" >            quiz_correct: '🎉 Doğru Cevap! Harikasın.',</span>
-<span class="cstat-no" title="statement not covered" >            quiz_wrong: '😔 Yanlış Cevap. Doğru cevap işaretlendi.',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Simulation / Explorer</span>
-<span class="cstat-no" title="statement not covered" >            sim_lab: 'Sanal Laboratuvar',</span>
-<span class="cstat-no" title="statement not covered" >            sim_live: 'CANLI',</span>
-<span class="cstat-no" title="statement not covered" >            sim_explore: 'İnteraktif Keşif',</span>
-<span class="cstat-no" title="statement not covered" >            sim_learn: 'ÖĞREN',</span>
-<span class="cstat-no" title="statement not covered" >            sim_discover: 'KEŞFET',</span>
-<span class="cstat-no" title="statement not covered" >            sim_interactive_img: 'Etkileşimli Görsel',</span>
-<span class="cstat-no" title="statement not covered" >            info_title: 'Bilgi',</span>
-<span class="cstat-no" title="statement not covered" >            exp_hover_msg: 'Parçaların üzerine gelerek ne işe yaradıklarını öğren.',</span>
-<span class="cstat-no" title="statement not covered" >            exp_hotspot_msg: 'Numaralı noktaların üzerine gelerek açıklamaları görün.',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Errors &amp; Modals</span>
-<span class="cstat-no" title="statement not covered" >            img_not_found: '📷 Resim bulunamadı.',</span>
-<span class="cstat-no" title="statement not covered" >            zoom_in: '🔍 Büyüt',</span>
-<span class="cstat-no" title="statement not covered" >        },</span>
-<span class="cstat-no" title="statement not covered" >        en: {</span>
-<span class="cstat-no" title="statement not covered" >            // General</span>
-<span class="cstat-no" title="statement not covered" >            loading: 'Loading...',</span>
-<span class="cstat-no" title="statement not covered" >            error_loading: 'Data Could Not Be Loaded',</span>
-<span class="cstat-no" title="statement not covered" >            back: 'Go Back',</span>
-<span class="cstat-no" title="statement not covered" >            start: 'Start →',</span>
-<span class="cstat-no" title="statement not covered" >            completed: '✅ Completed',</span>
-<span class="cstat-no" title="statement not covered" >            percent_completed: '%{rate} Completed',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Dashboard &amp; Navigation</span>
-<span class="cstat-no" title="statement not covered" >            course_selection_title: 'Which Adventure Do You Want? 🚀',</span>
-<span class="cstat-no" title="statement not covered" >            course_selection_desc: 'Choose the training set that suits your interest and start learning immediately.',</span>
-<span class="cstat-no" title="statement not covered" >            no_content: 'No content added for this course yet.',</span>
-<span class="cstat-no" title="statement not covered" >            intro: 'Intro',</span>
-<span class="cstat-no" title="statement not covered" >            episode: 'Episode',</span>
-<span class="cstat-no" title="statement not covered" >            simulation_badge: 'Simulation',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Project Tabs</span>
-<span class="cstat-no" title="statement not covered" >            tab_mission: '🎯 Mission',</span>
-<span class="cstat-no" title="statement not covered" >            tab_materials: 'Components',</span>
-<span class="cstat-no" title="statement not covered" >            tab_circuit: '🔌 Circuit',</span>
-<span class="cstat-no" title="statement not covered" >            tab_code: '💻 Code',</span>
-<span class="cstat-no" title="statement not covered" >            tab_challenge: '🏆 Challenge',</span>
-<span class="cstat-no" title="statement not covered" >            tab_quiz: '📝 Quiz',</span>
-<span class="cstat-no" title="statement not covered" >            tab_blocks: 'Block Codes',</span>
-<span class="cstat-no" title="statement not covered" >            tab_design: 'Design',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Content Headers</span>
-<span class="cstat-no" title="statement not covered" >            header_mission: 'Mission',</span>
-<span class="cstat-no" title="statement not covered" >            header_circuit: 'Wiring Diagram',</span>
-<span class="cstat-no" title="statement not covered" >            header_challenge: 'Challenge',</span>
-<span class="cstat-no" title="statement not covered" >            header_quiz: 'Test Yourself',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Interaction</span>
-<span class="cstat-no" title="statement not covered" >            btn_complete: '🏆 Complete Lesson',</span>
-<span class="cstat-no" title="statement not covered" >            btn_copy_code: 'Copy Code',</span>
-<span class="cstat-no" title="statement not covered" >            msg_copied: 'Copied',</span>
-<span class="cstat-no" title="statement not covered" >            msg_progress_saved: 'Progress is saved when you complete the lesson.',</span>
-<span class="cstat-no" title="statement not covered" >            quiz_correct: '🎉 Correct Answer! Awesome.',</span>
-<span class="cstat-no" title="statement not covered" >            quiz_wrong: '😔 Wrong Answer. Correct answer highlighted.',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Simulation / Explorer</span>
-<span class="cstat-no" title="statement not covered" >            sim_lab: 'Virtual Lab',</span>
-<span class="cstat-no" title="statement not covered" >            sim_live: 'LIVE',</span>
-<span class="cstat-no" title="statement not covered" >            sim_explore: 'Interactive Explorer',</span>
-<span class="cstat-no" title="statement not covered" >            sim_learn: 'LEARN',</span>
-<span class="cstat-no" title="statement not covered" >            sim_discover: 'DISCOVER',</span>
-<span class="cstat-no" title="statement not covered" >            sim_interactive_img: 'Interactive Image',</span>
-<span class="cstat-no" title="statement not covered" >            info_title: 'Info',</span>
-<span class="cstat-no" title="statement not covered" >            exp_hover_msg: 'Hover over parts to learn what they do.',</span>
-<span class="cstat-no" title="statement not covered" >            exp_hotspot_msg: 'Hover over numbered spots to see descriptions.',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Errors &amp; Modals</span>
-<span class="cstat-no" title="statement not covered" >            img_not_found: '📷 Image not found.',</span>
-<span class="cstat-no" title="statement not covered" >            zoom_in: '🔍 Zoom In',</span>
-<span class="cstat-no" title="statement not covered" >        },</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >    // Default allowed course keys (whitelist)</span>
+<span class="cstat-no" title="statement not covered" >    DEFAULT_ALLOWED_COURSES: ['arduino', 'microbit', 'scratch', 'mblock', 'appinventor'],</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Translate a key</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} key - The dictionary key</span>
-<span class="cstat-no" title="statement not covered" >     * @param {object} params - Optional parameters for interpolation (e.g. {rate: 50})</span>
+<span class="cstat-no" title="statement not covered" >     * Restore course data from localStorage (syncs with admin panel autosave)</span>
+<span class="cstat-no" title="statement not covered" >     * Security: Validates and sanitizes data to prevent XSS attacks</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {number} Number of courses restored</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    t: (key, params = {}) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        const lang = I18n.lang;</span>
-<span class="cstat-no" title="statement not covered" >        let str = I18n.translations[lang][key] || I18n.translations['tr'][key] || key;</span>
+<span class="cstat-no" title="statement not covered" >    restoreFromLocalStorage: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // Allow all courses defined in manifest + defaults</span>
+<span class="cstat-no" title="statement not covered" >        const manifestKeys =</span>
+<span class="cstat-no" title="statement not covered" >            window.CourseLoader &amp;&amp; window.CourseLoader.manifest ? Object.keys(window.CourseLoader.manifest) : [];</span>
+<span class="cstat-no" title="statement not covered" >        const allowedCourses = [...new Set([...LocalStorageManager.DEFAULT_ALLOWED_COURSES, ...manifestKeys])];</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Simple interpolation</span>
-<span class="cstat-no" title="statement not covered" >        Object.keys(params).forEach((param) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            str = str.replace(`%{${param}}`, params[param]);</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            // In Supabase-First architecture, the main app should only read from the database.</span>
+<span class="cstat-no" title="statement not covered" >            // localStorage contains admin autosaves which might be stale, duplicate, or draft.</span>
+<span class="cstat-no" title="statement not covered" >            // We only want to restore from localStorage if we are in the Admin Panel.</span>
+<span class="cstat-no" title="statement not covered" >            const isAdminPanel =</span>
+<span class="cstat-no" title="statement not covered" >                window.location.pathname.includes('admin.html') || window.location.pathname.includes('admin');</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return str;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >            if (!isAdminPanel) {</span>
+<span class="cstat-no" title="statement not covered" >                // Check if we have connectivity/Supabase loaded?</span>
+<span class="cstat-no" title="statement not covered" >                // Actually, regardless, main app shouldn't read admin drafts.</span>
+<span class="cstat-no" title="statement not covered" >                // Exception: Maybe offline mode? But current issue is duplicates.</span>
+<span class="cstat-no" title="statement not covered" >                console.log('[LocalStorage] Skipping restore on main site (Supabase-First)');</span>
+<span class="cstat-no" title="statement not covered" >                return 0;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Switch Language (Toggle)</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    toggle: () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        const current = I18n.lang;</span>
-<span class="cstat-no" title="statement not covered" >        const next = current === 'tr' ? 'en' : 'tr';</span>
+<span class="cstat-no" title="statement not covered" >            const saved = localStorage.getItem(LocalStorageManager.AUTOSAVE_KEY);</span>
+<span class="cstat-no" title="statement not covered" >            if (!saved) return 0;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (window.Settings) {</span>
-<span class="cstat-no" title="statement not covered" >            window.Settings.set('language', next);</span>
-<span class="cstat-no" title="statement not covered" >        } else {</span>
-<span class="cstat-no" title="statement not covered" >            localStorage.setItem('settings_language', next);</span>
+<span class="cstat-no" title="statement not covered" >            // Parse with error handling</span>
+<span class="cstat-no" title="statement not covered" >            let parsed;</span>
+<span class="cstat-no" title="statement not covered" >            try {</span>
+<span class="cstat-no" title="statement not covered" >                parsed = JSON.parse(saved);</span>
+<span class="cstat-no" title="statement not covered" >            } catch (parseError) {</span>
+<span class="cstat-no" title="statement not covered" >                console.warn('[LocalStorage] Invalid JSON in localStorage, clearing corrupted data:', parseError);</span>
+<span class="cstat-no" title="statement not covered" >                localStorage.removeItem(LocalStorageManager.AUTOSAVE_KEY);</span>
+<span class="cstat-no" title="statement not covered" >                return 0;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Validate top-level structure</span>
+<span class="cstat-no" title="statement not covered" >            if (!parsed || typeof parsed !== 'object') {</span>
+<span class="cstat-no" title="statement not covered" >                console.warn('[LocalStorage] Invalid autosave structure, ignoring');</span>
+<span class="cstat-no" title="statement not covered" >                return 0;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (!parsed.data || typeof parsed.data !== 'object' || Object.keys(parsed.data).length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >                return 0;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Validate timestamp</span>
+<span class="cstat-no" title="statement not covered" >            if (</span>
+<span class="cstat-no" title="statement not covered" >                parsed.timestamp &amp;&amp;</span>
+<span class="cstat-no" title="statement not covered" >                (typeof parsed.timestamp !== 'number' || parsed.timestamp &gt; Date.now() + 86400000)</span>
+<span class="cstat-no" title="statement not covered" >            ) {</span>
+<span class="cstat-no" title="statement not covered" >                console.warn('[LocalStorage] Invalid autosave timestamp, ignoring');</span>
+<span class="cstat-no" title="statement not covered" >                return 0;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Process only allowed courses with validation and sanitization</span>
+<span class="cstat-no" title="statement not covered" >            let restoredCount = 0;</span>
+<span class="cstat-no" title="statement not covered" >            Object.keys(parsed.data).forEach((key) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                // Only accept whitelisted course keys</span>
+<span class="cstat-no" title="statement not covered" >                if (!allowedCourses.includes(key)) {</span>
+<span class="cstat-no" title="statement not covered" >                    console.warn(`[LocalStorage] Unknown course key rejected: ${key}`);</span>
+<span class="cstat-no" title="statement not covered" >                    return;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Only merge if course exists in window.courseData</span>
+<span class="cstat-no" title="statement not covered" >                if (!window.courseData[key]) {</span>
+<span class="cstat-no" title="statement not covered" >                    return;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Skip if course data is sourced from Supabase (Official Source)</span>
+<span class="cstat-no" title="statement not covered" >                if (window.courseData[key]._supabaseId) {</span>
+<span class="cstat-no" title="statement not covered" >                    console.log(`[LocalStorage] Skipping restore for ${key} (Supabase source)`);</span>
+<span class="cstat-no" title="statement not covered" >                    return;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                const courseData = parsed.data[key];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Validate course data structure</span>
+<span class="cstat-no" title="statement not covered" >                if (typeof Validators !== 'undefined' &amp;&amp; !Validators.isValidCourseData(courseData)) {</span>
+<span class="cstat-no" title="statement not covered" >                    console.warn(`[LocalStorage] Invalid course data structure for: ${key}`);</span>
+<span class="cstat-no" title="statement not covered" >                    return;</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Sanitize all string values to prevent XSS</span>
+<span class="cstat-no" title="statement not covered" >                const sanitizedData =</span>
+<span class="cstat-no" title="statement not covered" >                    typeof Validators !== 'undefined' ? Validators.sanitizeObject(courseData) : courseData;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                // Merge sanitized data</span>
+<span class="cstat-no" title="statement not covered" >                window.courseData[key] = sanitizedData;</span>
+<span class="cstat-no" title="statement not covered" >                restoredCount++;</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (restoredCount &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >                const date = new Date(parsed.timestamp).toLocaleString();</span>
+<span class="cstat-no" title="statement not covered" >                console.log(`[LocalStorage] Course data restored (${date}), ${restoredCount} course(s)`);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            return restoredCount;</span>
+<span class="cstat-no" title="statement not covered" >        } catch (e) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[LocalStorage] Failed to restore from localStorage:', e);</span>
+<span class="cstat-no" title="statement not covered" >            // Don't propagate error, just log it</span>
+<span class="cstat-no" title="statement not covered" >            return 0;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Reload to apply changes instantly</span>
-<span class="cstat-no" title="statement not covered" >        window.location.reload();</span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Clear autosave data</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    clearAutosave: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        localStorage.removeItem(LocalStorageManager.AUTOSAVE_KEY);</span>
+<span class="cstat-no" title="statement not covered" >        console.log('[LocalStorage] Autosave data cleared');</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Check if autosave data exists</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {boolean}</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    hasAutosave: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        return localStorage.getItem(LocalStorageManager.AUTOSAVE_KEY) !== null;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Get autosave timestamp</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Date|null}</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    getAutosaveTimestamp: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            const saved = localStorage.getItem(LocalStorageManager.AUTOSAVE_KEY);</span>
+<span class="cstat-no" title="statement not covered" >            if (!saved) return null;</span>
+<span class="cstat-no" title="statement not covered" >            const parsed = JSON.parse(saved);</span>
+<span class="cstat-no" title="statement not covered" >            return parsed.timestamp ? new Date(parsed.timestamp) : null;</span>
+<span class="cstat-no" title="statement not covered" >        } catch {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >window.I18n = I18n;</span>
+<span class="cstat-no" title="statement not covered" >// Global scope'a ekle (mevcut yapıya uyum için)</span>
+<span class="cstat-no" title="statement not covered" >window.LocalStorageManager = LocalStorageManager;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -561,14 +543,14 @@
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2026-01-10T11:48:30.211Z
             </div>
-        <script src="../prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../sorter.js"></script>
-        <script src="../block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     

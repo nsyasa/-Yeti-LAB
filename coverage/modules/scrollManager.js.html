@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for modules/admin/images.js</title>
+    <title>Code coverage report for modules/scrollManager.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/admin</a> images.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">modules</a> scrollManager.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/234</span>
+                <span class='fraction'>0/255</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/234</span>
+                <span class='fraction'>0/255</span>
             </div>
         
             
@@ -297,7 +297,49 @@
 <a name='L232'></a><a href='#L232'>232</a>
 <a name='L233'></a><a href='#L233'>233</a>
 <a name='L234'></a><a href='#L234'>234</a>
-<a name='L235'></a><a href='#L235'>235</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -532,239 +574,260 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Image Manager Module for Admin Panel</span>
-<span class="cstat-no" title="statement not covered" > * Handles image selection, upload, preview, and URL resolution.</span>
+<span class="cstat-no" title="statement not covered" > * Scroll Manager Module - Enhanced Smart Scroll</span>
+<span class="cstat-no" title="statement not covered" > * Handles scroll interactions, header visibility, and scroll-based UI updates.</span>
 <span class="cstat-no" title="statement not covered" > *</span>
 <span class="cstat-no" title="statement not covered" > * Features:</span>
-<span class="cstat-no" title="statement not covered" > * - Image selector modal with grid view</span>
-<span class="cstat-no" title="statement not covered" > * - Supabase storage upload</span>
-<span class="cstat-no" title="statement not covered" > * - Smart URL resolution (local, Supabase, external)</span>
+<span class="cstat-no" title="statement not covered" > * - Smart header/bottom nav hide/show on scroll direction</span>
+<span class="cstat-no" title="statement not covered" > * - Delta threshold to prevent jittery behavior</span>
+<span class="cstat-no" title="statement not covered" > * - Velocity detection for responsive feedback</span>
+<span class="cstat-no" title="statement not covered" > * - Mobile touch support with momentum scroll</span>
+<span class="cstat-no" title="statement not covered" > * - Performance optimized with requestAnimationFrame</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >const ImageManager = {</span>
+<span class="cstat-no" title="statement not covered" >const ScrollManager = {</span>
 <span class="cstat-no" title="statement not covered" >    // Configuration</span>
 <span class="cstat-no" title="statement not covered" >    config: {</span>
-<span class="cstat-no" title="statement not covered" >        onUpdate: null, // Callback after image selection</span>
-<span class="cstat-no" title="statement not covered" >        getCourseData: () =&gt; window.courseData || {},</span>
+<span class="cstat-no" title="statement not covered" >        // Minimum scroll delta (px) before triggering hide/show</span>
+<span class="cstat-no" title="statement not covered" >        scrollDelta: 8,</span>
+<span class="cstat-no" title="statement not covered" >        // Distance from top where header is always visible</span>
+<span class="cstat-no" title="statement not covered" >        topThreshold: 80,</span>
+<span class="cstat-no" title="statement not covered" >        // Velocity threshold for instant hide (faster = more sensitive)</span>
+<span class="cstat-no" title="statement not covered" >        velocityThreshold: 15,</span>
+<span class="cstat-no" title="statement not covered" >        // Delay before allowing another toggle (ms)</span>
+<span class="cstat-no" title="statement not covered" >        toggleCooldown: 100,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // State</span>
-<span class="cstat-no" title="statement not covered" >    targetInputId: null,</span>
-<span class="cstat-no" title="statement not covered" >    targetInputId2: null,</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Initialize with configuration</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    init(config) {</span>
-<span class="cstat-no" title="statement not covered" >        this.config = { ...this.config, ...config };</span>
+<span class="cstat-no" title="statement not covered" >    // State tracking</span>
+<span class="cstat-no" title="statement not covered" >    state: {</span>
+<span class="cstat-no" title="statement not covered" >        lastScrollY: 0,</span>
+<span class="cstat-no" title="statement not covered" >        lastScrollTime: Date.now(),</span>
+<span class="cstat-no" title="statement not covered" >        ticking: false,</span>
+<span class="cstat-no" title="statement not covered" >        isHidden: false,</span>
+<span class="cstat-no" title="statement not covered" >        lastToggleTime: 0,</span>
+<span class="cstat-no" title="statement not covered" >        // Accumulated scroll delta for smoother detection</span>
+<span class="cstat-no" title="statement not covered" >        accumulatedDelta: 0,</span>
+<span class="cstat-no" title="statement not covered" >        // Touch tracking for mobile</span>
+<span class="cstat-no" title="statement not covered" >        touchStartY: 0,</span>
+<span class="cstat-no" title="statement not covered" >        isTouching: false,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // IMAGE SELECTOR MODAL</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Open image selector modal</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    openSelector(inputId, inputId2 = null) {</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId = inputId;</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId2 = inputId2;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const modal = document.getElementById('image-selector-modal');</span>
-<span class="cstat-no" title="statement not covered" >        if (modal) {</span>
-<span class="cstat-no" title="statement not covered" >            modal.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >            this.loadImageList();</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    // DOM references (cached for performance)</span>
+<span class="cstat-no" title="statement not covered" >    elements: {</span>
+<span class="cstat-no" title="statement not covered" >        header: null,</span>
+<span class="cstat-no" title="statement not covered" >        bottomNav: null,</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Close image selector modal</span>
+<span class="cstat-no" title="statement not covered" >     * Initialize scroll listeners</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    closeSelector() {</span>
-<span class="cstat-no" title="statement not covered" >        const modal = document.getElementById('image-selector-modal');</span>
-<span class="cstat-no" title="statement not covered" >        if (modal) modal.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >    init() {</span>
+<span class="cstat-no" title="statement not covered" >        // Cache DOM elements</span>
+<span class="cstat-no" title="statement not covered" >        this.elements.header = document.getElementById('main-header');</span>
+<span class="cstat-no" title="statement not covered" >        this.elements.bottomNav = document.getElementById('mobile-bottom-nav');</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId = null;</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId2 = null;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >        // Main scroll listener</span>
+<span class="cstat-no" title="statement not covered" >        window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Load available images into selector grid</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async loadImageList() {</span>
-<span class="cstat-no" title="statement not covered" >        const grid = document.getElementById('image-selector-grid');</span>
-<span class="cstat-no" title="statement not covered" >        if (!grid) return;</span>
+<span class="cstat-no" title="statement not covered" >        // Touch events for mobile (better momentum detection)</span>
+<span class="cstat-no" title="statement not covered" >        window.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });</span>
+<span class="cstat-no" title="statement not covered" >        window.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        grid.innerHTML = '&lt;div class="col-span-full text-center p-4"&gt;Yükleniyor...&lt;/div&gt;';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Collect images from all loaded course data</span>
-<span class="cstat-no" title="statement not covered" >        const knownImages = new Set();</span>
-<span class="cstat-no" title="statement not covered" >        const courseData = this.config.getCourseData();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        Object.values(courseData).forEach((course) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            if (course &amp;&amp; course.data) {</span>
-<span class="cstat-no" title="statement not covered" >                (course.data.projects || []).forEach((p) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    if (p.circuitImage) knownImages.add(p.circuitImage);</span>
-<span class="cstat-no" title="statement not covered" >                    if (p.code &amp;&amp; p.code.match(/\.(png|jpg|jpeg|gif)$/i)) knownImages.add(p.code);</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
-<span class="cstat-no" title="statement not covered" >                Object.values(course.data.componentInfo || {}).forEach((c) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    if (c.imgFileName) knownImages.add(c.imgFileName);</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
+<span class="cstat-no" title="statement not covered" >        // Visibility change - show nav when returning to tab</span>
+<span class="cstat-no" title="statement not covered" >        document.addEventListener('visibilitychange', () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            if (!document.hidden) {</span>
+<span class="cstat-no" title="statement not covered" >                this.show();</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Add generic fallback images</span>
-<span class="cstat-no" title="statement not covered" >        ['arduino_uno.jpg', 'breadboard.jpg', 'led_red.jpg', 'resistor.jpg', 'buzzer.jpg'].forEach((img) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            knownImages.add(img)</span>
+<span class="cstat-no" title="statement not covered" >        // Resize handler - show nav on resize</span>
+<span class="cstat-no" title="statement not covered" >        window.addEventListener(</span>
+<span class="cstat-no" title="statement not covered" >            'resize',</span>
+<span class="cstat-no" title="statement not covered" >            this.debounce(() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                if (window.scrollY &lt; this.config.topThreshold) {</span>
+<span class="cstat-no" title="statement not covered" >                    this.show();</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            }, 150)</span>
 <span class="cstat-no" title="statement not covered" >        );</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        grid.innerHTML = '';</span>
+<span class="cstat-no" title="statement not covered" >        // Initial state</span>
+<span class="cstat-no" title="statement not covered" >        this.handleScroll();</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (knownImages.size === 0) {</span>
-<span class="cstat-no" title="statement not covered" >            grid.innerHTML = '&lt;div class="col-span-full text-center p-4 text-gray-500"&gt;Kayıtlı resim bulunamadı.&lt;/div&gt;';</span>
-<span class="cstat-no" title="statement not covered" >            return;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        console.log('📜 ScrollManager initialized (Smart Scroll active)');</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        Array.from(knownImages)</span>
-<span class="cstat-no" title="statement not covered" >            .sort()</span>
-<span class="cstat-no" title="statement not covered" >            .forEach((imgName) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                const div = document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >                div.className =</span>
-<span class="cstat-no" title="statement not covered" >                    'border rounded cursor-pointer hover:border-blue-500 hover:shadow-md transition p-1 bg-white flex flex-col items-center';</span>
-<span class="cstat-no" title="statement not covered" >                div.onclick = () =&gt; this.selectImage(imgName);</span>
-<span class="cstat-no" title="statement not covered" >                div.innerHTML = `</span>
-<span class="cstat-no" title="statement not covered" >                &lt;div class="w-full h-24 bg-gray-100 mb-1 flex items-center justify-center overflow-hidden"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;img src="img/${imgName}" class="max-w-full max-h-full object-contain" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNSIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg=='"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;span class="text-[10px] text-gray-600 truncate w-full text-center" title="${imgName}"&gt;${imgName}&lt;/span&gt;</span>
-<span class="cstat-no" title="statement not covered" >            `;</span>
-<span class="cstat-no" title="statement not covered" >                grid.appendChild(div);</span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Handle touch start (mobile)</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    handleTouchStart(e) {</span>
+<span class="cstat-no" title="statement not covered" >        this.state.touchStartY = e.touches[0].clientY;</span>
+<span class="cstat-no" title="statement not covered" >        this.state.isTouching = true;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Handle touch end (mobile)</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    handleTouchEnd() {</span>
+<span class="cstat-no" title="statement not covered" >        this.state.isTouching = false;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Handle window scroll event with RequestAnimationFrame throttle</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    handleScroll() {</span>
+<span class="cstat-no" title="statement not covered" >        if (!this.state.ticking) {</span>
+<span class="cstat-no" title="statement not covered" >            window.requestAnimationFrame(() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                this.updateNavVisibility();</span>
+<span class="cstat-no" title="statement not covered" >                this.state.ticking = false;</span>
 <span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >            this.state.ticking = true;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Handle image selection</span>
+<span class="cstat-no" title="statement not covered" >     * Core logic for showing/hiding navigation</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    selectImage(imgName) {</span>
-<span class="cstat-no" title="statement not covered" >        // Update primary input</span>
-<span class="cstat-no" title="statement not covered" >        if (this.targetInputId) {</span>
-<span class="cstat-no" title="statement not covered" >            const el = document.getElementById(this.targetInputId);</span>
-<span class="cstat-no" title="statement not covered" >            if (el) {</span>
-<span class="cstat-no" title="statement not covered" >                el.value = imgName;</span>
-<span class="cstat-no" title="statement not covered" >                el.dispatchEvent(new Event('input'));</span>
-<span class="cstat-no" title="statement not covered" >                el.dispatchEvent(new Event('change'));</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    updateNavVisibility() {</span>
+<span class="cstat-no" title="statement not covered" >        const currentScrollY = window.scrollY;</span>
+<span class="cstat-no" title="statement not covered" >        const now = Date.now();</span>
+<span class="cstat-no" title="statement not covered" >        const timeDelta = now - this.state.lastScrollTime;</span>
+<span class="cstat-no" title="statement not covered" >        const scrollDelta = currentScrollY - this.state.lastScrollY;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Update secondary input if specified</span>
-<span class="cstat-no" title="statement not covered" >        if (this.targetInputId2) {</span>
-<span class="cstat-no" title="statement not covered" >            const el2 = document.getElementById(this.targetInputId2);</span>
-<span class="cstat-no" title="statement not covered" >            if (el2) {</span>
-<span class="cstat-no" title="statement not covered" >                el2.value = imgName;</span>
-<span class="cstat-no" title="statement not covered" >                el2.dispatchEvent(new Event('input'));</span>
-<span class="cstat-no" title="statement not covered" >                el2.dispatchEvent(new Event('change'));</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        // Calculate velocity (pixels per ms)</span>
+<span class="cstat-no" title="statement not covered" >        const velocity = timeDelta &gt; 0 ? (Math.abs(scrollDelta) / timeDelta) * 16 : 0;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.closeSelector();</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >        // Update header backdrop based on scroll position</span>
+<span class="cstat-no" title="statement not covered" >        this.updateHeaderBackdrop(currentScrollY);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // IMAGE PREVIEW &amp; UPLOAD</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Preview circuit image when URL/filename changes</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    previewCircuitImage() {</span>
-<span class="cstat-no" title="statement not covered" >        const input = document.getElementById('p-circuitImage');</span>
-<span class="cstat-no" title="statement not covered" >        const preview = document.getElementById('circuit-image-preview');</span>
-<span class="cstat-no" title="statement not covered" >        const img = document.getElementById('circuit-preview-img');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!input || !preview || !img) return;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const value = input.value.trim();</span>
-<span class="cstat-no" title="statement not covered" >        if (!value) {</span>
-<span class="cstat-no" title="statement not covered" >            preview.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >        // At top of page - always show nav</span>
+<span class="cstat-no" title="statement not covered" >        if (currentScrollY &lt;= this.config.topThreshold) {</span>
+<span class="cstat-no" title="statement not covered" >            this.show();</span>
+<span class="cstat-no" title="statement not covered" >            this.resetState(currentScrollY, now);</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const resolvedUrl = this.resolveImageUrl(value);</span>
-<span class="cstat-no" title="statement not covered" >        img.src = resolvedUrl;</span>
-<span class="cstat-no" title="statement not covered" >        img.onload = () =&gt; preview.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >        img.onerror = () =&gt; preview.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >        // Check cooldown</span>
+<span class="cstat-no" title="statement not covered" >        if (now - this.state.lastToggleTime &lt; this.config.toggleCooldown) {</span>
+<span class="cstat-no" title="statement not covered" >            this.state.lastScrollY = currentScrollY;</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Accumulate scroll delta</span>
+<span class="cstat-no" title="statement not covered" >        if (Math.sign(scrollDelta) === Math.sign(this.state.accumulatedDelta)) {</span>
+<span class="cstat-no" title="statement not covered" >            this.state.accumulatedDelta += scrollDelta;</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            // Direction changed - reset accumulator</span>
+<span class="cstat-no" title="statement not covered" >            this.state.accumulatedDelta = scrollDelta;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const absAccumulatedDelta = Math.abs(this.state.accumulatedDelta);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Fast scroll - instant response</span>
+<span class="cstat-no" title="statement not covered" >        if (velocity &gt;= this.config.velocityThreshold) {</span>
+<span class="cstat-no" title="statement not covered" >            if (scrollDelta &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >                this.hide();</span>
+<span class="cstat-no" title="statement not covered" >            } else {</span>
+<span class="cstat-no" title="statement not covered" >                this.show();</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >            this.state.lastToggleTime = now;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        // Normal scroll - check delta threshold</span>
+<span class="cstat-no" title="statement not covered" >        else if (absAccumulatedDelta &gt;= this.config.scrollDelta) {</span>
+<span class="cstat-no" title="statement not covered" >            if (this.state.accumulatedDelta &gt; 0 &amp;&amp; !this.state.isHidden) {</span>
+<span class="cstat-no" title="statement not covered" >                // Scrolling DOWN - hide nav</span>
+<span class="cstat-no" title="statement not covered" >                this.hide();</span>
+<span class="cstat-no" title="statement not covered" >                this.state.lastToggleTime = now;</span>
+<span class="cstat-no" title="statement not covered" >            } else if (this.state.accumulatedDelta &lt; 0 &amp;&amp; this.state.isHidden) {</span>
+<span class="cstat-no" title="statement not covered" >                // Scrolling UP - show nav</span>
+<span class="cstat-no" title="statement not covered" >                this.show();</span>
+<span class="cstat-no" title="statement not covered" >                this.state.lastToggleTime = now;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >            // Reset accumulator after action</span>
+<span class="cstat-no" title="statement not covered" >            this.state.accumulatedDelta = 0;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        this.state.lastScrollY = currentScrollY;</span>
+<span class="cstat-no" title="statement not covered" >        this.state.lastScrollTime = now;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Upload circuit image to Supabase Storage</span>
+<span class="cstat-no" title="statement not covered" >     * Update header backdrop effect</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async uploadCircuitImage(fileInput) {</span>
-<span class="cstat-no" title="statement not covered" >        const file = fileInput.files[0];</span>
-<span class="cstat-no" title="statement not covered" >        if (!file) return;</span>
+<span class="cstat-no" title="statement not covered" >    updateHeaderBackdrop(scrollY) {</span>
+<span class="cstat-no" title="statement not covered" >        const header = this.elements.header;</span>
+<span class="cstat-no" title="statement not covered" >        if (!header) return;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const statusEl = document.getElementById('autosave-status');</span>
-<span class="cstat-no" title="statement not covered" >        if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >            statusEl.textContent = '⬆️ Resim yükleniyor...';</span>
-<span class="cstat-no" title="statement not covered" >            statusEl.classList.add('text-yellow-400');</span>
+<span class="cstat-no" title="statement not covered" >        if (scrollY &lt;= 10) {</span>
+<span class="cstat-no" title="statement not covered" >            // At very top - transparent header</span>
+<span class="cstat-no" title="statement not covered" >            header.classList.remove('header-scrolled');</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            // Scrolled - add backdrop</span>
+<span class="cstat-no" title="statement not covered" >            header.classList.add('header-scrolled');</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            if (!window.SupabaseClient || !window.SupabaseClient.getClient()) {</span>
-<span class="cstat-no" title="statement not covered" >                throw new Error('Supabase client not initialized');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const publicUrl = await window.SupabaseClient.uploadImage(file, 'circuits');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const circuitInput = document.getElementById('p-circuitImage');</span>
-<span class="cstat-no" title="statement not covered" >            if (circuitInput) {</span>
-<span class="cstat-no" title="statement not covered" >                circuitInput.value = publicUrl;</span>
-<span class="cstat-no" title="statement not covered" >                this.previewCircuitImage();</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.textContent = '✅ Resim yüklendi!';</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.remove('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.add('text-green-400');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (this.config.onUpdate) this.config.onUpdate();</span>
-<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >            console.error('Image upload error:', error);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.textContent = '❌ Yükleme hatası!';</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.remove('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.add('text-red-400');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            alert(</span>
-<span class="cstat-no" title="statement not covered" >                'Resim yüklenemedi: ' +</span>
-<span class="cstat-no" title="statement not covered" >                    error.message +</span>
-<span class="cstat-no" title="statement not covered" >                    '\n\nAlternatif: Dosya adını manuel girin veya harici URL kullanın.'</span>
-<span class="cstat-no" title="statement not covered" >            );</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        fileInput.value = '';</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Smart Image URL Resolver</span>
-<span class="cstat-no" title="statement not covered" >     * Handles: local files, Supabase storage, external URLs</span>
+<span class="cstat-no" title="statement not covered" >     * Hide header and bottom nav</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    resolveImageUrl(imagePath) {</span>
-<span class="cstat-no" title="statement not covered" >        if (!imagePath) return '';</span>
+<span class="cstat-no" title="statement not covered" >    hide() {</span>
+<span class="cstat-no" title="statement not covered" >        if (this.state.isHidden) return;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Already a full URL</span>
-<span class="cstat-no" title="statement not covered" >        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {</span>
-<span class="cstat-no" title="statement not covered" >            return imagePath;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        this.elements.header?.classList.add('nav-hidden');</span>
+<span class="cstat-no" title="statement not covered" >        this.elements.bottomNav?.classList.add('nav-hidden');</span>
+<span class="cstat-no" title="statement not covered" >        this.state.isHidden = true;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Local file - use relative path</span>
-<span class="cstat-no" title="statement not covered" >        return imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;</span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Show header and bottom nav</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    show() {</span>
+<span class="cstat-no" title="statement not covered" >        if (!this.state.isHidden &amp;&amp; window.scrollY &gt; this.config.topThreshold) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        this.elements.header?.classList.remove('nav-hidden');</span>
+<span class="cstat-no" title="statement not covered" >        this.elements.bottomNav?.classList.remove('nav-hidden');</span>
+<span class="cstat-no" title="statement not covered" >        this.state.isHidden = false;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Reset state tracking</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    resetState(scrollY, time) {</span>
+<span class="cstat-no" title="statement not covered" >        this.state.lastScrollY = scrollY;</span>
+<span class="cstat-no" title="statement not covered" >        this.state.lastScrollTime = time;</span>
+<span class="cstat-no" title="statement not covered" >        this.state.accumulatedDelta = 0;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Force show (useful for programmatic control)</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    forceShow() {</span>
+<span class="cstat-no" title="statement not covered" >        this.show();</span>
+<span class="cstat-no" title="statement not covered" >        this.state.lastToggleTime = 0;</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Debounce helper</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    debounce(func, wait) {</span>
+<span class="cstat-no" title="statement not covered" >        let timeout;</span>
+<span class="cstat-no" title="statement not covered" >        return (...args) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            clearTimeout(timeout);</span>
+<span class="cstat-no" title="statement not covered" >            timeout = setTimeout(() =&gt; func.apply(this, args), wait);</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Check if nav is currently hidden</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    isNavHidden() {</span>
+<span class="cstat-no" title="statement not covered" >        return this.state.isHidden;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >window.ImageManager = ImageManager;</span>
+<span class="cstat-no" title="statement not covered" >// Expose globally</span>
+<span class="cstat-no" title="statement not covered" >if (typeof window !== 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >    window.ScrollManager = ScrollManager;</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -774,14 +837,14 @@
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2026-01-10T11:48:30.211Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

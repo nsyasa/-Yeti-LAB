@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for modules/admin/images.js</title>
+    <title>Code coverage report for modules/authUI.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/admin</a> images.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">modules</a> authUI.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/234</span>
+                <span class='fraction'>0/215</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/234</span>
+                <span class='fraction'>0/215</span>
             </div>
         
             
@@ -278,45 +278,7 @@
 <a name='L213'></a><a href='#L213'>213</a>
 <a name='L214'></a><a href='#L214'>214</a>
 <a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a>
-<a name='L224'></a><a href='#L224'>224</a>
-<a name='L225'></a><a href='#L225'>225</a>
-<a name='L226'></a><a href='#L226'>226</a>
-<a name='L227'></a><a href='#L227'>227</a>
-<a name='L228'></a><a href='#L228'>228</a>
-<a name='L229'></a><a href='#L229'>229</a>
-<a name='L230'></a><a href='#L230'>230</a>
-<a name='L231'></a><a href='#L231'>231</a>
-<a name='L232'></a><a href='#L232'>232</a>
-<a name='L233'></a><a href='#L233'>233</a>
-<a name='L234'></a><a href='#L234'>234</a>
-<a name='L235'></a><a href='#L235'>235</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L216'></a><a href='#L216'>216</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -532,239 +494,220 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Image Manager Module for Admin Panel</span>
-<span class="cstat-no" title="statement not covered" > * Handles image selection, upload, preview, and URL resolution.</span>
-<span class="cstat-no" title="statement not covered" > *</span>
-<span class="cstat-no" title="statement not covered" > * Features:</span>
-<span class="cstat-no" title="statement not covered" > * - Image selector modal with grid view</span>
-<span class="cstat-no" title="statement not covered" > * - Supabase storage upload</span>
-<span class="cstat-no" title="statement not covered" > * - Smart URL resolution (local, Supabase, external)</span>
+<span class="cstat-no" title="statement not covered" > * Auth UI Manager</span>
+<span class="cstat-no" title="statement not covered" > * Handles UI interactions related to authentication</span>
+<span class="cstat-no" title="statement not covered" > * Coordinates between Auth module and UI elements</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >const ImageManager = {</span>
-<span class="cstat-no" title="statement not covered" >    // Configuration</span>
-<span class="cstat-no" title="statement not covered" >    config: {</span>
-<span class="cstat-no" title="statement not covered" >        onUpdate: null, // Callback after image selection</span>
-<span class="cstat-no" title="statement not covered" >        getCourseData: () =&gt; window.courseData || {},</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // State</span>
-<span class="cstat-no" title="statement not covered" >    targetInputId: null,</span>
-<span class="cstat-no" title="statement not covered" >    targetInputId2: null,</span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >const AuthUI = {</span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Initialize with configuration</span>
+<span class="cstat-no" title="statement not covered" >     * Initialize Auth UI listeners and state</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    init(config) {</span>
-<span class="cstat-no" title="statement not covered" >        this.config = { ...this.config, ...config };</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // IMAGE SELECTOR MODAL</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Open image selector modal</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    openSelector(inputId, inputId2 = null) {</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId = inputId;</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId2 = inputId2;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const modal = document.getElementById('image-selector-modal');</span>
-<span class="cstat-no" title="statement not covered" >        if (modal) {</span>
-<span class="cstat-no" title="statement not covered" >            modal.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >            this.loadImageList();</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Close image selector modal</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    closeSelector() {</span>
-<span class="cstat-no" title="statement not covered" >        const modal = document.getElementById('image-selector-modal');</span>
-<span class="cstat-no" title="statement not covered" >        if (modal) modal.classList.add('hidden');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId = null;</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId2 = null;</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Load available images into selector grid</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async loadImageList() {</span>
-<span class="cstat-no" title="statement not covered" >        const grid = document.getElementById('image-selector-grid');</span>
-<span class="cstat-no" title="statement not covered" >        if (!grid) return;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        grid.innerHTML = '&lt;div class="col-span-full text-center p-4"&gt;Yükleniyor...&lt;/div&gt;';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Collect images from all loaded course data</span>
-<span class="cstat-no" title="statement not covered" >        const knownImages = new Set();</span>
-<span class="cstat-no" title="statement not covered" >        const courseData = this.config.getCourseData();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        Object.values(courseData).forEach((course) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            if (course &amp;&amp; course.data) {</span>
-<span class="cstat-no" title="statement not covered" >                (course.data.projects || []).forEach((p) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    if (p.circuitImage) knownImages.add(p.circuitImage);</span>
-<span class="cstat-no" title="statement not covered" >                    if (p.code &amp;&amp; p.code.match(/\.(png|jpg|jpeg|gif)$/i)) knownImages.add(p.code);</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
-<span class="cstat-no" title="statement not covered" >                Object.values(course.data.componentInfo || {}).forEach((c) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    if (c.imgFileName) knownImages.add(c.imgFileName);</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Add generic fallback images</span>
-<span class="cstat-no" title="statement not covered" >        ['arduino_uno.jpg', 'breadboard.jpg', 'led_red.jpg', 'resistor.jpg', 'buzzer.jpg'].forEach((img) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            knownImages.add(img)</span>
-<span class="cstat-no" title="statement not covered" >        );</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        grid.innerHTML = '';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (knownImages.size === 0) {</span>
-<span class="cstat-no" title="statement not covered" >            grid.innerHTML = '&lt;div class="col-span-full text-center p-4 text-gray-500"&gt;Kayıtlı resim bulunamadı.&lt;/div&gt;';</span>
+<span class="cstat-no" title="statement not covered" >    init: async () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // Check if Auth module is loaded</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Auth === 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >            console.log('[AuthUI] Auth module not loaded, showing login button');</span>
+<span class="cstat-no" title="statement not covered" >            AuthUI.updateUserUI(null);</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        Array.from(knownImages)</span>
-<span class="cstat-no" title="statement not covered" >            .sort()</span>
-<span class="cstat-no" title="statement not covered" >            .forEach((imgName) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                const div = document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >                div.className =</span>
-<span class="cstat-no" title="statement not covered" >                    'border rounded cursor-pointer hover:border-blue-500 hover:shadow-md transition p-1 bg-white flex flex-col items-center';</span>
-<span class="cstat-no" title="statement not covered" >                div.onclick = () =&gt; this.selectImage(imgName);</span>
-<span class="cstat-no" title="statement not covered" >                div.innerHTML = `</span>
-<span class="cstat-no" title="statement not covered" >                &lt;div class="w-full h-24 bg-gray-100 mb-1 flex items-center justify-center overflow-hidden"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;img src="img/${imgName}" class="max-w-full max-h-full object-contain" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNSIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg=='"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;span class="text-[10px] text-gray-600 truncate w-full text-center" title="${imgName}"&gt;${imgName}&lt;/span&gt;</span>
-<span class="cstat-no" title="statement not covered" >            `;</span>
-<span class="cstat-no" title="statement not covered" >                grid.appendChild(div);</span>
-<span class="cstat-no" title="statement not covered" >            });</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Handle image selection</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    selectImage(imgName) {</span>
-<span class="cstat-no" title="statement not covered" >        // Update primary input</span>
-<span class="cstat-no" title="statement not covered" >        if (this.targetInputId) {</span>
-<span class="cstat-no" title="statement not covered" >            const el = document.getElementById(this.targetInputId);</span>
-<span class="cstat-no" title="statement not covered" >            if (el) {</span>
-<span class="cstat-no" title="statement not covered" >                el.value = imgName;</span>
-<span class="cstat-no" title="statement not covered" >                el.dispatchEvent(new Event('input'));</span>
-<span class="cstat-no" title="statement not covered" >                el.dispatchEvent(new Event('change'));</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Update secondary input if specified</span>
-<span class="cstat-no" title="statement not covered" >        if (this.targetInputId2) {</span>
-<span class="cstat-no" title="statement not covered" >            const el2 = document.getElementById(this.targetInputId2);</span>
-<span class="cstat-no" title="statement not covered" >            if (el2) {</span>
-<span class="cstat-no" title="statement not covered" >                el2.value = imgName;</span>
-<span class="cstat-no" title="statement not covered" >                el2.dispatchEvent(new Event('input'));</span>
-<span class="cstat-no" title="statement not covered" >                el2.dispatchEvent(new Event('change'));</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.closeSelector();</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // IMAGE PREVIEW &amp; UPLOAD</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Preview circuit image when URL/filename changes</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    previewCircuitImage() {</span>
-<span class="cstat-no" title="statement not covered" >        const input = document.getElementById('p-circuitImage');</span>
-<span class="cstat-no" title="statement not covered" >        const preview = document.getElementById('circuit-image-preview');</span>
-<span class="cstat-no" title="statement not covered" >        const img = document.getElementById('circuit-preview-img');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!input || !preview || !img) return;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const value = input.value.trim();</span>
-<span class="cstat-no" title="statement not covered" >        if (!value) {</span>
-<span class="cstat-no" title="statement not covered" >            preview.classList.add('hidden');</span>
-<span class="cstat-no" title="statement not covered" >            return;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const resolvedUrl = this.resolveImageUrl(value);</span>
-<span class="cstat-no" title="statement not covered" >        img.src = resolvedUrl;</span>
-<span class="cstat-no" title="statement not covered" >        img.onload = () =&gt; preview.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >        img.onerror = () =&gt; preview.classList.add('hidden');</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Upload circuit image to Supabase Storage</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async uploadCircuitImage(fileInput) {</span>
-<span class="cstat-no" title="statement not covered" >        const file = fileInput.files[0];</span>
-<span class="cstat-no" title="statement not covered" >        if (!file) return;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const statusEl = document.getElementById('autosave-status');</span>
-<span class="cstat-no" title="statement not covered" >        if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >            statusEl.textContent = '⬆️ Resim yükleniyor...';</span>
-<span class="cstat-no" title="statement not covered" >            statusEl.classList.add('text-yellow-400');</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            if (!window.SupabaseClient || !window.SupabaseClient.getClient()) {</span>
-<span class="cstat-no" title="statement not covered" >                throw new Error('Supabase client not initialized');</span>
+<span class="cstat-no" title="statement not covered" >            await Auth.init();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Handle Profile Completion Redirects</span>
+<span class="cstat-no" title="statement not covered" >            const isProfilePage = window.location.pathname.includes('profile.html');</span>
+<span class="cstat-no" title="statement not covered" >            const redirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');</span>
+<span class="cstat-no" title="statement not covered" >            const MAX_REDIRECTS = 3;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (Auth.needsProfileCompletion() &amp;&amp; !isProfilePage &amp;&amp; redirectCount &lt; MAX_REDIRECTS) {</span>
+<span class="cstat-no" title="statement not covered" >                console.log(</span>
+<span class="cstat-no" title="statement not covered" >                    `[AuthUI] Profile incomplete, redirecting to profile.html (attempt ${redirectCount + 1}/${MAX_REDIRECTS})`</span>
+<span class="cstat-no" title="statement not covered" >                );</span>
+<span class="cstat-no" title="statement not covered" >                sessionStorage.setItem('profile_redirect_count', String(redirectCount + 1));</span>
+<span class="cstat-no" title="statement not covered" >                if (window.Router) {</span>
+<span class="cstat-no" title="statement not covered" >                    Router.redirectTo('profile.html');</span>
+<span class="cstat-no" title="statement not covered" >                } else {</span>
+<span class="cstat-no" title="statement not covered" >                    window.location.href = 'profile.html';</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >                return;</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const publicUrl = await window.SupabaseClient.uploadImage(file, 'circuits');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const circuitInput = document.getElementById('p-circuitImage');</span>
-<span class="cstat-no" title="statement not covered" >            if (circuitInput) {</span>
-<span class="cstat-no" title="statement not covered" >                circuitInput.value = publicUrl;</span>
-<span class="cstat-no" title="statement not covered" >                this.previewCircuitImage();</span>
+<span class="cstat-no" title="statement not covered" >            // Reset redirect count if profile is complete or already on profile page</span>
+<span class="cstat-no" title="statement not covered" >            if (!Auth.needsProfileCompletion()) {</span>
+<span class="cstat-no" title="statement not covered" >                sessionStorage.removeItem('profile_redirect_count');</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.textContent = '✅ Resim yüklendi!';</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.remove('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.add('text-green-400');</span>
+<span class="cstat-no" title="statement not covered" >            if (redirectCount &gt;= MAX_REDIRECTS &amp;&amp; Auth.needsProfileCompletion()) {</span>
+<span class="cstat-no" title="statement not covered" >                console.error('[AuthUI] Max profile redirects reached, possible loop detected.');</span>
+<span class="cstat-no" title="statement not covered" >                if (window.Toast) Toast.error('Profil yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.');</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (this.config.onUpdate) this.config.onUpdate();</span>
-<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >            console.error('Image upload error:', error);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.textContent = '❌ Yükleme hatası!';</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.remove('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.add('text-red-400');</span>
+<span class="cstat-no" title="statement not covered" >            // Initialize Progress Module (dependency on Auth)</span>
+<span class="cstat-no" title="statement not covered" >            if (window.Progress &amp;&amp; window.Progress.init) {</span>
+<span class="cstat-no" title="statement not covered" >                await window.Progress.init();</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            alert(</span>
-<span class="cstat-no" title="statement not covered" >                'Resim yüklenemedi: ' +</span>
-<span class="cstat-no" title="statement not covered" >                    error.message +</span>
-<span class="cstat-no" title="statement not covered" >                    '\n\nAlternatif: Dosya adını manuel girin veya harici URL kullanın.'</span>
-<span class="cstat-no" title="statement not covered" >            );</span>
+<span class="cstat-no" title="statement not covered" >            // Initial UI Update</span>
+<span class="cstat-no" title="statement not covered" >            AuthUI.updateUserUI(Auth.getUserInfo());</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Listen for Auth Changes</span>
+<span class="cstat-no" title="statement not covered" >            Auth.onAuthStateChange(async (event, _session, _role) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                AuthUI.updateUserUI(Auth.getUserInfo());</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                if (event === 'SIGNED_IN') {</span>
+<span class="cstat-no" title="statement not covered" >                    // Logic for post-signin redirection and data loading</span>
+<span class="cstat-no" title="statement not covered" >                    const currentIsProfilePage = window.location.pathname.includes('profile.html');</span>
+<span class="cstat-no" title="statement not covered" >                    const currentRedirectCount = parseInt(sessionStorage.getItem('profile_redirect_count') || '0');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                    if (</span>
+<span class="cstat-no" title="statement not covered" >                        Auth.needsProfileCompletion() &amp;&amp;</span>
+<span class="cstat-no" title="statement not covered" >                        !currentIsProfilePage &amp;&amp;</span>
+<span class="cstat-no" title="statement not covered" >                        currentRedirectCount &lt; MAX_REDIRECTS</span>
+<span class="cstat-no" title="statement not covered" >                    ) {</span>
+<span class="cstat-no" title="statement not covered" >                        sessionStorage.setItem('profile_redirect_count', String(currentRedirectCount + 1));</span>
+<span class="cstat-no" title="statement not covered" >                        if (window.Router) {</span>
+<span class="cstat-no" title="statement not covered" >                            Router.redirectTo('profile.html');</span>
+<span class="cstat-no" title="statement not covered" >                        } else {</span>
+<span class="cstat-no" title="statement not covered" >                            window.location.href = 'profile.html';</span>
+<span class="cstat-no" title="statement not covered" >                        }</span>
+<span class="cstat-no" title="statement not covered" >                    } else if (!Auth.needsProfileCompletion()) {</span>
+<span class="cstat-no" title="statement not covered" >                        sessionStorage.removeItem('profile_redirect_count');</span>
+<span class="cstat-no" title="statement not covered" >                        if (window.Progress &amp;&amp; window.Progress.loadFromServer) {</span>
+<span class="cstat-no" title="statement not covered" >                            await window.Progress.loadFromServer();</span>
+<span class="cstat-no" title="statement not covered" >                        }</span>
+<span class="cstat-no" title="statement not covered" >                    }</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >        } catch (err) {</span>
+<span class="cstat-no" title="statement not covered" >            console.warn('[AuthUI] Auth init error:', err);</span>
+<span class="cstat-no" title="statement not covered" >            if (window.Toast) Toast.apiError(err, 'Kimlik doğrulama');</span>
+<span class="cstat-no" title="statement not covered" >            AuthUI.updateUserUI(null);</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        fileInput.value = '';</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Smart Image URL Resolver</span>
-<span class="cstat-no" title="statement not covered" >     * Handles: local files, Supabase storage, external URLs</span>
+<span class="cstat-no" title="statement not covered" >     * Update User Interface based on auth state</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} userInfo - User information object</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    resolveImageUrl(imagePath) {</span>
-<span class="cstat-no" title="statement not covered" >        if (!imagePath) return '';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Already a full URL</span>
-<span class="cstat-no" title="statement not covered" >        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {</span>
-<span class="cstat-no" title="statement not covered" >            return imagePath;</span>
+<span class="cstat-no" title="statement not covered" >    updateUserUI: (userInfo) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // Delegate to Navbar component if available (Modern Approach)</span>
+<span class="cstat-no" title="statement not covered" >        if (window.Navbar &amp;&amp; window.Navbar.updateAuthUI) {</span>
+<span class="cstat-no" title="statement not covered" >            window.Navbar.updateAuthUI();</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Local file - use relative path</span>
-<span class="cstat-no" title="statement not covered" >        return imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;</span>
+<span class="cstat-no" title="statement not covered" >        // Legacy/Fallback UI Update (Direct DOM manipulation)</span>
+<span class="cstat-no" title="statement not covered" >        const loginBtn = document.getElementById('login-btn');</span>
+<span class="cstat-no" title="statement not covered" >        const userMenu = document.getElementById('user-menu');</span>
+<span class="cstat-no" title="statement not covered" >        const userName = document.getElementById('user-name');</span>
+<span class="cstat-no" title="statement not covered" >        const userAvatar = document.getElementById('user-avatar');</span>
+<span class="cstat-no" title="statement not covered" >        const teacherLink = document.getElementById('teacher-link');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        if (!loginBtn || !userMenu) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        if (userInfo &amp;&amp; userInfo.isLoggedIn) {</span>
+<span class="cstat-no" title="statement not covered" >            loginBtn.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >            loginBtn.classList.remove('md:flex');</span>
+<span class="cstat-no" title="statement not covered" >            userMenu.classList.remove('hidden');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (userName) userName.textContent = userInfo.displayName || 'Kullanıcı';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (userAvatar) {</span>
+<span class="cstat-no" title="statement not covered" >                if (userInfo.avatarUrl) {</span>
+<span class="cstat-no" title="statement not covered" >                    const isEmoji = /^[\p{Emoji}\u200d]+$/u.test(userInfo.avatarUrl) || userInfo.avatarUrl.length &lt;= 4;</span>
+<span class="cstat-no" title="statement not covered" >                    const isUrl =</span>
+<span class="cstat-no" title="statement not covered" >                        userInfo.avatarUrl.startsWith('http') ||</span>
+<span class="cstat-no" title="statement not covered" >                        userInfo.avatarUrl.startsWith('/') ||</span>
+<span class="cstat-no" title="statement not covered" >                        userInfo.avatarUrl.includes('.');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                    if (isUrl &amp;&amp; !isEmoji) {</span>
+<span class="cstat-no" title="statement not covered" >                        userAvatar.innerHTML = '';</span>
+<span class="cstat-no" title="statement not covered" >                        const img = document.createElement('img');</span>
+<span class="cstat-no" title="statement not covered" >                        img.src = userInfo.avatarUrl;</span>
+<span class="cstat-no" title="statement not covered" >                        img.className = 'w-8 h-8 rounded-full object-cover';</span>
+<span class="cstat-no" title="statement not covered" >                        img.alt = '';</span>
+<span class="cstat-no" title="statement not covered" >                        img.onerror = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                            userAvatar.textContent = '👤';</span>
+<span class="cstat-no" title="statement not covered" >                        };</span>
+<span class="cstat-no" title="statement not covered" >                        userAvatar.appendChild(img);</span>
+<span class="cstat-no" title="statement not covered" >                    } else {</span>
+<span class="cstat-no" title="statement not covered" >                        userAvatar.textContent = userInfo.avatarUrl;</span>
+<span class="cstat-no" title="statement not covered" >                    }</span>
+<span class="cstat-no" title="statement not covered" >                } else {</span>
+<span class="cstat-no" title="statement not covered" >                    userAvatar.textContent = userInfo.isStudent ? '🎓' : '👨‍🏫';</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (teacherLink) {</span>
+<span class="cstat-no" title="statement not covered" >                if (userInfo.isTeacher || userInfo.isAdmin) {</span>
+<span class="cstat-no" title="statement not covered" >                    teacherLink.classList.remove('hidden');</span>
+<span class="cstat-no" title="statement not covered" >                    teacherLink.classList.add('flex');</span>
+<span class="cstat-no" title="statement not covered" >                } else {</span>
+<span class="cstat-no" title="statement not covered" >                    teacherLink.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >                }</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            loginBtn.classList.remove('hidden');</span>
+<span class="cstat-no" title="statement not covered" >            loginBtn.classList.add('md:flex');</span>
+<span class="cstat-no" title="statement not covered" >            userMenu.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Toggle User Dropdown Menu</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    toggleUserMenu: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const dropdown = document.getElementById('user-dropdown');</span>
+<span class="cstat-no" title="statement not covered" >        if (dropdown) {</span>
+<span class="cstat-no" title="statement not covered" >            dropdown.classList.toggle('hidden');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            if (!dropdown.classList.contains('hidden')) {</span>
+<span class="cstat-no" title="statement not covered" >                setTimeout(() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                    document.addEventListener('click', AuthUI.closeUserMenu, { once: true });</span>
+<span class="cstat-no" title="statement not covered" >                }, 10);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Close User Dropdown Menu</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    closeUserMenu: (e) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const dropdown = document.getElementById('user-dropdown');</span>
+<span class="cstat-no" title="statement not covered" >        const userMenu = document.getElementById('user-menu');</span>
+<span class="cstat-no" title="statement not covered" >        if (dropdown &amp;&amp; userMenu &amp;&amp; !userMenu.contains(e.target)) {</span>
+<span class="cstat-no" title="statement not covered" >            dropdown.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Handle Logout</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    logout: async () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (typeof Auth === 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >            if (window.Router) Router.redirectTo('auth.html');</span>
+<span class="cstat-no" title="statement not covered" >            else window.location.href = 'auth.html';</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            await Auth.signOut();</span>
+<span class="cstat-no" title="statement not covered" >            // Also clear student session if any</span>
+<span class="cstat-no" title="statement not covered" >            if (Auth.studentLogout) Auth.studentLogout();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            AuthUI.updateUserUI(null);</span>
+<span class="cstat-no" title="statement not covered" >            window.location.reload();</span>
+<span class="cstat-no" title="statement not covered" >        } catch (err) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[AuthUI] Logout error:', err);</span>
+<span class="cstat-no" title="statement not covered" >            alert('Çıkış yapılırken hata oluştu');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >window.ImageManager = ImageManager;</span>
+<span class="cstat-no" title="statement not covered" >// Expose globally</span>
+<span class="cstat-no" title="statement not covered" >if (typeof window !== 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >    window.AuthUI = AuthUI;</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -774,14 +717,14 @@
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2026-01-10T11:48:30.211Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

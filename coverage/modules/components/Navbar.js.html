@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/236</span>
+                <span class='fraction'>0/239</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/236</span>
+                <span class='fraction'>0/239</span>
             </div>
         
             
@@ -299,7 +299,13 @@
 <a name='L234'></a><a href='#L234'>234</a>
 <a name='L235'></a><a href='#L235'>235</a>
 <a name='L236'></a><a href='#L236'>236</a>
-<a name='L237'></a><a href='#L237'>237</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -560,6 +566,22 @@
 <span class="cstat-no" title="statement not covered" >     * @param {string} route - Hedef route (orn: '/', '/admin', '/teacher')</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
 <span class="cstat-no" title="statement not covered" >    navigateSPA: (route) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        // Ana sayfaya dönüyorsa özel işlem yap</span>
+<span class="cstat-no" title="statement not covered" >        if (route === '/') {</span>
+<span class="cstat-no" title="statement not covered" >            // URL'deki ?course=... gibi parametreleri temizle</span>
+<span class="cstat-no" title="statement not covered" >            if (window.location.search) {</span>
+<span class="cstat-no" title="statement not covered" >                const cleanUrl = window.location.pathname + '#/';</span>
+<span class="cstat-no" title="statement not covered" >                window.history.replaceState(null, '', cleanUrl);</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Doğrudan kurs seçim ekranını göster (Router'a güvenmeden)</span>
+<span class="cstat-no" title="statement not covered" >            if (Navbar.isOnSPA() &amp;&amp; window.app?.renderCourseSelection) {</span>
+<span class="cstat-no" title="statement not covered" >                window.location.hash = '#/';</span>
+<span class="cstat-no" title="statement not covered" >                app.renderCourseSelection(false);</span>
+<span class="cstat-no" title="statement not covered" >                return;</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        if (Navbar.isOnSPA()) {</span>
 <span class="cstat-no" title="statement not covered" >            // index.html içindeyiz, Router kullan</span>
 <span class="cstat-no" title="statement not covered" >            if (window.Router) {</span>
@@ -582,7 +604,9 @@
 <span class="cstat-no" title="statement not covered" >            &lt;div class="flex justify-between h-20 items-center"&gt;</span>
 <span class="cstat-no" title="statement not covered" >                </span>
 <span class="cstat-no" title="statement not covered" >                &lt;!-- Logo --&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group" onclick="Navbar.navigateSPA('/')"&gt;</span>
+<span class="cstat-no" title="statement not covered" >                &lt;a href="index.html#/" </span>
+<span class="cstat-no" title="statement not covered" >                   onclick="event.preventDefault(); Navbar.navigateSPA('/');" </span>
+<span class="cstat-no" title="statement not covered" >                   class="flex-shrink-0 flex items-center gap-3 cursor-pointer group no-underline"&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;div class="relative w-10 h-10 transition-transform group-hover:scale-110 duration-300"&gt;</span>
 <span class="cstat-no" title="statement not covered" >                        &lt;div class="absolute inset-0 bg-gradient-to-tr from-theme to-cyan-300 rounded-xl rotate-6 group-hover:rotate-12 transition-transform opacity-20"&gt;&lt;/div&gt;</span>
 <span class="cstat-no" title="statement not covered" >                        &lt;div class="absolute inset-0 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center overflow-hidden"&gt;</span>
@@ -592,40 +616,25 @@
 <span class="cstat-no" title="statement not covered" >                    &lt;div class="flex flex-col brand-logo"&gt;</span>
 <span class="cstat-no" title="statement not covered" >                        &lt;span class="text-2xl font-bold text-gray-800 dark:text-white tracking-tight leading-none group-hover:text-theme transition-colors"&gt;Yeti&lt;span class="brand-lab text-theme"&gt;LAB&lt;/span&gt;&lt;/span&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >                &lt;!-- Desktop Search --&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;div class="flex-1 max-w-xl mx-8 hidden lg:block relative group"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;span class="text-gray-400 text-lg group-hover:text-theme transition-colors"&gt;🔍&lt;/span&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;input type="text" </span>
-<span class="cstat-no" title="statement not covered" >                        oninput="window.Search?.handle(this.value)" </span>
-<span class="cstat-no" title="statement not covered" >                        placeholder="Ders, konu veya proje ara..."</span>
-<span class="cstat-no" title="statement not covered" >                        class="block w-full pl-11 pr-4 py-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-theme focus:ring-4 focus:ring-theme/10 transition-all bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 hover:border-gray-200"</span>
-<span class="cstat-no" title="statement not covered" >                    &gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 hidden z-50 max-h-96 overflow-y-auto"&gt;&lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;/div&gt;</span>
+<span class="cstat-no" title="statement not covered" >                &lt;/a&gt;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >                &lt;!-- Right Menu --&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;div class="flex items-center gap-3"&gt;</span>
+<span class="cstat-no" title="statement not covered" >                &lt;div class="flex items-center gap-2"&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    </span>
-<span class="cstat-no" title="statement not covered" >                    &lt;!-- Mobile Search Toggle --&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;!-- Search Icon (All screens) --&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;button onclick="UI.toggleMobileSearch()" </span>
-<span class="cstat-no" title="statement not covered" >                        class="lg:hidden p-2 text-gray-500 hover:text-theme hover:bg-gray-50 rounded-lg transition-colors"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;span class="text-xl"&gt;🔍&lt;/span&gt;</span>
+<span class="cstat-no" title="statement not covered" >                        class="p-2.5 text-gray-500 hover:text-theme hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all"</span>
+<span class="cstat-no" title="statement not covered" >                        title="Ara"&gt;</span>
+<span class="cstat-no" title="statement not covered" >                        &lt;svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;</span>
+<span class="cstat-no" title="statement not covered" >                            &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"&gt;&lt;/path&gt;</span>
+<span class="cstat-no" title="statement not covered" >                        &lt;/svg&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;/button&gt;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >                    &lt;!-- Themes --&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;div class="h-8 flex items-center gap-1"&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;/div&gt;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >                    &lt;!-- Language --&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;button onclick="window.I18n?.toggle()" </span>
-<span class="cstat-no" title="statement not covered" >                        class="p-2 text-gray-600 hover:text-theme rounded-lg hover:bg-gray-100 font-bold border border-gray-200 min-w-[44px] min-h-[44px] flex items-center justify-center transform hover:scale-105 transition-all"</span>
-<span class="cstat-no" title="statement not covered" >                        title="Dil Değiştir / Change Language"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;span id="lang-text" class="text-sm"&gt;TR&lt;/span&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/button&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;!-- Language toggle removed - single language for now --&gt;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >                    &lt;!-- Auth Menu --&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;div id="navbar-auth-section" class="ml-2"&gt;</span>
@@ -778,7 +787,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-08T09:13:35.238Z
+                at 2026-01-10T11:48:30.211Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

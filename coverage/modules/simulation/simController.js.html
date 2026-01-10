@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for modules/admin/images.js</title>
+    <title>Code coverage report for modules/simulation/simController.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/admin</a> images.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/simulation</a> simController.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/234</span>
+                <span class='fraction'>0/209</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/234</span>
+                <span class='fraction'>0/209</span>
             </div>
         
             
@@ -272,57 +272,7 @@
 <a name='L207'></a><a href='#L207'>207</a>
 <a name='L208'></a><a href='#L208'>208</a>
 <a name='L209'></a><a href='#L209'>209</a>
-<a name='L210'></a><a href='#L210'>210</a>
-<a name='L211'></a><a href='#L211'>211</a>
-<a name='L212'></a><a href='#L212'>212</a>
-<a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a>
-<a name='L224'></a><a href='#L224'>224</a>
-<a name='L225'></a><a href='#L225'>225</a>
-<a name='L226'></a><a href='#L226'>226</a>
-<a name='L227'></a><a href='#L227'>227</a>
-<a name='L228'></a><a href='#L228'>228</a>
-<a name='L229'></a><a href='#L229'>229</a>
-<a name='L230'></a><a href='#L230'>230</a>
-<a name='L231'></a><a href='#L231'>231</a>
-<a name='L232'></a><a href='#L232'>232</a>
-<a name='L233'></a><a href='#L233'>233</a>
-<a name='L234'></a><a href='#L234'>234</a>
-<a name='L235'></a><a href='#L235'>235</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L210'></a><a href='#L210'>210</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -532,239 +482,214 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" > * Image Manager Module for Admin Panel</span>
-<span class="cstat-no" title="statement not covered" > * Handles image selection, upload, preview, and URL resolution.</span>
+<span class="cstat-no" title="statement not covered" > * Simulation Controller Module</span>
+<span class="cstat-no" title="statement not covered" > * Canvas tabanlı simülasyonları yönetir</span>
+<span class="cstat-no" title="statement not covered" > * Frame rate kontrolü, Chart.js entegrasyonu ve modüler simülasyon çağrıları</span>
 <span class="cstat-no" title="statement not covered" > *</span>
-<span class="cstat-no" title="statement not covered" > * Features:</span>
-<span class="cstat-no" title="statement not covered" > * - Image selector modal with grid view</span>
-<span class="cstat-no" title="statement not covered" > * - Supabase storage upload</span>
-<span class="cstat-no" title="statement not covered" > * - Smart URL resolution (local, Supabase, external)</span>
+<span class="cstat-no" title="statement not covered" > * @module modules/simulation/simController</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >const ImageManager = {</span>
-<span class="cstat-no" title="statement not covered" >    // Configuration</span>
-<span class="cstat-no" title="statement not covered" >    config: {</span>
-<span class="cstat-no" title="statement not covered" >        onUpdate: null, // Callback after image selection</span>
-<span class="cstat-no" title="statement not covered" >        getCourseData: () =&gt; window.courseData || {},</span>
+<span class="cstat-no" title="statement not covered" >const SimController = {</span>
+<span class="cstat-no" title="statement not covered" >    // Simulation state</span>
+<span class="cstat-no" title="statement not covered" >    state: {</span>
+<span class="cstat-no" title="statement not covered" >        val1: 0,</span>
+<span class="cstat-no" title="statement not covered" >        val2: 0,</span>
+<span class="cstat-no" title="statement not covered" >        active: false,</span>
+<span class="cstat-no" title="statement not covered" >        timer: 0,</span>
+<span class="cstat-no" title="statement not covered" >        angle: 0,</span>
+<span class="cstat-no" title="statement not covered" >        dir: 2,</span>
+<span class="cstat-no" title="statement not covered" >        lastTick: Date.now(),</span>
+<span class="cstat-no" title="statement not covered" >        themeColor: '#00979C',</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // State</span>
-<span class="cstat-no" title="statement not covered" >    targetInputId: null,</span>
-<span class="cstat-no" title="statement not covered" >    targetInputId2: null,</span>
+<span class="cstat-no" title="statement not covered" >    // Animation loop reference</span>
+<span class="cstat-no" title="statement not covered" >    loop: null,</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Chart.js instance</span>
+<span class="cstat-no" title="statement not covered" >    chartInstance: null,</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Frame rate control</span>
+<span class="cstat-no" title="statement not covered" >    lastFrameTime: 0,</span>
+<span class="cstat-no" title="statement not covered" >    targetFPS: 30,</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Current project reference (for hasGraph check)</span>
+<span class="cstat-no" title="statement not covered" >    currentProject: null,</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Initialize with configuration</span>
+<span class="cstat-no" title="statement not covered" >     * Stop the simulation loop and destroy chart</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    init(config) {</span>
-<span class="cstat-no" title="statement not covered" >        this.config = { ...this.config, ...config };</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // IMAGE SELECTOR MODAL</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Open image selector modal</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    openSelector(inputId, inputId2 = null) {</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId = inputId;</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId2 = inputId2;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const modal = document.getElementById('image-selector-modal');</span>
-<span class="cstat-no" title="statement not covered" >        if (modal) {</span>
-<span class="cstat-no" title="statement not covered" >            modal.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >            this.loadImageList();</span>
+<span class="cstat-no" title="statement not covered" >    stop: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (SimController.loop) {</span>
+<span class="cstat-no" title="statement not covered" >            cancelAnimationFrame(SimController.loop);</span>
+<span class="cstat-no" title="statement not covered" >            SimController.loop = null;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        if (SimController.chartInstance) {</span>
+<span class="cstat-no" title="statement not covered" >            SimController.chartInstance.destroy();</span>
+<span class="cstat-no" title="statement not covered" >            SimController.chartInstance = null;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Close image selector modal</span>
+<span class="cstat-no" title="statement not covered" >     * Set the current project for simulation</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} project - Project object with hasGraph property</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    closeSelector() {</span>
-<span class="cstat-no" title="statement not covered" >        const modal = document.getElementById('image-selector-modal');</span>
-<span class="cstat-no" title="statement not covered" >        if (modal) modal.classList.add('hidden');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId = null;</span>
-<span class="cstat-no" title="statement not covered" >        this.targetInputId2 = null;</span>
+<span class="cstat-no" title="statement not covered" >    setProject: (project) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        SimController.currentProject = project;</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Load available images into selector grid</span>
+<span class="cstat-no" title="statement not covered" >     * Get the simulation state</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Object} Current simulation state</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async loadImageList() {</span>
-<span class="cstat-no" title="statement not covered" >        const grid = document.getElementById('image-selector-grid');</span>
-<span class="cstat-no" title="statement not covered" >        if (!grid) return;</span>
+<span class="cstat-no" title="statement not covered" >    getState: () =&gt; SimController.state,</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        grid.innerHTML = '&lt;div class="col-span-full text-center p-4"&gt;Yükleniyor...&lt;/div&gt;';</span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Update simulation state</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} updates - State properties to update</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    setState: (updates) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        Object.assign(SimController.state, updates);</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Collect images from all loaded course data</span>
-<span class="cstat-no" title="statement not covered" >        const knownImages = new Set();</span>
-<span class="cstat-no" title="statement not covered" >        const courseData = this.config.getCourseData();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        Object.values(courseData).forEach((course) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >            if (course &amp;&amp; course.data) {</span>
-<span class="cstat-no" title="statement not covered" >                (course.data.projects || []).forEach((p) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    if (p.circuitImage) knownImages.add(p.circuitImage);</span>
-<span class="cstat-no" title="statement not covered" >                    if (p.code &amp;&amp; p.code.match(/\.(png|jpg|jpeg|gif)$/i)) knownImages.add(p.code);</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
-<span class="cstat-no" title="statement not covered" >                Object.values(course.data.componentInfo || {}).forEach((c) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    if (c.imgFileName) knownImages.add(c.imgFileName);</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Add generic fallback images</span>
-<span class="cstat-no" title="statement not covered" >        ['arduino_uno.jpg', 'breadboard.jpg', 'led_red.jpg', 'resistor.jpg', 'buzzer.jpg'].forEach((img) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            knownImages.add(img)</span>
-<span class="cstat-no" title="statement not covered" >        );</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        grid.innerHTML = '';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (knownImages.size === 0) {</span>
-<span class="cstat-no" title="statement not covered" >            grid.innerHTML = '&lt;div class="col-span-full text-center p-4 text-gray-500"&gt;Kayıtlı resim bulunamadı.&lt;/div&gt;';</span>
+<span class="cstat-no" title="statement not covered" >    /**</span>
+<span class="cstat-no" title="statement not covered" >     * Setup simulation canvas and chart</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} type - Simulation type (e.g., 'led_blink', 'servo')</span>
+<span class="cstat-no" title="statement not covered" >     * @param {Object} options - Optional configuration</span>
+<span class="cstat-no" title="statement not covered" >     */</span>
+<span class="cstat-no" title="statement not covered" >    setup: (type, options = {}) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const cvs = document.getElementById('simCanvas');</span>
+<span class="cstat-no" title="statement not covered" >        if (!cvs) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('[SimController] Canvas element not found');</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        Array.from(knownImages)</span>
-<span class="cstat-no" title="statement not covered" >            .sort()</span>
-<span class="cstat-no" title="statement not covered" >            .forEach((imgName) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                const div = document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >                div.className =</span>
-<span class="cstat-no" title="statement not covered" >                    'border rounded cursor-pointer hover:border-blue-500 hover:shadow-md transition p-1 bg-white flex flex-col items-center';</span>
-<span class="cstat-no" title="statement not covered" >                div.onclick = () =&gt; this.selectImage(imgName);</span>
-<span class="cstat-no" title="statement not covered" >                div.innerHTML = `</span>
-<span class="cstat-no" title="statement not covered" >                &lt;div class="w-full h-24 bg-gray-100 mb-1 flex items-center justify-center overflow-hidden"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;img src="img/${imgName}" class="max-w-full max-h-full object-contain" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNSIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg=='"&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;span class="text-[10px] text-gray-600 truncate w-full text-center" title="${imgName}"&gt;${imgName}&lt;/span&gt;</span>
-<span class="cstat-no" title="statement not covered" >            `;</span>
-<span class="cstat-no" title="statement not covered" >                grid.appendChild(div);</span>
+<span class="cstat-no" title="statement not covered" >        const ctx = cvs.getContext('2d');</span>
+<span class="cstat-no" title="statement not covered" >        cvs.width = options.width || 500;</span>
+<span class="cstat-no" title="statement not covered" >        cvs.height = options.height || 350;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Get Current Theme Color from CSS</span>
+<span class="cstat-no" title="statement not covered" >        const themeColor =</span>
+<span class="cstat-no" title="statement not covered" >            getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim() || '#00979C';</span>
+<span class="cstat-no" title="statement not covered" >        SimController.state.themeColor = themeColor;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Setup chart if project has graph</span>
+<span class="cstat-no" title="statement not covered" >        const chartCanvas = document.getElementById('dataChart');</span>
+<span class="cstat-no" title="statement not covered" >        if (chartCanvas &amp;&amp; SimController.currentProject?.hasGraph) {</span>
+<span class="cstat-no" title="statement not covered" >            const chartCtx = chartCanvas.getContext('2d');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Destroy existing chart</span>
+<span class="cstat-no" title="statement not covered" >            if (SimController.chartInstance) {</span>
+<span class="cstat-no" title="statement not covered" >                SimController.chartInstance.destroy();</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            // Create new chart</span>
+<span class="cstat-no" title="statement not covered" >            SimController.chartInstance = new Chart(chartCtx, {</span>
+<span class="cstat-no" title="statement not covered" >                type: 'line',</span>
+<span class="cstat-no" title="statement not covered" >                data: {</span>
+<span class="cstat-no" title="statement not covered" >                    labels: Array(20).fill(''),</span>
+<span class="cstat-no" title="statement not covered" >                    datasets: [</span>
+<span class="cstat-no" title="statement not covered" >                        {</span>
+<span class="cstat-no" title="statement not covered" >                            data: Array(20).fill(0),</span>
+<span class="cstat-no" title="statement not covered" >                            borderColor: themeColor,</span>
+<span class="cstat-no" title="statement not covered" >                            tension: 0.3,</span>
+<span class="cstat-no" title="statement not covered" >                        },</span>
+<span class="cstat-no" title="statement not covered" >                    ],</span>
+<span class="cstat-no" title="statement not covered" >                },</span>
+<span class="cstat-no" title="statement not covered" >                options: {</span>
+<span class="cstat-no" title="statement not covered" >                    responsive: true,</span>
+<span class="cstat-no" title="statement not covered" >                    maintainAspectRatio: false,</span>
+<span class="cstat-no" title="statement not covered" >                    animation: false,</span>
+<span class="cstat-no" title="statement not covered" >                    plugins: { legend: { display: false } },</span>
+<span class="cstat-no" title="statement not covered" >                    scales: { y: { display: true } },</span>
+<span class="cstat-no" title="statement not covered" >                },</span>
 <span class="cstat-no" title="statement not covered" >            });</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Call modular simulation setup</span>
+<span class="cstat-no" title="statement not covered" >        if (window.Simulations?.[type]?.setup) {</span>
+<span class="cstat-no" title="statement not covered" >            // Create app-like interface for backward compatibility</span>
+<span class="cstat-no" title="statement not covered" >            const appInterface = SimController._createAppInterface();</span>
+<span class="cstat-no" title="statement not covered" >            window.Simulations[type].setup(appInterface);</span>
+<span class="cstat-no" title="statement not covered" >        } else {</span>
+<span class="cstat-no" title="statement not covered" >            SimController.setControls(`&lt;div class="text-red-500 text-xs"&gt;Simülasyon Bulunamadı: ${type}&lt;/div&gt;`);</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Start the animation loop</span>
+<span class="cstat-no" title="statement not covered" >        SimController.loop = requestAnimationFrame(() =&gt; SimController._runLoop(ctx, type));</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Handle image selection</span>
+<span class="cstat-no" title="statement not covered" >     * Set controls HTML in the simulation panel</span>
+<span class="cstat-no" title="statement not covered" >     * @param {string} html - HTML string for controls</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    selectImage(imgName) {</span>
-<span class="cstat-no" title="statement not covered" >        // Update primary input</span>
-<span class="cstat-no" title="statement not covered" >        if (this.targetInputId) {</span>
-<span class="cstat-no" title="statement not covered" >            const el = document.getElementById(this.targetInputId);</span>
-<span class="cstat-no" title="statement not covered" >            if (el) {</span>
-<span class="cstat-no" title="statement not covered" >                el.value = imgName;</span>
-<span class="cstat-no" title="statement not covered" >                el.dispatchEvent(new Event('input'));</span>
-<span class="cstat-no" title="statement not covered" >                el.dispatchEvent(new Event('change'));</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >    setControls: (html) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const controlsEl = document.getElementById('simControls');</span>
+<span class="cstat-no" title="statement not covered" >        if (controlsEl) {</span>
+<span class="cstat-no" title="statement not covered" >            controlsEl.innerHTML = html;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Update secondary input if specified</span>
-<span class="cstat-no" title="statement not covered" >        if (this.targetInputId2) {</span>
-<span class="cstat-no" title="statement not covered" >            const el2 = document.getElementById(this.targetInputId2);</span>
-<span class="cstat-no" title="statement not covered" >            if (el2) {</span>
-<span class="cstat-no" title="statement not covered" >                el2.value = imgName;</span>
-<span class="cstat-no" title="statement not covered" >                el2.dispatchEvent(new Event('input'));</span>
-<span class="cstat-no" title="statement not covered" >                el2.dispatchEvent(new Event('change'));</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.closeSelector();</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" >    // IMAGE PREVIEW &amp; UPLOAD</span>
-<span class="cstat-no" title="statement not covered" >    // ==========================================</span>
-<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Preview circuit image when URL/filename changes</span>
+<span class="cstat-no" title="statement not covered" >     * Internal: Run the simulation loop with FPS throttling</span>
+<span class="cstat-no" title="statement not covered" >     * @private</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    previewCircuitImage() {</span>
-<span class="cstat-no" title="statement not covered" >        const input = document.getElementById('p-circuitImage');</span>
-<span class="cstat-no" title="statement not covered" >        const preview = document.getElementById('circuit-image-preview');</span>
-<span class="cstat-no" title="statement not covered" >        const img = document.getElementById('circuit-preview-img');</span>
+<span class="cstat-no" title="statement not covered" >    _runLoop: (ctx, type) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const now = Date.now();</span>
+<span class="cstat-no" title="statement not covered" >        const frameInterval = 1000 / SimController.targetFPS;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!input || !preview || !img) return;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const value = input.value.trim();</span>
-<span class="cstat-no" title="statement not covered" >        if (!value) {</span>
-<span class="cstat-no" title="statement not covered" >            preview.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >        // Throttle to target FPS</span>
+<span class="cstat-no" title="statement not covered" >        if (now - SimController.lastFrameTime &lt; frameInterval) {</span>
+<span class="cstat-no" title="statement not covered" >            SimController.loop = requestAnimationFrame(() =&gt; SimController._runLoop(ctx, type));</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        SimController.lastFrameTime = now;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const resolvedUrl = this.resolveImageUrl(value);</span>
-<span class="cstat-no" title="statement not covered" >        img.src = resolvedUrl;</span>
-<span class="cstat-no" title="statement not covered" >        img.onload = () =&gt; preview.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >        img.onerror = () =&gt; preview.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >        // Clear canvas</span>
+<span class="cstat-no" title="statement not covered" >        ctx.clearRect(0, 0, 500, 350);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        let val = 0;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Call modular draw function</span>
+<span class="cstat-no" title="statement not covered" >        if (window.Simulations?.[type]?.draw) {</span>
+<span class="cstat-no" title="statement not covered" >            const appInterface = SimController._createAppInterface();</span>
+<span class="cstat-no" title="statement not covered" >            val = window.Simulations[type].draw(ctx, appInterface, now);</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        // Update chart if available</span>
+<span class="cstat-no" title="statement not covered" >        if (SimController.currentProject?.hasGraph &amp;&amp; SimController.chartInstance &amp;&amp; val !== undefined) {</span>
+<span class="cstat-no" title="statement not covered" >            const d = SimController.chartInstance.data.datasets[0].data;</span>
+<span class="cstat-no" title="statement not covered" >            d.shift();</span>
+<span class="cstat-no" title="statement not covered" >            d.push(val);</span>
+<span class="cstat-no" title="statement not covered" >            SimController.chartInstance.update('none');</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        SimController.loop = requestAnimationFrame(() =&gt; SimController._runLoop(ctx, type));</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Upload circuit image to Supabase Storage</span>
+<span class="cstat-no" title="statement not covered" >     * Create an app-like interface for backward compatibility with Simulations module</span>
+<span class="cstat-no" title="statement not covered" >     * @private</span>
+<span class="cstat-no" title="statement not covered" >     * @returns {Object} App-compatible interface</span>
 <span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    async uploadCircuitImage(fileInput) {</span>
-<span class="cstat-no" title="statement not covered" >        const file = fileInput.files[0];</span>
-<span class="cstat-no" title="statement not covered" >        if (!file) return;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const statusEl = document.getElementById('autosave-status');</span>
-<span class="cstat-no" title="statement not covered" >        if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >            statusEl.textContent = '⬆️ Resim yükleniyor...';</span>
-<span class="cstat-no" title="statement not covered" >            statusEl.classList.add('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            if (!window.SupabaseClient || !window.SupabaseClient.getClient()) {</span>
-<span class="cstat-no" title="statement not covered" >                throw new Error('Supabase client not initialized');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const publicUrl = await window.SupabaseClient.uploadImage(file, 'circuits');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const circuitInput = document.getElementById('p-circuitImage');</span>
-<span class="cstat-no" title="statement not covered" >            if (circuitInput) {</span>
-<span class="cstat-no" title="statement not covered" >                circuitInput.value = publicUrl;</span>
-<span class="cstat-no" title="statement not covered" >                this.previewCircuitImage();</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.textContent = '✅ Resim yüklendi!';</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.remove('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.add('text-green-400');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (this.config.onUpdate) this.config.onUpdate();</span>
-<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >            console.error('Image upload error:', error);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            if (statusEl) {</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.textContent = '❌ Yükleme hatası!';</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.remove('text-yellow-400');</span>
-<span class="cstat-no" title="statement not covered" >                statusEl.classList.add('text-red-400');</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            alert(</span>
-<span class="cstat-no" title="statement not covered" >                'Resim yüklenemedi: ' +</span>
-<span class="cstat-no" title="statement not covered" >                    error.message +</span>
-<span class="cstat-no" title="statement not covered" >                    '\n\nAlternatif: Dosya adını manuel girin veya harici URL kullanın.'</span>
-<span class="cstat-no" title="statement not covered" >            );</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        fileInput.value = '';</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Smart Image URL Resolver</span>
-<span class="cstat-no" title="statement not covered" >     * Handles: local files, Supabase storage, external URLs</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    resolveImageUrl(imagePath) {</span>
-<span class="cstat-no" title="statement not covered" >        if (!imagePath) return '';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Already a full URL</span>
-<span class="cstat-no" title="statement not covered" >        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {</span>
-<span class="cstat-no" title="statement not covered" >            return imagePath;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Local file - use relative path</span>
-<span class="cstat-no" title="statement not covered" >        return imagePath.startsWith('img/') ? imagePath : `img/${imagePath}`;</span>
+<span class="cstat-no" title="statement not covered" >    _createAppInterface: () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        return {</span>
+<span class="cstat-no" title="statement not covered" >            simState: SimController.state,</span>
+<span class="cstat-no" title="statement not covered" >            chartInstance: SimController.chartInstance,</span>
+<span class="cstat-no" title="statement not covered" >            currentProject: SimController.currentProject,</span>
+<span class="cstat-no" title="statement not covered" >            setControls: SimController.setControls,</span>
+<span class="cstat-no" title="statement not covered" >            // Backward compatibility: some simulations access these directly</span>
+<span class="cstat-no" title="statement not covered" >            get simLoop() {</span>
+<span class="cstat-no" title="statement not covered" >                return SimController.loop;</span>
+<span class="cstat-no" title="statement not covered" >            },</span>
+<span class="cstat-no" title="statement not covered" >            set simLoop(value) {</span>
+<span class="cstat-no" title="statement not covered" >                SimController.loop = value;</span>
+<span class="cstat-no" title="statement not covered" >            },</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >window.ImageManager = ImageManager;</span>
+<span class="cstat-no" title="statement not covered" >// Global scope'a ekle (mevcut yapıya uyum için)</span>
+<span class="cstat-no" title="statement not covered" >window.SimController = SimController;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

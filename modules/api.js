@@ -155,8 +155,13 @@ const API = {
             retryDelay = this.defaults.retryDelay,
             retryBackoff = this.defaults.retryBackoff,
             onRetry = null, // callback(attempt, error)
-            context = 'Veri yükleme',
+            context = 'Veri yükleme', // eslint-disable-line no-unused-vars
         } = options;
+
+        // Metrik: API call sayısı
+        if (typeof Metrics !== 'undefined') Metrics.increment('apiCalls');
+
+        const timer = typeof Metrics !== 'undefined' ? Metrics.startTimer('apiCall') : null;
 
         let lastError = null;
         let delay = retryDelay;
@@ -175,6 +180,7 @@ const API = {
                     throw result.error;
                 }
 
+                if (timer) Metrics.endTimer(timer);
                 return result;
             } catch (error) {
                 lastError = error;
@@ -182,11 +188,13 @@ const API = {
 
                 // Don't retry on certain errors
                 if (this.isNonRetryableError(error)) {
+                    if (typeof Metrics !== 'undefined') Metrics.increment('errors');
                     throw error;
                 }
 
                 // Last attempt failed
                 if (attempt === maxRetries) {
+                    if (typeof Metrics !== 'undefined') Metrics.increment('errors');
                     throw error;
                 }
 
@@ -201,6 +209,7 @@ const API = {
             }
         }
 
+        if (typeof Metrics !== 'undefined') Metrics.increment('errors');
         throw lastError;
     },
 
