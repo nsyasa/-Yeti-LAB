@@ -11,10 +11,6 @@ export default defineConfig({
             input: {
                 main: resolve(__dirname, 'index.html'),
                 auth: resolve(__dirname, 'auth.html'),
-                teacher: resolve(__dirname, 'teacher.html'),
-                profile: resolve(__dirname, 'profile.html'),
-                admin: resolve(__dirname, 'admin.html'),
-                studentDashboard: resolve(__dirname, 'student-dashboard.html'),
             },
             output: {
                 // Asset naming with hash for cache busting

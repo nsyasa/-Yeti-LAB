@@ -167,6 +167,10 @@ const ViewLoader = {
      * Load admin-related scripts
      * In production (Vite bundle), these are already loaded via main.js
      */
+    /**
+     * Load admin-related scripts
+     * Uses dynamic import for true code splitting in Vite
+     */
     loadAdminScripts: async () => {
         console.log('[ViewLoader] Loading admin scripts...');
 
@@ -176,38 +180,42 @@ const ViewLoader = {
             return;
         }
 
-        const scripts = [
-            // Constants
-            'constants/elements.js',
+        try {
+            // Dynamic imports trigger Vite to create separate chunks
             // Core dependencies
-            'data/base.js',
-            'modules/courseLoader.js',
-            'data/quiz.js',
-            'modules/themes.js',
-            'config/tabs.js',
-            // Admin modules
-            'modules/admin/storage.js',
-            'modules/admin/courses.js',
-            'modules/admin/phases.js',
-            'modules/admin/components.js',
-            'modules/admin/projects.js',
-            'modules/admin/settings.js',
-            'modules/admin/supabase-sync.js',
-            'modules/admin/hotspots.js',
-            'modules/admin/images.js',
-            'modules/admin/quizzes.js',
-            'modules/admin.js', // Main admin coordinator
-            // View components
-            'views/admin/AdminLayout.js',
-            'views/admin/sections/ProjectsSection.js',
-            'views/admin/sections/PhasesSection.js',
-            'views/admin/sections/ComponentsSection.js',
-            'views/admin/modals/AdminModals.js',
-            'views/admin/AdminView.js',
-        ];
+            await import('../../constants/elements.js');
+            await import('../../data/base.js');
+            await import('../../modules/courseLoader.js');
+            await import('../../data/quiz.js');
+            await import('../../modules/themes.js');
+            await import('../../config/tabs.js');
 
-        await ViewLoader.loadScripts(scripts);
-        console.log('[ViewLoader] Admin scripts loaded');
+            // Admin modules
+            await import('../../modules/admin/storage.js');
+            await import('../../modules/admin/courses.js');
+            await import('../../modules/admin/phases.js');
+            await import('../../modules/admin/components.js');
+            await import('../../modules/admin/projects.js');
+            await import('../../modules/admin/settings.js');
+            await import('../../modules/admin/supabase-sync.js');
+            await import('../../modules/admin/hotspots.js');
+            await import('../../modules/admin/images.js');
+            await import('../../modules/admin/quizzes.js');
+            await import('../../modules/admin.js');
+
+            // View components
+            await import('../../views/admin/AdminLayout.js');
+            await import('../../views/admin/sections/ProjectsSection.js');
+            await import('../../views/admin/sections/PhasesSection.js');
+            await import('../../views/admin/sections/ComponentsSection.js');
+            await import('../../views/admin/modals/AdminModals.js');
+            await import('../../views/admin/AdminView.js');
+
+            console.log('[ViewLoader] Admin scripts loaded via dynamic import');
+        } catch (error) {
+            console.error('[ViewLoader] Failed to load admin scripts:', error);
+            throw error;
+        }
     },
 
     // ========================
@@ -272,6 +280,10 @@ const ViewLoader = {
      * Load teacher-related scripts
      * In production (Vite bundle), these are already loaded via main.js
      */
+    /**
+     * Load teacher-related scripts
+     * Uses dynamic import for true code splitting in Vite
+     */
     loadTeacherScripts: async () => {
         console.log('[ViewLoader] Loading teacher scripts...');
 
@@ -281,17 +293,19 @@ const ViewLoader = {
             return;
         }
 
-        const scripts = [
-            'views/teacher/TeacherLayout.js',
-            'views/teacher/sections/DashboardSection.js',
-            'views/teacher/sections/ClassroomsSection.js',
-            'views/teacher/sections/StudentsSection.js',
-            'views/teacher/modals/TeacherModals.js',
-            'views/teacher/TeacherView.js',
-        ];
+        try {
+            await import('../../views/teacher/TeacherLayout.js');
+            await import('../../views/teacher/sections/DashboardSection.js');
+            await import('../../views/teacher/sections/ClassroomsSection.js');
+            await import('../../views/teacher/sections/StudentsSection.js');
+            await import('../../views/teacher/modals/TeacherModals.js');
+            await import('../../views/teacher/TeacherView.js');
 
-        await ViewLoader.loadScripts(scripts);
-        console.log('[ViewLoader] Teacher scripts loaded');
+            console.log('[ViewLoader] Teacher scripts loaded via dynamic import');
+        } catch (error) {
+            console.error('[ViewLoader] Failed to load teacher scripts:', error);
+            throw error;
+        }
     },
 
     // ========================
@@ -330,6 +344,10 @@ const ViewLoader = {
      * Load profile-related scripts
      * In production (Vite bundle), these are already loaded via main.js
      */
+    /**
+     * Load profile-related scripts
+     * Uses dynamic import for true code splitting in Vite
+     */
     loadProfileScripts: async () => {
         console.log('[ViewLoader] Loading profile scripts...');
 
@@ -339,17 +357,19 @@ const ViewLoader = {
             return;
         }
 
-        const scripts = [
-            'modules/constants.js',
-            'modules/validators.js',
-            'data/cities.js',
-            'modules/badges.js',
-            'modules/profile.js',
-            'views/profile/ProfileView.js',
-        ];
+        try {
+            await import('../../modules/constants.js');
+            await import('../../modules/validators.js');
+            await import('../../data/cities.js');
+            await import('../../modules/badges.js');
+            await import('../../modules/profile.js');
+            await import('../../views/profile/ProfileView.js');
 
-        await ViewLoader.loadScripts(scripts);
-        console.log('[ViewLoader] Profile scripts loaded');
+            console.log('[ViewLoader] Profile scripts loaded via dynamic import');
+        } catch (error) {
+            console.error('[ViewLoader] Failed to load profile scripts:', error);
+            throw error;
+        }
     },
 
     // ========================
@@ -386,13 +406,22 @@ const ViewLoader = {
     /**
      * Load student dashboard-related scripts
      */
+    /**
+     * Load student dashboard-related scripts
+     * Uses dynamic import for true code splitting in Vite
+     */
     loadStudentDashboardScripts: async () => {
         console.log('[ViewLoader] Loading student dashboard scripts...');
 
-        const scripts = ['modules/courseLoader.js', 'views/student/StudentDashboardView.js'];
+        try {
+            await import('../../modules/courseLoader.js');
+            await import('../../views/student/StudentDashboardView.js');
 
-        await ViewLoader.loadScripts(scripts);
-        console.log('[ViewLoader] Student dashboard scripts loaded');
+            console.log('[ViewLoader] Student dashboard scripts loaded via dynamic import');
+        } catch (error) {
+            console.error('[ViewLoader] Failed to load student dashboard scripts:', error);
+            throw error;
+        }
     },
 };
 

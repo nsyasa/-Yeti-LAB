@@ -103,49 +103,12 @@ import '../modules/assistant.js';
 
 // ==========================================
 // PHASE 11: View Scripts (SPA Lazy Views)
-// These are loaded by ViewLoader but need to be in bundle
 // ==========================================
-
-// Admin View & Modules
-import '../constants/elements.js';
-import '../constants/selectors.js'; // DOM Selectors (Step 2)
-import '../modules/admin/storage.js';
-import '../modules/admin/courses.js';
-import '../modules/admin/phases.js';
-import '../modules/admin/components.js';
-import '../modules/admin/projects.js';
-import '../modules/admin/settings.js';
-import '../modules/admin/supabase-sync.js';
-import '../modules/admin/hotspots.js';
-import '../modules/admin/images.js';
-import '../modules/admin/quizzes.js';
-import '../modules/admin.js';
-import '../views/admin/AdminLayout.js';
-import '../views/admin/sections/ProjectsSection.js';
-import '../views/admin/sections/PhasesSection.js';
-import '../views/admin/sections/ComponentsSection.js';
-import '../views/admin/modals/AdminModals.js';
-import '../views/admin/AdminView.js';
-
-// Teacher View & Modules
-import '../modules/teacher/analytics.js';
-import '../modules/teacher/classrooms.js';
-import '../modules/teacher/students.js';
-import '../modules/teacher-manager.js';
-import '../views/teacher/TeacherLayout.js';
-import '../views/teacher/sections/DashboardSection.js';
-import '../views/teacher/sections/ClassroomsSection.js';
-import '../views/teacher/sections/StudentsSection.js';
-import '../views/teacher/modals/TeacherModals.js';
-import '../views/teacher/TeacherView.js';
-
-// Profile View & Modules
-import '../data/cities.js';
-import '../modules/profile.js';
-import '../views/profile/ProfileView.js';
-
-// Student Dashboard View
-import '../views/student/StudentDashboardView.js';
+// REMOVED: These are now lazy loaded via ViewLoader (modules/routing/viewLoader.js)
+// - Admin View & Modules
+// - Teacher View & Modules
+// - Profile View & Modules
+// - Student Dashboard View
 
 // ==========================================
 // PHASE 12: Main Application
