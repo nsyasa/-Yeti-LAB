@@ -265,19 +265,19 @@ const Router = {
     },
 
     // Başlangıç durumunu yükle
-    init: async (appInstance) => {
+    async init(appInstance) {
         this.appInstance = appInstance; // Save reference for legacy delegation
 
         if (window.Performance) window.Performance.mark('router_init');
         console.log('[Router] Initializing...');
 
         // ===== Adım 1.6: Hash Change Listener =====
-        if (Router.mode === 'hash') {
-            window.addEventListener('hashchange', () => Router.handleRouteChange());
+        if (this.mode === 'hash') {
+            window.addEventListener('hashchange', () => this.handleRouteChange());
         }
 
         // Önce legacy URL kontrolü yap (?course=xxx → #/course/xxx)
-        if (Router.checkLegacyParams()) {
+        if (this.checkLegacyParams()) {
             // Legacy URL dönüştürüldü, hash routing devralacak
             console.log('[Router] Legacy params detected and converted');
             return;
@@ -285,19 +285,19 @@ const Router = {
 
         // ===== FAZ 6: Başlangıç Route'unu Her Zaman İşle =====
         // Hash varsa veya yoksa (ana sayfa) route'u işle
-        Router.handleRouteChange();
-        console.log('[Router] Initial route handled:', Router.currentRoute);
+        this.handleRouteChange();
+        console.log('[Router] Initial route handled:', this.currentRoute);
 
         // === ESKİ MANTIK (Query String popstate desteği - geriye uyumluluk) ===
         // Tarayıcı geri/ileri butonlarını dinle
         window.addEventListener('popstate', (_event) => {
             // Hash routing aktifse hashchange zaten dinleniyor
-            if (Router.mode === 'hash' && window.location.hash) {
+            if (this.mode === 'hash' && window.location.hash) {
                 return; // hashchange event'i halledecek
             }
 
             // Legacy query string desteği
-            const { course, project } = Router.getParams();
+            const { course, project } = this.getParams();
 
             if (course && appInstance) {
                 // Navigate to Course
@@ -308,7 +308,7 @@ const Router = {
                             appInstance.loadProject(projectId, false);
                         }
                     } else {
-                        if (UI && UI.switchView) UI.switchView('dashboard-view');
+                        if (window.UI && UI.switchView) UI.switchView('dashboard-view');
                     }
                 });
             } else if (appInstance) {

@@ -141,10 +141,13 @@ const SupabaseClient = {
      */
     async getSession() {
         try {
+            const client = this.getClient();
+            if (!client) return null;
+
             const {
                 data: { session },
                 error,
-            } = await this.getClient().auth.getSession();
+            } = await client.auth.getSession();
 
             if (error) throw error;
 
@@ -172,7 +175,10 @@ const SupabaseClient = {
                 return false;
             }
 
-            const { data, error } = await this.getClient()
+            const client = this.getClient();
+            if (!client) return false;
+
+            const { data, error } = await client
                 .from('content_admins')
                 .select('id')
                 .eq('user_id', this.currentUser.id)
@@ -195,7 +201,13 @@ const SupabaseClient = {
      * Listen to auth state changes
      */
     onAuthStateChange(callback) {
-        return this.getClient().auth.onAuthStateChange((event, session) => {
+        const client = this.getClient();
+        if (!client) {
+            console.warn('[SupabaseClient] Auth not available - skipping onAuthStateChange');
+            return { data: { subscription: { unsubscribe: () => {} } } };
+        }
+
+        return client.auth.onAuthStateChange((event, session) => {
             this.currentUser = session?.user || null;
             callback(event, session);
         });
