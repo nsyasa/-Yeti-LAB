@@ -2,73 +2,102 @@
 
 **İnteraktif Robotik ve Kodlama Eğitim Platformu**
 
+![Yeti LAB Banner](public/logo.png)
+
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://nsyasa.github.io/-Yeti-LAB/)
+[![Build Status](https://github.com/nsyasa/-Yeti-LAB/actions/workflows/ci.yml/badge.svg)](https://github.com/nsyasa/-Yeti-LAB/actions)
+[![Playwright Tests](https://github.com/nsyasa/-Yeti-LAB/actions/workflows/playwright.yml/badge.svg)](https://github.com/nsyasa/-Yeti-LAB/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
 
 ## 🎯 Proje Hakkında
 
-Yeti LAB, öğrencilere Arduino, Micro:bit, Scratch, mBlock ve App Inventor gibi platformları öğreten interaktif bir eğitim platformudur. Öğretmenler sınıf oluşturabilir, öğrenci ilerlemelerini takip edebilir.
+Yeti LAB, öğrencilere **Arduino**, **Micro:bit**, **Scratch**, **mBlock** ve **Minecraft Education** gibi platformları öğreten modern, interaktif bir eğitim platformudur. Single Page Application (SPA) mimarisi üzerine kurulu olan bu proje, öğretmenler için detaylı bir yönetim paneli, öğrenciler için oyunlaştırılmış bir öğrenme deneyimi sunar.
 
-### ✨ Özellikler
+### ✨ Temel Özellikler
 
-- 🤖 **5 Farklı Kurs**: Arduino, Micro:bit, Scratch, mBlock, App Inventor
-- 🎮 **İnteraktif Simülasyonlar**: Gerçek zamanlı devre simülasyonları
-- 📊 **İlerleme Takibi**: Öğrenci bazlı ders tamamlama takibi
-- 🏫 **Öğretmen Paneli**: Sınıf yönetimi ve ilerleme raporları
-- 🧪 **Quiz Sistemi**: Her ders sonunda test
-- 🏔️ **Yeti Asistan**: AI destekli yardımcı
-- 🌙 **Karanlık Mod**: Göz yorgunluğunu azaltan tema
-- 🌍 **Çoklu Dil**: Türkçe ve İngilizce desteği
-
----
-
-## 🚀 Demo
-
-**Canlı Site:** https://nsyasa.github.io/-Yeti-LAB/
-
-| Sayfa           | Link                                                            |
-| --------------- | --------------------------------------------------------------- |
-| Ana Sayfa       | [index.html](https://nsyasa.github.io/-Yeti-LAB/)               |
-| Giriş           | [auth.html](https://nsyasa.github.io/-Yeti-LAB/auth.html)       |
-| Öğretmen Paneli | [teacher.html](https://nsyasa.github.io/-Yeti-LAB/teacher.html) |
+- 🚀 **Modern SPA Mimarisi**: Hızlı, akıcı ve dinamik sayfa geçişleri.
+- ⚡ **Lazy Loading & Code Splitting**: Yüksek performanslı ve optimize edilmiş yükleme süreleri.
+- 🤖 **Kapsamlı Müfredat**: 6+ farklı kurs modülü (Arduino, Micro:bit, App Inventor vb.).
+- 🏫 **Öğretmen Paneli**: Sınıf yönetimi, öğrenci ekleme, ilerleme takibi ve detaylı analizler.
+- 👨‍💼 **Admin Paneli**: Kurs içeriği, proje ve faz yönetimi için güçlü araçlar.
+- 🏆 **Oyunlaştırma**: Rozetler, puan sistemi ve interaktif quizler.
+- 🧪 **Test Odaklı Geliştirme**: Kapsamlı E2E (Playwright) ve Entegrasyon (Vitest) testleri.
 
 ---
 
 ## 🛠️ Teknolojiler
 
-| Teknoloji        | Kullanım                          |
-| ---------------- | --------------------------------- |
-| **HTML/CSS/JS**  | Frontend                          |
-| **Tailwind CSS** | Styling                           |
-| **Supabase**     | Backend (Auth, Database, Storage) |
-| **GitHub Pages** | Hosting                           |
+| Kategori       | Teknolojiler                                        |
+| -------------- | --------------------------------------------------- |
+| **Frontend**   | Vanilla JS (ES6+), HTML5, CSS3                      |
+| **Build Tool** | **Vite** (Production Optimization)                  |
+| **Styling**    | **Tailwind CSS**                                    |
+| **Backend**    | **Supabase** (Auth, Postgres DB, Realtime)          |
+| **Testing**    | **Playwright** (E2E), **Vitest** (Unit/Integration) |
+| **CI/CD**      | **GitHub Actions** (Automated Testing & Deployment) |
 
 ---
 
-## 📦 Kurulum
+## 📦 Kurulum ve Çalıştırma
 
 ### Gereksinimler
 
 - Node.js 18+
-- npm veya yarn
+- npm
 
-### Adımlar
+### 1. Projeyi Klonlayın
 
 ```bash
-# Repo'yu klonla
 git clone https://github.com/nsyasa/-Yeti-LAB.git
 cd -Yeti-LAB
-
-# Bağımlılıkları yükle
-npm install
-
-# Geliştirme sunucusu
-npx http-server -p 3000
 ```
 
-Tarayıcıda `http://localhost:3000` adresini açın.
+### 2. Bağımlılıkları Yükleyin
+
+```bash
+npm install
+```
+
+### 3. Çevresel Değişkenleri Ayarlayın
+
+Kök dizinde `.env` dosyası oluşturun ve Supabase bilgilerinizi ekleyin:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_key
+```
+
+### 4. Geliştirme Sunucusunu Başlatın
+
+```bash
+npm run dev
+```
+
+Tarayıcıda `http://localhost:5173` (veya terminalde belirtilen port) adresine gidin.
+
+---
+
+## 🧪 Testler
+
+Proje, yazılım kalitesini korumak için kapsamlı test altyapısına sahiptir.
+
+### Birim ve Entegrasyon Testleri (Vitest)
+
+```bash
+npm run test
+```
+
+### Uçtan Uca Testler (Playwright)
+
+```bash
+# Testleri çalıştır (Headless)
+npx playwright test
+
+# Test UI arayüzünü aç
+npx playwright test --ui
+```
 
 ---
 
@@ -76,63 +105,65 @@ Tarayıcıda `http://localhost:3000` adresini açın.
 
 ```
 -Yeti-LAB/
-├── index.html          # Ana sayfa
-├── auth.html           # Giriş sayfası
-├── teacher.html        # Öğretmen paneli
-├── profile.html        # Profil sayfası
-├── admin.html          # Admin paneli
-├── app.js              # Ana uygulama logic
-├── modules/            # JavaScript modülleri
-│   ├── auth.js         # Kimlik doğrulama
-│   ├── progress.js     # İlerleme takibi
-│   ├── ui.js           # UI yardımcıları
+├── public/             # Statik dosyalar (Görseller, favicon vb.)
+├── src/                # Ana giriş noktaları ve build kaynakları
+├── modules/            # Uygulama mantığı ve modüller
+│   ├── admin/          # Admin paneli modülleri
+│   ├── teacher/        # Öğretmen paneli modülleri
+│   ├── routing/        # Router ve ViewLoader
+│   ├── database/       # Supabase ve veri işlemleri
 │   └── ...
-├── data/               # Kurs verileri
-│   ├── arduino.js
-│   ├── microbit.js
-│   └── ...
-├── styles/             # CSS dosyaları
-└── scripts/            # SQL ve yardımcı scriptler
+├── views/              # UI Bileşenleri ve Sayfa Tasarımları
+│   ├── admin/          # Admin arayüz bileşenleri
+│   ├── teacher/        # Öğretmen arayüz bileşenleri
+│   ├── student/        # Öğrenci arayüz bileşenleri
+│   └── profile/        # Profil sayfası
+├── tests/              # Test dosyaları
+│   ├── e2e/            # Playwright E2E testleri
+│   ├── integration/    # Vitest entegrasyon testleri
+│   └── unit/           # Birim testleri
+├── data/               # Statik kurs verileri (Fallback)
+└── index.html          # SPA giriş noktası
 ```
 
 ---
 
-## 🎓 Kullanım
+## 👥 Kullanıcı Rehberi
 
-### Öğrenci Olarak
+### 👨‍🎓 Öğrenci Girişi
 
-1. Öğretmeninizden **sınıf kodunu** alın
-2. [Giriş sayfası](https://nsyasa.github.io/-Yeti-LAB/auth.html)'ndan kodu girin
-3. İsminizi yazın ve derslere başlayın!
+1. Öğretmeninizden aldığınız **Sınıf Kodu** ile giriş yapın.
+2. Adınızı girin ve avatarınızı seçin.
+3. Size atanan rotaları takip ederek dersleri tamamlayın.
 
-### Öğretmen Olarak
+### 👩‍🏫 Öğretmen Girişi
 
-1. Google veya GitHub ile giriş yapın
-2. [Öğretmen paneli](https://nsyasa.github.io/-Yeti-LAB/teacher.html)'nden sınıf oluşturun
-3. Sınıf kodunu öğrencilerinizle paylaşın
-4. İlerlemelerini takip edin
+1. E-posta veya GitHub ile giriş yapın.
+2. **Kontrol Paneli** üzerinden yeni sınıflar oluşturun.
+3. Öğrencilerinizi tek tek veya toplu liste olarak ekleyin.
+4. "İlerleme Takibi" sekmesinden sınıfınızın durumunu canlı izleyin.
+
+### 🛡️ Admin Girişi
+
+1. Yetkili hesap ile giriş yapın.
+2. **Admin Paneli** üzerinden yeni kurslar, projeler ve testler ekleyin.
+3. Sistem genelindeki istatistikleri görüntüleyin.
 
 ---
 
 ## 🤝 Katkıda Bulunma
 
-1. Repo'yu fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
+1. Forklayın
+2. Feature branch oluşturun (`git checkout -b feature/yenilik`)
+3. Commit leyin (`git commit -m 'Yeni özellik: X eklendi'`)
+4. Pushlayın (`git push origin feature/yenilik`)
 5. Pull Request açın
 
 ---
 
 ## 📄 Lisans
 
-Bu proje MIT lisansı altında lisanslanmıştır.
-
----
-
-## 👤 İletişim
-
-- **GitHub:** [@nsyasa](https://github.com/nsyasa)
+Bu proje MIT lisansı ile lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
 
 ---
 
