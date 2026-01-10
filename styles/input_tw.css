@@ -1,1 +1,8 @@
 @import 'tailwindcss';
+
+/* Content Sources for Tailwind CSS Purging */
+@source "../*.html";
+@source "../src/**/*.js";
+@source "../modules/**/*.js";
+@source "../views/**/*.js";
+@source "../data/**/*.js";
