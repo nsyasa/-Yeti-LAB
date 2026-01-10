@@ -21,14 +21,24 @@ export default defineConfig({
                 entryFileNames: 'assets/[name]-[hash].js',
                 chunkFileNames: 'assets/[name]-[hash].js',
                 assetFileNames: 'assets/[name]-[hash].[ext]',
+                // Define global variables for external dependencies
+                globals: {
+                    '@supabase/supabase-js': 'supabase', // Global variable name from CDN
+                    'chart.js': 'Chart'
+                }
             },
             // External dependencies (loaded from CDN)
-            external: [],
+            // Prevent bundling if accidentally imported
+            external: ['@supabase/supabase-js', 'chart.js'],
         },
         outDir: 'dist',
         emptyOutDir: true,
-        // Minification settings
+        // Minification settings (esbuild is faster)
         minify: 'esbuild',
+        // Configure esbuild specifics
+        esbuild: {
+            drop: [], // Don't drop console.log (keep for debugging)
+        },
         // Source maps for debugging (disable in production if needed)
         sourcemap: false,
         // Target modern browsers
