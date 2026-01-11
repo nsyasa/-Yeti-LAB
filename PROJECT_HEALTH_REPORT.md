@@ -62,19 +62,19 @@ Aşağıdaki sırayla ilerlenmesi önerilir:
 
 - [x] `app.js` diyeti: Routing mantığının `Router` ve `ViewManager`'a taşınması.
 - [x] `modules/admin.js` dosyasının parçalanması (`AdminController`, `AdminState` vb.).
-- [ ] CSS temizliği: `styles/*.css` dosyalarındaki çakışan stillerin Tailwind'e taşınması.
+- [x] CSS temizliği: `styles/*.css` dosyalarındaki çakışan stillerin Tailwind'e taşınması (Fix: Safelist eklendi).
 
 ### 🧪 Faz 3: Güven Ağı (Testing)
 
-- [ ] `teacher.integration.test.js` içindeki mock'ların azaltılması.
-- [ ] `admin.js` için coverage takibinin açılması.
-- [ ] CI/CD (GitHub Actions) pipeline'ına basit bir Smoke Test eklenmesi.
+- [x] `teacher.integration.test.js` mock temizliği (Daha gerçekçi testler).
+- [x] `vitest.config.js` coverage ayarlarının düzenlenmesi (Admin modülü dahil edildi).
+- [x] GitHub Actions workflow analizi ve stabilizasyon (Smoke Test eklendi).
 
 ### 📚 Faz 4: Sürdürülebilirlik
 
-- [ ] `.agent/workflows` klasöründeki 17 dosyanın 3 ana dosyada birleştirilmesi.
-- [ ] `CHANGELOG.md` güncellemesi.
-- [ ] `README.md` güncellemesi (Simülasyon ekleme rehberi vb.).
+- [x] `.agent/workflows` klasöründeki 17 dosyanın 3 ana dosyada birleştirilmesi (Tamamlandı).
+- [x] `CHANGELOG.md` güncellemesi (Tamamlandı).
+- [x] `README.md` güncellemesi (Simülasyon ekleme rehberi vb. eklendi).
 
 ---
 

@@ -7,6 +7,10 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+// Import Real Managers
+import { ClassroomManager } from '../../modules/teacher/classrooms.js';
+import { StudentManager } from '../../modules/teacher/students.js';
+
 let TeacherManager;
 
 describe('Teacher Manager Integration', () => {
@@ -33,6 +37,7 @@ describe('Teacher Manager Integration', () => {
             <input id="newStudentClassroom" />
             <input id="studentName" />
             <input id="studentPassword" />
+            <div id="classroomsList"></div>
         `;
 
         // Setup Globals
@@ -55,39 +60,41 @@ describe('Teacher Manager Integration', () => {
             redirectTo: vi.fn(),
         };
 
+        // ENHANCED SUPABASE MOCK
         const mockEq = vi.fn().mockResolvedValue({ data: [], error: null });
         const mockIn = vi.fn().mockResolvedValue({ data: [], error: null });
+        const mockSingle = vi.fn().mockResolvedValue({ data: { id: 999, name: 'Mocked Single' }, error: null });
+        const mockInsert = vi.fn().mockImplementation((data) => {
+            return {
+                select: vi.fn().mockReturnValue({
+                    single: vi
+                        .fn()
+                        .mockResolvedValue({
+                            data: { ...data, id: Math.floor(Math.random() * 1000), code: '1234' },
+                            error: null,
+                        }),
+                }),
+            };
+        });
+        const mockSelect = vi.fn().mockReturnValue({
+            eq: mockEq,
+            in: mockIn,
+            single: mockSingle,
+        });
 
         global.SupabaseClient = {
             init: vi.fn(),
             getClient: vi.fn().mockReturnValue({
                 from: vi.fn().mockImplementation((table) => {
-                    // Start of chain
-                    const chain = {
-                        select: vi.fn().mockReturnValue({
-                            eq: mockEq,
-                            in: mockIn,
-                        }),
+                    return {
+                        select: mockSelect,
+                        insert: mockInsert,
+                        update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+                        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) }),
                     };
-                    return chain;
                 }),
             }),
-            // Expose mocks for test manipulation
-            _mocks: { mockEq, mockIn },
-        };
-
-        // Mock Dependent Managers
-        global.ClassroomManager = {
-            init: vi.fn(),
-            renderList: vi.fn(),
-            create: vi.fn().mockResolvedValue({ success: true, data: { name: 'Test Class', code: '1234' } }),
-        };
-
-        global.StudentManager = {
-            init: vi.fn(),
-            renderList: vi.fn(),
-            generatePassword: vi.fn().mockReturnValue('123456'),
-            add: vi.fn().mockResolvedValue({ success: true, data: { display_name: 'Test Student' } }),
+            _mocks: { mockEq, mockIn, mockInsert },
         };
 
         global.TeacherAnalytics = {
@@ -98,8 +105,14 @@ describe('Teacher Manager Integration', () => {
             load: vi.fn(),
         };
 
+        // EXPOSE REAL MANAGERS TO GLOBAL (since TeacherManager expects them globally)
+        global.ClassroomManager = ClassroomManager;
+        global.StudentManager = StudentManager;
+
         // Ensure window functionality
         window.location = { pathname: '/teacher.html' };
+        window.ClassroomManager = ClassroomManager;
+        window.StudentManager = StudentManager;
 
         // Load Module
         await import('../../modules/teacher-manager.js');
@@ -111,9 +124,9 @@ describe('Teacher Manager Integration', () => {
         delete global.Auth;
         delete global.Router;
         delete global.SupabaseClient;
+        delete global.TeacherAnalytics;
         delete global.ClassroomManager;
         delete global.StudentManager;
-        delete global.TeacherAnalytics;
         document.body.innerHTML = '';
     });
 
@@ -198,7 +211,12 @@ describe('Teacher Manager Integration', () => {
 
             await TeacherManager.createClassroom(event);
 
-            expect(global.ClassroomManager.create).toHaveBeenCalledWith('New Class', '', expect.anything());
+            // Verify Supabase was called instead of mocking the manager directly
+            expect(global.SupabaseClient._mocks.mockInsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    name: 'New Class',
+                })
+            );
             expect(global.Toast.success).toHaveBeenCalled();
         });
 
@@ -215,7 +233,7 @@ describe('Teacher Manager Integration', () => {
 
             await TeacherManager.createClassroom(event);
 
-            expect(global.ClassroomManager.create).not.toHaveBeenCalled();
+            expect(global.SupabaseClient._mocks.mockInsert).not.toHaveBeenCalled();
             expect(global.Toast.error).toHaveBeenCalledWith('Sınıf adı gerekli');
         });
     });
@@ -224,9 +242,15 @@ describe('Teacher Manager Integration', () => {
         it('should add student successfully', async () => {
             await initTeacher();
             // Setup Inputs
-            document.getElementById('newStudentClassroom').value = '1';
+            const classroomInput = document.getElementById('newStudentClassroom');
+            if (classroomInput) classroomInput.value = '1';
+
             document.getElementById('studentName').value = 'New Student';
             document.getElementById('studentPassword').value = '123456';
+
+            // IMPORTANT: StudentManager requires `selectedAvatarEmoji` which is set via `selectAvatar` in the UI
+            // but we can just let it default or mock the input if needed.
+            // StudentManager.add expects params: (classroomId, displayName, password, avatarEmoji)
 
             const event = {
                 preventDefault: vi.fn(),
@@ -235,7 +259,12 @@ describe('Teacher Manager Integration', () => {
 
             await TeacherManager.addStudent(event);
 
-            expect(global.StudentManager.add).toHaveBeenCalled();
+            // StudentManager calls supabase insert
+            expect(global.SupabaseClient._mocks.mockInsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    display_name: 'New Student',
+                })
+            );
             expect(global.Toast.success).toHaveBeenCalled();
         });
     });

@@ -16,7 +16,7 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text', 'html'],
             include: ['modules/**/*.js'],
-            exclude: ['modules/admin.js'], // Çok büyük, aşamalı eklenecek
+            // exclude: ['modules/admin.js'], // Removed exclusion to enable tracking
         },
 
         // Setup dosyası

@@ -6,7 +6,17 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
-## [1.0.0] - 2025-01-01
+## [1.0.1] - 2026-01-11
+
+### 🔧 İyileştirmeler & Düzeltmeler
+
+- **Güvenlik**: `supabaseClient.js` içindeki hardcoded API anahtarları temizlendi.
+- **Mimari**: 17 adet dağınık workflow dosyası 3 ana dosyada birleştirildi (`active_roadmap.md`, `SPA_MIGRATION_ARCHIVE.md`, `REFACTORING_ROADMAP.md`).
+- **Görsel**: Kurs kartlarındaki kayıp renk stilleri (CSS safelist hatası) düzeltildi.
+- **Performans**: Admin Paneli kayıt işlemlerine `debounce` mekanizması eklendi.
+- **SPA**: View yönetimi için `ViewManager` entegrasyonu tamamlandı.
+
+## [1.0.0] - 2026-01-01
 
 ### 🚀 Eklenen
 

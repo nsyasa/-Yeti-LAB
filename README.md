@@ -128,6 +128,30 @@ npx playwright test --ui
 
 ---
 
+## 🧪 Simülasyon Geliştirme
+
+Yeti LAB, her proje için özel interaktif simülasyonlar içerir. Yeni bir simülasyon eklemek için:
+
+1.  **Tanımlama**: `data/course-*.js` içindeki manifest dosyasında projenizin `simType` (örn: `p5`, `canvas`) özelliğini belirtin.
+2.  **Logic**: `modules/simulations/` altında yeni bir JS dosyası oluşturun (örn: `arduino-led-blink.js`).
+3.  **Çizim**: `draw()` ve `setup()` fonksiyonlarını export edin.
+4.  **Entegrasyon**: `SimManager.js` dosyasına yeni simülasyonunuzu kaydedin.
+
+```javascript
+// Örnek Simülasyon Yapısı
+export const simulation = {
+    setup(p) {
+        p.createCanvas(400, 400);
+    },
+    draw(p) {
+        p.background(220);
+        // Simülasyon mantığı
+    },
+};
+```
+
+---
+
 ## 👥 Kullanıcı Rehberi
 
 ### 👨‍🎓 Öğrenci Girişi

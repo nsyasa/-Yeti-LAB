@@ -1,6 +1,19 @@
+# 🏗️ REFACTORING & ARCHITECTURE ROADMAP
+
+This document outlines the long-term architectural improvements, backend refactoring, and code modernization plans for Yeti LAB.
+
+## 📋 Table of Contents
+
+1. [Backend Improvements](#backend-improvements)
+2. [App Refactoring](#app-refactoring)
+3. [Modernization Plan](#modernization-plan)
+4. [Supabase Integration](#supabase-integration)
+
 ---
-description: Backend İyileştirme Roadmap - Siteyi Bozmadan Güvenli Değişiklikler
+
 ---
+
+## description: Backend İyileştirme Roadmap - Siteyi Bozmadan Güvenli Değişiklikler
 
 # 🛡️ Backend İyileştirme Roadmap
 
@@ -675,3 +688,368 @@ Herhangi bir adım sorun çıkarırsa:
 - Bir adım başarısız olursa diğerleri etkilenmez
 - Tüm değişiklikler backward-compatible
 - Mevcut API'ler değişmiyor, sadece genişletiliyor
+
+---
+
+## description: app.js Modüler Refactoring - 1162 satırlık dosyayı küçük modüllere bölme planı
+
+# app.js Modüler Refactoring Planı
+
+## ✅ TAMAMLANDI (8 Ocak 2026)
+
+### Özet
+
+- **Başlangıç:** 1162 satır
+- **Final:** 760 satır
+- **Azaltma:** -402 satır (%35)
+- **Test:** 386/386 geçti ✅
+- **Lint:** 0 hata ✅
+
+### Tamamlanan Fazlar
+
+| FAZ | Modül                         | Azaltma | Commit  |
+| --- | ----------------------------- | ------- | ------- |
+| 1   | `core/stateProxy.js`          | -38     | aa4d369 |
+| 2   | `core/localStorage.js`        | -91     | 4bfbdc5 |
+| 3   | `routing/viewLoader.js`       | -244    | e561dd7 |
+| 4   | `simulation/simController.js` | -29     | bc74b63 |
+
+### Oluşturulan Modüller
+
+```
+modules/
+├── core/
+│   ├── stateProxy.js      (67 satır)  - Store senkronizasyonu
+│   └── localStorage.js    (160 satır) - XSS korumalı autosave
+├── routing/
+│   └── viewLoader.js      (330 satır) - SPA view lazy loading
+└── simulation/
+    └── simController.js   (210 satır) - Canvas simülasyonları
+```
+
+### bonus: AbortError Fix (94947d1)
+
+- Supabase client auth ayarları optimize edildi
+- Network hataları gracefully handle ediliyor
+- Static manifest fallback çalışıyor
+
+---
+
+## 📝 Gelecek İyileştirmeler (Opsiyonel)
+
+### Düşük Öncelikli (Mevcut 760 satır yönetilebilir):
+
+1. **Course/Project UI Modülü**
+    - `selectCourse`, `loadProject` → CourseUI/ProjectUI
+    - Tahmini: ~80 satır azaltma
+
+2. **Quiz Management Modülü**
+    - `checkAnswer`, `getPracticalTip` → QuizUI
+    - Tahmini: ~50 satır azaltma
+
+### Not:
+
+- Kalan fonksiyonlar çoğunlukla UI modülüne delege ediyor
+- Daha fazla modül ayırmak karmaşıklık getirebilir
+- **760 satır makul ve bakımı kolay bir boyut**
+
+---
+
+## ✅ Kontrol Listesi (Tamamlandı)
+
+- [x] FAZ 1: StateProxy modülü
+- [x] FAZ 2: LocalStorageManager modülü
+- [x] FAZ 3: ViewLoader modülü
+- [x] FAZ 4: SimController modülü
+- [x] Tüm testler geçiyor (386/386)
+- [x] Lint hataları temizlendi
+- [x] GitHub'a push edildi
+- [x] AbortError fix eklendi
+
+---
+
+## description: Yeti LAB projesini parçalı HTML yapısından modern, bileşen tabanlı (Component-Based) bir mimariye taşıma planı.
+
+# 🏔️ Yeti LAB Modernizasyon Planı
+
+Amacımız: Projeyi bozmadan, tekrar eden kodları (Code Duplication) azaltmak ve yönetilebilirliği artırmak.
+
+## FAZ 1: Görsel Birleştirme (Componentization)
+
+Bu fazda HTML içinde kopyala-yapıştır yapılmış UI parçalarını JavaScript bileşenlerine dönüştüreceğiz.
+
+- [x] **Adım 1: Navbar (Üst Menü) Modülü**
+    - `modules/components/Navbar.js` oluşturulacak.
+    - Tüm sayfalardaki `<nav>` etiketi silinip, JS ile render edilecek.
+    - Menü değişiklikleri tek dosyadan yönetilecek.
+- [x] **Adım 2: Footer (Alt Bilgi) Modülü**
+    - `modules/components/Footer.js` oluşturulacak.
+    - Telif hakkı yılı ve linkler merkezi olacak.
+- [x] **Adım 3: Layout Wrapper**
+    - `modules/layout/MainLayout.js` oluşturulacak.
+    - Tüm sayfalar bu layout modülünü kullanarak header/footer yükleyecek.
+    - Sayfa içi scriptlerdeki `Navbar.init()` çağrıları kaldırılacak.
+
+### ✅ Tamamlanan Ara Görevler (Bug Fixes & UI - 04.01.2026)
+
+- [x] **Navbar Logo & User Menu:** Logo SVG olarak güncellendi, User Menu render hatası giderildi.
+- [x] **Footer Fix:** Footer konumu, sayfa altına sabitleme ve Dark mode rengi düzeltildi.
+- [x] **Teacher Panel Fix:** Script çakışmaları ve `TeacherManager` başlatma hatası giderildi.
+- [x] **Profile Page:** Footer eklendi, istatistik gösterim hataları (NaN%) düzeltildi.
+
+## FAZ 2: Mantıksal Birleştirme (State Management)
+
+Bu fazda veri akışını merkezileştireceğiz.
+
+- [x] **Adım 4: Merkezi Veri Deposu (Store)**
+    - `modules/store/store.js` oluşturulacak.
+    - Kullanıcı bilgisi (`currentUser`), Seçili Ders (`currentCourse`) burada tutulacak.
+    - `window.Auth` yerine `Store.auth` kullanılacak.
+- [x] **Adım 5: Event Bus (Olay Yöneticisi)**
+    - `Store` modülüne `on`, `off`, `emit` yetenekleri eklendi.
+    - Bileşenlerin birbiriyle konuşması için altyapı hazır.
+
+## FAZ 3: SPA Dönüşümü (Single Page Application)
+
+Bu fazda sayfa yenilemelerini kaldıracağız.
+
+- [x] **Adım 6: Gelişmiş Router**
+    - `modules/router.js`, `popstate` olayını dinleyerek sayfa yenilemeden durum yönetimi yapacak.
+    - URL parametreleri (`?course=arduino`) değiştiğinde ilgili görünüm otomatik yüklenecek.
+- [x] **Adım 7: Görsel Mükemmellik (Visual Polish)**
+    - `index.html` tasarımı güçlendirilecek (Hero section, Fontlar).
+    - Skeleton Loading eklenerek açılış hissiyatı iyileştirilecek.
+    - `modules/ui.js` içinde animasyonlar kontrol edilecek.
+- [x] **Adım 8: Son Kontroller ve Optimizasyon**
+    - Gereksiz dosyaların temizlenmesi.
+    - `console.log` temizliği yapıldı.
+    - Kodlar üretim kalitesine (Production Ready) getirildi.
+
+## Kurallar
+
+1. **Asla Bozma:** Her adımda proje çalışır durumda olmalı.
+2. **Küçük Adımlar:** Bir seferde sadece bir bileşen değiştirilecek.
+3. **Geriye Uyumluluk:** Eski kodlar yeni yapıya uyana kadar çalışmaya devam edecek.
+
+---
+
+## description: Supabase-First Admin Panel Refactoring - Eylem Planı
+
+# Supabase-First Admin Panel Refactoring
+
+Bu workflow, admin panelindeki veri yönetimini tamamen Supabase'e dayalı hale getirmek için adımları içerir.
+
+## ✅ Tamamlanan Adımlar
+
+### ADIM 1: Supabase Schema Kontrolü
+
+- [x] `projects` tablosu yapısı incelendi
+- [x] `position` kolonu mevcut (kritik)
+- [x] UNIQUE constraint: `(course_id, slug)`
+- [x] RLS politikaları doğru yapılandırılmış
+
+### ADIM 3: Slug Stratejisi Değişikliği
+
+- [x] `syncProjects()` fonksiyonunda slug artık `p-{position}` formatında
+- [x] `saveProjectToSupabase()` fonksiyonunda slug aynı formata getirildi
+- [x] Başlık değiştiğinde yeni kayıt oluşmuyor
+
+### ADIM 4: Proje CRUD Düzeltmeleri
+
+- [x] `deleteProjectByPosition()` metodu eklendi
+- [x] `ProjectManager.delete()` artık Supabase'den de siliyor
+- [x] `ProjectManager.add()` Supabase max position kontrolü yapıyor
+- [x] `saveProjectToSupabase()` tutarlı slug kullanıyor
+
+### ADIM 6: Faz CRUD Düzenlemesi
+
+- [x] Faz dropdown'ı ders formunda mevcut fazları gösteriyor
+- [x] `PhaseManager.add()` Supabase'e kaydediyor
+- [x] `PhaseManager.delete()` Supabase'den siliyor
+- [x] `PhaseManager.update()` Supabase'e güncelliyor
+
+### Veritabanı Temizliği
+
+- [x] 26 duplicate proje silindi
+- [x] Tüm sluglar `p-X` formatına güncellendi
+- [x] Duplicate Microbit kursu silindi
+
+### UUID Doğrulama
+
+- [x] `progress.js`'te UUID doğrulaması eklendi
+- [x] Geçersiz student_id otomatik temizleniyor
+
+## ⏳ Bekleyen Adımlar
+
+(Tüm adımlar tamamlandı! 🎉)
+
+## Kod Değişiklikleri Özeti
+
+### `modules/admin/supabase-sync.js`
+
+1. `syncProjects()` - Slug `p-{position}` formatında
+2. `saveProjectToSupabase()` - Aynı slug formatı
+3. `deleteProjectByPosition()` - Yeni metod
+
+### `modules/admin/projects.js`
+
+1. `delete()` - Supabase'den siliyor
+2. `add()` - Supabase max position kontrolü
+3. `populatePhaseDropdown()` - Yeni metod
+4. Config'e `getPhases` eklendi
+
+### `modules/progress.js`
+
+1. UUID doğrulaması ve otomatik session temizleme
+
+### `admin.html`
+
+1. Faz seçimi `<input>` → `<select>` değiştirildi
+
+---
+
+## description: Yeti LAB projesini bozmadan modern, esnek, bakımı kolay, güvenli ve temiz hale getirmek için teknik refactoring yol haritası.
+
+# 🔧 Teknik Refactoring Yol Haritası
+
+**Son Güncelleme:** 2026-01-08 13:45  
+**Durum:** ✅ İkinci Faz Tamamlandı - Auth/Scroll/Helpers Ayrıştırıldı
+
+---
+
+## 📊 Mevcut Durum (Güncellenmiş)
+
+| Bileşen          | Durum           | Notlar                                    |
+| ---------------- | --------------- | ----------------------------------------- |
+| Vite Dev Server  | ✅ Çalışıyor    | `npm run dev` → localhost:3000            |
+| Store (State)    | ✅ Mevcut       | `modules/store/store.js`                  |
+| Router           | ✅ Mevcut       | Hash-based SPA routing                    |
+| Supabase         | ✅ Çalışıyor    | 7 kurs, Singleton pattern                 |
+| Auth UI          | ✅ Ayrıştırıldı | `modules/authUI.js`                       |
+| Scroll Logic     | ✅ Ayrıştırıldı | `modules/scrollManager.js`                |
+| ThemeManager     | ✅ Temiz        | `app.js`'den ayrıştırıldı                 |
+| Helpers          | ✅ Taşındı      | `Validators.js` (Validation + Cleaning)   |
+| Unit Tests       | ✅ 386 test     | Integration testlerle kapsam genişletildi |
+| Env Variables    | ⚠️ Hazır        | `.env.example` var, FAZ 5'te aktif olacak |
+| Global Namespace | ⚠️ Aktif        | FAZ 5'te ES6 modules ile değiştirilecek   |
+
+---
+
+## ✅ TAMAMLANAN ADIMLAR (2026-01-08)
+
+### FAZ 1-3: Temel Modernizasyon (Tamamlandı)
+
+- ✅ Env Variables, ESLint, Utils, Constants, Validators modülleri.
+
+### FAZ 4: app.js Dekompozisyonu
+
+| Adım                  | Durum | Yapılanlar                                                           |
+| --------------------- | ----- | -------------------------------------------------------------------- |
+| 4.1 Helper Ayrıştırma | ✅    | `escapeHtml`, `sanitizeObject`, `isValidCourseData` → `Validators`'a |
+| 4.2 Scroll Logic      | ✅    | `app.handleScroll` → `ScrollManager` modülüne taşındı                |
+| 4.3 ThemeManager      | ✅    | `app.theme` state kaldırıldı, ThemeManager'a delege                  |
+| 4.4 Auth UI           | ✅    | `initAuth`, `updateUserUI`, `menu` → `AuthUI` modülüne taşındı       |
+| 4.5 State → Store     | 🟡    | Proxy (geçici) çözüm aktif, tam geçiş bekleniyor                     |
+
+### Bonus Düzeltmeler
+
+| Düzeltme                 | Açıklama                                                      |
+| ------------------------ | ------------------------------------------------------------- |
+| SupabaseClient Singleton | `Multiple GoTrueClient instances` uyarısı giderildi           |
+| Test Coverage Artışı     | Router, ViewManager, Cache ve Store integration testleri      |
+| Script Loading Fix       | Eksik modüller (`utils`, `validators`) `index.html`'e eklendi |
+
+---
+
+## ⏳ BEKLEYEN ADIMLAR
+
+### FAZ 4: app.js Dekompozisyonu (Devam)
+
+| #   | Adım                 | Risk      | Süre    | Durum        | Not                              |
+| --- | -------------------- | --------- | ------- | ------------ | -------------------------------- |
+| 4.1 | State → Store Taşıma | 🟡 Orta   | 3 saat  | ⏳           | `app.state` → `Store.setState()` |
+| 4.2 | Simulation Engine    | 🔴 Yüksek | 3+ saat | ⏸️ Ertelendi | Çok fazla bağımlılık             |
+
+### FAZ 5: Script Loading Modernizasyonu
+
+| #   | Adım            | Risk      | Süre   | Durum | Not                         |
+| --- | --------------- | --------- | ------ | ----- | --------------------------- |
+| 5.1 | Tek Entry Point | 🔴 Yüksek | 1 gün  | ⏳    | `src/main.js` + ES6 modules |
+| 5.2 | Code Splitting  | 🟡 Orta   | 3 saat | ⏳    | Dynamic imports             |
+
+### FAZ 6: Test ve Dokümantasyon
+
+| #   | Adım              | Risk     | Süre    | Durum | Not                   |
+| --- | ----------------- | -------- | ------- | ----- | --------------------- |
+| 6.1 | Test Coverage     | 🟢 Düşük | Sürekli | ⏳    | Hedef: %60            |
+| 6.2 | README Güncelleme | 🟢 Düşük | 1 saat  | ⏳    | Mimari dokümantasyonu |
+
+### Ertelenen / İptal Edilen
+
+| Adım                       | Durum        | Sebep                                           |
+| -------------------------- | ------------ | ----------------------------------------------- |
+| 3.3 Legacy Format Kaldırma | ❌ Ertelendi | Tüm UI bileşenlerini etkiler, büyük refactoring |
+| 4.2 Simulation Engine      | ⏸️ Ertelendi | `app.simState` çok fazla yerde kullanılıyor     |
+
+---
+
+## 📈 İLERLEME ÖZETİ
+
+```
+Tamamlanan Adımlar: 4/5 (FAZ 4)
+Bekleyen Adımlar: State Migration (FAZ 4.5)
+
+Test Durumu: 386/386 test geçiyor ✅
+Console Hataları: 0 ✅
+Admin Paneli: Çalışıyor ✅
+Teacher Paneli: Çalışıyor ✅
+```
+
+---
+
+## 🎯 SONRAKİ OTURUM İÇİN ÖNERİLEN ADIMLAR
+
+### Seçenek A: FAZ 5.1 - Tek Entry Point (Büyük)
+
+- Tüm script tag'lerini kaldır
+- `src/main.js` oluştur
+- ES6 modules geçişi
+- **Risk:** Yüksek, **Süre:** ~1 gün
+
+### Seçenek B: FAZ 4.1 - State → Store (Güvenli)
+
+- `app.state` kullanımlarını `Store`'a taşı
+- Adım adım, düşük riskli
+- **Risk:** Orta, **Süre:** ~3 saat
+
+### Seçenek C: FAZ 6.2 - README Güncelleme (Hızlı)
+
+- Proje mimarisini dokümante et
+- Yeni geliştirici rehberi
+- **Risk:** Düşük, **Süre:** ~1 saat
+
+---
+
+## 📋 KONTROL LİSTESİ (Her Commit İçin)
+
+```
+[ ] npm run dev ile test edildi
+[ ] Sayfa yenilendi, hata yok
+[ ] Console'da yeni hata yok
+[ ] npm run test geçti
+[ ] npm run lint geçti
+[ ] Git commit yapıldı
+```
+
+---
+
+## 🆘 ACİL DURUM PLANI
+
+Eğer bir adım projeyi bozarsa:
+
+```bash
+git stash        # Değişiklikleri sakla
+git checkout .   # Son çalışan duruma dön
+```
+
+Sorunu izole et ve daha küçük adımlarla tekrar dene.
