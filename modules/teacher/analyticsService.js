@@ -34,7 +34,10 @@ const AnalyticsService = {
         // Paralel sorgular
         const [studentsResult, assignmentsResult, submissionsResult, enrollmentsResult] = await Promise.all([
             // Toplam öğrenci
-            getSupabase().from('students').select('id', { count: 'exact', head: true }).in('classroom_id', classroomIds),
+            getSupabase()
+                .from('students')
+                .select('id', { count: 'exact', head: true })
+                .in('classroom_id', classroomIds),
 
             // Toplam ödev
             getSupabase().from('assignments').select('id, status', { count: 'exact' }).in('classroom_id', classroomIds),
