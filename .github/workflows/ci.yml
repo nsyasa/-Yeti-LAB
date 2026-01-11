@@ -58,7 +58,7 @@ jobs:
       run: |
         npx vite preview --port 4173 &
         sleep 5
-        curl http://localhost:4173 | grep "Yeti LAB"
+        curl http://localhost:4173/-Yeti-LAB/ | grep "Yeti LAB"
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
