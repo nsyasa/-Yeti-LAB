@@ -231,7 +231,7 @@ async function loadDashboardData() {
         if (!currentUser && typeof Auth !== 'undefined' && Auth.currentUser) {
             currentUser = Auth.currentUser;
         }
-        
+
         if (!currentUser) {
             console.warn('[TeacherManager] No user found for dashboard data');
             return;
