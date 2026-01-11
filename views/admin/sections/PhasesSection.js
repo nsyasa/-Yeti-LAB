@@ -8,7 +8,7 @@ const PhasesSection = {
      */
     render() {
         return `
-            <div class="bg-white rounded-lg shadow p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <div class="flex items-center justify-between border-b pb-4 mb-6">
                     <h2 class="text-xl font-bold text-gray-700 flex items-center gap-2">
                         📁 Faz Yönetimi
@@ -21,7 +21,7 @@ const PhasesSection = {
                     </button>
                 </div>
 
-                <p class="text-gray-500 text-sm mb-6">
+                <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">
                     💡 Fazlar, dersleri gruplandırmak için kullanılır. Örneğin: "Başlangıç", "Orta Seviye", "İleri Seviye" gibi.
                 </p>
 

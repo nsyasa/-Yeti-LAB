@@ -188,3 +188,13 @@
     background-color: var(--theme-color);
     border-radius: 0 4px 4px 0;
 }
+
+/* Admin specific background */
+.admin-bg {
+    background-color: #f9fafb;
+}
+
+.dark .admin-bg,
+.dark-mode .admin-bg {
+    background-color: #111827;
+}

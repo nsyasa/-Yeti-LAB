@@ -164,33 +164,33 @@ const UI = {
 
             return `
                 <div onclick="app.selectCourse('${key}', event)" 
-                     class="course-card bg-white rounded-xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-lg transition-all hover:-translate-y-1 ${hiddenClass}" 
+                     class="course-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible hover:shadow-lg transition-all hover:-translate-y-1 ${hiddenClass}" 
                      data-course="${key}"
                      data-index="${index}">
                     
                     <!-- Level Badge (compact on mobile) -->
-                    <div class="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 lg:px-2 lg:py-1 bg-${levelInfo.color}-100 text-${levelInfo.color}-700 rounded-full text-xs font-bold">
+                    <div class="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 lg:px-2 lg:py-1 bg-${levelInfo.color}-100 dark:bg-${levelInfo.color}-900/30 text-${levelInfo.color}-700 dark:text-${levelInfo.color}-300 rounded-full text-xs font-bold">
                         <span class="hidden lg:inline">${levelInfo.icon}</span>
                         <span>Lv.${levelInfo.level}</span>
                     </div>
                     
                     <!-- Icon -->
-                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-gray-50 p-3 lg:p-4 rounded-full group-hover:scale-110 transition-transform">
+                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-gray-50 dark:bg-gray-700 p-3 lg:p-4 rounded-full group-hover:scale-110 transition-transform">
                         ${icon}
                     </div>
                     
                     <!-- Title -->
-                    <h3 class="text-sm lg:text-lg text-gray-800 mb-1 lg:mb-2 group-hover:text-theme transition-colors font-bold line-clamp-2">${title}</h3>
+                    <h3 class="text-sm lg:text-lg text-gray-800 dark:text-gray-100 mb-1 lg:mb-2 group-hover:text-theme transition-colors font-bold line-clamp-2">${title}</h3>
                     
                     <!-- Description (hidden on mobile) -->
-                    <p class="hidden lg:block text-gray-500 text-xs leading-relaxed line-clamp-2">${description}</p>
+                    <p class="hidden lg:block text-gray-500 dark:text-gray-400 text-xs leading-relaxed line-clamp-2">${description}</p>
                     
                     <!-- Progress Bar (compact on mobile) -->
                     <div class="mt-auto pt-2 lg:pt-3 w-full">
-                        <div class="w-full bg-gray-200 rounded-full h-1.5 lg:h-2 overflow-hidden">
-                            <div class="h-full rounded-full ${percentage > 0 ? 'bg-theme' : 'bg-gray-300'} transition-all duration-500" style="width: ${percentage}%"></div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 lg:h-2 overflow-hidden">
+                            <div class="h-full rounded-full ${percentage > 0 ? 'bg-theme' : 'bg-gray-300 dark:bg-gray-600'} transition-all duration-500" style="width: ${percentage}%"></div>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 hidden lg:block">${completed > 0 ? `${completed}/${total} ders` : 'Henüz başlamadın'}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 hidden lg:block">${completed > 0 ? `${completed}/${total} ders` : 'Henüz başlamadın'}</p>
                     </div>
                     
                     <!-- Peek Yeti (appears on hover, smaller on mobile) -->

@@ -71,24 +71,24 @@ const CourseManager = {
                 <button type="button" onclick="CourseManager.selectCourse('${c.key}')"
                     class="w-full p-3 rounded-lg border-2 transition text-left ${
                         isActive
-                            ? 'border-theme bg-theme/10 shadow-md'
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow'
+                            ? 'border-theme bg-theme/10 dark:bg-theme/20 shadow-md'
+                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow'
                     }">
                     <div class="flex items-center gap-2">
                         <span class="text-2xl">${c.icon || '📦'}</span>
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-sm text-gray-800 truncate">${c.title}</div>
-                            <div class="text-xs text-gray-400 font-mono truncate">${c.key}</div>
+                            <div class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate">${c.title}</div>
+                            <div class="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">${c.key}</div>
                         </div>
                     </div>
                 </button>
                 <!-- Reorder buttons (on hover) -->
                 <div class="absolute -right-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button type="button" onclick="event.stopPropagation(); CourseManager.moveUp(${index})" 
-                        class="w-5 h-5 rounded bg-gray-200 hover:bg-gray-300 text-xs ${isFirst ? 'invisible' : ''}"
+                        class="w-5 h-5 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-xs ${isFirst ? 'invisible' : ''}"
                         title="Yukarı">↑</button>
                     <button type="button" onclick="event.stopPropagation(); CourseManager.moveDown(${index})" 
-                        class="w-5 h-5 rounded bg-gray-200 hover:bg-gray-300 text-xs ${isLast ? 'invisible' : ''}"
+                        class="w-5 h-5 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-xs ${isLast ? 'invisible' : ''}"
                         title="Aşağı">↓</button>
                 </div>
             </div>`;
@@ -307,28 +307,28 @@ const CourseManager = {
                 const isLast = index === this.courses.length - 1;
 
                 return `
-            <div class="flex items-center justify-between p-3 bg-white border rounded shadow-sm hover:shadow transition group" draggable="true" ondragstart="CourseManager.dragStart(event, ${index})" ondragover="CourseManager.allowDrop(event)" ondrop="CourseManager.drop(event, ${index})">
+            <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-sm hover:shadow transition group" draggable="true" ondragstart="CourseManager.dragStart(event, ${index})" ondragover="CourseManager.allowDrop(event)" ondrop="CourseManager.drop(event, ${index})">
                 <div class="flex items-center gap-4">
                     <div class="flex flex-col items-center gap-1">
-                        <span class="text-xs font-bold text-gray-400 bg-gray-100 rounded px-2 py-0.5">#${index + 1}</span>
-                        <span class="cursor-move text-gray-300 hover:text-gray-500 text-lg">☰</span>
+                        <span class="text-xs font-bold text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5">#${index + 1}</span>
+                        <span class="cursor-move text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 text-lg">☰</span>
                     </div>
-                    <div class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded text-2xl">${c.icon || '📦'}</div>
+                    <div class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded text-2xl">${c.icon || '📦'}</div>
                     <div>
-                        <div class="font-bold text-gray-800">${c.title}</div>
-                        <div class="text-xs text-gray-500 font-mono">${c.key}</div>
+                        <div class="font-bold text-gray-800 dark:text-gray-100">${c.title}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">${c.key}</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onclick="event.stopPropagation(); CourseManager.moveUp(${index})" 
-                            class="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 text-sm ${isFirst ? 'invisible' : ''}" 
+                            class="w-7 h-7 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm ${isFirst ? 'invisible' : ''}" 
                             title="Yukarı Taşı">↑</button>
                         <button onclick="event.stopPropagation(); CourseManager.moveDown(${index})" 
-                            class="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 text-sm ${isLast ? 'invisible' : ''}" 
+                            class="w-7 h-7 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm ${isLast ? 'invisible' : ''}" 
                             title="Aşağı Taşı">↓</button>
                     </div>
-                    <button onclick="CourseManager.deleteCourse('${c.key}')" class="p-2 text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="Sil">🗑️</button>
+                    <button onclick="CourseManager.deleteCourse('${c.key}')" class="p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="Sil">🗑️</button>
                 </div>
             </div>`;
             })

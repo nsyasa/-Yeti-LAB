@@ -10,8 +10,8 @@ const ProjectsSection = {
         return `
             <div class="flex items-start gap-6 h-full">
                 <!-- Sol Menü - Proje Listesi -->
-                <div class="w-1/3 bg-white rounded-lg shadow overflow-hidden sticky top-24 max-h-[80vh] flex flex-col">
-                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <div class="w-1/3 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden sticky top-24 max-h-[80vh] flex flex-col">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                         <h2 class="font-bold text-lg text-gray-700">Ders Listesi</h2>
                         <button
                             onclick="admin.addNewProject()"
@@ -24,11 +24,11 @@ const ProjectsSection = {
                 </div>
 
                 <!-- Sağ Form - Proje Düzenleme -->
-                <div class="w-2/3 bg-white rounded-lg shadow p-6">
+                <div class="w-2/3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <div id="project-welcome" class="text-center py-16 text-gray-500">
                         <div class="text-6xl mb-4">📚</div>
-                        <h2 class="text-xl font-bold text-gray-600 mb-2">Ders Seçin veya Oluşturun</h2>
-                        <p class="text-gray-400 mb-6 max-w-md mx-auto">
+                        <h2 class="text-xl font-bold text-gray-600 dark:text-gray-200 mb-2">Ders Seçin veya Oluşturun</h2>
+                        <p class="text-gray-400 dark:text-gray-500 mb-6 max-w-md mx-auto">
                             Soldan bir ders seçin veya yeni bir ders oluşturarak başlayın.
                         </p>
                         <button
@@ -357,7 +357,7 @@ const ProjectsSection = {
                     <div>
                         <label id="lbl-circuit" class="block text-xs font-bold text-gray-500 uppercase mb-1">Simülasyon Tipi</label>
                         <div class="flex gap-2">
-                            <select id="p-simType" class="flex-1 border p-2 rounded text-sm bg-gray-50 focus:bg-white transition"
+                            <select id="p-simType" class="flex-1 border border-gray-200 dark:border-gray-600 p-2 rounded text-sm bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 transition text-gray-900 dark:text-gray-100"
                                     onchange="admin.toggleCustomSimType()">
                                 <option value="led">LED Yakma</option>
                                 <option value="button">Buton Kullanımı</option>
@@ -382,7 +382,7 @@ const ProjectsSection = {
                                 <option value="custom">-- Özel Gir --</option>
                             </select>
                             <input type="text" id="p-simType-custom" 
-                                   class="flex-1 border p-2 rounded text-sm bg-white hidden"
+                                   class="flex-1 border border-gray-200 dark:border-gray-600 p-2 rounded text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hidden"
                                    placeholder="Simülasyon Kodu..." />
                         </div>
                     </div>

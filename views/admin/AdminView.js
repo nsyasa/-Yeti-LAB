@@ -12,7 +12,7 @@ const AdminView = {
      */
     template() {
         return `
-            <div id="admin-view" class="admin-bg min-h-screen">
+            <div id="admin-view" class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
                 <!-- Tab Navigation (main-header altında) -->
                 ${AdminLayout.renderTabNav()}
                 
@@ -173,12 +173,18 @@ const AdminView = {
 
         // Check if already bundled (Vite production build)
         // If AdminLayout exists, scripts are already loaded via bundle
-        if (window.AdminLayout && window.CourseManager && window.ProjectManager) {
+        if (window.AdminLayout && window.CourseManager && window.ProjectManager && window.admin) {
             console.log('[AdminView] Dependencies already bundled, skipping dynamic load');
             return;
         }
 
         const scripts = [
+            // Core Admin Infrastructure (State & UI)
+            'modules/admin/state.js',
+            'modules/admin/ui.js',
+            'modules/admin/backup.js',
+            'modules/admin/projectEditor.js',
+
             // Core admin modules (already exist)
             'modules/admin/courses.js',
             'modules/admin/projects.js',
@@ -193,6 +199,9 @@ const AdminView = {
             // View components
             'views/admin/AdminLayout.js',
             'views/admin/modals/AdminModals.js',
+
+            // Main Admin Coordinator (Must be last)
+            'modules/admin.js',
         ];
 
         for (const src of scripts) {

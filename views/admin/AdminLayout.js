@@ -105,7 +105,7 @@ const AdminLayout = {
                     </div>
                 </button>
 
-                <div id="course-settings-form" class="hidden border-t border-theme/20 bg-white/50">
+                <div id="course-settings-form" class="hidden border-t border-theme/20 bg-white/50 dark:bg-gray-800/50">
                     <!-- Bölüm 1: Kurs Seçimi ve Yönetimi -->
                     <div class="p-4 border-b border-gray-200">
                         <div class="flex items-center justify-between mb-3">

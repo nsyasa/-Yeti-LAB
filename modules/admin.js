@@ -150,7 +150,167 @@ const admin = {
 
         admin.showLoading('Yeti LAB Yönetim Paneli Yükleniyor...');
 
-        // ... (rest of init) ...
+        try {
+            // 1. Load course list from Supabase
+            if (typeof SupabaseSync !== 'undefined') {
+                const courses = await SupabaseSync.loadCourseList();
+
+                // Initialize allCourseData with placeholders
+                admin.allCourseData = {};
+                courses.forEach((c) => {
+                    admin.allCourseData[c.slug] = {
+                        title: c.title,
+                        _supabaseId: c.id,
+                        // Other data will be loaded on demand
+                    };
+                });
+            }
+
+            // 2. Determine initial course
+            let initialKey = admin.currentCourseKey;
+            const keys = Object.keys(admin.allCourseData || {});
+
+            if (keys.length > 0) {
+                if (!keys.includes(initialKey)) {
+                    initialKey = keys[0];
+                }
+            } else {
+                // No courses found, create default/empty state or handle gracefully
+                console.warn('[Admin] No courses found.');
+                // Optional: Create a default course or just let the user create one
+            }
+
+            // 3. Select course (loads full data)
+            if (initialKey) {
+                await admin.changeCourse(initialKey);
+            }
+
+            // 4. Initialize Sub-Modules
+            if (typeof CourseManager !== 'undefined') CourseManager.init();
+
+            // Initialize Project Manager
+            if (typeof ProjectManager !== 'undefined') {
+                ProjectManager.init({
+                    getProjects: () => admin.currentData?.projects || [],
+                    getPhases: () => admin.currentData?.phases || [],
+                    getComponentInfo: () => admin.currentData?.componentInfo || {},
+                    getCourseKey: () => admin.currentCourseKey,
+                    getCourseId: () => admin.allCourseData[admin.currentCourseKey]?._supabaseId,
+                    onUpdate: () => admin.triggerAutoSave(),
+                    onProjectSelect: (id) => admin.loadProject(id),
+                });
+            }
+
+            // Initialize Phase Manager
+            if (typeof PhaseManager !== 'undefined') {
+                PhaseManager.init({
+                    getPhases: () => admin.currentData?.phases || [],
+                    onUpdate: () => admin.triggerAutoSave(),
+                    onPhaseSelect: (index) => admin.loadPhase(index),
+                });
+            }
+
+            // Initialize Component Manager
+            if (typeof ComponentManager !== 'undefined') {
+                ComponentManager.init({
+                    getComponentInfo: () => admin.currentData?.componentInfo || {},
+                    onUpdate: () => admin.triggerAutoSave(),
+                    onComponentSelect: (key) => admin.loadComponent(key),
+                });
+            }
+
+            // Initialize Image Manager
+            if (typeof ImageManager !== 'undefined') {
+                ImageManager.init({
+                    getCourseKey: () => admin.currentCourseKey,
+                });
+            }
+
+            // 5. Finalize
+            admin._isInitialized = true;
+            console.log('[Admin] Initialized successfully');
+        } catch (error) {
+            console.error('[Admin] Init error:', error);
+            alert('Admin paneli yüklenirken hata oluştu: ' + error.message);
+        } finally {
+            admin.hideLoading();
+        }
+    },
+
+    changeCourse: async (key) => {
+        try {
+            admin.showLoading(`"${key}" kursu yükleniyor...`);
+
+            console.log(`[Admin] Changing course to: ${key}`);
+            admin.currentCourseKey = key;
+
+            // 1. Load full data if not already fully loaded
+            // We check for 'data' property to see if full content is loaded
+            let courseData = admin.allCourseData[key];
+
+            if (!courseData || !courseData.data) {
+                if (typeof SupabaseSync !== 'undefined') {
+                    const loadedData = await SupabaseSync.loadFromSupabase(key);
+                    if (loadedData) {
+                        admin.allCourseData[key] = loadedData;
+                        courseData = loadedData;
+                    }
+                }
+            }
+
+            if (!courseData) {
+                throw new Error(`Course data for "${key}" could not be loaded.`);
+            }
+
+            // 2. Set as current global data
+            admin.currentData = courseData.data;
+
+            // 3. Render UI components
+            if (typeof CourseManager !== 'undefined') {
+                CourseManager.refreshList(); // Update course selector
+                CourseManager.renderSelectorGrid();
+            }
+
+            // Update Header/Settings Preview
+            const titleEl = document.getElementById('course-title-preview');
+            const descEl = document.getElementById('course-desc-preview');
+            const iconEl = document.getElementById('course-icon-preview');
+
+            if (titleEl) titleEl.textContent = courseData.title || key;
+            if (descEl) descEl.textContent = courseData.description || 'Açıklama yok';
+            if (iconEl) iconEl.textContent = courseData.icon || '📦';
+
+            // Render settings form inputs
+            const inputTitle = document.getElementById('admin-course-title');
+            const inputDesc = document.getElementById('admin-course-description');
+            const inputIcon = document.getElementById('admin-course-icon');
+
+            if (inputTitle) inputTitle.value = courseData.title || '';
+            if (inputDesc) inputDesc.value = courseData.description || '';
+            if (inputIcon) inputIcon.value = courseData.icon || '📦';
+
+            // 4. Initial Render of content
+            admin.renderProjectList();
+            admin.renderPhaseList();
+            admin.renderComponentList();
+
+            // Initialize other editors
+            if (admin.currentData.projects && admin.currentData.projects.length > 0) {
+                // Select first project by default
+                admin.loadProject(admin.currentData.projects[0].id);
+            } else {
+                document.getElementById('project-form').classList.add('hidden');
+                document.getElementById('project-welcome').classList.remove('hidden');
+            }
+
+            // Load Custom Tab Names
+            admin.loadCourseSettings();
+        } catch (error) {
+            console.error('[Admin] Change course error:', error);
+            // Don't show alert for simple switch, maybe toast?
+        } finally {
+            admin.hideLoading();
+        }
     },
 
     // ...

@@ -8,7 +8,7 @@ const ComponentsSection = {
      */
     render() {
         return `
-            <div class="bg-white rounded-lg shadow p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <div class="flex items-center justify-between border-b pb-4 mb-6">
                     <h2 class="text-xl font-bold text-gray-700 flex items-center gap-2">
                         🔧 Devre Elemanları
@@ -78,25 +78,25 @@ const ComponentsSection = {
      */
     renderComponentCard(comp) {
         return `
-            <div class="bg-gray-50 rounded-lg border p-4 hover:border-theme/50 hover:shadow-md transition cursor-pointer group"
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4 hover:border-theme/50 hover:shadow-md transition cursor-pointer group"
                  onclick="ComponentManager.edit('${comp.id}')">
                 <div class="flex items-start justify-between mb-3">
                     <div class="text-3xl">${comp.icon || '🔌'}</div>
-                    <span class="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-600">
+                    <span class="text-xs px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300">
                         ${this.getCategoryLabel(comp.category)}
                     </span>
                 </div>
-                <h3 class="font-bold text-gray-700 mb-1">${this.escapeHtml(comp.name || 'İsimsiz')}</h3>
-                <p class="text-xs text-gray-400 line-clamp-2">${this.escapeHtml(comp.description || '')}</p>
+                <h3 class="font-bold text-gray-700 dark:text-gray-200 mb-1">${this.escapeHtml(comp.name || 'İsimsiz')}</h3>
+                <p class="text-xs text-gray-400 dark:text-gray-400 line-clamp-2">${this.escapeHtml(comp.description || '')}</p>
                 
                 <!-- Actions -->
                 <div class="flex justify-end gap-1 mt-3 opacity-0 group-hover:opacity-100 transition">
                     <button onclick="event.stopPropagation(); ComponentManager.edit('${comp.id}')" 
-                            class="p-1.5 hover:bg-gray-200 rounded text-sm" title="Düzenle">
+                            class="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-sm" title="Düzenle">
                         ✏️
                     </button>
                     <button onclick="event.stopPropagation(); ComponentManager.deleteById('${comp.id}')" 
-                            class="p-1.5 hover:bg-red-100 text-red-500 rounded text-sm" title="Sil">
+                            class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 rounded text-sm" title="Sil">
                         🗑️
                     </button>
                 </div>
@@ -112,7 +112,7 @@ const ComponentsSection = {
             <div id="component-edit-modal" 
                  class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center"
                  onclick="if(event.target === this) ComponentManager.closeEditModal()">
-                <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-bold text-lg">🔧 Devre Elemanı Düzenle</h3>
                         <button onclick="ComponentManager.closeEditModal()" 

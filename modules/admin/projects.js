@@ -610,6 +610,16 @@ const ProjectManager = {
 
     // --- HELPERS ---
 
+    getProjectById(id) {
+        const projects = this.config.getProjects();
+        return projects.find((p) => p.id === id);
+    },
+
+    getCurrentProject() {
+        if (this.currentProjectId === null) return null;
+        return this.getProjectById(this.currentProjectId);
+    },
+
     /**
      * Populate phase dropdown with available phases
      */
