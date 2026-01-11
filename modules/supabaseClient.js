@@ -763,3 +763,7 @@ const SupabaseClient = {
 if (typeof window !== 'undefined') {
     window.SupabaseClient = SupabaseClient;
 }
+
+// ES Module exports for Vite/Rollup bundling
+export const supabase = SupabaseClient.getClient();
+export default SupabaseClient;
