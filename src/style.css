@@ -56,15 +56,47 @@
 
 /* Custom CSS Layers */
 @layer base {
+    /* Global body - Deep navy background by default */
     body {
-        @apply font-sans bg-gray-50 text-gray-900 transition-colors duration-300;
+        @apply font-sans transition-colors duration-300;
+        background-color: var(--lab-bg-dark, #0f172a);
+        color: var(--text-secondary, #cbd5e1);
     }
 
-    /* Dark mode base styles */
+    /* Dark mode is now default - this ensures consistency */
+    body,
     body.dark-mode,
     html.dark body,
     html.dark-mode body {
-        @apply bg-gray-900 text-gray-100;
+        background-color: var(--lab-bg-dark, #0f172a);
+        color: var(--text-secondary, #cbd5e1);
+    }
+
+    /* Light mode override (only if explicitly set) */
+    html.light body,
+    html[data-theme='light'] body {
+        @apply bg-gray-50 text-gray-900;
+    }
+
+    /* Consistent heading typography across all pages */
+    h1 {
+        font-size: var(--heading-h1, clamp(2rem, 5vw, 3rem));
+        @apply font-extrabold tracking-tight leading-tight text-white;
+    }
+
+    h2 {
+        font-size: var(--heading-h2, clamp(1.5rem, 4vw, 2.25rem));
+        @apply font-bold tracking-tight leading-tight text-white;
+    }
+
+    h3 {
+        font-size: var(--heading-h3, clamp(1.25rem, 3vw, 1.5rem));
+        @apply font-semibold text-white;
+    }
+
+    h4 {
+        font-size: var(--heading-h4, clamp(1rem, 2.5vw, 1.25rem));
+        @apply font-semibold text-white;
     }
 }
 
