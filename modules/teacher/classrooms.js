@@ -109,10 +109,16 @@ export const ClassroomManager = {
         }
 
         try {
+            // Fallback to Auth.currentUser if ClassroomManager.currentUser is null
+            const user = ClassroomManager.currentUser || (typeof Auth !== 'undefined' ? Auth.currentUser : null);
+            if (!user) {
+                throw new Error('Kullanıcı oturumu bulunamadı');
+            }
+
             const { data, error } = await SupabaseClient.getClient()
                 .from('classrooms')
                 .insert({
-                    teacher_id: ClassroomManager.currentUser.id,
+                    teacher_id: user.id,
                     name: name,
                     description: description || null,
                 })

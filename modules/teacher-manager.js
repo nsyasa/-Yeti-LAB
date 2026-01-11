@@ -227,7 +227,15 @@ async function loadProjects() {
 
 async function loadDashboardData() {
     try {
-        if (!currentUser) return;
+        // Fallback to Auth.currentUser if currentUser is null
+        if (!currentUser && typeof Auth !== 'undefined' && Auth.currentUser) {
+            currentUser = Auth.currentUser;
+        }
+        
+        if (!currentUser) {
+            console.warn('[TeacherManager] No user found for dashboard data');
+            return;
+        }
 
         // Load classrooms
         const { data: classroomsData, error: classroomsError } = await SupabaseClient.getClient()
