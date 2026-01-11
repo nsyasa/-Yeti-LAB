@@ -281,6 +281,9 @@ async function loadDashboardData() {
         if (elActiveToday) elActiveToday.textContent = activeToday;
         if (elCompletedLessons) elCompletedLessons.textContent = '0'; // Will be updated by loadProgress if needed
 
+        // Render dashboard classrooms list
+        renderDashboardClassrooms(classrooms);
+
         // Initialize Classroom Manager
         if (typeof ClassroomManager !== 'undefined') {
             ClassroomManager.init(currentUser, classrooms, {
@@ -406,6 +409,43 @@ async function deleteClassroom(classroomId) {
             showToast('Sınıf silinirken hata oluştu', 'error');
         }
     }
+}
+
+function renderDashboardClassrooms(classroomsList) {
+    const container = document.getElementById('dashboardClassroomsList');
+    if (!container) return;
+
+    if (!classroomsList || classroomsList.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state py-8">
+                <div class="icon text-4xl mb-2">🏫</div>
+                <p class="text-gray-500">Henüz sınıf oluşturmadınız</p>
+                <button onclick="TeacherManager?.openCreateClassroomModal()"
+                    class="mt-3 px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:brightness-110 transition">
+                    İlk Sınıfı Oluştur
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = classroomsList.map(classroom => {
+        const studentCount = classroom.students?.[0]?.count || 0;
+        return `
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer" onclick="viewClassroom('${classroom.id}')">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">${classroom.is_active ? '✅' : '⏸️'}</span>
+                    <div>
+                        <p class="font-semibold text-gray-800 dark:text-white">${escapeHtml(classroom.name)}</p>
+                        <p class="text-sm text-gray-500">👨‍🎓 ${studentCount} öğrenci • ${classroom.code}</p>
+                    </div>
+                </div>
+                <button onclick="event.stopPropagation(); openClassroomSettings('${classroom.id}')" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors" title="Ayarlar">
+                    ⚙️
+                </button>
+            </div>
+        `;
+    }).join('');
 }
 
 function copyCode(element) {
@@ -968,6 +1008,7 @@ window.openBulkAddModal = openBulkAddModal;
 window.openClassroomSettings = openClassroomSettings;
 window.toggleClassroom = toggleClassroom;
 window.deleteClassroom = deleteClassroom;
+window.viewClassroom = viewClassroom;
 window.previewBulkStudents = previewBulkStudents;
 window.resetBulkForm = resetBulkForm;
 window.copyBulkList = copyBulkList;
