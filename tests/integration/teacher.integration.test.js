@@ -67,12 +67,10 @@ describe('Teacher Manager Integration', () => {
         const mockInsert = vi.fn().mockImplementation((data) => {
             return {
                 select: vi.fn().mockReturnValue({
-                    single: vi
-                        .fn()
-                        .mockResolvedValue({
-                            data: { ...data, id: Math.floor(Math.random() * 1000), code: '1234' },
-                            error: null,
-                        }),
+                    single: vi.fn().mockResolvedValue({
+                        data: { ...data, id: Math.floor(Math.random() * 1000), code: '1234' },
+                        error: null,
+                    }),
                 }),
             };
         });
