@@ -228,7 +228,7 @@ const Navbar = {
             if (notificationSection) {
                 notificationSection.classList.add('hidden');
             }
-            
+
             container.innerHTML = `
                 <a href="auth.html" class="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-400 text-white rounded-xl font-bold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 transition-all">
                     <span class="rocket-icon inline-block transition-transform group-hover:rotate-[-15deg] group-hover:-translate-y-0.5">🚀</span>

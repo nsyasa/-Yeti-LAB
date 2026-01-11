@@ -76,7 +76,7 @@ const StudentSubmissionModal = {
      */
     async loadAssignment(assignmentId) {
         const contentEl = document.getElementById('submissionModalContent');
-        
+
         try {
             const assignment = await window.StudentSubmissionService?.getAssignmentDetail(assignmentId);
             if (!assignment) throw new Error('Ödev bulunamadı');
@@ -87,7 +87,7 @@ const StudentSubmissionModal = {
 
             // Başlık güncelle
             document.getElementById('submissionModalTitle').textContent = assignment.title;
-            
+
             // Meta güncelle
             const status = window.StudentSubmissionService?.getAssignmentStatus(assignment);
             const timeRemaining = window.StudentSubmissionService?.getTimeRemaining(assignment.due_date);
@@ -96,17 +96,20 @@ const StudentSubmissionModal = {
             document.getElementById('submissionModalMeta').innerHTML = `
                 ${statusBadge}
                 ${assignment.course ? `<span>📚 ${this.escapeHtml(assignment.course.title)}</span>` : ''}
-                ${assignment.due_date ? `
+                ${
+                    assignment.due_date
+                        ? `
                     <span class="${timeRemaining?.overdue ? 'text-red-500' : timeRemaining?.urgent ? 'text-orange-500' : ''}">
                         ⏰ ${timeRemaining?.text}
                     </span>
-                ` : ''}
+                `
+                        : ''
+                }
                 <span>⭐ ${assignment.max_points} puan</span>
             `;
 
             // İçerik render
             this.renderContent(assignment, status);
-
         } catch (error) {
             console.error('[StudentSubmissionModal] Load error:', error);
             contentEl.innerHTML = `
@@ -129,29 +132,41 @@ const StudentSubmissionModal = {
 
         contentEl.innerHTML = `
             <!-- Ödev Açıklaması -->
-            ${assignment.description ? `
+            ${
+                assignment.description
+                    ? `
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">📄 Açıklama</h4>
                     <p class="text-gray-600 dark:text-gray-400">${this.escapeHtml(assignment.description)}</p>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
 
             <!-- Talimatlar -->
-            ${assignment.instructions ? `
+            ${
+                assignment.instructions
+                    ? `
                 <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                     <h4 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">📋 Talimatlar</h4>
                     <div class="prose prose-sm dark:prose-invert max-w-none text-blue-900 dark:text-blue-200">
                         ${assignment.instructions}
                     </div>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
 
             <!-- Değerlendirme Kriterleri -->
-            ${assignment.rubric && assignment.rubric.length > 0 ? `
+            ${
+                assignment.rubric && assignment.rubric.length > 0
+                    ? `
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-3">📊 Değerlendirme Kriterleri</h4>
                     <div class="grid gap-2">
-                        ${assignment.rubric.map(r => `
+                        ${assignment.rubric
+                            .map(
+                                (r) => `
                             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div>
                                     <span class="font-medium text-gray-800 dark:text-white">${this.escapeHtml(r.criterion_name)}</span>
@@ -159,13 +174,19 @@ const StudentSubmissionModal = {
                                 </div>
                                 <span class="text-sm font-bold text-theme">${r.max_points} puan</span>
                             </div>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </div>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
 
             <!-- Not ve Geri Bildirim (varsa) -->
-            ${hasGrade ? `
+            ${
+                hasGrade
+                    ? `
                 <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-200 dark:border-green-800">
                     <div class="flex items-center justify-between mb-3">
                         <h4 class="font-semibold text-green-800 dark:text-green-300">✅ Değerlendirme Sonucu</h4>
@@ -173,37 +194,55 @@ const StudentSubmissionModal = {
                             ${submission.grade} / ${assignment.max_points}
                         </div>
                     </div>
-                    ${submission.feedback ? `
+                    ${
+                        submission.feedback
+                            ? `
                         <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
                             <p class="text-sm text-gray-700 dark:text-gray-300">${this.escapeHtml(submission.feedback)}</p>
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <p class="text-xs text-gray-500 mt-2">
                         Değerlendirilme: ${window.StudentSubmissionService?.formatDate(submission.graded_at)}
                     </p>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
 
             <!-- Revizyon Talebi (varsa) -->
-            ${submission?.status === 'revision_requested' ? `
+            ${
+                submission?.status === 'revision_requested'
+                    ? `
                 <div class="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-800">
                     <h4 class="font-semibold text-orange-800 dark:text-orange-300 mb-2">🔄 Revizyon İstendi</h4>
-                    ${submission.feedback ? `
+                    ${
+                        submission.feedback
+                            ? `
                         <p class="text-sm text-orange-900 dark:text-orange-200 mb-3">${this.escapeHtml(submission.feedback)}</p>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <p class="text-xs text-orange-600">Öğretmenin geri bildirimine göre ödevini düzenleyip tekrar gönderebilirsin.</p>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
 
             <!-- Gönderim Formu (gönderilebilirse) -->
             ${status?.canSubmit ? this.renderSubmissionForm() : ''}
 
             <!-- Önceki Gönderimler -->
-            ${assignment.my_submissions && assignment.my_submissions.length > 0 && !status?.canSubmit ? `
+            ${
+                assignment.my_submissions && assignment.my_submissions.length > 0 && !status?.canSubmit
+                    ? `
                 <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-3">📜 Gönderim Geçmişi</h4>
                     <div class="space-y-2">
-                        ${assignment.my_submissions.map(s => `
+                        ${assignment.my_submissions
+                            .map(
+                                (s) => `
                             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm">
                                 <span class="text-gray-600 dark:text-gray-300">
                                     Deneme ${s.attempt_number} - ${window.StudentSubmissionService?.formatDate(s.submitted_at)}
@@ -212,10 +251,14 @@ const StudentSubmissionModal = {
                                     ${s.grade !== null ? s.grade + ' puan' : 'Değerlendirilmedi'}
                                 </span>
                             </div>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </div>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
         `;
 
         // Drag-drop alanını aktifleştir
@@ -291,7 +334,9 @@ const StudentSubmissionModal = {
     renderUploadedFiles() {
         if (this.uploadedFiles.length === 0) return '';
 
-        return this.uploadedFiles.map(file => `
+        return this.uploadedFiles
+            .map(
+                (file) => `
             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div class="flex items-center gap-2 min-w-0">
                     <span class="text-lg">${this.getFileIcon(file.file_type)}</span>
@@ -307,7 +352,9 @@ const StudentSubmissionModal = {
                         class="text-red-400 hover:text-red-600 text-lg">×</button>
                 </div>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     },
 
     /**
@@ -357,7 +404,7 @@ const StudentSubmissionModal = {
             'application/zip',
             'application/x-zip-compressed',
             'image/png',
-            'image/jpeg'
+            'image/jpeg',
         ];
         const maxSize = 5 * 1024 * 1024; // 5MB
 
@@ -379,17 +426,13 @@ const StudentSubmissionModal = {
 
             try {
                 // Yükle
-                const fileRecord = await window.StudentSubmissionService?.uploadFile(
-                    this.currentSubmission.id,
-                    file
-                );
+                const fileRecord = await window.StudentSubmissionService?.uploadFile(this.currentSubmission.id, file);
 
                 if (fileRecord) {
                     this.uploadedFiles.push(fileRecord);
                     this.updateFilesList();
                     if (window.Toast) Toast.success(`${file.name} yüklendi`);
                 }
-
             } catch (error) {
                 console.error('File upload error:', error);
                 if (window.Toast) Toast.error(`${file.name}: Yükleme başarısız`);
@@ -405,7 +448,7 @@ const StudentSubmissionModal = {
 
         try {
             await window.StudentSubmissionService?.deleteFile(fileId);
-            this.uploadedFiles = this.uploadedFiles.filter(f => f.id !== fileId);
+            this.uploadedFiles = this.uploadedFiles.filter((f) => f.id !== fileId);
             this.updateFilesList();
             if (window.Toast) Toast.success('Dosya silindi');
         } catch (error) {
@@ -433,7 +476,7 @@ const StudentSubmissionModal = {
 
             const submission = await window.StudentSubmissionService?.saveSubmission({
                 assignment_id: this.currentAssignment.id,
-                content: content
+                content: content,
             });
 
             this.currentSubmission = submission;
@@ -443,7 +486,6 @@ const StudentSubmissionModal = {
             }
 
             return submission;
-
         } catch (error) {
             console.error('Save draft error:', error);
             if (!silent && window.Toast) {
@@ -473,7 +515,7 @@ const StudentSubmissionModal = {
             await window.StudentSubmissionService?.submitAssignment(submission.id);
 
             if (window.Toast) Toast.success('Ödev başarıyla gönderildi! 🎉');
-            
+
             // Modalı kapat
             this.close();
 
@@ -481,7 +523,6 @@ const StudentSubmissionModal = {
             if (window.StudentAssignmentsSection) {
                 StudentAssignmentsSection.loadData();
             }
-
         } catch (error) {
             console.error('Submit error:', error);
             if (window.Toast) Toast.error('Gönderim başarısız: ' + error.message);
@@ -527,7 +568,7 @@ const StudentSubmissionModal = {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
-    }
+    },
 };
 
 window.StudentSubmissionModal = StudentSubmissionModal;

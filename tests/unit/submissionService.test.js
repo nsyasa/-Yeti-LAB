@@ -208,9 +208,7 @@ describe('StudentSubmissionService', () => {
             const assignment = createMockAssignment({ max_attempts: -1 });
             const submission = createMockSubmission({ attempt_number: 10 });
 
-            const canResubmit =
-                assignment.max_attempts === -1 ||
-                submission.attempt_number < assignment.max_attempts;
+            const canResubmit = assignment.max_attempts === -1 || submission.attempt_number < assignment.max_attempts;
 
             expect(canResubmit).toBe(true);
         });
@@ -456,9 +454,7 @@ describe('StudentSubmissionService', () => {
                 createMockSubmission({ submitted_at: '2026-01-08T10:00:00Z' }),
             ];
 
-            const sorted = [...submissions].sort(
-                (a, b) => new Date(b.submitted_at) - new Date(a.submitted_at)
-            );
+            const sorted = [...submissions].sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
 
             expect(new Date(sorted[0].submitted_at).getDate()).toBe(12);
         });

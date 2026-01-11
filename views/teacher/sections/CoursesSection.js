@@ -69,8 +69,11 @@ const CoursesSection = {
     renderStatsBar() {
         const totalCourses = this.courses?.length || 0;
         const totalEnrollments = Object.values(this.enrollmentStats).reduce((sum, stat) => sum + (stat.total || 0), 0);
-        const activeEnrollments = Object.values(this.enrollmentStats).reduce((sum, stat) => sum + (stat.active || 0), 0);
-        
+        const activeEnrollments = Object.values(this.enrollmentStats).reduce(
+            (sum, stat) => sum + (stat.active || 0),
+            0
+        );
+
         return `
             <div class="px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 bg-purple-100 dark:bg-purple-900/30">
                 <span class="text-lg">📚</span>
@@ -111,7 +114,7 @@ const CoursesSection = {
     renderCourseCard(course) {
         const stats = this.enrollmentStats[course.id] || { total: 0, active: 0, completed: 0 };
         const themeColor = course.theme_color || '#00979c';
-        
+
         return `
             <div class="glass-card rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer group"
                  onclick="CoursesSection.openAssignmentModal('${course.id}')"
@@ -184,11 +187,11 @@ const CoursesSection = {
 
         try {
             const { default: CourseEnrollmentService } = await import('/modules/courseEnrollmentService.js');
-            
+
             // Paralel yükleme
             const [courses, classrooms] = await Promise.all([
                 CourseEnrollmentService.getCourses(),
-                CourseEnrollmentService.getTeacherClassrooms()
+                CourseEnrollmentService.getTeacherClassrooms(),
             ]);
 
             this.courses = courses;
@@ -212,14 +215,14 @@ const CoursesSection = {
     async loadEnrollmentStats() {
         try {
             const { default: CourseEnrollmentService } = await import('/modules/courseEnrollmentService.js');
-            
+
             const statsPromises = this.courses.map(async (course) => {
                 const stats = await CourseEnrollmentService.getCourseEnrollmentStats(course.id);
                 return { courseId: course.id, stats };
             });
 
             const results = await Promise.all(statsPromises);
-            
+
             this.enrollmentStats = {};
             results.forEach(({ courseId, stats }) => {
                 this.enrollmentStats[courseId] = stats;
@@ -253,7 +256,7 @@ const CoursesSection = {
             return;
         }
 
-        list.innerHTML = this.courses.map(course => this.renderCourseCard(course)).join('');
+        list.innerHTML = this.courses.map((course) => this.renderCourseCard(course)).join('');
     },
 
     /**
@@ -261,14 +264,14 @@ const CoursesSection = {
      * @param {string} courseId - Kurs ID
      */
     async openAssignmentModal(courseId) {
-        const course = this.courses.find(c => c.id === courseId);
+        const course = this.courses.find((c) => c.id === courseId);
         if (!course) return;
 
         this.selectedCourse = course;
 
         const modal = document.getElementById('courseAssignmentModal');
         const content = document.getElementById('courseAssignmentModalContent');
-        
+
         if (!modal || !content) return;
 
         content.innerHTML = this.renderAssignmentModalContent(course);
@@ -284,7 +287,7 @@ const CoursesSection = {
      */
     renderAssignmentModalContent(course) {
         const themeColor = course.theme_color || '#00979c';
-        
+
         return `
             <!-- Header -->
             <div class="p-6 border-b border-gray-200 dark:border-gray-700" style="background: ${themeColor}10">
@@ -353,16 +356,16 @@ const CoursesSection = {
 
         try {
             const { default: CourseEnrollmentService } = await import('/modules/courseEnrollmentService.js');
-            
+
             // Her sınıf için kayıt durumunu kontrol et
             const classroomData = await Promise.all(
                 this.classrooms.map(async (classroom) => {
                     const enrollments = await CourseEnrollmentService.getClassroomEnrollments(classroom.id);
-                    const courseEnrollments = enrollments.filter(e => e.course_id === this.selectedCourse.id);
+                    const courseEnrollments = enrollments.filter((e) => e.course_id === this.selectedCourse.id);
                     return {
                         ...classroom,
                         enrolledCount: courseEnrollments.length,
-                        isAssigned: courseEnrollments.length > 0
+                        isAssigned: courseEnrollments.length > 0,
                     };
                 })
             );
@@ -379,7 +382,7 @@ const CoursesSection = {
                 return;
             }
 
-            list.innerHTML = classroomData.map(classroom => this.renderClassroomEnrollmentItem(classroom)).join('');
+            list.innerHTML = classroomData.map((classroom) => this.renderClassroomEnrollmentItem(classroom)).join('');
         } catch (error) {
             console.error('Sınıf kayıtları yüklenemedi:', error);
             list.innerHTML = `
@@ -398,7 +401,7 @@ const CoursesSection = {
         const studentCount = classroom.students?.[0]?.count || 0;
         const isAssigned = classroom.isAssigned;
         const enrolledCount = classroom.enrolledCount || 0;
-        
+
         return `
             <div class="glass-card rounded-xl p-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -414,7 +417,9 @@ const CoursesSection = {
                 </div>
                 
                 <div class="flex items-center gap-2">
-                    ${isAssigned ? `
+                    ${
+                        isAssigned
+                            ? `
                         <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                             ✓ Atandı
                         </span>
@@ -423,14 +428,16 @@ const CoursesSection = {
                             title="Atamayı Kaldır">
                             <span>🗑️</span>
                         </button>
-                    ` : `
+                    `
+                            : `
                         <button onclick="CoursesSection.enrollClassroom('${classroom.id}')"
                             class="px-4 py-2 bg-theme text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all flex items-center gap-2"
                             ${studentCount === 0 ? 'disabled title="Sınıfta öğrenci yok"' : ''}>
                             <span>➕</span>
                             <span>Ata</span>
                         </button>
-                    `}
+                    `
+                    }
                 </div>
             </div>
         `;
@@ -445,9 +452,9 @@ const CoursesSection = {
 
         try {
             const { default: CourseEnrollmentService } = await import('/modules/courseEnrollmentService.js');
-            
+
             const result = await CourseEnrollmentService.enrollClassroom(classroomId, this.selectedCourse.id);
-            
+
             // Toast göster
             if (window.showToast) {
                 window.showToast(result.message, 'success');
@@ -455,7 +462,7 @@ const CoursesSection = {
 
             // Listeyi yenile
             await this.loadClassroomEnrollments();
-            
+
             // İstatistikleri güncelle
             await this.loadEnrollmentStats();
             this.updateUI();
@@ -480,16 +487,16 @@ const CoursesSection = {
 
         try {
             const { default: CourseEnrollmentService } = await import('/modules/courseEnrollmentService.js');
-            
+
             await CourseEnrollmentService.unenrollClassroom(classroomId, this.selectedCourse.id);
-            
+
             if (window.showToast) {
                 window.showToast('Kurs ataması kaldırıldı', 'success');
             }
 
             // Listeyi yenile
             await this.loadClassroomEnrollments();
-            
+
             // İstatistikleri güncelle
             await this.loadEnrollmentStats();
             this.updateUI();
@@ -531,7 +538,7 @@ const CoursesSection = {
                 </div>
             `;
         }
-    }
+    },
 };
 
 window.CoursesSection = CoursesSection;

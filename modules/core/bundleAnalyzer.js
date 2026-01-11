@@ -14,28 +14,10 @@ export const BundleAnalyzer = {
      */
     getImportedModules() {
         const modules = {
-            core: [
-                'modules/cache.js',
-                'modules/utils.js',
-                'modules/constants.js',
-                'modules/validators.js',
-            ],
-            routing: [
-                'modules/router.js',
-                'modules/viewManager.js',
-                'modules/scrollManager.js',
-            ],
-            auth: [
-                'modules/auth.js',
-                'modules/authUI.js',
-                'modules/supabaseClient.js',
-            ],
-            ui: [
-                'modules/ui.js',
-                'modules/toast.js',
-                'modules/themeManager.js',
-                'modules/themes.js',
-            ],
+            core: ['modules/cache.js', 'modules/utils.js', 'modules/constants.js', 'modules/validators.js'],
+            routing: ['modules/router.js', 'modules/viewManager.js', 'modules/scrollManager.js'],
+            auth: ['modules/auth.js', 'modules/authUI.js', 'modules/supabaseClient.js'],
+            ui: ['modules/ui.js', 'modules/toast.js', 'modules/themeManager.js', 'modules/themes.js'],
             features: [
                 'modules/progress.js',
                 'modules/badges.js',
@@ -122,7 +104,7 @@ export const BundleAnalyzer = {
                 suggestions: [
                     'Named exports kullan (default yerine)',
                     'Kullanılmayan fonksiyonları kaldır',
-                    'sideEffects: false ekle package.json\'a',
+                    "sideEffects: false ekle package.json'a",
                 ],
             },
             {
@@ -130,7 +112,7 @@ export const BundleAnalyzer = {
                 suggestions: [
                     'Gzip/Brotli sıkıştırma aktif et',
                     'Minification kontrol et',
-                    'Source map production\'da devre dışı bırak',
+                    "Source map production'da devre dışı bırak",
                 ],
             },
             {
@@ -225,8 +207,8 @@ export const BundleAnalyzer = {
                 FCP: { max: 1800, warning: 1500 }, // First Contentful Paint
                 LCP: { max: 2500, warning: 2000 }, // Largest Contentful Paint
                 TTI: { max: 3800, warning: 3000 }, // Time to Interactive
-                TBT: { max: 300, warning: 200 },   // Total Blocking Time
-                CLS: { max: 0.1, warning: 0.05 },  // Cumulative Layout Shift
+                TBT: { max: 300, warning: 200 }, // Total Blocking Time
+                CLS: { max: 0.1, warning: 0.05 }, // Cumulative Layout Shift
             },
         };
     },

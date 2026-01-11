@@ -24,7 +24,7 @@ const StudentCoursesSection = {
      */
     async loadCourses() {
         if (!this.studentId) return;
-        
+
         this.isLoading = true;
 
         try {
@@ -64,7 +64,7 @@ const StudentCoursesSection = {
 
         return `
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${this.courses.map(course => this.renderCourseCard(course)).join('')}
+                ${this.courses.map((course) => this.renderCourseCard(course)).join('')}
             </div>
         `;
     },
@@ -77,7 +77,7 @@ const StudentCoursesSection = {
     renderCourseCard(course) {
         const themeColor = course.theme_color || '#00979c';
         const enrolledDate = course.enrolledAt ? new Date(course.enrolledAt).toLocaleDateString('tr-TR') : '';
-        
+
         // Kurs slug'a göre ikon belirle
         const icons = {
             arduino: '🤖',
@@ -85,7 +85,7 @@ const StudentCoursesSection = {
             scratch: '🎮',
             mblock: '🦾',
             'minecraft-edu': '⛏️',
-            appinventor: '📱'
+            appinventor: '📱',
         };
         const icon = icons[course.slug] || '📚';
 
@@ -105,11 +105,15 @@ const StudentCoursesSection = {
                         <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
                             ${course.description || 'Açıklama yok'}
                         </p>
-                        ${enrolledDate ? `
+                        ${
+                            enrolledDate
+                                ? `
                             <p class="text-xs text-gray-400 mt-2">
                                 📅 Kayıt: ${enrolledDate}
                             </p>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                     </div>
                 </div>
                 <button class="mt-4 w-full py-2.5 px-4 border-2 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors flex items-center justify-center gap-2"
@@ -150,7 +154,7 @@ const StudentCoursesSection = {
      */
     getEnrolledCount() {
         return this.courses?.length || 0;
-    }
+    },
 };
 
 // Global export for onclick handlers

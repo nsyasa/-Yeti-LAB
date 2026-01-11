@@ -15,17 +15,19 @@ export const StudentSubmissionService = {
      * @returns {Promise<Array>} Ödev listesi
      */
     async getMyAssignments(options = {}) {
-        const { 
-            status = 'active',  // active, all
+        const {
+            status = 'active', // active, all
             courseId = null,
-            limit = 50
+            limit = 50,
         } = options;
 
         try {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             // Öğrenci profil bilgisini al (classroom_id için)
@@ -43,14 +45,16 @@ export const StudentSubmissionService = {
             // Öğrencinin sınıfına atanmış ödevleri getir
             let query = supabase
                 .from('assignments')
-                .select(`
+                .select(
+                    `
                     *,
                     classroom:classrooms!assignments_classroom_id_fkey(id, name),
                     course:courses!assignments_course_id_fkey(id, title, slug),
                     my_submission:submissions!submissions_assignment_id_fkey(
                         id, status, grade, feedback, submitted_at, graded_at, attempt_number
                     )
-                `)
+                `
+                )
                 .eq('classroom_id', profile.classroom_id)
                 .order('due_date', { ascending: true, nullsFirst: false });
 
@@ -71,11 +75,10 @@ export const StudentSubmissionService = {
             if (error) throw error;
 
             // Sadece bu öğrencinin gönderilerini filtrele
-            return data.map(assignment => ({
+            return data.map((assignment) => ({
                 ...assignment,
-                my_submission: assignment.my_submission?.find(s => true) || null // İlk submission
+                my_submission: assignment.my_submission?.find((s) => true) || null, // İlk submission
             }));
-
         } catch (error) {
             console.error('[StudentSubmissionService] getMyAssignments error:', error);
             throw error;
@@ -92,18 +95,22 @@ export const StudentSubmissionService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             // Ödev detaylarını al
             const { data: assignment, error: assignmentError } = await supabase
                 .from('assignments')
-                .select(`
+                .select(
+                    `
                     *,
                     classroom:classrooms!assignments_classroom_id_fkey(id, name),
                     course:courses!assignments_course_id_fkey(id, title, slug),
                     rubric:rubrics(*)
-                `)
+                `
+                )
                 .eq('id', assignmentId)
                 .single();
 
@@ -112,10 +119,12 @@ export const StudentSubmissionService = {
             // Bu öğrencinin gönderimlerini al
             const { data: submissions, error: submissionError } = await supabase
                 .from('submissions')
-                .select(`
+                .select(
+                    `
                     *,
                     files:submission_files(*)
-                `)
+                `
+                )
                 .eq('assignment_id', assignmentId)
                 .eq('student_id', user.id)
                 .order('submitted_at', { ascending: false });
@@ -125,9 +134,8 @@ export const StudentSubmissionService = {
             return {
                 ...assignment,
                 my_submissions: submissions || [],
-                current_submission: submissions?.[0] || null
+                current_submission: submissions?.[0] || null,
             };
-
         } catch (error) {
             console.error('[StudentSubmissionService] getAssignmentDetail error:', error);
             throw error;
@@ -148,7 +156,9 @@ export const StudentSubmissionService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             // Mevcut taslak var mı kontrol et
@@ -166,7 +176,7 @@ export const StudentSubmissionService = {
                     .from('submissions')
                     .update({
                         content: submissionData.content || '',
-                        updated_at: new Date().toISOString()
+                        updated_at: new Date().toISOString(),
                     })
                     .eq('id', existingDraft.id)
                     .select()
@@ -194,7 +204,7 @@ export const StudentSubmissionService = {
                         student_id: user.id,
                         content: submissionData.content || '',
                         status: 'draft',
-                        attempt_number: nextAttempt
+                        attempt_number: nextAttempt,
                     })
                     .select()
                     .single();
@@ -202,7 +212,6 @@ export const StudentSubmissionService = {
                 if (error) throw error;
                 return data;
             }
-
         } catch (error) {
             console.error('[StudentSubmissionService] saveSubmission error:', error);
             throw error;
@@ -223,7 +232,7 @@ export const StudentSubmissionService = {
                 .from('submissions')
                 .update({
                     status: 'submitted',
-                    submitted_at: new Date().toISOString()
+                    submitted_at: new Date().toISOString(),
                 })
                 .eq('id', submissionId)
                 .select()
@@ -231,7 +240,6 @@ export const StudentSubmissionService = {
 
             if (error) throw error;
             return data;
-
         } catch (error) {
             console.error('[StudentSubmissionService] submitAssignment error:', error);
             throw error;
@@ -250,7 +258,9 @@ export const StudentSubmissionService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             // Gönderi bilgisini al
@@ -272,15 +282,15 @@ export const StudentSubmissionService = {
                 .from('submissions')
                 .upload(filePath, file, {
                     cacheControl: '3600',
-                    upsert: false
+                    upsert: false,
                 });
 
             if (uploadError) throw uploadError;
 
             // Public URL al
-            const { data: { publicUrl } } = supabase.storage
-                .from('submissions')
-                .getPublicUrl(filePath);
+            const {
+                data: { publicUrl },
+            } = supabase.storage.from('submissions').getPublicUrl(filePath);
 
             // Dosya kaydını oluştur
             const { data: fileRecord, error: fileError } = await supabase
@@ -291,14 +301,13 @@ export const StudentSubmissionService = {
                     file_path: filePath,
                     file_url: publicUrl,
                     file_size: file.size,
-                    file_type: file.type || 'application/octet-stream'
+                    file_type: file.type || 'application/octet-stream',
                 })
                 .select()
                 .single();
 
             if (fileError) throw fileError;
             return fileRecord;
-
         } catch (error) {
             console.error('[StudentSubmissionService] uploadFile error:', error);
             throw error;
@@ -324,20 +333,14 @@ export const StudentSubmissionService = {
 
             if (file?.file_path) {
                 // Storage'dan sil
-                await supabase.storage
-                    .from('submissions')
-                    .remove([file.file_path]);
+                await supabase.storage.from('submissions').remove([file.file_path]);
             }
 
             // Kaydı sil
-            const { error } = await supabase
-                .from('submission_files')
-                .delete()
-                .eq('id', fileId);
+            const { error } = await supabase.from('submission_files').delete().eq('id', fileId);
 
             if (error) throw error;
             return true;
-
         } catch (error) {
             console.error('[StudentSubmissionService] deleteFile error:', error);
             throw error;
@@ -365,7 +368,7 @@ export const StudentSubmissionService = {
                 label: 'Kapalı',
                 color: 'gray',
                 icon: '🔒',
-                canSubmit: false
+                canSubmit: false,
             };
         }
 
@@ -376,7 +379,7 @@ export const StudentSubmissionService = {
                 label: 'Notlandırıldı',
                 color: 'green',
                 icon: '✅',
-                canSubmit: false
+                canSubmit: false,
             };
         }
 
@@ -387,7 +390,7 @@ export const StudentSubmissionService = {
                 label: 'Revizyon İstendi',
                 color: 'orange',
                 icon: '🔄',
-                canSubmit: true
+                canSubmit: true,
             };
         }
 
@@ -398,7 +401,7 @@ export const StudentSubmissionService = {
                 label: 'Gönderildi',
                 color: 'blue',
                 icon: '📤',
-                canSubmit: false
+                canSubmit: false,
             };
         }
 
@@ -409,7 +412,7 @@ export const StudentSubmissionService = {
                 label: 'Taslak',
                 color: 'yellow',
                 icon: '📝',
-                canSubmit: true
+                canSubmit: true,
             };
         }
 
@@ -421,7 +424,7 @@ export const StudentSubmissionService = {
                     label: 'Geç Teslim',
                     color: 'red',
                     icon: '⏰',
-                    canSubmit: true
+                    canSubmit: true,
                 };
             }
             return {
@@ -429,7 +432,7 @@ export const StudentSubmissionService = {
                 label: 'Süresi Doldu',
                 color: 'red',
                 icon: '❌',
-                canSubmit: false
+                canSubmit: false,
             };
         }
 
@@ -439,7 +442,7 @@ export const StudentSubmissionService = {
             label: 'Bekliyor',
             color: 'gray',
             icon: '⏳',
-            canSubmit: true
+            canSubmit: true,
         };
     },
 
@@ -457,11 +460,11 @@ export const StudentSubmissionService = {
 
         if (diff < 0) {
             const overdueDays = Math.abs(Math.ceil(diff / (1000 * 60 * 60 * 24)));
-            return { 
-                text: `${overdueDays} gün geçti`, 
-                days: -overdueDays, 
-                urgent: false, 
-                overdue: true 
+            return {
+                text: `${overdueDays} gün geçti`,
+                days: -overdueDays,
+                urgent: false,
+                overdue: true,
             };
         }
 
@@ -493,7 +496,7 @@ export const StudentSubmissionService = {
             month: 'short',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
         });
     },
 
@@ -521,11 +524,11 @@ export const StudentSubmissionService = {
             yellow: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
             orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
             red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-            gray: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+            gray: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
         };
 
         return `<span class="px-2 py-1 text-xs font-medium rounded-full ${colorClasses[status.color]}">${status.icon} ${status.label}</span>`;
-    }
+    },
 };
 
 // Global erişim için

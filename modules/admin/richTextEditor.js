@@ -1,10 +1,10 @@
 /**
  * Rich Text Editor - Admin Panel Integration
  * Global wrapper for TipTap-based editor
- * 
+ *
  * Bu dosya, ES module olan richTextEditor.js'i
  * global window objesi üzerinden erişilebilir hale getirir.
- * 
+ *
  * Kullanım:
  *   const editor = AdminRichTextEditor.create('#editor-container', {
  *       content: '<p>Mevcut içerik</p>',
@@ -31,9 +31,7 @@ const AdminRichTextEditor = {
      */
     create(element, options = {}) {
         const id = `editor-${Date.now()}`;
-        const container = typeof element === 'string' 
-            ? document.querySelector(element) 
-            : element;
+        const container = typeof element === 'string' ? document.querySelector(element) : element;
 
         if (!container) {
             console.error('[AdminRichTextEditor] Container not found:', element);
@@ -46,7 +44,7 @@ const AdminRichTextEditor = {
         // Create simple fallback editor (textarea-based)
         // Full TipTap integration requires Vite build
         const wrapper = this._createFallbackEditor(container, config, id);
-        
+
         this.instances.set(id, wrapper);
         return wrapper;
     },
@@ -102,11 +100,11 @@ const AdminRichTextEditor = {
         let isPreviewMode = false;
 
         // Toolbar actions
-        container.querySelectorAll('[data-action]').forEach(btn => {
+        container.querySelectorAll('[data-action]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const action = btn.dataset.action;
                 this._handleAction(textarea, action, preview);
-                
+
                 if (action === 'preview') {
                     isPreviewMode = !isPreviewMode;
                     textarea.style.display = isPreviewMode ? 'none' : 'block';
@@ -123,9 +121,9 @@ const AdminRichTextEditor = {
         textarea.addEventListener('input', () => {
             isDirty = true;
             status.textContent = 'Değişiklikler...';
-            
+
             if (autosaveTimer) clearTimeout(autosaveTimer);
-            
+
             if (config.autosave && config.onSave) {
                 autosaveTimer = setTimeout(() => {
                     config.onSave(textarea.value);
@@ -139,29 +137,29 @@ const AdminRichTextEditor = {
         return {
             id,
             container,
-            
+
             getHTML() {
                 return this._markdownToHtml(textarea.value);
             },
-            
+
             getText() {
                 return textarea.value;
             },
-            
+
             getContent() {
                 return textarea.value;
             },
-            
+
             setContent(content) {
                 textarea.value = content || '';
                 isDirty = false;
             },
-            
+
             clear() {
                 textarea.value = '';
                 isDirty = false;
             },
-            
+
             save() {
                 if (config.onSave) {
                     config.onSave(textarea.value);
@@ -169,21 +167,21 @@ const AdminRichTextEditor = {
                     status.textContent = '✓ Kaydedildi';
                 }
             },
-            
+
             hasUnsavedChanges() {
                 return isDirty;
             },
-            
+
             focus() {
                 textarea.focus();
             },
-            
+
             destroy() {
                 if (autosaveTimer) clearTimeout(autosaveTimer);
                 container.innerHTML = '';
                 AdminRichTextEditor.instances.delete(id);
             },
-            
+
             _markdownToHtml: AdminRichTextEditor._markdownToHtml.bind(AdminRichTextEditor),
         };
     },
@@ -196,10 +194,10 @@ const AdminRichTextEditor = {
         const end = textarea.selectionEnd;
         const text = textarea.value;
         const selected = text.substring(start, end);
-        
+
         let replacement = '';
         let cursorOffset = 0;
-        
+
         switch (action) {
             case 'bold':
                 replacement = `**${selected || 'kalın metin'}**`;
@@ -231,7 +229,7 @@ const AdminRichTextEditor = {
             case 'preview':
                 return; // Handled separately
         }
-        
+
         if (replacement) {
             textarea.value = text.substring(0, start) + replacement + text.substring(end);
             textarea.focus();
@@ -245,7 +243,7 @@ const AdminRichTextEditor = {
      */
     _markdownToHtml(markdown) {
         if (!markdown) return '';
-        
+
         let html = markdown
             // Escape HTML
             .replace(/&/g, '&amp;')
@@ -276,15 +274,15 @@ const AdminRichTextEditor = {
             // Line breaks
             .replace(/\n\n/g, '</p><p>')
             .replace(/\n/g, '<br>');
-        
+
         // Wrap lists
         html = html.replace(/(<li>.*<\/li>\s*)+/g, '<ul>$&</ul>');
-        
+
         // Wrap in paragraphs if not already wrapped
         if (!html.startsWith('<')) {
             html = '<p>' + html + '</p>';
         }
-        
+
         return html;
     },
 
@@ -299,7 +297,7 @@ const AdminRichTextEditor = {
      * Destroy all instances
      */
     destroyAll() {
-        this.instances.forEach(instance => instance.destroy());
+        this.instances.forEach((instance) => instance.destroy());
         this.instances.clear();
     },
 
@@ -310,27 +308,46 @@ const AdminRichTextEditor = {
         if (typeof DOMPurify !== 'undefined') {
             return DOMPurify.sanitize(html, {
                 ALLOWED_TAGS: [
-                    'p', 'br', 'strong', 'em', 'u', 's', 'code', 'pre',
-                    'h1', 'h2', 'h3', 'h4',
-                    'ul', 'ol', 'li',
-                    'blockquote', 'hr',
-                    'a', 'img',
-                    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                    'p',
+                    'br',
+                    'strong',
+                    'em',
+                    'u',
+                    's',
+                    'code',
+                    'pre',
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'ul',
+                    'ol',
+                    'li',
+                    'blockquote',
+                    'hr',
+                    'a',
+                    'img',
+                    'table',
+                    'thead',
+                    'tbody',
+                    'tr',
+                    'th',
+                    'td',
                 ],
                 ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'target', 'rel'],
             });
         }
-        
+
         // Basic fallback sanitization
         return html
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
             .replace(/on\w+="[^"]*"/gi, '')
             .replace(/javascript:/gi, '');
-    }
+    },
 };
 
 // Add CSS styles dynamically
-(function() {
+(function () {
     const style = document.createElement('style');
     style.textContent = `
         .admin-rte-wrapper {

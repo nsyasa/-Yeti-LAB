@@ -20,11 +20,11 @@ test.describe('Teacher Assignment Flow', () => {
 
             // Assignments tab'ı arayalım
             const assignmentsTab = page.locator('[data-section="assignments"], .tab-assignments');
-            
+
             // Tab varsa tıklayalım
-            if (await assignmentsTab.count() > 0) {
+            if ((await assignmentsTab.count()) > 0) {
                 await assignmentsTab.first().click();
-                
+
                 // Assignments section yüklenmeli
                 const assignmentsSection = page.locator('.assignments-section, #assignments-section');
                 await expect(assignmentsSection.or(page.locator('body'))).toBeVisible();
@@ -33,11 +33,13 @@ test.describe('Teacher Assignment Flow', () => {
 
         test('should have create assignment button', async ({ page }) => {
             // Create assignment butonu arayalım
-            const createBtn = page.locator('button:has-text("Yeni Ödev"), button:has-text("Ödev Oluştur"), .create-assignment-btn');
+            const createBtn = page.locator(
+                'button:has-text("Yeni Ödev"), button:has-text("Ödev Oluştur"), .create-assignment-btn'
+            );
 
             // Sayfa yüklenene kadar bekle
             await page.waitForLoadState('domcontentloaded');
-            
+
             // Buton görünür olabilir veya olmayabilir (auth durumuna bağlı)
             const btnCount = await createBtn.count();
             console.log('Create Assignment Button Count:', btnCount);
@@ -54,7 +56,7 @@ test.describe('Teacher Assignment Flow', () => {
 
                 // Modal açıldı mı kontrol et
                 const modal = page.locator('.assignment-modal, .modal-overlay');
-                
+
                 if (await modal.isVisible().catch(() => false)) {
                     // Form alanları
                     const titleInput = page.locator('input[name="title"], #assignment-title');
@@ -84,7 +86,7 @@ test.describe('Teacher Assignment Flow', () => {
                 if (await typeSelect.isVisible().catch(() => false)) {
                     const options = await typeSelect.locator('option').allTextContents();
                     console.log('Assignment types:', options);
-                    
+
                     // En az bir tür olmalı
                     expect(options.length).toBeGreaterThan(0);
                 }
@@ -102,11 +104,14 @@ test.describe('Teacher Assignment Flow', () => {
 
                 // Detay görünümü açılmalı
                 const detailView = page.locator('.assignment-detail, .assignment-view');
-                
+
                 // Veya modal açılmalı
                 const detailModal = page.locator('.assignment-detail-modal');
-                
-                const isDetailVisible = await detailView.or(detailModal).isVisible().catch(() => false);
+
+                const isDetailVisible = await detailView
+                    .or(detailModal)
+                    .isVisible()
+                    .catch(() => false);
                 console.log('Assignment detail visible:', isDetailVisible);
             }
         });
@@ -225,7 +230,12 @@ test.describe('Student Assignment Flow', () => {
             // Notlandırılmış ödev
             const gradedCard = page.locator('.assignment-card.graded, .graded-assignment');
 
-            if (await gradedCard.first().isVisible().catch(() => false)) {
+            if (
+                await gradedCard
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 // Puan gösterimi
                 const gradeDisplay = page.locator('.grade-display, .score');
                 const gradeVisible = await gradeDisplay.isVisible().catch(() => false);

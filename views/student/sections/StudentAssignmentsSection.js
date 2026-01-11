@@ -143,39 +143,53 @@ const StudentAssignmentsSection = {
                             </div>
                         </div>
                         
-                        ${assignment.description ? `
+                        ${
+                            assignment.description
+                                ? `
                             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 ml-12 mb-2">
                                 ${this.escapeHtml(assignment.description.substring(0, 120))}${assignment.description.length > 120 ? '...' : ''}
                             </p>
-                        ` : ''}
+                        `
+                                : ''
+                        }
 
                         <div class="flex flex-wrap items-center gap-4 text-sm ml-12">
-                            ${assignment.due_date ? `
+                            ${
+                                assignment.due_date
+                                    ? `
                                 <span class="flex items-center gap-1 ${timeRemaining.overdue ? 'text-red-500 font-medium' : timeRemaining.urgent ? 'text-orange-500 font-medium' : 'text-gray-500'}">
                                     ⏰ ${timeRemaining.text}
                                 </span>
-                            ` : '<span class="text-gray-400">⏰ Süresiz</span>'}
+                            `
+                                    : '<span class="text-gray-400">⏰ Süresiz</span>'
+                            }
                             <span class="text-gray-500">⭐ ${assignment.max_points} puan</span>
                         </div>
                     </div>
 
                     <!-- Sağ: Not veya Aksiyon -->
                     <div class="flex items-center gap-3 lg:flex-shrink-0">
-                        ${hasGrade ? `
+                        ${
+                            hasGrade
+                                ? `
                             <div class="text-center">
                                 <div class="text-3xl font-bold ${submission.grade >= assignment.max_points * 0.6 ? 'text-green-600' : 'text-orange-600'}">
                                     ${submission.grade}
                                 </div>
                                 <div class="text-xs text-gray-500">/ ${assignment.max_points}</div>
                             </div>
-                        ` : status.canSubmit ? `
+                        `
+                                : status.canSubmit
+                                  ? `
                             <button onclick="event.stopPropagation(); StudentAssignmentsSection.openAssignment('${assignment.id}')"
                                 class="px-5 py-2.5 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all shadow-md">
                                 ${submission?.status === 'draft' ? '📝 Devam Et' : '📤 Gönder'}
                             </button>
-                        ` : `
+                        `
+                                  : `
                             <span class="text-gray-400 text-sm">👀 Görüntüle</span>
-                        `}
+                        `
+                        }
                         
                         <span class="text-gray-400 text-xl">→</span>
                     </div>
@@ -220,11 +234,11 @@ const StudentAssignmentsSection = {
         const sorted = [...filtered].sort((a, b) => {
             const statusA = window.StudentSubmissionService?.getAssignmentStatus(a);
             const statusB = window.StudentSubmissionService?.getAssignmentStatus(b);
-            
+
             // Önce canSubmit olanlar
             if (statusA?.canSubmit && !statusB?.canSubmit) return -1;
             if (!statusA?.canSubmit && statusB?.canSubmit) return 1;
-            
+
             // Sonra due date'e göre
             if (a.due_date && b.due_date) {
                 return new Date(a.due_date) - new Date(b.due_date);
@@ -232,7 +246,7 @@ const StudentAssignmentsSection = {
             return 0;
         });
 
-        container.innerHTML = sorted.map(a => this.renderAssignmentCard(a)).join('');
+        container.innerHTML = sorted.map((a) => this.renderAssignmentCard(a)).join('');
     },
 
     /**
@@ -244,12 +258,11 @@ const StudentAssignmentsSection = {
         this.updateFilterButtons();
 
         try {
-            const assignments = await window.StudentSubmissionService?.getMyAssignments({ status: 'all' }) || [];
+            const assignments = (await window.StudentSubmissionService?.getMyAssignments({ status: 'all' })) || [];
             this.assignments = assignments;
 
             // Stats güncelle
             this.updateStats();
-
         } catch (error) {
             console.error('[StudentAssignmentsSection] Load error:', error);
             if (window.Toast) {
@@ -276,13 +289,13 @@ const StudentAssignmentsSection = {
      */
     calculateStats() {
         const service = window.StudentSubmissionService;
-        
+
         let pending = 0;
         let urgent = 0;
         let submitted = 0;
         let graded = 0;
 
-        this.assignments.forEach(a => {
+        this.assignments.forEach((a) => {
             const status = service?.getAssignmentStatus(a);
             const time = service?.getTimeRemaining(a.due_date);
 
@@ -303,7 +316,7 @@ const StudentAssignmentsSection = {
             pending,
             urgent,
             submitted,
-            graded
+            graded,
         };
     },
 
@@ -313,7 +326,7 @@ const StudentAssignmentsSection = {
     getFilteredAssignments() {
         const service = window.StudentSubmissionService;
 
-        return this.assignments.filter(assignment => {
+        return this.assignments.filter((assignment) => {
             const status = service?.getAssignmentStatus(assignment);
 
             switch (this.filter) {
@@ -342,10 +355,10 @@ const StudentAssignmentsSection = {
      * Filtre butonlarını güncelle
      */
     updateFilterButtons() {
-        document.querySelectorAll('.assignment-filter-btn').forEach(btn => {
+        document.querySelectorAll('.assignment-filter-btn').forEach((btn) => {
             btn.classList.remove('bg-theme', 'text-white');
             btn.classList.add('bg-gray-100', 'text-gray-600', 'dark:bg-gray-700', 'dark:text-gray-300');
-            
+
             if (btn.dataset.filter === this.filter) {
                 btn.classList.add('bg-theme', 'text-white');
                 btn.classList.remove('bg-gray-100', 'text-gray-600', 'dark:bg-gray-700', 'dark:text-gray-300');
@@ -378,7 +391,7 @@ const StudentAssignmentsSection = {
             project: '🎯',
             homework: '📚',
             quiz: '❓',
-            exam: '📝'
+            exam: '📝',
         };
         return icons[type] || '📋';
     },
@@ -391,7 +404,7 @@ const StudentAssignmentsSection = {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
-    }
+    },
 };
 
 window.StudentAssignmentsSection = StudentAssignmentsSection;

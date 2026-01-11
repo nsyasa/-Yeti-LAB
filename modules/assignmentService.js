@@ -15,14 +15,14 @@ export const AssignmentService = {
      * @returns {Promise<Array>} Ödev listesi
      */
     async getAssignments(options = {}) {
-        const { 
-            classroomId = null, 
-            courseId = null, 
+        const {
+            classroomId = null,
+            courseId = null,
             status = null,
             limit = 50,
             offset = 0,
             orderBy = 'created_at',
-            orderDirection = 'desc'
+            orderDirection = 'desc',
         } = options;
 
         try {
@@ -31,13 +31,15 @@ export const AssignmentService = {
 
             let query = supabase
                 .from('assignments')
-                .select(`
+                .select(
+                    `
                     *,
                     classroom:classrooms!assignments_classroom_id_fkey(id, name, code),
                     course:courses!assignments_course_id_fkey(id, title, slug),
                     submission_count:submissions(count),
                     rubric:rubrics(*)
-                `)
+                `
+                )
                 .order(orderBy, { ascending: orderDirection === 'asc' })
                 .range(offset, offset + limit - 1);
 
@@ -57,11 +59,10 @@ export const AssignmentService = {
             if (error) throw error;
 
             // Submission count'ı düzelt
-            return data.map(assignment => ({
+            return data.map((assignment) => ({
                 ...assignment,
-                submission_count: assignment.submission_count?.[0]?.count || 0
+                submission_count: assignment.submission_count?.[0]?.count || 0,
             }));
-
         } catch (error) {
             console.error('[AssignmentService] getAssignments error:', error);
             throw error;
@@ -80,7 +81,8 @@ export const AssignmentService = {
 
             const { data, error } = await supabase
                 .from('assignments')
-                .select(`
+                .select(
+                    `
                     *,
                     classroom:classrooms!assignments_classroom_id_fkey(id, name, code),
                     course:courses!assignments_course_id_fkey(id, title, slug),
@@ -89,13 +91,13 @@ export const AssignmentService = {
                         id, status, grade, submitted_at, graded_at,
                         student:profiles!submissions_student_id_fkey(id, display_name, avatar_url)
                     )
-                `)
+                `
+                )
                 .eq('id', assignmentId)
                 .single();
 
             if (error) throw error;
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] getAssignment error:', error);
             throw error;
@@ -112,7 +114,9 @@ export const AssignmentService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             // Ödev verilerini hazırla
@@ -131,14 +135,10 @@ export const AssignmentService = {
                 late_penalty_percent: assignmentData.late_penalty_percent || 10,
                 max_attempts: assignmentData.max_attempts || 1,
                 status: assignmentData.status || 'draft',
-                settings: assignmentData.settings || {}
+                settings: assignmentData.settings || {},
             };
 
-            const { data, error } = await supabase
-                .from('assignments')
-                .insert(assignment)
-                .select()
-                .single();
+            const { data, error } = await supabase.from('assignments').insert(assignment).select().single();
 
             if (error) throw error;
 
@@ -148,7 +148,6 @@ export const AssignmentService = {
             }
 
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] createAssignment error:', error);
             throw error;
@@ -182,7 +181,6 @@ export const AssignmentService = {
             }
 
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] updateAssignment error:', error);
             throw error;
@@ -200,14 +198,10 @@ export const AssignmentService = {
             if (!supabase) throw new Error('Supabase client not initialized');
 
             // Soft delete - status'u archived yap
-            const { error } = await supabase
-                .from('assignments')
-                .update({ status: 'archived' })
-                .eq('id', assignmentId);
+            const { error } = await supabase.from('assignments').update({ status: 'archived' }).eq('id', assignmentId);
 
             if (error) throw error;
             return true;
-
         } catch (error) {
             console.error('[AssignmentService] deleteAssignment error:', error);
             throw error;
@@ -220,9 +214,9 @@ export const AssignmentService = {
      * @returns {Promise<Object>} Güncellenen ödev
      */
     async publishAssignment(assignmentId) {
-        return this.updateAssignment(assignmentId, { 
+        return this.updateAssignment(assignmentId, {
             status: 'active',
-            published_at: new Date().toISOString()
+            published_at: new Date().toISOString(),
         });
     },
 
@@ -256,17 +250,13 @@ export const AssignmentService = {
                 criterion_description: criterion.description || '',
                 max_points: criterion.max_points || 10,
                 position: index + 1,
-                levels: criterion.levels || this.getDefaultLevels(criterion.max_points || 10)
+                levels: criterion.levels || this.getDefaultLevels(criterion.max_points || 10),
             }));
 
-            const { data, error } = await supabase
-                .from('rubrics')
-                .insert(rubrics)
-                .select();
+            const { data, error } = await supabase.from('rubrics').insert(rubrics).select();
 
             if (error) throw error;
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] createRubric error:', error);
             throw error;
@@ -285,17 +275,13 @@ export const AssignmentService = {
             if (!supabase) throw new Error('Supabase client not initialized');
 
             // Eski rubriği sil
-            await supabase
-                .from('rubrics')
-                .delete()
-                .eq('assignment_id', assignmentId);
+            await supabase.from('rubrics').delete().eq('assignment_id', assignmentId);
 
             // Yeni rubrik oluştur (boş değilse)
             if (criteria && criteria.length > 0) {
                 return await this.createRubric(assignmentId, criteria);
             }
             return [];
-
         } catch (error) {
             console.error('[AssignmentService] updateRubric error:', error);
             throw error;
@@ -313,7 +299,7 @@ export const AssignmentService = {
             { name: 'İyi', points: Math.round(maxPoints * 0.75), description: 'Kriterlerin çoğunu karşılıyor' },
             { name: 'Orta', points: Math.round(maxPoints * 0.5), description: 'Temel kriterleri karşılıyor' },
             { name: 'Geliştirilmeli', points: Math.round(maxPoints * 0.25), description: 'Önemli eksiklikler var' },
-            { name: 'Yetersiz', points: 0, description: 'Kriterleri karşılamıyor' }
+            { name: 'Yetersiz', points: 0, description: 'Kriterleri karşılamıyor' },
         ];
     },
 
@@ -336,11 +322,13 @@ export const AssignmentService = {
 
             let query = supabase
                 .from('submissions')
-                .select(`
+                .select(
+                    `
                     *,
                     student:profiles!submissions_student_id_fkey(id, display_name, avatar_url, email),
                     files:submission_files(*)
-                `)
+                `
+                )
                 .eq('assignment_id', assignmentId)
                 .order('submitted_at', { ascending: false })
                 .limit(limit);
@@ -352,7 +340,6 @@ export const AssignmentService = {
             const { data, error } = await query;
             if (error) throw error;
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] getSubmissions error:', error);
             throw error;
@@ -370,7 +357,9 @@ export const AssignmentService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             const updates = {
@@ -379,7 +368,7 @@ export const AssignmentService = {
                 rubric_scores: gradeData.rubric_scores || null,
                 graded_by: user.id,
                 graded_at: new Date().toISOString(),
-                status: 'graded'
+                status: 'graded',
             };
 
             const { data, error } = await supabase
@@ -391,7 +380,6 @@ export const AssignmentService = {
 
             if (error) throw error;
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] gradeSubmission error:', error);
             throw error;
@@ -413,7 +401,7 @@ export const AssignmentService = {
                 .from('submissions')
                 .update({
                     status: 'revision_requested',
-                    feedback: feedback
+                    feedback: feedback,
                 })
                 .eq('id', submissionId)
                 .select()
@@ -421,7 +409,6 @@ export const AssignmentService = {
 
             if (error) throw error;
             return data;
-
         } catch (error) {
             console.error('[AssignmentService] requestRevision error:', error);
             throw error;
@@ -451,19 +438,18 @@ export const AssignmentService = {
 
             const stats = {
                 total: submissions.length,
-                submitted: submissions.filter(s => s.status === 'submitted').length,
-                graded: submissions.filter(s => s.status === 'graded').length,
-                revision_requested: submissions.filter(s => s.status === 'revision_requested').length,
-                average_grade: 0
+                submitted: submissions.filter((s) => s.status === 'submitted').length,
+                graded: submissions.filter((s) => s.status === 'graded').length,
+                revision_requested: submissions.filter((s) => s.status === 'revision_requested').length,
+                average_grade: 0,
             };
 
-            const gradedSubmissions = submissions.filter(s => s.grade !== null);
+            const gradedSubmissions = submissions.filter((s) => s.grade !== null);
             if (gradedSubmissions.length > 0) {
                 stats.average_grade = gradedSubmissions.reduce((sum, s) => sum + s.grade, 0) / gradedSubmissions.length;
             }
 
             return stats;
-
         } catch (error) {
             console.error('[AssignmentService] getAssignmentStats error:', error);
             throw error;
@@ -487,7 +473,6 @@ export const AssignmentService = {
 
             if (error) throw error;
             return count || 0;
-
         } catch (error) {
             console.error('[AssignmentService] getClassroomStudentCount error:', error);
             return 0;
@@ -503,7 +488,9 @@ export const AssignmentService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
             const { data, error } = await supabase
@@ -515,7 +502,6 @@ export const AssignmentService = {
 
             if (error) throw error;
             return data || [];
-
         } catch (error) {
             console.error('[AssignmentService] getTeacherClassrooms error:', error);
             return [];
@@ -539,7 +525,6 @@ export const AssignmentService = {
 
             if (error) throw error;
             return data || [];
-
         } catch (error) {
             console.error('[AssignmentService] getCourses error:', error);
             return [];
@@ -559,7 +544,7 @@ export const AssignmentService = {
             month: 'short',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
         });
     },
 
@@ -601,7 +586,8 @@ export const AssignmentService = {
             draft: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">📝 Taslak</span>',
             active: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">✅ Aktif</span>',
             closed: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">🔒 Kapalı</span>',
-            archived: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">🗄️ Arşiv</span>'
+            archived:
+                '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">🗄️ Arşiv</span>',
         };
         return badges[status] || badges.draft;
     },
@@ -613,13 +599,15 @@ export const AssignmentService = {
      */
     getTypeBadge(type) {
         const badges = {
-            project: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">🎯 Proje</span>',
-            homework: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">📚 Ödev</span>',
+            project:
+                '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">🎯 Proje</span>',
+            homework:
+                '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">📚 Ödev</span>',
             quiz: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">❓ Quiz</span>',
-            exam: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">📝 Sınav</span>'
+            exam: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">📝 Sınav</span>',
         };
         return badges[type] || badges.project;
-    }
+    },
 };
 
 // Global erişim için

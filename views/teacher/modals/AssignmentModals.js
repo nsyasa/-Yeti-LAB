@@ -353,7 +353,7 @@ const AssignmentModals = {
      */
     async openSubmissions(assignmentId) {
         this.open('submissionsModal');
-        
+
         // Loading göster
         document.getElementById('submissionsList').innerHTML = `
             <div class="text-center py-8">
@@ -366,14 +366,15 @@ const AssignmentModals = {
             const [assignment, submissions, stats] = await Promise.all([
                 window.AssignmentService?.getAssignment(assignmentId),
                 window.AssignmentService?.getSubmissions(assignmentId),
-                window.AssignmentService?.getAssignmentStats(assignmentId)
+                window.AssignmentService?.getAssignmentStats(assignmentId),
             ]);
 
             this.currentAssignment = assignment;
 
             // Başlık güncelle
-            document.getElementById('submissionsModalTitle').textContent = `📥 ${assignment?.title || 'Öğrenci Gönderileri'}`;
-            document.getElementById('submissionsModalSubtitle').textContent = 
+            document.getElementById('submissionsModalTitle').textContent =
+                `📥 ${assignment?.title || 'Öğrenci Gönderileri'}`;
+            document.getElementById('submissionsModalSubtitle').textContent =
                 `${assignment?.classroom?.name || 'Sınıf belirtilmemiş'} • ${submissions?.length || 0} gönderi`;
 
             // Stats render
@@ -381,7 +382,6 @@ const AssignmentModals = {
 
             // Gönderileri render
             this.renderSubmissions(submissions);
-
         } catch (error) {
             console.error('[AssignmentModals] Load submissions error:', error);
             document.getElementById('submissionsList').innerHTML = `
@@ -406,14 +406,18 @@ const AssignmentModals = {
         // Dosyaları göster
         const filesContainer = document.getElementById('gradeSubmissionFiles');
         if (submission.files && submission.files.length > 0) {
-            filesContainer.innerHTML = submission.files.map(file => `
+            filesContainer.innerHTML = submission.files
+                .map(
+                    (file) => `
                 <a href="${file.file_url}" target="_blank" 
                     class="flex items-center gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors">
                     <span>📎</span>
                     <span class="text-sm text-theme hover:underline">${this.escapeHtml(file.file_name)}</span>
                     <span class="text-xs text-gray-400">(${this.formatFileSize(file.file_size)})</span>
                 </a>
-            `).join('');
+            `
+                )
+                .join('');
         } else {
             filesContainer.innerHTML = '<p class="text-sm text-gray-400">Dosya yüklenmemiş</p>';
         }
@@ -449,13 +453,15 @@ const AssignmentModals = {
         const courseSelect = document.getElementById('assignmentCourse');
 
         if (classroomSelect) {
-            classroomSelect.innerHTML = '<option value="">Sınıf seçin (opsiyonel)</option>' +
-                this.classrooms.map(c => `<option value="${c.id}">${this.escapeHtml(c.name)}</option>`).join('');
+            classroomSelect.innerHTML =
+                '<option value="">Sınıf seçin (opsiyonel)</option>' +
+                this.classrooms.map((c) => `<option value="${c.id}">${this.escapeHtml(c.name)}</option>`).join('');
         }
 
         if (courseSelect) {
-            courseSelect.innerHTML = '<option value="">Kurs seçin (opsiyonel)</option>' +
-                this.courses.map(c => `<option value="${c.id}">${this.escapeHtml(c.title)}</option>`).join('');
+            courseSelect.innerHTML =
+                '<option value="">Kurs seçin (opsiyonel)</option>' +
+                this.courses.map((c) => `<option value="${c.id}">${this.escapeHtml(c.title)}</option>`).join('');
         }
     },
 
@@ -537,7 +543,7 @@ const AssignmentModals = {
                 late_penalty_percent: parseInt(document.getElementById('assignmentLatePenalty').value) || 10,
                 max_attempts: parseInt(document.getElementById('assignmentMaxAttempts').value) || 1,
                 status: status,
-                rubric: this.rubricItems
+                rubric: this.rubricItems,
             };
 
             if (!formData.title) {
@@ -556,13 +562,12 @@ const AssignmentModals = {
                 const message = status === 'draft' ? 'Taslak kaydedildi' : 'Ödev kaydedildi ve yayınlandı!';
                 if (window.Toast) Toast.success(message);
                 this.close('assignmentFormModal');
-                
+
                 // Listeyi yenile
                 if (window.AssignmentsSection) {
                     AssignmentsSection.loadData();
                 }
             }
-
         } catch (error) {
             console.error('[AssignmentModals] Save error:', error);
             if (window.Toast) Toast.error('Kaydetme başarısız: ' + error.message);
@@ -586,11 +591,11 @@ const AssignmentModals = {
 
         try {
             const rubricScores = this.collectRubricScores();
-            
+
             await window.AssignmentService?.gradeSubmission(submissionId, {
                 grade,
                 feedback,
-                rubric_scores: rubricScores
+                rubric_scores: rubricScores,
             });
 
             if (window.Toast) Toast.success('Gönderi notlandırıldı!');
@@ -600,7 +605,6 @@ const AssignmentModals = {
             if (this.currentAssignment) {
                 this.openSubmissions(this.currentAssignment.id);
             }
-
         } catch (error) {
             console.error('[AssignmentModals] Grade error:', error);
             if (window.Toast) Toast.error('Notlandırma başarısız');
@@ -627,7 +631,6 @@ const AssignmentModals = {
             if (this.currentAssignment) {
                 this.openSubmissions(this.currentAssignment.id);
             }
-
         } catch (error) {
             console.error('[AssignmentModals] Revision error:', error);
             if (window.Toast) Toast.error('İşlem başarısız');
@@ -646,7 +649,7 @@ const AssignmentModals = {
             id: Date.now(),
             name: '',
             description: '',
-            max_points: 10
+            max_points: 10,
         };
         this.rubricItems.push(item);
         this.renderRubricItems();
@@ -656,7 +659,7 @@ const AssignmentModals = {
      * Rubrik öğesi sil
      */
     removeRubricItem(id) {
-        this.rubricItems = this.rubricItems.filter(item => item.id !== id);
+        this.rubricItems = this.rubricItems.filter((item) => item.id !== id);
         this.renderRubricItems();
     },
 
@@ -672,7 +675,9 @@ const AssignmentModals = {
             return;
         }
 
-        container.innerHTML = this.rubricItems.map((item, index) => `
+        container.innerHTML = this.rubricItems
+            .map(
+                (item, index) => `
             <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl" data-rubric-id="${item.id}">
                 <div class="flex items-start gap-3">
                     <span class="text-lg font-bold text-gray-400">${index + 1}</span>
@@ -700,14 +705,16 @@ const AssignmentModals = {
                         class="text-red-400 hover:text-red-600 text-xl">×</button>
                 </div>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     },
 
     /**
      * Rubrik öğesini güncelle
      */
     updateRubricItem(id, field, value) {
-        const item = this.rubricItems.find(i => i.id === id);
+        const item = this.rubricItems.find((i) => i.id === id);
         if (item) {
             item[field] = value;
         }
@@ -720,7 +727,9 @@ const AssignmentModals = {
         const container = document.getElementById('gradeRubricItems');
         if (!container || !this.currentAssignment?.rubric) return;
 
-        container.innerHTML = this.currentAssignment.rubric.map(criterion => `
+        container.innerHTML = this.currentAssignment.rubric
+            .map(
+                (criterion) => `
             <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                 <div class="flex justify-between items-start mb-2">
                     <div>
@@ -736,7 +745,9 @@ const AssignmentModals = {
                     min="0" max="${criterion.max_points}"
                     placeholder="Puan" />
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     },
 
     /**
@@ -744,7 +755,7 @@ const AssignmentModals = {
      */
     collectRubricScores() {
         const scores = {};
-        document.querySelectorAll('.rubric-score-input').forEach(input => {
+        document.querySelectorAll('.rubric-score-input').forEach((input) => {
             const criterionId = input.dataset.criterionId;
             const value = parseFloat(input.value);
             if (!isNaN(value)) {
@@ -778,12 +789,16 @@ const AssignmentModals = {
                 <span class="font-bold text-green-700 dark:text-green-400">${stats.graded}</span>
                 <span class="text-sm text-green-600 dark:text-green-400">Notlandırıldı</span>
             </div>
-            ${stats.average_grade > 0 ? `
+            ${
+                stats.average_grade > 0
+                    ? `
                 <div class="px-4 py-2 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center gap-2">
                     <span class="font-bold text-purple-700 dark:text-purple-400">${stats.average_grade.toFixed(1)}</span>
                     <span class="text-sm text-purple-600 dark:text-purple-400">Ortalama</span>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
         `;
     },
 
@@ -804,11 +819,12 @@ const AssignmentModals = {
             return;
         }
 
-        container.innerHTML = submissions.map(sub => {
-            const statusBadge = this.getSubmissionStatusBadge(sub.status);
-            const submittedAt = window.AssignmentService?.formatDate(sub.submitted_at) || '-';
+        container.innerHTML = submissions
+            .map((sub) => {
+                const statusBadge = this.getSubmissionStatusBadge(sub.status);
+                const submittedAt = window.AssignmentService?.formatDate(sub.submitted_at) || '-';
 
-            return `
+                return `
                 <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-theme/20 flex items-center justify-center text-lg">
@@ -821,11 +837,15 @@ const AssignmentModals = {
                     </div>
                     <div class="flex items-center gap-3">
                         ${statusBadge}
-                        ${sub.grade !== null ? `
+                        ${
+                            sub.grade !== null
+                                ? `
                             <span class="font-bold text-lg ${sub.grade >= this.currentAssignment?.max_points * 0.6 ? 'text-green-600' : 'text-orange-600'}">
                                 ${sub.grade}/${this.currentAssignment?.max_points || 100}
                             </span>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                         <button onclick='AssignmentModals.openGrade(${JSON.stringify(sub).replace(/'/g, "\\'")})'
                             class="px-4 py-2 bg-theme text-white rounded-lg text-sm font-medium hover:brightness-110 transition-all">
                             ${sub.status === 'graded' ? '✏️ Düzenle' : '✅ Notlandır'}
@@ -833,7 +853,8 @@ const AssignmentModals = {
                     </div>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     },
 
     /**
@@ -841,10 +862,12 @@ const AssignmentModals = {
      */
     getSubmissionStatusBadge(status) {
         const badges = {
-            submitted: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">⏳ Bekliyor</span>',
+            submitted:
+                '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">⏳ Bekliyor</span>',
             graded: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">✅ Notlandı</span>',
-            revision_requested: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">🔄 Revizyon</span>',
-            late: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">⏰ Geç</span>'
+            revision_requested:
+                '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">🔄 Revizyon</span>',
+            late: '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">⏰ Geç</span>',
         };
         return badges[status] || badges.submitted;
     },
@@ -914,7 +937,7 @@ const AssignmentModals = {
         const sizes = ['B', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(1024));
         return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-    }
+    },
 };
 
 window.AssignmentModals = AssignmentModals;

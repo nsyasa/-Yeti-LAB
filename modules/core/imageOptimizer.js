@@ -35,8 +35,7 @@ export const ImageOptimizer = {
                 this._webpSupport = false;
                 resolve(false);
             };
-            img.src =
-                'data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=';
+            img.src = 'data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=';
         });
     },
 
@@ -74,9 +73,7 @@ export const ImageOptimizer = {
         const ext = format || basePath.split('.').pop();
         const baseWithoutExt = basePath.replace(/\.[^.]+$/, '');
 
-        return widths
-            .map((width) => `${baseWithoutExt}-${width}w.${ext} ${width}w`)
-            .join(', ');
+        return widths.map((width) => `${baseWithoutExt}-${width}w.${ext} ${width}w`).join(', ');
     },
 
     /**
@@ -84,14 +81,7 @@ export const ImageOptimizer = {
      * @param {Object} options - Seçenekler
      */
     createPictureElement(options) {
-        const {
-            src,
-            alt = '',
-            className = '',
-            widths = [320, 640, 1024],
-            sizes = '100vw',
-            lazy = true,
-        } = options;
+        const { src, alt = '', className = '', widths = [320, 640, 1024], sizes = '100vw', lazy = true } = options;
 
         const ext = src.split('.').pop();
         const baseWithoutExt = src.replace(/\.[^.]+$/, '');
@@ -142,12 +132,7 @@ export const ImageOptimizer = {
      * @param {Object} options - Seçenekler
      */
     createBlurUpImage(options) {
-        const {
-            src,
-            alt = '',
-            className = '',
-            aspectRatio = '16/9',
-        } = options;
+        const { src, alt = '', className = '', aspectRatio = '16/9' } = options;
 
         const placeholder = this.createPlaceholder(src);
 
@@ -178,12 +163,7 @@ export const ImageOptimizer = {
      * @returns {Promise<Blob>}
      */
     async resizeImage(file, options = {}) {
-        const {
-            maxWidth = 1920,
-            maxHeight = 1080,
-            quality = 0.8,
-            format = 'image/jpeg',
-        } = options;
+        const { maxWidth = 1920, maxHeight = 1080, quality = 0.8, format = 'image/jpeg' } = options;
 
         return new Promise((resolve, reject) => {
             const img = new Image();

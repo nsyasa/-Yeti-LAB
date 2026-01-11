@@ -1,7 +1,7 @@
 /**
  * Rich Text Editor Module - Yeti LAB
  * TipTap tabanlı WYSIWYG editör
- * 
+ *
  * Özellikler:
  * - Temel formatlama (bold, italic, underline)
  * - Başlıklar (H1-H4)
@@ -51,7 +51,7 @@ class RichTextEditor {
             onImageUpload: null,
             ...options,
         };
-        
+
         this.autosaveTimer = null;
         this.isDirty = false;
     }
@@ -65,9 +65,10 @@ class RichTextEditor {
             return null;
         }
 
-        this.container = typeof this.options.element === 'string'
-            ? document.querySelector(this.options.element)
-            : this.options.element;
+        this.container =
+            typeof this.options.element === 'string'
+                ? document.querySelector(this.options.element)
+                : this.options.element;
 
         if (!this.container) {
             console.error('[RichTextEditor] Container element not found');
@@ -125,7 +126,7 @@ class RichTextEditor {
             editable: this.options.editable,
             onUpdate: ({ editor }) => {
                 this.isDirty = true;
-                
+
                 if (this.options.onUpdate) {
                     this.options.onUpdate(editor.getHTML());
                 }
@@ -271,7 +272,7 @@ class RichTextEditor {
      */
     _setupToolbarEvents() {
         // Button clicks
-        this.toolbar.querySelectorAll('[data-action]').forEach(el => {
+        this.toolbar.querySelectorAll('[data-action]').forEach((el) => {
             if (el.tagName === 'BUTTON') {
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -385,11 +386,11 @@ class RichTextEditor {
     _showLinkDialog() {
         const dialog = this.container.querySelector('.rte-link-dialog');
         const input = document.getElementById('rte-link-url');
-        
+
         // Get existing link if any
         const previousUrl = this.editor.getAttributes('link').href;
         input.value = previousUrl || '';
-        
+
         dialog.style.display = 'flex';
         input.focus();
     }
@@ -409,7 +410,7 @@ class RichTextEditor {
         // Validate file
         const maxSize = 2 * 1024 * 1024; // 2MB for images in content
         if (file.size > maxSize) {
-            alert('Görsel boyutu 2MB\'dan küçük olmalıdır.');
+            alert("Görsel boyutu 2MB'dan küçük olmalıdır.");
             return;
         }
 
@@ -460,7 +461,7 @@ class RichTextEditor {
         if (!this.editor || !this.toolbar) return;
 
         // Update active states
-        this.toolbar.querySelectorAll('[data-action]').forEach(el => {
+        this.toolbar.querySelectorAll('[data-action]').forEach((el) => {
             const action = el.dataset.action;
             let isActive = false;
 
@@ -542,12 +543,29 @@ class RichTextEditor {
         const html = this.getHTML();
         return DOMPurify.sanitize(html, {
             ALLOWED_TAGS: [
-                'p', 'br', 'strong', 'em', 's', 'code', 'pre',
-                'h1', 'h2', 'h3', 'h4',
-                'ul', 'ol', 'li',
+                'p',
+                'br',
+                'strong',
+                'em',
+                's',
+                'code',
+                'pre',
+                'h1',
+                'h2',
+                'h3',
+                'h4',
+                'ul',
+                'ol',
+                'li',
                 'blockquote',
-                'a', 'img',
-                'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                'a',
+                'img',
+                'table',
+                'thead',
+                'tbody',
+                'tr',
+                'th',
+                'td',
             ],
             ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'target', 'rel'],
             ALLOW_DATA_ATTR: false,
@@ -597,7 +615,7 @@ class RichTextEditor {
         if (!this.isDirty) return;
 
         const content = this.getSanitizedHTML();
-        
+
         if (this.options.onSave) {
             this.options.onSave(content);
         }
@@ -638,7 +656,7 @@ class RichTextEditor {
         if (this.autosaveTimer) {
             clearTimeout(this.autosaveTimer);
         }
-        
+
         if (this.editor) {
             this.editor.destroy();
             this.editor = null;

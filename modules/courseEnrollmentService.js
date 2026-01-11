@@ -29,17 +29,21 @@ const CourseEnrollmentService = {
      * Öğretmenin sınıflarını getir
      */
     async getTeacherClassrooms() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         const { data, error } = await supabase
             .from('classrooms')
-            .select(`
+            .select(
+                `
                 id,
                 name,
                 code,
                 students:students(count)
-            `)
+            `
+            )
             .eq('teacher_id', user.id)
             .order('name');
 
@@ -75,7 +79,8 @@ const CourseEnrollmentService = {
     async getClassroomEnrollments(classroomId) {
         const { data, error } = await supabase
             .from('course_enrollments')
-            .select(`
+            .select(
+                `
                 id,
                 course_id,
                 student_id,
@@ -87,7 +92,8 @@ const CourseEnrollmentService = {
                     title,
                     theme_color
                 )
-            `)
+            `
+            )
             .eq('classroom_id', classroomId);
 
         if (error) {
@@ -104,7 +110,8 @@ const CourseEnrollmentService = {
     async getStudentEnrollments(studentId) {
         const { data, error } = await supabase
             .from('course_enrollments')
-            .select(`
+            .select(
+                `
                 id,
                 course_id,
                 status,
@@ -117,7 +124,8 @@ const CourseEnrollmentService = {
                     description,
                     theme_color
                 )
-            `)
+            `
+            )
             .eq('student_id', studentId)
             .order('enrolled_at', { ascending: false });
 
@@ -135,12 +143,14 @@ const CourseEnrollmentService = {
      * @param {string} courseId - Kurs ID
      */
     async enrollClassroom(classroomId, courseId) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Sınıftaki tüm öğrencileri al
         const students = await this.getStudentsByClassroom(classroomId);
-        
+
         if (students.length === 0) {
             throw new Error('Bu sınıfta henüz öğrenci yok');
         }
@@ -150,34 +160,34 @@ const CourseEnrollmentService = {
             .from('course_enrollments')
             .select('student_id')
             .eq('course_id', courseId)
-            .in('student_id', students.map(s => s.id));
+            .in(
+                'student_id',
+                students.map((s) => s.id)
+            );
 
-        const existingStudentIds = new Set(existingEnrollments?.map(e => e.student_id) || []);
-        
+        const existingStudentIds = new Set(existingEnrollments?.map((e) => e.student_id) || []);
+
         // Sadece kayıtlı olmayan öğrencileri ekle
         const newEnrollments = students
-            .filter(s => !existingStudentIds.has(s.id))
-            .map(student => ({
+            .filter((s) => !existingStudentIds.has(s.id))
+            .map((student) => ({
                 student_id: student.id,
                 course_id: courseId,
                 classroom_id: classroomId,
                 assigned_by: user.id,
-                status: 'active'
+                status: 'active',
             }));
 
         if (newEnrollments.length === 0) {
-            return { 
-                success: true, 
+            return {
+                success: true,
                 message: 'Tüm öğrenciler zaten bu kursa kayıtlı',
                 enrolled: 0,
-                skipped: students.length
+                skipped: students.length,
             };
         }
 
-        const { data, error } = await supabase
-            .from('course_enrollments')
-            .insert(newEnrollments)
-            .select();
+        const { data, error } = await supabase.from('course_enrollments').insert(newEnrollments).select();
 
         if (error) {
             console.error('Toplu kayıt hatası:', error);
@@ -188,7 +198,7 @@ const CourseEnrollmentService = {
             success: true,
             message: `${data.length} öğrenci kursa kaydedildi`,
             enrolled: data.length,
-            skipped: existingStudentIds.size
+            skipped: existingStudentIds.size,
         };
     },
 
@@ -199,7 +209,9 @@ const CourseEnrollmentService = {
      * @param {string} classroomId - Sınıf ID (opsiyonel)
      */
     async enrollStudent(studentId, courseId, classroomId = null) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Mevcut kayıt kontrolü
@@ -231,7 +243,7 @@ const CourseEnrollmentService = {
                 course_id: courseId,
                 classroom_id: classroomId,
                 assigned_by: user.id,
-                status: 'active'
+                status: 'active',
             })
             .select()
             .single();
@@ -251,7 +263,9 @@ const CourseEnrollmentService = {
      * @param {string} classroomId - Sınıf ID (opsiyonel)
      */
     async enrollMultipleStudents(studentIds, courseId, classroomId = null) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Mevcut kayıtları kontrol et
@@ -261,31 +275,28 @@ const CourseEnrollmentService = {
             .eq('course_id', courseId)
             .in('student_id', studentIds);
 
-        const existingStudentIds = new Set(existingEnrollments?.map(e => e.student_id) || []);
-        
+        const existingStudentIds = new Set(existingEnrollments?.map((e) => e.student_id) || []);
+
         const newEnrollments = studentIds
-            .filter(id => !existingStudentIds.has(id))
-            .map(studentId => ({
+            .filter((id) => !existingStudentIds.has(id))
+            .map((studentId) => ({
                 student_id: studentId,
                 course_id: courseId,
                 classroom_id: classroomId,
                 assigned_by: user.id,
-                status: 'active'
+                status: 'active',
             }));
 
         if (newEnrollments.length === 0) {
-            return { 
-                success: true, 
-                enrolled: 0, 
+            return {
+                success: true,
+                enrolled: 0,
                 skipped: studentIds.length,
-                message: 'Tüm öğrenciler zaten kayıtlı'
+                message: 'Tüm öğrenciler zaten kayıtlı',
             };
         }
 
-        const { data, error } = await supabase
-            .from('course_enrollments')
-            .insert(newEnrollments)
-            .select();
+        const { data, error } = await supabase.from('course_enrollments').insert(newEnrollments).select();
 
         if (error) {
             console.error('Toplu kayıt hatası:', error);
@@ -296,7 +307,7 @@ const CourseEnrollmentService = {
             success: true,
             enrolled: data.length,
             skipped: existingStudentIds.size,
-            message: `${data.length} öğrenci kaydedildi`
+            message: `${data.length} öğrenci kaydedildi`,
         };
     },
 
@@ -307,7 +318,7 @@ const CourseEnrollmentService = {
      */
     async updateEnrollmentStatus(enrollmentId, status) {
         const updateData = { status };
-        
+
         if (status === 'completed') {
             updateData.completed_at = new Date().toISOString();
         }
@@ -332,10 +343,7 @@ const CourseEnrollmentService = {
      * @param {string} enrollmentId - Kayıt ID
      */
     async removeEnrollment(enrollmentId) {
-        const { error } = await supabase
-            .from('course_enrollments')
-            .delete()
-            .eq('id', enrollmentId);
+        const { error } = await supabase.from('course_enrollments').delete().eq('id', enrollmentId);
 
         if (error) {
             console.error('Kayıt silme hatası:', error);
@@ -370,20 +378,19 @@ const CourseEnrollmentService = {
      * @param {string} courseId - Kurs ID
      */
     async getCourseEnrollmentStats(courseId) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Öğretmenin sınıflarındaki kayıtları al
-        const { data: classrooms } = await supabase
-            .from('classrooms')
-            .select('id')
-            .eq('teacher_id', user.id);
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
 
         if (!classrooms || classrooms.length === 0) {
             return { total: 0, active: 0, completed: 0, dropped: 0, paused: 0 };
         }
 
-        const classroomIds = classrooms.map(c => c.id);
+        const classroomIds = classrooms.map((c) => c.id);
 
         const { data, error } = await supabase
             .from('course_enrollments')
@@ -401,10 +408,10 @@ const CourseEnrollmentService = {
             active: 0,
             completed: 0,
             dropped: 0,
-            paused: 0
+            paused: 0,
         };
 
-        data?.forEach(enrollment => {
+        data?.forEach((enrollment) => {
             if (stats[enrollment.status] !== undefined) {
                 stats[enrollment.status]++;
             }
@@ -421,11 +428,13 @@ const CourseEnrollmentService = {
     async hasAccess(studentId, courseSlug) {
         const { data, error } = await supabase
             .from('course_enrollments')
-            .select(`
+            .select(
+                `
                 id,
                 status,
                 courses:course_id (slug)
-            `)
+            `
+            )
             .eq('student_id', studentId)
             .eq('status', 'active');
 
@@ -434,7 +443,7 @@ const CourseEnrollmentService = {
             return false;
         }
 
-        return data?.some(e => e.courses?.slug === courseSlug) || false;
+        return data?.some((e) => e.courses?.slug === courseSlug) || false;
     },
 
     /**
@@ -444,7 +453,8 @@ const CourseEnrollmentService = {
     async getMyActiveCourses(studentId) {
         const { data, error } = await supabase
             .from('course_enrollments')
-            .select(`
+            .select(
+                `
                 id,
                 enrolled_at,
                 courses:course_id (
@@ -454,7 +464,8 @@ const CourseEnrollmentService = {
                     description,
                     theme_color
                 )
-            `)
+            `
+            )
             .eq('student_id', studentId)
             .eq('status', 'active')
             .order('enrolled_at', { ascending: false });
@@ -464,12 +475,14 @@ const CourseEnrollmentService = {
             throw error;
         }
 
-        return data?.map(e => ({
-            enrollmentId: e.id,
-            enrolledAt: e.enrolled_at,
-            ...e.courses
-        })) || [];
-    }
+        return (
+            data?.map((e) => ({
+                enrollmentId: e.id,
+                enrolledAt: e.enrolled_at,
+                ...e.courses,
+            })) || []
+        );
+    },
 };
 
 export default CourseEnrollmentService;

@@ -494,7 +494,7 @@ const StudentDashboardView = {
 
         try {
             // Load assignments via service
-            const assignments = await window.StudentSubmissionService?.getMyAssignments({ status: 'active' }) || [];
+            const assignments = (await window.StudentSubmissionService?.getMyAssignments({ status: 'active' })) || [];
 
             if (assignments.length === 0) {
                 container.innerHTML = `
@@ -512,18 +512,21 @@ const StudentDashboardView = {
 
             container.innerHTML = `
                 <div class="space-y-3">
-                    ${displayAssignments.map(assignment => this.renderAssignmentCard(assignment)).join('')}
+                    ${displayAssignments.map((assignment) => this.renderAssignmentCard(assignment)).join('')}
                 </div>
-                ${hasMore ? `
+                ${
+                    hasMore
+                        ? `
                     <div class="text-center mt-4">
                         <button onclick="StudentDashboardView.showAllAssignments()"
                             class="text-theme hover:underline font-medium text-sm">
                             Tüm Ödevleri Gör (${assignments.length}) →
                         </button>
                     </div>
-                ` : ''}
+                `
+                        : ''
+                }
             `;
-
         } catch (error) {
             console.error('[StudentDashboardView] renderAssignments error:', error);
             container.innerHTML = `
@@ -556,29 +559,45 @@ const StudentDashboardView = {
                         <h4 class="font-semibold text-gray-800 dark:text-white truncate">${this.escapeHtml(assignment.title)}</h4>
                         <div class="flex items-center gap-2 text-sm">
                             <span class="px-2 py-0.5 rounded-full text-xs font-medium 
-                                ${status.color === 'green' ? 'bg-green-100 text-green-700' : 
-                                  status.color === 'orange' ? 'bg-orange-100 text-orange-700' : 
-                                  status.color === 'red' ? 'bg-red-100 text-red-700' : 
-                                  status.color === 'blue' ? 'bg-blue-100 text-blue-700' : 
-                                  'bg-gray-100 text-gray-700'}">
+                                ${
+                                    status.color === 'green'
+                                        ? 'bg-green-100 text-green-700'
+                                        : status.color === 'orange'
+                                          ? 'bg-orange-100 text-orange-700'
+                                          : status.color === 'red'
+                                            ? 'bg-red-100 text-red-700'
+                                            : status.color === 'blue'
+                                              ? 'bg-blue-100 text-blue-700'
+                                              : 'bg-gray-100 text-gray-700'
+                                }">
                                 ${status.icon} ${status.label}
                             </span>
-                            ${assignment.due_date ? `
+                            ${
+                                assignment.due_date
+                                    ? `
                                 <span class="${timeRemaining.overdue ? 'text-red-500' : timeRemaining.urgent ? 'text-orange-500' : 'text-gray-400'} text-xs">
                                     ⏰ ${timeRemaining.text}
                                 </span>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    ${hasGrade ? `
+                    ${
+                        hasGrade
+                            ? `
                         <span class="font-bold ${submission.grade >= assignment.max_points * 0.6 ? 'text-green-600' : 'text-orange-600'}">
                             ${submission.grade}/${assignment.max_points}
                         </span>
-                    ` : status.canSubmit ? `
+                    `
+                            : status.canSubmit
+                              ? `
                         <span class="px-3 py-1 bg-theme text-white rounded-lg text-sm font-medium">Gönder</span>
-                    ` : ''}
+                    `
+                              : ''
+                    }
                     <span class="text-gray-400">→</span>
                 </div>
             </div>

@@ -16,7 +16,7 @@ const NotificationDropdown = {
     async init() {
         // NotificationService'i dinamik import et
         const { default: NotificationService } = await import('/modules/notificationService.js');
-        
+
         // İlk yüklemede sayıyı al
         this.unreadCount = await NotificationService.getUnreadCount();
         this.updateBadge();
@@ -25,12 +25,12 @@ const NotificationDropdown = {
         this._unsubscribe = NotificationService.subscribe(({ unreadCount, newNotification }) => {
             this.unreadCount = unreadCount;
             this.updateBadge();
-            
+
             if (newNotification && this.isOpen) {
                 // Açıksa listeyi yenile
                 this.loadNotifications();
             }
-            
+
             // Toast göster
             if (newNotification && window.showToast) {
                 window.showToast(newNotification.title, 'info');
@@ -89,12 +89,16 @@ const NotificationDropdown = {
                         ${this.unreadCount > 0 ? `<span class="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs rounded-full">${this.unreadCount}</span>` : ''}
                     </h3>
                     <div class="flex items-center gap-2">
-                        ${this.unreadCount > 0 ? `
+                        ${
+                            this.unreadCount > 0
+                                ? `
                             <button onclick="NotificationDropdown.markAllRead()" 
                                 class="text-xs text-theme hover:underline">
                                 Tümünü Okundu İşaretle
                             </button>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                     </div>
                 </div>
 
@@ -136,7 +140,7 @@ const NotificationDropdown = {
             `;
         }
 
-        return this.notifications.map(notification => this.renderNotificationItem(notification)).join('');
+        return this.notifications.map((notification) => this.renderNotificationItem(notification)).join('');
     },
 
     /**
@@ -167,11 +171,15 @@ const NotificationDropdown = {
                             </h4>
                             ${isUnread ? '<span class="w-2 h-2 bg-theme rounded-full shrink-0 mt-1.5"></span>' : ''}
                         </div>
-                        ${notification.message ? `
+                        ${
+                            notification.message
+                                ? `
                             <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">
                                 ${notification.message}
                             </p>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                         <p class="text-xs text-gray-400 mt-1">
                             ${timeAgo}
                         </p>
@@ -202,7 +210,7 @@ const NotificationDropdown = {
      */
     async toggle(event) {
         event?.stopPropagation();
-        
+
         const dropdown = document.getElementById('notification-dropdown');
         if (!dropdown) return;
 
@@ -211,7 +219,7 @@ const NotificationDropdown = {
         if (this.isOpen) {
             dropdown.classList.remove('hidden');
             await this.loadNotifications();
-            
+
             // Dışarı tıklama listener'ı
             setTimeout(() => {
                 document.addEventListener('click', this._outsideClickHandler);
@@ -228,7 +236,7 @@ const NotificationDropdown = {
     _outsideClickHandler: (e) => {
         const dropdown = document.getElementById('notification-dropdown');
         const bell = document.getElementById('notification-bell');
-        
+
         if (dropdown && !dropdown.contains(e.target) && bell && !bell.contains(e.target)) {
             NotificationDropdown.close();
         }
@@ -286,7 +294,7 @@ const NotificationDropdown = {
         try {
             const { default: NotificationService } = await import('/modules/notificationService.js');
             await NotificationService.markAsRead(notificationId);
-            
+
             this.unreadCount = Math.max(0, this.unreadCount - 1);
             this.updateBadge();
         } catch (error) {
@@ -311,13 +319,13 @@ const NotificationDropdown = {
         try {
             const { default: NotificationService } = await import('/modules/notificationService.js');
             await NotificationService.markAllAsRead();
-            
+
             this.unreadCount = 0;
             this.updateBadge();
-            
+
             // Listeyi yenile
             await this.loadNotifications();
-            
+
             if (window.showToast) {
                 window.showToast('Tüm bildirimler okundu', 'success');
             }
@@ -343,17 +351,17 @@ const NotificationDropdown = {
      */
     getIcon(type) {
         const icons = {
-            'assignment_created': '📋',
-            'assignment_due_soon': '⏰',
-            'assignment_due_today': '🔔',
-            'assignment_overdue': '⚠️',
-            'submission_received': '📥',
-            'submission_graded': '✅',
-            'submission_returned': '↩️',
-            'course_enrolled': '📚',
-            'achievement_earned': '🏆',
-            'announcement': '📢',
-            'system': '⚙️'
+            assignment_created: '📋',
+            assignment_due_soon: '⏰',
+            assignment_due_today: '🔔',
+            assignment_overdue: '⚠️',
+            submission_received: '📥',
+            submission_graded: '✅',
+            submission_returned: '↩️',
+            course_enrolled: '📚',
+            achievement_earned: '🏆',
+            announcement: '📢',
+            system: '⚙️',
         };
         return icons[type] || '🔔';
     },
@@ -363,17 +371,17 @@ const NotificationDropdown = {
      */
     getColor(type) {
         const colors = {
-            'assignment_created': 'text-blue-500',
-            'assignment_due_soon': 'text-orange-500',
-            'assignment_due_today': 'text-red-500',
-            'assignment_overdue': 'text-red-600',
-            'submission_received': 'text-green-500',
-            'submission_graded': 'text-emerald-500',
-            'submission_returned': 'text-yellow-500',
-            'course_enrolled': 'text-purple-500',
-            'achievement_earned': 'text-amber-500',
-            'announcement': 'text-indigo-500',
-            'system': 'text-gray-500'
+            assignment_created: 'text-blue-500',
+            assignment_due_soon: 'text-orange-500',
+            assignment_due_today: 'text-red-500',
+            assignment_overdue: 'text-red-600',
+            submission_received: 'text-green-500',
+            submission_graded: 'text-emerald-500',
+            submission_returned: 'text-yellow-500',
+            course_enrolled: 'text-purple-500',
+            achievement_earned: 'text-amber-500',
+            announcement: 'text-indigo-500',
+            system: 'text-gray-500',
         };
         return colors[type] || 'text-gray-500';
     },
@@ -393,9 +401,9 @@ const NotificationDropdown = {
         if (diffMins < 60) return `${diffMins} dk önce`;
         if (diffHours < 24) return `${diffHours} saat önce`;
         if (diffDays < 7) return `${diffDays} gün önce`;
-        
+
         return date.toLocaleDateString('tr-TR');
-    }
+    },
 };
 
 window.NotificationDropdown = NotificationDropdown;

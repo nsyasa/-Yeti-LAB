@@ -217,9 +217,7 @@ describe('AssignmentService', () => {
                 createMockAssignment({ due_date: '2026-01-25T00:00:00Z' }),
             ];
 
-            const sorted = [...assignments].sort(
-                (a, b) => new Date(a.due_date) - new Date(b.due_date)
-            );
+            const sorted = [...assignments].sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
 
             expect(new Date(sorted[0].due_date).getDate()).toBe(15);
             expect(new Date(sorted[2].due_date).getDate()).toBe(25);
@@ -232,9 +230,7 @@ describe('AssignmentService', () => {
                 createMockAssignment({ created_at: '2026-01-08T10:00:00Z' }),
             ];
 
-            const sorted = [...assignments].sort(
-                (a, b) => new Date(b.created_at) - new Date(a.created_at)
-            );
+            const sorted = [...assignments].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             expect(new Date(sorted[0].created_at).getDate()).toBe(12);
         });
@@ -269,9 +265,7 @@ describe('AssignmentService', () => {
             const futureDate = new Date(Date.now() + 5 * 86400000).toISOString();
             const assignment = createMockAssignment({ due_date: futureDate });
 
-            const daysUntilDue = Math.ceil(
-                (new Date(assignment.due_date) - new Date()) / 86400000
-            );
+            const daysUntilDue = Math.ceil((new Date(assignment.due_date) - new Date()) / 86400000);
 
             expect(daysUntilDue).toBeGreaterThanOrEqual(4);
             expect(daysUntilDue).toBeLessThanOrEqual(6);
@@ -366,9 +360,7 @@ describe('AssignmentService', () => {
             };
 
             const submissionRate =
-                assignment.student_count > 0
-                    ? (assignment.submission_count / assignment.student_count) * 100
-                    : 0;
+                assignment.student_count > 0 ? (assignment.submission_count / assignment.student_count) * 100 : 0;
 
             expect(submissionRate).toBe(0);
         });
@@ -390,8 +382,7 @@ describe('AssignmentService', () => {
             const assignment = createMockAssignment({ max_attempts: 3 });
             const currentAttempts = 2;
 
-            const canResubmit =
-                assignment.max_attempts === -1 || currentAttempts < assignment.max_attempts;
+            const canResubmit = assignment.max_attempts === -1 || currentAttempts < assignment.max_attempts;
 
             expect(canResubmit).toBe(true);
         });

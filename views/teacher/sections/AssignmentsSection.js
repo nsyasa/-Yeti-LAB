@@ -9,7 +9,7 @@ const AssignmentsSection = {
     filters: {
         classroom: '',
         status: '',
-        search: ''
+        search: '',
     },
     isLoading: false,
 
@@ -173,18 +173,26 @@ const AssignmentsSection = {
                             </div>
                         </div>
                         
-                        ${assignment.description ? `
+                        ${
+                            assignment.description
+                                ? `
                             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 ml-9 mb-2">
                                 ${this.escapeHtml(assignment.description.substring(0, 150))}${assignment.description.length > 150 ? '...' : ''}
                             </p>
-                        ` : ''}
+                        `
+                                : ''
+                        }
 
                         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 ml-9">
-                            ${assignment.due_date ? `
+                            ${
+                                assignment.due_date
+                                    ? `
                                 <span class="flex items-center gap-1 ${timeRemaining.isOverdue ? 'text-red-500' : timeRemaining.isUrgent ? 'text-orange-500' : ''}">
                                     ⏰ ${timeRemaining.text}
                                 </span>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
                             <span class="flex items-center gap-1">
                                 📥 ${assignment.submission_count || 0} gönderi
                             </span>
@@ -196,13 +204,17 @@ const AssignmentsSection = {
 
                     <!-- Sağ: Aksiyonlar -->
                     <div class="flex items-center gap-2 lg:flex-shrink-0">
-                        ${assignment.status === 'draft' ? `
+                        ${
+                            assignment.status === 'draft'
+                                ? `
                             <button onclick="AssignmentsSection.publishAssignment('${assignment.id}')"
                                 class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors text-sm"
                                 title="Yayınla">
                                 🚀 Yayınla
                             </button>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                         
                         <button onclick="AssignmentsSection.viewSubmissions('${assignment.id}')"
                             class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors text-sm"
@@ -259,7 +271,7 @@ const AssignmentsSection = {
             return;
         }
 
-        container.innerHTML = filtered.map(a => this.renderAssignmentCard(a)).join('');
+        container.innerHTML = filtered.map((a) => this.renderAssignmentCard(a)).join('');
     },
 
     /**
@@ -274,7 +286,7 @@ const AssignmentsSection = {
             const [assignments, classrooms, courses] = await Promise.all([
                 window.AssignmentService?.getAssignments() || [],
                 window.AssignmentService?.getTeacherClassrooms() || [],
-                window.AssignmentService?.getCourses() || []
+                window.AssignmentService?.getCourses() || [],
             ]);
 
             this.assignments = assignments;
@@ -283,10 +295,9 @@ const AssignmentsSection = {
 
             // Sınıf filtresini doldur
             this.populateClassroomFilter();
-            
+
             // Stats'ı güncelle
             this.updateStatsBar();
-
         } catch (error) {
             console.error('[AssignmentsSection] Load error:', error);
             if (window.Toast) {
@@ -305,8 +316,9 @@ const AssignmentsSection = {
         const select = document.getElementById('assignmentClassroomFilter');
         if (!select) return;
 
-        select.innerHTML = '<option value="">Tüm Sınıflar</option>' +
-            this.classrooms.map(c => `<option value="${c.id}">${this.escapeHtml(c.name)}</option>`).join('');
+        select.innerHTML =
+            '<option value="">Tüm Sınıflar</option>' +
+            this.classrooms.map((c) => `<option value="${c.id}">${this.escapeHtml(c.name)}</option>`).join('');
     },
 
     /**
@@ -325,10 +337,10 @@ const AssignmentsSection = {
     calculateStats() {
         const stats = {
             total: this.assignments.length,
-            active: this.assignments.filter(a => a.status === 'active').length,
-            draft: this.assignments.filter(a => a.status === 'draft').length,
-            closed: this.assignments.filter(a => a.status === 'closed').length,
-            pendingSubmissions: 0
+            active: this.assignments.filter((a) => a.status === 'active').length,
+            draft: this.assignments.filter((a) => a.status === 'draft').length,
+            closed: this.assignments.filter((a) => a.status === 'closed').length,
+            pendingSubmissions: 0,
         };
 
         // Bekleyen gönderi sayısını hesapla
@@ -343,7 +355,7 @@ const AssignmentsSection = {
      * Filtrelenmiş ödevleri getir
      */
     getFilteredAssignments() {
-        return this.assignments.filter(assignment => {
+        return this.assignments.filter((assignment) => {
             // Sınıf filtresi
             if (this.filters.classroom && assignment.classroom_id !== this.filters.classroom) {
                 return false;
@@ -397,7 +409,7 @@ const AssignmentsSection = {
      */
     clearFilters() {
         this.filters = { classroom: '', status: '', search: '' };
-        
+
         const searchInput = document.getElementById('assignmentSearchInput');
         const classroomSelect = document.getElementById('assignmentClassroomFilter');
         const statusSelect = document.getElementById('assignmentStatusFilter');
@@ -472,12 +484,13 @@ const AssignmentsSection = {
         const existingMenu = document.querySelector('.assignment-context-menu');
         if (existingMenu) existingMenu.remove();
 
-        const assignment = this.assignments.find(a => a.id === assignmentId);
+        const assignment = this.assignments.find((a) => a.id === assignmentId);
         if (!assignment) return;
 
         const menu = document.createElement('div');
-        menu.className = 'assignment-context-menu absolute z-50 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[180px]';
-        
+        menu.className =
+            'assignment-context-menu absolute z-50 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[180px]';
+
         const rect = event.target.getBoundingClientRect();
         menu.style.top = `${rect.bottom + 8}px`;
         menu.style.right = `${window.innerWidth - rect.right}px`;
@@ -487,18 +500,26 @@ const AssignmentsSection = {
                 class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2">
                 📋 Kopyala
             </button>
-            ${assignment.status === 'active' ? `
+            ${
+                assignment.status === 'active'
+                    ? `
                 <button onclick="AssignmentsSection.closeAssignment('${assignmentId}')" 
                     class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2">
                     🔒 Kapat
                 </button>
-            ` : ''}
-            ${assignment.status === 'closed' ? `
+            `
+                    : ''
+            }
+            ${
+                assignment.status === 'closed'
+                    ? `
                 <button onclick="AssignmentsSection.reopenAssignment('${assignmentId}')" 
                     class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2">
                     🔓 Yeniden Aç
                 </button>
-            ` : ''}
+            `
+                    : ''
+            }
             <hr class="my-2 border-gray-200 dark:border-gray-700">
             <button onclick="AssignmentsSection.deleteAssignment('${assignmentId}')" 
                 class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">
@@ -523,7 +544,7 @@ const AssignmentsSection = {
      */
     async closeAssignment(assignmentId) {
         document.querySelector('.assignment-context-menu')?.remove();
-        
+
         if (!confirm('Bu ödevi kapatmak istediğinize emin misiniz? Öğrenciler artık gönderi yapamayacak.')) return;
 
         try {
@@ -566,7 +587,7 @@ const AssignmentsSection = {
                 ...original,
                 title: `${original.title} (Kopya)`,
                 status: 'draft',
-                due_date: null
+                due_date: null,
             };
             delete copy.id;
             delete copy.created_at;
@@ -576,7 +597,6 @@ const AssignmentsSection = {
             await window.AssignmentService?.createAssignment(copy);
             if (window.Toast) Toast.success('Ödev kopyalandı');
             await this.loadData();
-
         } catch (error) {
             console.error('[AssignmentsSection] Duplicate error:', error);
             if (window.Toast) Toast.error('Kopyalama başarısız');
@@ -588,7 +608,7 @@ const AssignmentsSection = {
      */
     async deleteAssignment(assignmentId) {
         document.querySelector('.assignment-context-menu')?.remove();
-        
+
         if (!confirm('Bu ödevi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')) return;
 
         try {
@@ -613,7 +633,7 @@ const AssignmentsSection = {
             project: '🎯',
             homework: '📚',
             quiz: '❓',
-            exam: '📝'
+            exam: '📝',
         };
         return icons[type] || '📋';
     },
@@ -626,7 +646,7 @@ const AssignmentsSection = {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
-    }
+    },
 };
 
 window.AssignmentsSection = AssignmentsSection;

@@ -14,70 +14,61 @@ const AnalyticsService = {
      * @returns {Promise<Object>}
      */
     async getDashboardSummary() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Öğretmenin sınıflarını al
-        const { data: classrooms } = await supabase
-            .from('classrooms')
-            .select('id')
-            .eq('teacher_id', user.id);
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
 
         if (!classrooms || classrooms.length === 0) {
             return this._getEmptySummary();
         }
 
-        const classroomIds = classrooms.map(c => c.id);
+        const classroomIds = classrooms.map((c) => c.id);
 
         // Paralel sorgular
-        const [
-            studentsResult,
-            assignmentsResult,
-            submissionsResult,
-            enrollmentsResult
-        ] = await Promise.all([
+        const [studentsResult, assignmentsResult, submissionsResult, enrollmentsResult] = await Promise.all([
             // Toplam öğrenci
-            supabase
-                .from('students')
-                .select('id', { count: 'exact', head: true })
-                .in('classroom_id', classroomIds),
-            
+            supabase.from('students').select('id', { count: 'exact', head: true }).in('classroom_id', classroomIds),
+
             // Toplam ödev
-            supabase
-                .from('assignments')
-                .select('id, status', { count: 'exact' })
-                .in('classroom_id', classroomIds),
-            
+            supabase.from('assignments').select('id, status', { count: 'exact' }).in('classroom_id', classroomIds),
+
             // Toplam gönderim
             supabase
                 .from('submissions')
                 .select('id, status, score')
-                .in('assignment_id', 
-                    (await supabase
-                        .from('assignments')
-                        .select('id')
-                        .in('classroom_id', classroomIds)
-                    ).data?.map(a => a.id) || []
+                .in(
+                    'assignment_id',
+                    (await supabase.from('assignments').select('id').in('classroom_id', classroomIds)).data?.map(
+                        (a) => a.id
+                    ) || []
                 ),
-            
+
             // Aktif kurs kayıtları
             supabase
                 .from('course_enrollments')
                 .select('id, status', { count: 'exact' })
                 .in('classroom_id', classroomIds)
-                .eq('status', 'active')
+                .eq('status', 'active'),
         ]);
 
         const submissions = submissionsResult.data || [];
         const assignments = assignmentsResult.data || [];
 
         // Hesaplamalar
-        const pendingSubmissions = submissions.filter(s => s.status === 'submitted').length;
-        const gradedSubmissions = submissions.filter(s => s.status === 'graded').length;
-        const averageScore = submissions.filter(s => s.score !== null).length > 0
-            ? Math.round(submissions.filter(s => s.score !== null).reduce((sum, s) => sum + s.score, 0) / submissions.filter(s => s.score !== null).length)
-            : 0;
-        const activeAssignments = assignments.filter(a => a.status === 'published').length;
+        const pendingSubmissions = submissions.filter((s) => s.status === 'submitted').length;
+        const gradedSubmissions = submissions.filter((s) => s.status === 'graded').length;
+        const averageScore =
+            submissions.filter((s) => s.score !== null).length > 0
+                ? Math.round(
+                      submissions.filter((s) => s.score !== null).reduce((sum, s) => sum + s.score, 0) /
+                          submissions.filter((s) => s.score !== null).length
+                  )
+                : 0;
+        const activeAssignments = assignments.filter((a) => a.status === 'published').length;
 
         return {
             totalStudents: studentsResult.count || 0,
@@ -88,7 +79,7 @@ const AnalyticsService = {
             pendingSubmissions,
             gradedSubmissions,
             averageScore,
-            activeEnrollments: enrollmentsResult.count || 0
+            activeEnrollments: enrollmentsResult.count || 0,
         };
     },
 
@@ -105,7 +96,7 @@ const AnalyticsService = {
             pendingSubmissions: 0,
             gradedSubmissions: 0,
             averageScore: 0,
-            activeEnrollments: 0
+            activeEnrollments: 0,
         };
     },
 
@@ -114,7 +105,9 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getSubmissionTrend(days = 7) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         const startDate = new Date();
@@ -128,7 +121,7 @@ const AnalyticsService = {
 
         if (!assignments || assignments.length === 0) return [];
 
-        const assignmentIds = assignments.map(a => a.id);
+        const assignmentIds = assignments.map((a) => a.id);
 
         // Gönderim verilerini al
         const { data: submissions } = await supabase
@@ -144,15 +137,13 @@ const AnalyticsService = {
             const date = new Date();
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split('T')[0];
-            
-            const count = submissions?.filter(s => 
-                s.created_at.startsWith(dateStr)
-            ).length || 0;
+
+            const count = submissions?.filter((s) => s.created_at.startsWith(dateStr)).length || 0;
 
             trend.push({
                 date: dateStr,
                 label: date.toLocaleDateString('tr-TR', { weekday: 'short', day: 'numeric' }),
-                count
+                count,
             });
         }
 
@@ -164,12 +155,15 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getClassroomPerformance() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         const { data: classrooms } = await supabase
             .from('classrooms')
-            .select(`
+            .select(
+                `
                 id,
                 name,
                 students(count),
@@ -177,21 +171,24 @@ const AnalyticsService = {
                     id,
                     submissions(score, status)
                 )
-            `)
+            `
+            )
             .eq('teacher_id', user.id);
 
         if (!classrooms) return [];
 
-        return classrooms.map(classroom => {
+        return classrooms.map((classroom) => {
             const studentCount = classroom.students?.[0]?.count || 0;
-            const allSubmissions = classroom.assignments?.flatMap(a => a.submissions || []) || [];
-            const gradedSubmissions = allSubmissions.filter(s => s.status === 'graded' && s.score !== null);
-            const avgScore = gradedSubmissions.length > 0
-                ? Math.round(gradedSubmissions.reduce((sum, s) => sum + s.score, 0) / gradedSubmissions.length)
-                : 0;
-            const submissionRate = studentCount > 0 && classroom.assignments?.length > 0
-                ? Math.round((allSubmissions.length / (studentCount * classroom.assignments.length)) * 100)
-                : 0;
+            const allSubmissions = classroom.assignments?.flatMap((a) => a.submissions || []) || [];
+            const gradedSubmissions = allSubmissions.filter((s) => s.status === 'graded' && s.score !== null);
+            const avgScore =
+                gradedSubmissions.length > 0
+                    ? Math.round(gradedSubmissions.reduce((sum, s) => sum + s.score, 0) / gradedSubmissions.length)
+                    : 0;
+            const submissionRate =
+                studentCount > 0 && classroom.assignments?.length > 0
+                    ? Math.round((allSubmissions.length / (studentCount * classroom.assignments.length)) * 100)
+                    : 0;
 
             return {
                 id: classroom.id,
@@ -200,7 +197,7 @@ const AnalyticsService = {
                 assignmentCount: classroom.assignments?.length || 0,
                 submissionCount: allSubmissions.length,
                 averageScore: avgScore,
-                submissionRate
+                submissionRate,
             };
         });
     },
@@ -210,12 +207,15 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getAssignmentStats() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         const { data } = await supabase
             .from('assignments')
-            .select(`
+            .select(
+                `
                 id,
                 title,
                 status,
@@ -224,23 +224,25 @@ const AnalyticsService = {
                 classroom_id,
                 classrooms!inner(name, teacher_id, students(count)),
                 submissions(id, status, score, submitted_at)
-            `)
+            `
+            )
             .eq('classrooms.teacher_id', user.id)
             .order('created_at', { ascending: false })
             .limit(10);
 
         if (!data) return [];
 
-        return data.map(assignment => {
+        return data.map((assignment) => {
             const studentCount = assignment.classrooms?.students?.[0]?.count || 0;
             const submissions = assignment.submissions || [];
-            const gradedSubs = submissions.filter(s => s.status === 'graded' && s.score !== null);
-            const avgScore = gradedSubs.length > 0
-                ? Math.round(gradedSubs.reduce((sum, s) => sum + s.score, 0) / gradedSubs.length)
-                : null;
-            
+            const gradedSubs = submissions.filter((s) => s.status === 'graded' && s.score !== null);
+            const avgScore =
+                gradedSubs.length > 0
+                    ? Math.round(gradedSubs.reduce((sum, s) => sum + s.score, 0) / gradedSubs.length)
+                    : null;
+
             // Geç gönderim kontrolü
-            const lateSubs = submissions.filter(s => {
+            const lateSubs = submissions.filter((s) => {
                 if (!assignment.due_date || !s.submitted_at) return false;
                 return new Date(s.submitted_at) > new Date(assignment.due_date);
             }).length;
@@ -257,7 +259,7 @@ const AnalyticsService = {
                 submissionRate: studentCount > 0 ? Math.round((submissions.length / studentCount) * 100) : 0,
                 gradedCount: gradedSubs.length,
                 averageScore: avgScore,
-                lateSubmissions: lateSubs
+                lateSubmissions: lateSubs,
             };
         });
     },
@@ -268,36 +270,40 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getTopStudents(limit = 5) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         // Öğretmenin sınıflarındaki öğrencileri al
         const { data: students } = await supabase
             .from('students')
-            .select(`
+            .select(
+                `
                 id,
                 name,
                 username,
                 avatar_url,
                 classroom_id,
                 classrooms!inner(teacher_id)
-            `)
+            `
+            )
             .eq('classrooms.teacher_id', user.id);
 
         if (!students || students.length === 0) return [];
 
         // Her öğrenci için gönderim ve puan bilgisi
-        const studentIds = students.map(s => s.id);
-        
+        const studentIds = students.map((s) => s.id);
+
         const { data: submissions } = await supabase
             .from('submissions')
             .select('student_id, score, status')
             .in('student_id', studentIds);
 
         // Öğrenci bazlı gruplama
-        const studentStats = students.map(student => {
-            const studentSubs = submissions?.filter(s => s.student_id === student.id) || [];
-            const gradedSubs = studentSubs.filter(s => s.status === 'graded' && s.score !== null);
+        const studentStats = students.map((student) => {
+            const studentSubs = submissions?.filter((s) => s.student_id === student.id) || [];
+            const gradedSubs = studentSubs.filter((s) => s.status === 'graded' && s.score !== null);
             const totalScore = gradedSubs.reduce((sum, s) => sum + s.score, 0);
             const avgScore = gradedSubs.length > 0 ? Math.round(totalScore / gradedSubs.length) : 0;
 
@@ -308,14 +314,12 @@ const AnalyticsService = {
                 avatar: student.avatar_url,
                 submissionCount: studentSubs.length,
                 averageScore: avgScore,
-                totalScore
+                totalScore,
             };
         });
 
         // Ortalama puana göre sırala
-        return studentStats
-            .sort((a, b) => b.averageScore - a.averageScore)
-            .slice(0, limit);
+        return studentStats.sort((a, b) => b.averageScore - a.averageScore).slice(0, limit);
     },
 
     /**
@@ -323,7 +327,9 @@ const AnalyticsService = {
      * @returns {Promise<Object>}
      */
     async getSubmissionStatusDistribution() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return { submitted: 0, graded: 0, late: 0, draft: 0 };
 
         const { data: assignments } = await supabase
@@ -335,7 +341,7 @@ const AnalyticsService = {
             return { submitted: 0, graded: 0, late: 0, draft: 0 };
         }
 
-        const assignmentIds = assignments.map(a => a.id);
+        const assignmentIds = assignments.map((a) => a.id);
 
         const { data: submissions } = await supabase
             .from('submissions')
@@ -347,10 +353,10 @@ const AnalyticsService = {
             graded: 0,
             late_submitted: 0,
             draft: 0,
-            revision_requested: 0
+            revision_requested: 0,
         };
 
-        submissions?.forEach(s => {
+        submissions?.forEach((s) => {
             if (distribution[s.status] !== undefined) {
                 distribution[s.status]++;
             }
@@ -364,7 +370,9 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getWeeklyActivityHeatmap() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         const startDate = new Date();
@@ -372,19 +380,21 @@ const AnalyticsService = {
 
         const { data: submissions } = await supabase
             .from('submissions')
-            .select(`
+            .select(
+                `
                 created_at,
                 assignments!inner(
                     classrooms!inner(teacher_id)
                 )
-            `)
+            `
+            )
             .eq('assignments.classrooms.teacher_id', user.id)
             .gte('created_at', startDate.toISOString());
 
         // Gün ve saat bazlı gruplama
         const heatmap = {};
         const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
-        
+
         // Boş grid oluştur
         days.forEach((day, dayIndex) => {
             heatmap[dayIndex] = {};
@@ -394,7 +404,7 @@ const AnalyticsService = {
         });
 
         // Verileri doldur
-        submissions?.forEach(s => {
+        submissions?.forEach((s) => {
             const date = new Date(s.created_at);
             const day = date.getDay();
             const hour = date.getHours();
@@ -404,13 +414,14 @@ const AnalyticsService = {
         // Formatla
         const result = [];
         days.forEach((dayName, dayIndex) => {
-            for (let hour = 8; hour <= 22; hour++) { // 08:00 - 22:00 arası
+            for (let hour = 8; hour <= 22; hour++) {
+                // 08:00 - 22:00 arası
                 result.push({
                     day: dayName,
                     dayIndex,
                     hour,
                     hourLabel: `${hour.toString().padStart(2, '0')}:00`,
-                    count: heatmap[dayIndex][hour]
+                    count: heatmap[dayIndex][hour],
                 });
             }
         });
@@ -423,13 +434,13 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getCourseCompletionRates() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         // View kullan
-        const { data } = await supabase
-            .from('course_completion_rates')
-            .select('*');
+        const { data } = await supabase.from('course_completion_rates').select('*');
 
         return data || [];
     },
@@ -440,12 +451,15 @@ const AnalyticsService = {
      * @returns {Promise<Array>}
      */
     async getRecentActivity(limit = 10) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         const { data: submissions } = await supabase
             .from('submissions')
-            .select(`
+            .select(
+                `
                 id,
                 status,
                 score,
@@ -457,23 +471,26 @@ const AnalyticsService = {
                     title,
                     classrooms!inner(teacher_id)
                 )
-            `)
+            `
+            )
             .eq('assignments.classrooms.teacher_id', user.id)
             .order('created_at', { ascending: false })
             .limit(limit);
 
-        return submissions?.map(s => ({
-            id: s.id,
-            type: s.status === 'graded' ? 'graded' : 'submitted',
-            studentName: s.students?.name || 'Bilinmeyen',
-            studentAvatar: s.students?.avatar_url,
-            assignmentTitle: s.assignments?.title || '',
-            score: s.score,
-            createdAt: s.created_at,
-            submittedAt: s.submitted_at,
-            gradedAt: s.graded_at
-        })) || [];
-    }
+        return (
+            submissions?.map((s) => ({
+                id: s.id,
+                type: s.status === 'graded' ? 'graded' : 'submitted',
+                studentName: s.students?.name || 'Bilinmeyen',
+                studentAvatar: s.students?.avatar_url,
+                assignmentTitle: s.assignments?.title || '',
+                score: s.score,
+                createdAt: s.created_at,
+                submittedAt: s.submitted_at,
+                gradedAt: s.graded_at,
+            })) || []
+        );
+    },
 };
 
 export default AnalyticsService;

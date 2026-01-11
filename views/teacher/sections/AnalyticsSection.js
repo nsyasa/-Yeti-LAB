@@ -113,12 +113,17 @@ const AnalyticsSection = {
      * Loading state for summary
      */
     renderSummaryLoading() {
-        return Array(4).fill('').map(() => `
+        return Array(4)
+            .fill('')
+            .map(
+                () => `
             <div class="glass-card rounded-xl p-4 animate-pulse">
                 <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-2"></div>
                 <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     },
 
     /**
@@ -138,9 +143,14 @@ const AnalyticsSection = {
     renderTableLoading() {
         return `
             <div class="animate-pulse space-y-3">
-                ${Array(3).fill('').map(() => `
+                ${Array(3)
+                    .fill('')
+                    .map(
+                        () => `
                     <div class="h-12 bg-gray-100 dark:bg-gray-700 rounded-lg"></div>
-                `).join('')}
+                `
+                    )
+                    .join('')}
             </div>
         `;
     },
@@ -151,7 +161,10 @@ const AnalyticsSection = {
     renderListLoading() {
         return `
             <div class="animate-pulse space-y-3">
-                ${Array(5).fill('').map(() => `
+                ${Array(5)
+                    .fill('')
+                    .map(
+                        () => `
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                         <div class="flex-grow">
@@ -159,7 +172,9 @@ const AnalyticsSection = {
                             <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                         </div>
                     </div>
-                `).join('')}
+                `
+                    )
+                    .join('')}
             </div>
         `;
     },
@@ -198,7 +213,7 @@ const AnalyticsSection = {
                 assignmentStats,
                 topStudents,
                 statusDistribution,
-                recentActivity
+                recentActivity,
             ] = await Promise.all([
                 AnalyticsService.getDashboardSummary(),
                 AnalyticsService.getSubmissionTrend(7),
@@ -206,7 +221,7 @@ const AnalyticsSection = {
                 AnalyticsService.getAssignmentStats(),
                 AnalyticsService.getTopStudents(5),
                 AnalyticsService.getSubmissionStatusDistribution(),
-                AnalyticsService.getRecentActivity(10)
+                AnalyticsService.getRecentActivity(10),
             ]);
 
             this.summary = summary;
@@ -216,7 +231,6 @@ const AnalyticsSection = {
             this.topStudents = topStudents;
             this.statusDistribution = statusDistribution;
             this.recentActivity = recentActivity;
-
         } catch (error) {
             console.error('Analytics veri yükleme hatası:', error);
             if (window.showToast) window.showToast('Veriler yüklenirken hata oluştu', 'error');
@@ -247,10 +261,12 @@ const AnalyticsSection = {
             { label: 'Toplam Öğrenci', value: this.summary.totalStudents, icon: '👨‍🎓', color: 'blue' },
             { label: 'Aktif Ödev', value: this.summary.activeAssignments, icon: '📋', color: 'green' },
             { label: 'Bekleyen Gönderim', value: this.summary.pendingSubmissions, icon: '📥', color: 'orange' },
-            { label: 'Ortalama Puan', value: this.summary.averageScore, icon: '⭐', color: 'purple', suffix: '%' }
+            { label: 'Ortalama Puan', value: this.summary.averageScore, icon: '⭐', color: 'purple', suffix: '%' },
         ];
 
-        container.innerHTML = stats.map(stat => `
+        container.innerHTML = stats
+            .map(
+                (stat) => `
             <div class="glass-card rounded-xl p-4 border-l-4 border-${stat.color}-500">
                 <div class="flex items-center justify-between">
                     <div>
@@ -262,7 +278,9 @@ const AnalyticsSection = {
                     <div class="text-3xl opacity-50">${stat.icon}</div>
                 </div>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     },
 
     /**
@@ -277,13 +295,14 @@ const AnalyticsSection = {
             return;
         }
 
-        const maxCount = Math.max(...this.submissionTrend.map(d => d.count), 1);
+        const maxCount = Math.max(...this.submissionTrend.map((d) => d.count), 1);
 
         container.innerHTML = `
             <div class="flex items-end justify-between h-48 gap-2 px-2">
-                ${this.submissionTrend.map(day => {
-                    const height = (day.count / maxCount) * 100;
-                    return `
+                ${this.submissionTrend
+                    .map((day) => {
+                        const height = (day.count / maxCount) * 100;
+                        return `
                         <div class="flex-1 flex flex-col items-center gap-1">
                             <span class="text-xs font-semibold text-gray-600 dark:text-gray-400">${day.count}</span>
                             <div class="w-full bg-theme/20 rounded-t-lg transition-all hover:bg-theme/30 relative group"
@@ -293,7 +312,8 @@ const AnalyticsSection = {
                             <span class="text-xs text-gray-500 dark:text-gray-400 text-center">${day.label}</span>
                         </div>
                     `;
-                }).join('')}
+                    })
+                    .join('')}
             </div>
         `;
     },
@@ -306,7 +326,7 @@ const AnalyticsSection = {
         if (!container || !this.statusDistribution) return;
 
         const total = Object.values(this.statusDistribution).reduce((a, b) => a + b, 0);
-        
+
         if (total === 0) {
             container.innerHTML = this.renderEmptyState('Henüz gönderim yok');
             return;
@@ -317,16 +337,17 @@ const AnalyticsSection = {
             { label: 'Notlandı', value: this.statusDistribution.graded, color: 'bg-green-500' },
             { label: 'Geç Gönderim', value: this.statusDistribution.late_submitted, color: 'bg-orange-500' },
             { label: 'Taslak', value: this.statusDistribution.draft, color: 'bg-gray-400' },
-            { label: 'Revizyon', value: this.statusDistribution.revision_requested, color: 'bg-purple-500' }
-        ].filter(item => item.value > 0);
+            { label: 'Revizyon', value: this.statusDistribution.revision_requested, color: 'bg-purple-500' },
+        ].filter((item) => item.value > 0);
 
         container.innerHTML = `
             <div class="flex items-center gap-6">
                 <!-- Simple horizontal bars -->
                 <div class="flex-grow space-y-3">
-                    ${items.map(item => {
-                        const percentage = Math.round((item.value / total) * 100);
-                        return `
+                    ${items
+                        .map((item) => {
+                            const percentage = Math.round((item.value / total) * 100);
+                            return `
                             <div class="flex items-center gap-3">
                                 <span class="w-24 text-sm text-gray-600 dark:text-gray-400">${item.label}</span>
                                 <div class="flex-grow h-6 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -335,7 +356,8 @@ const AnalyticsSection = {
                                 <span class="w-12 text-sm font-semibold text-gray-700 dark:text-gray-300 text-right">${item.value}</span>
                             </div>
                         `;
-                    }).join('')}
+                        })
+                        .join('')}
                 </div>
             </div>
             <div class="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -370,7 +392,9 @@ const AnalyticsSection = {
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        ${this.classroomPerformance.map(classroom => `
+                        ${this.classroomPerformance
+                            .map(
+                                (classroom) => `
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <td class="py-3">
                                     <div class="flex items-center gap-2">
@@ -395,7 +419,9 @@ const AnalyticsSection = {
                                     </div>
                                 </td>
                             </tr>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </tbody>
                 </table>
             </div>
@@ -416,14 +442,16 @@ const AnalyticsSection = {
 
         container.innerHTML = `
             <div class="space-y-3">
-                ${this.topStudents.map((student, index) => {
-                    const medals = ['🥇', '🥈', '🥉'];
-                    const medal = index < 3 ? medals[index] : `${index + 1}.`;
-                    const avatarHtml = student.avatar && !student.avatar.startsWith('�')
-                        ? `<img src="${student.avatar}" class="w-10 h-10 rounded-full object-cover">`
-                        : `<span class="text-xl">${student.avatar || '👤'}</span>`;
+                ${this.topStudents
+                    .map((student, index) => {
+                        const medals = ['🥇', '🥈', '🥉'];
+                        const medal = index < 3 ? medals[index] : `${index + 1}.`;
+                        const avatarHtml =
+                            student.avatar && !student.avatar.startsWith('�')
+                                ? `<img src="${student.avatar}" class="w-10 h-10 rounded-full object-cover">`
+                                : `<span class="text-xl">${student.avatar || '👤'}</span>`;
 
-                    return `
+                        return `
                         <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50">
                             <span class="text-lg w-8 text-center">${medal}</span>
                             <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
@@ -439,7 +467,8 @@ const AnalyticsSection = {
                             </div>
                         </div>
                     `;
-                }).join('')}
+                    })
+                    .join('')}
             </div>
         `;
     },
@@ -458,15 +487,17 @@ const AnalyticsSection = {
 
         container.innerHTML = `
             <div class="space-y-3 max-h-80 overflow-y-auto">
-                ${this.recentActivity.map(activity => {
-                    const isGraded = activity.type === 'graded';
-                    const icon = isGraded ? '✅' : '📥';
-                    const timeAgo = this.formatTimeAgo(activity.createdAt);
-                    const avatarHtml = activity.studentAvatar && !activity.studentAvatar.startsWith('�')
-                        ? `<img src="${activity.studentAvatar}" class="w-8 h-8 rounded-full object-cover">`
-                        : `<span class="text-sm">${activity.studentAvatar || '👤'}</span>`;
+                ${this.recentActivity
+                    .map((activity) => {
+                        const isGraded = activity.type === 'graded';
+                        const icon = isGraded ? '✅' : '📥';
+                        const timeAgo = this.formatTimeAgo(activity.createdAt);
+                        const avatarHtml =
+                            activity.studentAvatar && !activity.studentAvatar.startsWith('�')
+                                ? `<img src="${activity.studentAvatar}" class="w-8 h-8 rounded-full object-cover">`
+                                : `<span class="text-sm">${activity.studentAvatar || '👤'}</span>`;
 
-                    return `
+                        return `
                         <div class="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50">
                             <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
                                 ${avatarHtml}
@@ -481,16 +512,21 @@ const AnalyticsSection = {
                                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${activity.assignmentTitle}</p>
                             </div>
                             <div class="text-right shrink-0">
-                                ${isGraded && activity.score !== null ? `
+                                ${
+                                    isGraded && activity.score !== null
+                                        ? `
                                     <span class="text-sm font-semibold text-theme">${activity.score}%</span>
-                                ` : `
+                                `
+                                        : `
                                     <span class="text-lg">${icon}</span>
-                                `}
+                                `
+                                }
                                 <p class="text-xs text-gray-400">${timeAgo}</p>
                             </div>
                         </div>
                     `;
-                }).join('')}
+                    })
+                    .join('')}
             </div>
         `;
     },
@@ -521,15 +557,21 @@ const AnalyticsSection = {
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        ${this.assignmentStats.map(assignment => `
+                        ${this.assignmentStats
+                            .map(
+                                (assignment) => `
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <td class="py-3">
                                     <p class="font-medium text-gray-800 dark:text-white line-clamp-1">${assignment.title}</p>
-                                    ${assignment.dueDate ? `
+                                    ${
+                                        assignment.dueDate
+                                            ? `
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             📅 ${new Date(assignment.dueDate).toLocaleDateString('tr-TR')}
                                         </p>
-                                    ` : ''}
+                                    `
+                                            : ''
+                                    }
                                 </td>
                                 <td class="py-3 text-sm text-gray-600 dark:text-gray-400">${assignment.classroomName}</td>
                                 <td class="py-3 text-center">
@@ -542,23 +584,33 @@ const AnalyticsSection = {
                                     <span class="text-xs text-gray-400 ml-1">(${assignment.submissionRate}%)</span>
                                 </td>
                                 <td class="py-3 text-center">
-                                    ${assignment.averageScore !== null ? `
+                                    ${
+                                        assignment.averageScore !== null
+                                            ? `
                                         <span class="font-semibold ${this.getScoreColor(assignment.averageScore)}">${assignment.averageScore}%</span>
-                                    ` : `
+                                    `
+                                            : `
                                         <span class="text-gray-400">-</span>
-                                    `}
+                                    `
+                                    }
                                 </td>
                                 <td class="py-3 text-center">
-                                    ${assignment.lateSubmissions > 0 ? `
+                                    ${
+                                        assignment.lateSubmissions > 0
+                                            ? `
                                         <span class="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs rounded-full">
                                             ${assignment.lateSubmissions}
                                         </span>
-                                    ` : `
+                                    `
+                                            : `
                                         <span class="text-gray-400">-</span>
-                                    `}
+                                    `
+                                    }
                                 </td>
                             </tr>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </tbody>
                 </table>
             </div>
@@ -582,9 +634,12 @@ const AnalyticsSection = {
      */
     renderStatusBadge(status) {
         const badges = {
-            'draft': { label: 'Taslak', class: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
-            'published': { label: 'Aktif', class: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
-            'closed': { label: 'Kapalı', class: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' }
+            draft: { label: 'Taslak', class: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
+            published: {
+                label: 'Aktif',
+                class: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+            },
+            closed: { label: 'Kapalı', class: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
         };
         const badge = badges[status] || badges['draft'];
         return `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${badge.class}">${badge.label}</span>`;
@@ -615,9 +670,9 @@ const AnalyticsSection = {
         if (diffMins < 60) return `${diffMins} dk`;
         if (diffHours < 24) return `${diffHours} saat`;
         if (diffDays < 7) return `${diffDays} gün`;
-        
+
         return date.toLocaleDateString('tr-TR');
-    }
+    },
 };
 
 window.AnalyticsSection = AnalyticsSection;

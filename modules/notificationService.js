@@ -21,7 +21,9 @@ const NotificationService = {
      * @returns {Promise<Array>}
      */
     async getNotifications({ limit = 20, offset = 0, unreadOnly = false } = {}) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return [];
 
         // Kullanıcının student mi user mi olduğunu belirle
@@ -54,7 +56,9 @@ const NotificationService = {
      * @returns {Promise<number>}
      */
     async getUnreadCount() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return 0;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
@@ -83,9 +87,9 @@ const NotificationService = {
     async markAsRead(notificationId) {
         const { data, error } = await supabase
             .from('notifications')
-            .update({ 
-                is_read: true, 
-                read_at: new Date().toISOString() 
+            .update({
+                is_read: true,
+                read_at: new Date().toISOString(),
             })
             .eq('id', notificationId)
             .select()
@@ -108,7 +112,9 @@ const NotificationService = {
      * @returns {Promise<void>}
      */
     async markAllAsRead() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
@@ -116,9 +122,9 @@ const NotificationService = {
 
         const { error } = await supabase
             .from('notifications')
-            .update({ 
-                is_read: true, 
-                read_at: new Date().toISOString() 
+            .update({
+                is_read: true,
+                read_at: new Date().toISOString(),
             })
             .eq(recipientField, recipientId)
             .eq('is_read', false);
@@ -138,10 +144,7 @@ const NotificationService = {
      * @returns {Promise<void>}
      */
     async deleteNotification(notificationId) {
-        const { error } = await supabase
-            .from('notifications')
-            .delete()
-            .eq('id', notificationId);
+        const { error } = await supabase.from('notifications').delete().eq('id', notificationId);
 
         if (error) {
             console.error('Bildirim silme hatası:', error);
@@ -157,16 +160,15 @@ const NotificationService = {
      * @returns {Promise<void>}
      */
     async clearAll() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
         if (!recipientField) return;
 
-        const { error } = await supabase
-            .from('notifications')
-            .delete()
-            .eq(recipientField, recipientId);
+        const { error } = await supabase.from('notifications').delete().eq(recipientField, recipientId);
 
         if (error) {
             console.error('Tüm bildirimleri silme hatası:', error);
@@ -204,7 +206,9 @@ const NotificationService = {
      * @private
      */
     async _startRealtimeSubscription() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
@@ -219,13 +223,13 @@ const NotificationService = {
                     event: 'INSERT',
                     schema: 'public',
                     table: 'notifications',
-                    filter: `${recipientField}=eq.${recipientId}`
+                    filter: `${recipientField}=eq.${recipientId}`,
                 },
                 (payload) => {
                     console.log('[NotificationService] Yeni bildirim:', payload.new);
                     this._unreadCount++;
                     this._notifyListeners(payload.new);
-                    
+
                     // Browser notification göster (izin varsa)
                     this._showBrowserNotification(payload.new);
                 }
@@ -252,11 +256,11 @@ const NotificationService = {
      * @private
      */
     _notifyListeners(newNotification = null) {
-        this._listeners.forEach(callback => {
+        this._listeners.forEach((callback) => {
             try {
                 callback({
                     unreadCount: this._unreadCount,
-                    newNotification
+                    newNotification,
                 });
             } catch (error) {
                 console.error('Listener hatası:', error);
@@ -271,12 +275,12 @@ const NotificationService = {
      */
     _showBrowserNotification(notification) {
         if (!('Notification' in window)) return;
-        
+
         if (Notification.permission === 'granted') {
             new Notification(notification.title, {
                 body: notification.message || '',
                 icon: '/img/logo.svg',
-                tag: notification.id
+                tag: notification.id,
             });
         }
     },
@@ -287,11 +291,11 @@ const NotificationService = {
      */
     async requestPermission() {
         if (!('Notification' in window)) return 'denied';
-        
+
         if (Notification.permission === 'default') {
             return await Notification.requestPermission();
         }
-        
+
         return Notification.permission;
     },
 
@@ -303,22 +307,14 @@ const NotificationService = {
      */
     async _getRecipientInfo(userId) {
         // Önce user_profiles'da kontrol et (öğretmen/admin)
-        const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('id')
-            .eq('id', userId)
-            .single();
+        const { data: profile } = await supabase.from('user_profiles').select('id').eq('id', userId).single();
 
         if (profile) {
             return { recipientField: 'recipient_user_id', recipientId: profile.id };
         }
 
         // students tablosunda kontrol et
-        const { data: student } = await supabase
-            .from('students')
-            .select('id')
-            .eq('user_id', userId)
-            .single();
+        const { data: student } = await supabase.from('students').select('id').eq('user_id', userId).single();
 
         if (student) {
             return { recipientField: 'recipient_student_id', recipientId: student.id };
@@ -334,17 +330,17 @@ const NotificationService = {
      */
     getIcon(type) {
         const icons = {
-            'assignment_created': '📋',
-            'assignment_due_soon': '⏰',
-            'assignment_due_today': '🔔',
-            'assignment_overdue': '⚠️',
-            'submission_received': '📥',
-            'submission_graded': '✅',
-            'submission_returned': '↩️',
-            'course_enrolled': '📚',
-            'achievement_earned': '🏆',
-            'announcement': '📢',
-            'system': '⚙️'
+            assignment_created: '📋',
+            assignment_due_soon: '⏰',
+            assignment_due_today: '🔔',
+            assignment_overdue: '⚠️',
+            submission_received: '📥',
+            submission_graded: '✅',
+            submission_returned: '↩️',
+            course_enrolled: '📚',
+            achievement_earned: '🏆',
+            announcement: '📢',
+            system: '⚙️',
         };
         return icons[type] || '🔔';
     },
@@ -356,17 +352,17 @@ const NotificationService = {
      */
     getColor(type) {
         const colors = {
-            'assignment_created': 'text-blue-500',
-            'assignment_due_soon': 'text-orange-500',
-            'assignment_due_today': 'text-red-500',
-            'assignment_overdue': 'text-red-600',
-            'submission_received': 'text-green-500',
-            'submission_graded': 'text-emerald-500',
-            'submission_returned': 'text-yellow-500',
-            'course_enrolled': 'text-purple-500',
-            'achievement_earned': 'text-amber-500',
-            'announcement': 'text-indigo-500',
-            'system': 'text-gray-500'
+            assignment_created: 'text-blue-500',
+            assignment_due_soon: 'text-orange-500',
+            assignment_due_today: 'text-red-500',
+            assignment_overdue: 'text-red-600',
+            submission_received: 'text-green-500',
+            submission_graded: 'text-emerald-500',
+            submission_returned: 'text-yellow-500',
+            course_enrolled: 'text-purple-500',
+            achievement_earned: 'text-amber-500',
+            announcement: 'text-indigo-500',
+            system: 'text-gray-500',
         };
         return colors[type] || 'text-gray-500';
     },
@@ -388,7 +384,7 @@ const NotificationService = {
         if (diffMins < 60) return `${diffMins} dk önce`;
         if (diffHours < 24) return `${diffHours} saat önce`;
         if (diffDays < 7) return `${diffDays} gün önce`;
-        
+
         return date.toLocaleDateString('tr-TR');
     },
 
@@ -417,7 +413,7 @@ const NotificationService = {
 
         // İlk yüklemede sayıyı al
         this.getUnreadCount();
-    }
+    },
 };
 
 export default NotificationService;
