@@ -421,4 +421,277 @@
     .dashboard-content {
         @apply p-4;
     }
+
+    /* ============================================
+       LESSON PAGE - Research Lab Theme
+       ============================================ */
+
+    /* Dark Glassmorphic Content Panel */
+    .lesson-content-panel {
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .lesson-content-panel h2,
+    .lesson-content-panel h3,
+    .lesson-content-panel h4,
+    .lesson-content-panel p,
+    .lesson-content-panel span,
+    .lesson-content-panel li,
+    .lesson-content-panel label {
+        @apply text-white;
+    }
+
+    .lesson-content-panel .text-gray-600,
+    .lesson-content-panel .text-gray-700,
+    .lesson-content-panel .text-gray-800 {
+        @apply text-slate-300;
+    }
+
+    .lesson-content-panel .text-gray-400,
+    .lesson-content-panel .text-gray-500 {
+        @apply text-slate-400;
+    }
+
+    /* Header section in lesson panel */
+    .lesson-header {
+        background: rgba(15, 23, 42, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Tab Buttons - Glowing Orange Active State */
+    .lesson-tab {
+        @apply relative px-5 py-3.5 text-sm font-semibold transition-all duration-300;
+        color: rgba(255, 255, 255, 0.6);
+        background: transparent;
+        border-bottom: 2px solid transparent;
+    }
+
+    .lesson-tab:hover {
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 140, 0, 0.1);
+    }
+
+    .lesson-tab.active {
+        color: #fff;
+        background: rgba(255, 140, 0, 0.15);
+        border-bottom-color: transparent;
+    }
+
+    .lesson-tab.active::after {
+        content: '';
+        @apply absolute bottom-0 left-2 right-2 h-0.5;
+        background: linear-gradient(90deg, var(--cta-start, #ff8c00), var(--cta-end, #ff4500));
+        box-shadow:
+            0 0 12px rgba(255, 140, 0, 0.6),
+            0 0 24px rgba(255, 140, 0, 0.3);
+        border-radius: 2px;
+    }
+
+    .lesson-tab-icon {
+        @apply mr-2 text-base;
+    }
+
+    /* Tab container */
+    .lesson-tabs-container {
+        background: rgba(15, 23, 42, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Content Area - Dark Theme */
+    .lesson-content-area {
+        @apply p-6;
+        background: rgba(15, 23, 42, 0.5);
+    }
+
+    .lesson-content-area .bg-gray-50,
+    .lesson-content-area .bg-gray-100 {
+        background: rgba(30, 41, 59, 0.8) !important;
+        @apply border border-slate-600/50 text-white;
+    }
+
+    .lesson-content-area .bg-white {
+        background: rgba(30, 41, 59, 0.9) !important;
+        @apply border border-slate-600/30 text-white;
+    }
+
+    .lesson-content-area .bg-yellow-50 {
+        background: rgba(234, 179, 8, 0.15) !important;
+        @apply border-l-4 border-yellow-500;
+    }
+
+    .lesson-content-area .bg-blue-50 {
+        background: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    /* Code Blocks - Dark Inset Background */
+    .lesson-content-area pre,
+    .lesson-content-area code {
+        @apply bg-slate-900 text-green-400 border border-slate-700;
+    }
+
+    .lesson-content-area .code-scroll {
+        background: #0d1117 !important;
+        @apply border border-slate-700 rounded-lg;
+    }
+
+    /* Quiz Styling */
+    .lesson-content-area .quiz-question {
+        background: rgba(30, 41, 59, 0.8) !important;
+        @apply border border-slate-600/50;
+    }
+
+    .lesson-content-area .quiz-question p {
+        @apply text-white;
+    }
+
+    .lesson-content-area .quiz-question button {
+        background: rgba(51, 65, 85, 0.8) !important;
+        @apply text-white border-slate-600 hover:bg-slate-600;
+    }
+
+    /* Materials Cards */
+    .lesson-content-area .flex.items-start.bg-white,
+    .lesson-content-area .flex.items-center.bg-gray-50 {
+        background: rgba(30, 41, 59, 0.8) !important;
+        @apply border border-slate-600/50 rounded-lg;
+    }
+
+    .lesson-content-area .flex.items-start.bg-white h4,
+    .lesson-content-area .flex.items-start.bg-white p {
+        @apply text-white;
+    }
+
+    /* Navigation Buttons - Brand Gradient */
+    .lesson-nav-btn {
+        @apply relative px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 transform;
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(255, 140, 0, 0.3);
+        color: #fff;
+    }
+
+    .lesson-nav-btn:hover {
+        @apply scale-105;
+        border-color: rgba(255, 140, 0, 0.6);
+        box-shadow:
+            0 0 20px rgba(255, 140, 0, 0.25),
+            inset 0 0 20px rgba(255, 140, 0, 0.05);
+    }
+
+    .lesson-nav-btn:active {
+        @apply scale-95;
+    }
+
+    .lesson-nav-btn.primary {
+        background: linear-gradient(135deg, var(--cta-start, #ff8c00), var(--cta-end, #ff4500));
+        border: none;
+        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+    }
+
+    .lesson-nav-btn.primary:hover {
+        box-shadow: 0 6px 25px rgba(255, 140, 0, 0.5);
+    }
+
+    /* ============================================
+       VIRTUAL LAB - Research Lab Frame
+       ============================================ */
+    .virtual-lab-container {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        @apply rounded-xl overflow-hidden;
+    }
+
+    .virtual-lab-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        @apply px-4 py-3 flex justify-between items-center;
+    }
+
+    .virtual-lab-title {
+        @apply font-bold text-white tracking-wide flex items-center gap-2;
+    }
+
+    /* Live Badge with Pulse Animation */
+    .live-badge {
+        @apply relative px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: white;
+        box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+    }
+
+    .live-badge::before {
+        content: '';
+        @apply absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full;
+        background: #fff;
+        animation: live-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes live-pulse {
+        0%,
+        100% {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            opacity: 0.5;
+            transform: translateY(-50%) scale(1.3);
+        }
+    }
+
+    /* Fullscreen Toggle Button */
+    .fullscreen-btn {
+        @apply p-2 rounded-lg transition-all duration-300;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    .fullscreen-btn:hover {
+        background: rgba(255, 140, 0, 0.2);
+        border-color: rgba(255, 140, 0, 0.5);
+        box-shadow: 0 0 15px rgba(255, 140, 0, 0.3);
+    }
+
+    .virtual-lab-content {
+        @apply relative flex-grow flex flex-col justify-center items-center;
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .virtual-lab-controls {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        @apply p-3;
+    }
+
+    /* Info Box - Dark Theme */
+    .virtual-lab-info {
+        background: rgba(30, 58, 138, 0.3);
+        border-top: 1px solid rgba(59, 130, 246, 0.3);
+        @apply p-4 text-sm;
+    }
+
+    .virtual-lab-info,
+    .virtual-lab-info span,
+    .virtual-lab-info p {
+        @apply text-blue-100;
+    }
+
+    .virtual-lab-info #info-title {
+        @apply text-white font-bold text-lg;
+    }
+
+    /* Chart Card - Dark Theme */
+    .chart-card {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        @apply rounded-xl p-4;
+    }
+
+    .chart-card h4 {
+        @apply text-slate-400;
+    }
 }

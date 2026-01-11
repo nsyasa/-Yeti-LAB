@@ -279,68 +279,74 @@
                 <!-- SOL KOLON: Simülasyon -->
                 <div class="w-full lg:w-5/12 flex flex-col space-y-4" id="left-column">
                     <div class="flex gap-2 mb-2">
-                        <button
-                            onclick="app.renderDashboard()"
-                            class="text-sm text-gray-700 dark:text-gray-200 hover:text-white hover:bg-theme flex items-center gap-2 font-bold bg-white dark:bg-gray-800 px-5 py-2.5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 group"
-                        >
+                        <button onclick="app.renderDashboard()" class="lesson-nav-btn flex items-center gap-2 group">
                             <span class="group-hover:-translate-x-1 transition-transform duration-300">←</span> Geri
                         </button>
-                        <button
-                            onclick="app.toggleSidebar()"
-                            class="text-sm text-white bg-theme hover:brightness-90 flex items-center font-bold px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition"
-                        >
-                            ☰ Ders Listesi
+                        <button onclick="app.toggleSidebar()" class="lesson-nav-btn primary flex items-center gap-2">
+                            <span>☰</span> Ders Listesi
                         </button>
                     </div>
 
                     <!-- Simülatör / İnteraktif Kart -->
                     <div
                         id="sim-container"
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col relative"
+                        class="virtual-lab-container flex flex-col relative"
                         style="min-height: 450px"
                     >
-                        <div class="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-                            <h3 class="font-bold tracking-wide flex items-center" id="sim-title">
-                                <span class="mr-2">🔬</span> Sanal Laboratuvar
-                            </h3>
-                            <span class="text-xs bg-green-600 px-2 py-1 rounded text-white" id="sim-badge">CANLI</span>
+                        <div class="virtual-lab-header">
+                            <h3 class="virtual-lab-title" id="sim-title"><span>🔬</span> Sanal Laboratuvar</h3>
+                            <div class="flex items-center gap-3">
+                                <span class="live-badge" id="sim-badge">
+                                    <span class="ml-3">CANLI</span>
+                                </span>
+                                <button
+                                    onclick="UI.toggleFullscreen('sim-container')"
+                                    class="fullscreen-btn"
+                                    title="Tam Ekran"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path
+                                            d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
-                        <div
-                            class="p-0 bg-gray-100 relative flex-grow flex flex-col justify-center items-center overflow-hidden"
-                            id="sim-content-area"
-                            style="height: 250px"
-                        >
-                            <!-- Mobile: 250px, Desktop: will be overridden by CSS -->
+                        <div class="virtual-lab-content overflow-hidden" id="sim-content-area" style="height: 250px">
                             <!-- Canvas (Simülasyon Çizimleri) -->
                             <canvas id="simCanvas" class="w-full h-full object-contain hidden"></canvas>
 
                             <!-- İnteraktif Görsel (Board Tanıtımı) -->
-                            <div id="interactive-area" class="w-full h-full relative hidden bg-gray-200"></div>
+                            <div id="interactive-area" class="w-full h-full relative hidden"></div>
 
                             <!-- Kontrol Paneli (Butonlar/Sliderlar) -->
                             <div
                                 id="simControls"
-                                class="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur p-3 border-t border-gray-200 dark:border-gray-700 shadow-inner z-30"
+                                class="virtual-lab-controls absolute bottom-0 left-0 right-0 z-30"
                             ></div>
                         </div>
 
                         <!-- Bilgi Kutusu (Parça açıklamaları için) -->
-                        <div
-                            id="interactive-info"
-                            class="p-4 bg-blue-50 border-t border-blue-100 text-sm text-blue-900 hidden h-32 overflow-y-auto font-medium transition-all"
-                        >
+                        <div id="interactive-info" class="virtual-lab-info hidden h-32 overflow-y-auto transition-all">
                             <span class="font-bold text-lg block mb-1" id="info-title">Keşfet</span>
                             <span id="info-desc">Parçaların üzerine gelerek ne işe yaradıklarını öğren.</span>
                         </div>
                     </div>
 
                     <!-- Grafik Kartı -->
-                    <div
-                        id="chart-card"
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 hidden"
-                    >
-                        <h4 class="text-xs font-bold text-gray-500 uppercase mb-2 flex justify-between items-center">
+                    <div id="chart-card" class="chart-card hidden">
+                        <h4 class="text-xs font-bold uppercase mb-2 flex justify-between items-center">
                             <span>📊 Veri Grafiği (Serial Plotter)</span>
                         </h4>
                         <div class="chart-container">
@@ -351,38 +357,33 @@
 
                 <!-- SAĞ KOLON: İçerik (Sekmeler) -->
                 <div
-                    class="w-full lg:w-7/12 flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+                    class="lesson-content-panel w-full lg:w-7/12 flex flex-col rounded-xl overflow-hidden"
                     style="min-height: 600px"
                 >
-                    <div class="p-6 border-b border-gray-100 bg-gray-50">
+                    <div class="lesson-header p-6">
                         <div class="flex justify-between items-start">
                             <div>
                                 <span
                                     id="project-tag"
-                                    class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 uppercase tracking-wider text-white bg-theme shadow-sm"
+                                    class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 to-red-500 shadow-sm"
                                     >Giriş</span
                                 >
-                                <h2
-                                    id="project-title"
-                                    class="text-2xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
-                                >
-                                    Başlık
-                                </h2>
+                                <h2 id="project-title" class="text-2xl font-bold text-white leading-tight">Başlık</h2>
                             </div>
                             <div class="text-5xl cursor-default" id="project-icon">⚡</div>
                         </div>
-                        <p id="project-desc" class="mt-2 text-gray-600 dark:text-gray-300">Açıklama...</p>
+                        <p id="project-desc" class="mt-2 text-slate-300">Açıklama...</p>
                     </div>
 
                     <div
                         id="project-tabs-container"
-                        class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto bg-white dark:bg-gray-800 sticky top-0 z-10"
+                        class="lesson-tabs-container flex overflow-x-auto sticky top-0 z-10"
                     >
                         <!-- Tab buttons are dynamically generated by UI.renderTabs() -->
                     </div>
 
                     <div
-                        class="p-6 overflow-y-auto flex-grow h-[500px] bg-white dark:bg-gray-800 relative"
+                        class="lesson-content-area overflow-y-auto flex-grow h-[500px] relative"
                         id="tab-content-area"
                     ></div>
                 </div>

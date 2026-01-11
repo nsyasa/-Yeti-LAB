@@ -787,7 +787,20 @@ const UI = {
             customTabNames = courseData?.customTabNames || {};
         }
 
-        // Render Buttons
+        // Tab icons mapping
+        const tabIcons = {
+            mission: '🎯',
+            materials: '🔧',
+            circuit: '⚡',
+            design: '🎨',
+            code: '💻',
+            blocks: '🧩',
+            challenge: '🏆',
+            tip: '💡',
+            quiz: '📝',
+        };
+
+        // Render Buttons with icons and new styling
         btnContainer.innerHTML = tabs
             .map((t) => {
                 // Priority: customTabNames > I18n translation > default label
@@ -804,18 +817,15 @@ const UI = {
                     }
                 }
 
-                return `<button class="tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme hover:bg-gray-50 border-b-2 border-transparent transition whitespace-nowrap" data-tab="${t.id}">${label}</button>`;
+                const icon = tabIcons[t.id] || '📄';
+                return `<button class="lesson-tab whitespace-nowrap" data-tab="${t.id}"><span class="lesson-tab-icon">${icon}</span>${label}</button>`;
             })
             .join('');
 
-        const btns = document.querySelectorAll('.tab-btn');
+        const btns = document.querySelectorAll('.lesson-tab');
         const clickHandler = (b) => {
-            btns.forEach(
-                (t) =>
-                    (t.className =
-                        'tab-btn px-4 py-3 text-sm font-bold text-gray-500 hover-text-theme border-b-2 border-transparent')
-            );
-            b.className = 'tab-btn px-4 py-3 text-sm font-bold text-theme border-b-2 border-theme';
+            btns.forEach((t) => t.classList.remove('active'));
+            b.classList.add('active');
             area.innerHTML = content[b.dataset.tab] || I18n.t('no_content');
         };
 
@@ -823,6 +833,18 @@ const UI = {
 
         // Click first
         if (btns.length > 0) clickHandler(btns[0]);
+    },
+
+    // --- Fullscreen Toggle ---
+    toggleFullscreen: (elementId) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        if (!document.fullscreenElement) {
+            element.requestFullscreen?.() || element.webkitRequestFullscreen?.() || element.msRequestFullscreen?.();
+        } else {
+            document.exitFullscreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+        }
     },
 
     // --- Modal & Info ---
