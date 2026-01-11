@@ -22,19 +22,19 @@ test.describe('Lazy Loading & SPA Navigation', () => {
 
         // Wait for navigation - either auth.html redirect OR stay on admin with login prompt
         // The app uses Router.redirectTo('auth.html') which does window.location.href = 'auth.html'
-        // This should result in a URL containing 'auth.html' or 'auth' 
+        // This should result in a URL containing 'auth.html' or 'auth'
         await page.waitForTimeout(2000); // Wait for async auth check
-        
+
         // Check if redirected to auth page (either auth.html or hash route)
         const url = page.url();
         const isOnAuthPage = url.includes('auth.html') || url.includes('#/auth') || url.includes('/auth');
-        
+
         // If not redirected, check if there's a login requirement shown
         if (!isOnAuthPage) {
             // AdminView should at least show some loading or restricted message
             console.log(`[Test] Current URL: ${url}`);
         }
-        
+
         // Accept either auth redirect or staying on page (for error handling scenarios)
         expect(isOnAuthPage || url.includes('admin')).toBeTruthy();
     });
@@ -44,15 +44,15 @@ test.describe('Lazy Loading & SPA Navigation', () => {
 
         // Wait for navigation - either auth.html redirect OR stay on teacher with login prompt
         await page.waitForTimeout(2000); // Wait for async auth check
-        
+
         // Check if redirected to auth page
         const url = page.url();
         const isOnAuthPage = url.includes('auth.html') || url.includes('#/auth') || url.includes('/auth');
-        
+
         if (!isOnAuthPage) {
             console.log(`[Test] Current URL: ${url}`);
         }
-        
+
         // Accept either auth redirect or staying on page
         expect(isOnAuthPage || url.includes('teacher')).toBeTruthy();
     });
