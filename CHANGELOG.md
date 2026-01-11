@@ -6,6 +6,72 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.1.0] - 2026-01-11
+
+### 🎨 Tasarım Sistemi Güncellemesi
+
+#### Global CSS Değişken Sistemi
+
+- **CSS Variables**: Tüm sayfalarda tutarlılık için kapsamlı `:root` değişken sistemi eklendi
+    - `--cta-start` / `--cta-end`: Turuncu-kırmızı gradient (#FF8C00 → #FF4500)
+    - `--lab-bg-dark`: Deep navy background (#0F172A) tüm sayfalarda varsayılan
+    - `--glass-bg`, `--glass-blur`: Glassmorphism efektleri için değişkenler
+    - Responsive typography: `clamp()` ile dinamik heading boyutları
+- **Progress Bars**: Tüm ilerleme çubukları artık CTA gradient kullanıyor
+- **Active States**: Tüm aktif durumlar (tabs, nav items) unified turuncu accent
+- **Z-index Scale**: Bileşenler arası katmanlama için sistematik ölçek
+
+#### Research Lab Teması - Lesson Page
+
+- **Dark Glassmorphic Panel**: İçerik alanı #0F172A bazlı 85% opacity glassmorphism
+- **Tab Navigation**:
+    - Her sekme için tutarlı ikonlar (🎯 Mission, 🔧 Materials, ⚡ Circuit, etc.)
+    - Aktif sekmede glowing turuncu underline + box-shadow efekti
+    - Hover states ile subtle background highlight
+- **Virtual Lab Container**:
+    - Pulsing "CANLI" badge with red animation (`@keyframes live-pulse`)
+    - Entegre fullscreen toggle butonu (SVG icon)
+    - `UI.toggleFullscreen()` fonksiyonu eklendi
+- **Navigation Buttons**: Brand gradient ile stilize edilmiş Geri/Ders Listesi butonları
+- **Accessibility**: Tüm metinler white/light-gray, kod blokları dark inset background
+
+#### Dashboard Glassmorphism Redesign
+
+- **Lesson Cards**: Solid white yerine dark glassmorphic containers
+    - `rgba(30, 41, 59, 0.75)` arka plan + `backdrop-filter: blur(10px)`
+    - Hover: border-color turuncu glow efekti
+- **Mini Progress Bars**: Her kartın altında turuncu-kırmızı gradient ilerleme
+- **Phase Headers**:
+    - Glowing icons with `@keyframes icon-glow` animation
+    - Gradient underline (60% width)
+- **Locked States**:
+    - Blur overlay + lock icon guests için
+    - Login olmayan kullanıcılar intro dışındaki dersleri kilidi görür
+- **Sidebar**: Dark mode glassmorphism + orange accent colors
+
+### 🤖 AI Asistan İyileştirmeleri
+
+- **Global Positioning**: BANA SOR artık tüm sayfalarda görünür (Homepage, Dashboard, Lesson)
+- **Consistent Placement**:
+    - Mobil: `bottom: 6rem` (bottom nav üzerinde)
+    - Desktop: `bottom: 1.5rem, right: 1.5rem`
+- **Z-index**: `var(--z-assistant)` ile proper layering
+
+### 📱 Mobile & Responsive
+
+- **Bottom Navigation**: Glassmorphic bar with backdrop blur
+- **Active Indicators**: Turuncu gradient bottom border on active nav items
+- **Course Grid**: 2-column layout on mobile with proper spacing
+
+### 🔧 Teknik İyileştirmeler
+
+- **Tailwind v4**: Theme değişkenleri `@theme` bloğunda konsolide edildi
+- **Component Layer**: `.lesson-card`, `.lesson-tab`, `.virtual-lab-container` etc.
+- **Animation System**: Standardize edilmiş keyframe animasyonları
+- **Typography Scale**: Consistent h1-h4 sizing across all pages
+
+---
+
 ## [1.0.1] - 2026-01-11
 
 ### 🔧 İyileştirmeler & Düzeltmeler
