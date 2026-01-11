@@ -78,4 +78,53 @@ Aşağıdaki sırayla ilerlenmesi önerilir:
 
 ---
 
-_Bu rapor Antigravity tarafından 10.01.2026 tarihinde oluşturulmuştur._
+## 🎯 Yarın Yapılacaklar (Next Sprint - 12-13 Ocak 2026)
+
+### **🎨 GÖREV 1: Admin Panel CSS Beyazlıkları Düzeltme**
+
+- **Zaman:** 30-45 dakika
+- **Başlangıç Kodu:**
+    - `src/input.css` - Admin section CSS'leri
+    - `views/admin/AdminLayout.js`
+    - `views/admin/sections/*.js`
+- **Kontrol Edilecek:**
+    - Admin header/nav beyaz arka planları
+    - Modal arka planları
+    - Input/form alanları
+    - Card/section arka planları
+- **İşlem:** `--lab-bg-dark` ve `--lab-surface` ile koyu tema sağlanacak
+- **Sonuç:** Admin panel tam dark mode uyumlu
+
+### **📝 GÖREV 2: Proje Amacı İçin Zengin Metin Editörü**
+
+- **Zaman:** 20-30 dakika
+- **Başlangıç Kodu:**
+    - `modules/admin/richTextEditor.js` - Önceden hazır
+    - `views/admin/sections/ProjectsSection.js`
+    - `views/admin/modals/AdminModals.js`
+- **İşlem:**
+    - Project creation modalında "Amaç" metin alanı ekle
+    - RichTextEditor widget'ı initialize et
+    - Markdown → HTML dönüşümü
+    - Supabase'e markdown olarak kaydet
+- **Sonuç:** Admin'ler projeler için HTML formatted açıklama yazabilecek
+
+### **🎬 GÖREV 3: Simülasyon Bölümünde YouTube Video Desteği**
+
+- **Zaman:** 25-40 dakika
+- **Başlangıç Kodu:**
+    - `modules/simulations.js` - Data schema
+    - `views/student/SimulationView.js` veya `StudentCourseView.js`
+    - `modules/simulation/simController.js`
+- **İşlem:**
+    - Simülasyon JSON schema'sında `youtube_url` alanı ekle
+    - Video validation (URL parsing)
+    - Responsive iframe embed
+    - Video play butonu ekleme
+- **Sonuç:** Simülasyonlarla ilgili YouTube videoları gösterebilecek
+
+---
+
+**Tahmini Total Zaman:** 75-115 dakika (Bir gün içinde tamamlanabilir)
+
+_Rapor güncellendi: 12 Ocak 2026_
