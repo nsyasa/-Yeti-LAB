@@ -145,8 +145,16 @@ const Navbar = {
             // Logged In
             const user = currentUser;
             const meta = user.user_metadata || {};
-            const role = meta.role || 'student';
+            const role = meta.role || window.Auth?.userRole || 'student';
             const isTeacher = role === 'teacher' || (window.Auth && window.Auth.isTeacher());
+
+            // Get display name from Auth module (more reliable) or fallback to metadata
+            const displayName =
+                window.Auth?.getDisplayName?.() ||
+                meta.full_name ||
+                meta.name ||
+                user.email?.split('@')[0] ||
+                'Kullanıcı';
 
             // Avatar İşlemi
             const avatarUrl = meta.avatar_url || '👤';
@@ -165,7 +173,7 @@ const Navbar = {
                         <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-600 group-hover:border-theme transition-colors">
                             ${avatarHtml}
                         </div>
-                        <span class="hidden md:inline font-bold text-gray-700 dark:text-gray-200 text-sm max-w-[100px] truncate">${meta.full_name || 'Kullanıcı'}</span>
+                        <span class="hidden md:inline font-bold text-gray-700 dark:text-gray-200 text-sm max-w-[100px] truncate">${displayName}</span>
                         <span class="text-xs text-gray-400">▼</span>
                     </button>
 
@@ -178,7 +186,7 @@ const Navbar = {
                                     ${avatarHtml}
                                 </div>
                                 <div>
-                                    <div class="font-bold text-gray-800 dark:text-white text-sm">${meta.full_name || 'Misafir'}</div>
+                                    <div class="font-bold text-gray-800 dark:text-white text-sm">${displayName}</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">${isAdmin ? 'Yönetici Hesabı' : isTeacher ? 'Eğitmen Hesabı' : 'Öğrenci Hesabı'}</div>
                                 </div>
                             </div>

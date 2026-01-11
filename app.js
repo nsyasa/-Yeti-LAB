@@ -77,7 +77,7 @@ const app = {
         getCompletionRate: (key) => window.Progress?.getRate(key) || 0,
     },
 
-    init: () => {
+    init: async () => {
         // Global Logout Alias for Component Compatibility
         window.logout = app.logout;
 
@@ -88,7 +88,9 @@ const app = {
             if (window.ScrollManager) {
                 window.ScrollManager.init();
             }
-            app.initAuth(); // Auth durumunu kontrol et, Progress da burada başlatılacak
+
+            // CRITICAL: Auth must complete before UI renders to show correct user state
+            await app.initAuth(); // Auth durumunu kontrol et, Progress da burada başlatılacak
 
             // Progress callback'i ayarla (init auth içinde çağrılacak)
             if (window.Progress) {
@@ -108,7 +110,7 @@ const app = {
             window.Search?.init(app.selectCourse, app.loadProject);
             window.Assistant?.init();
 
-            // Navbar'ı başlat
+            // Navbar'ı başlat (Auth tamamlandıktan sonra)
             if (window.MainLayout) {
                 try {
                     window.MainLayout.init();
@@ -163,9 +165,9 @@ const app = {
 
     // --- Auth Management ---
     // Refactored to modules/authUI.js (FAZ 4.1 Part 2)
-    initAuth: () => {
+    initAuth: async () => {
         if (window.AuthUI) {
-            window.AuthUI.init();
+            await window.AuthUI.init();
         } else {
             console.error('[App] AuthUI module not found');
         }

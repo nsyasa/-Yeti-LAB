@@ -23,7 +23,7 @@ const TeacherModals = {
      */
     createClassroomModal() {
         return `
-            <div id="createClassroomModal" class="modal-overlay">
+            <div id="createClassroomModal" class="modal-overlay hidden">
                 <div class="modal-content">
                     <h3 class="text-xl font-bold mb-4">🏫 Yeni Sınıf Oluştur</h3>
                     <form id="createClassroomForm" onsubmit="TeacherManager.createClassroom(event)">
@@ -60,7 +60,7 @@ const TeacherModals = {
      */
     viewClassroomModal() {
         return `
-            <div id="viewClassroomModal" class="modal-overlay">
+            <div id="viewClassroomModal" class="modal-overlay hidden">
                 <div class="modal-content">
                     <div class="flex justify-between items-start mb-4">
                         <h3 id="viewClassroomName" class="text-xl font-bold">Sınıf Adı</h3>
@@ -91,7 +91,7 @@ const TeacherModals = {
      */
     addStudentModal() {
         return `
-            <div id="addStudentModal" class="modal-overlay">
+            <div id="addStudentModal" class="modal-overlay hidden">
                 <div class="modal-content">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-bold">👨‍🎓 Öğrenci Ekle</h3>
@@ -171,7 +171,7 @@ const TeacherModals = {
      */
     bulkAddModal() {
         return `
-            <div id="bulkAddModal" class="modal-overlay">
+            <div id="bulkAddModal" class="modal-overlay hidden">
                 <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-bold">📋 Toplu Öğrenci Ekle</h3>
@@ -258,7 +258,7 @@ const TeacherModals = {
      */
     classroomSettingsModal() {
         return `
-            <div id="classroomSettingsModal" class="modal-overlay">
+            <div id="classroomSettingsModal" class="modal-overlay hidden">
                 <div class="modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
                     <div class="flex justify-between items-start mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2 z-10 border-b border-gray-100 dark:border-gray-700">
                         <h3 class="text-xl font-bold">⚙️ Sınıf Ayarları</h3>
@@ -362,7 +362,7 @@ const TeacherModals = {
      */
     editStudentModal() {
         return `
-            <div id="editStudentModal" class="modal-overlay">
+            <div id="editStudentModal" class="modal-overlay hidden">
                 <div class="modal-content">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-bold">✏️ Öğrenci Düzenle</h3>
@@ -440,7 +440,7 @@ const TeacherModals = {
      */
     studentDetailModal() {
         return `
-            <div id="studentDetailModal" class="modal-overlay">
+            <div id="studentDetailModal" class="modal-overlay hidden">
                 <div class="modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center gap-3">

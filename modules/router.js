@@ -18,6 +18,9 @@ const Router = {
         teacher: 'teacher', // Teacher dashboard
         'teacher/classrooms': 'teacher-classrooms', // Sınıflar
         'teacher/students': 'teacher-students', // Öğrenciler
+        'teacher/assignments': 'teacher-assignments', // Ödevler
+        'teacher/courses': 'teacher-courses', // Dersler
+        'teacher/analytics': 'teacher-analytics', // Analitik
         // Admin Panel Routes (SPA)
         admin: 'admin', // Admin dashboard/projects
         'admin/projects': 'admin-projects', // Ders yönetimi
@@ -172,6 +175,9 @@ const Router = {
             case 'teacher':
             case 'teacher-classrooms':
             case 'teacher-students':
+            case 'teacher-assignments':
+            case 'teacher-courses':
+            case 'teacher-analytics':
                 if (window.ViewLoader) await window.ViewLoader.loadTeacherView(route);
                 break;
 

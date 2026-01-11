@@ -121,6 +121,12 @@ const Auth = {
         if (error) throw error;
 
         this.currentUser = data.user;
+
+        // Update Store immediately so UI can react
+        if (window.Store) {
+            window.Store.setUser(this.currentUser);
+        }
+
         await this.loadUserProfile();
 
         return data;

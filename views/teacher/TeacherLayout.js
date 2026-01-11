@@ -1,112 +1,209 @@
 /**
- * TeacherLayout - Tab Navigation ve Header render fonksiyonları
- * Teacher panel için layout bileşenleri (Sidebar kaldırıldı)
+ * TeacherLayout - Single Screen Dashboard Layout Components
+ * Compact Header with Tab Navigation, Mobile Bottom Nav
+ * 100vh viewport - masaüstü uygulaması hissi
  */
 const TeacherLayout = {
     /**
-     * Tab Navigation - Yatay menü (Sidebar yerine)
+     * Compact Header - Tab Navigation ile (h-14)
      */
-    renderTabNav() {
+    renderCompactHeader() {
         return `
-            <div class="teacher-tab-nav bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div class="flex items-center justify-between h-11">
-                        <!-- Tab Buttons -->
-                        <div class="flex items-center gap-0.5 sm:gap-1 overflow-x-auto">
-                            <button onclick="TeacherView.showSection('dashboard')"
-                                class="teacher-tab-btn flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-                                data-section="dashboard">
-                                <span>📊</span>
-                                <span class="hidden sm:inline">Panel</span>
-                            </button>
-
-                            <button onclick="TeacherView.showSection('classrooms')"
-                                class="teacher-tab-btn flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-                                data-section="classrooms">
-                                <span>🏫</span>
-                                <span class="hidden sm:inline">Sınıflar</span>
-                            </button>
-                            
-                            <button onclick="TeacherView.showSection('students')"
-                                class="teacher-tab-btn flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-                                data-section="students">
-                                <span>👨‍🎓</span>
-                                <span class="hidden sm:inline">Öğrenciler</span>
-                            </button>
-
-                            <button onclick="TeacherView.showSection('assignments')"
-                                class="teacher-tab-btn flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-                                data-section="assignments">
-                                <span>📋</span>
-                                <span class="hidden sm:inline">Ödevler</span>
-                            </button>
-
-                            <button onclick="TeacherView.showSection('courses')"
-                                class="teacher-tab-btn flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-                                data-section="courses">
-                                <span>📚</span>
-                                <span class="hidden sm:inline">Kurslar</span>
-                            </button>
-
-                            <button onclick="TeacherView.showSection('analytics')"
-                                class="teacher-tab-btn flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-                                data-section="analytics">
-                                <span>📈</span>
-                                <span class="hidden sm:inline">Analytics</span>
-                            </button>
-                        </div>
+            <header class="teacher-compact-header bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 flex-shrink-0 z-30">
+                
+                <!-- Top Row: Logo + Actions -->
+                <div class="h-12 flex items-center px-4 gap-4 border-b border-slate-100 dark:border-slate-700/50">
+                    <!-- Logo & Title -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🎓</span>
+                        <h1 class="text-sm font-bold text-slate-800 dark:text-white">Öğretmen Paneli</h1>
+                    </div>
+                    
+                    <!-- Spacer -->
+                    <div class="flex-1"></div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2">
                         
-                        <!-- Action Buttons -->
-                        <div class="flex items-center gap-1.5">
-                            <!-- Theme Toggle -->
-                            <button onclick="ThemeManager?.toggle()"
-                                class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                title="Tema Değiştir">
-                                <span id="teacherThemeIcon" class="text-sm">🌙</span>
-                            </button>
-                            
-                            <!-- New Class Button -->
-                            <button onclick="TeacherManager?.openCreateClassroomModal()"
-                                class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-theme text-white rounded-lg font-semibold hover:brightness-110 transition-all shadow-sm text-sm">
-                                <span>+</span>
-                                <span>Yeni Sınıf</span>
-                            </button>
-                            
-                            <!-- Mobile: Just icon -->
-                            <button onclick="TeacherManager?.openCreateClassroomModal()"
-                                class="sm:hidden p-1.5 bg-theme text-white rounded-lg hover:brightness-110 transition-all shadow-sm"
-                                title="Yeni Sınıf">
-                                <span class="text-sm">+</span>
-                            </button>
-                        </div>
+                        <!-- Theme Toggle -->
+                        <button onclick="ThemeManager?.toggle()"
+                            class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
+                            title="Tema Değiştir">
+                            <span id="teacherThemeIcon" class="text-sm">🌙</span>
+                        </button>
+                        
+                        <!-- Back to Main -->
+                        <a href="/#/" 
+                            class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
+                            title="Ana Sayfaya Dön">
+                            <span class="text-sm">🏠</span>
+                        </a>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Tab Navigation Row -->
+                <div class="h-11 flex items-center px-4 gap-1 overflow-x-auto scrollbar-hide">
+                    <button onclick="TeacherView.showSection('classrooms')"
+                        class="teacher-header-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                        data-section="classrooms">
+                        <span>🏫</span>
+                        <span>Sınıflar</span>
+                    </button>
+                    
+                    <button onclick="TeacherView.showSection('students')"
+                        class="teacher-header-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                        data-section="students">
+                        <span>👨‍🎓</span>
+                        <span>Öğrenciler</span>
+                    </button>
+                    
+                    <button onclick="TeacherView.showSection('assignments')"
+                        class="teacher-header-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                        data-section="assignments">
+                        <span>📋</span>
+                        <span>Ödevler</span>
+                    </button>
+                    
+                    <button onclick="TeacherView.showSection('courses')"
+                        class="teacher-header-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                        data-section="courses">
+                        <span>📚</span>
+                        <span>Kurslar</span>
+                    </button>
+                    
+                    <button onclick="TeacherView.showSection('analytics')"
+                        class="teacher-header-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                        data-section="analytics">
+                        <span>📈</span>
+                        <span>Analytics</span>
+                    </button>
+                </div>
+            </header>
         `;
+    },
+
+    /**
+     * Left Sidebar - Desktop Navigation (Artık kullanılmıyor, header tab nav var)
+     */
+    renderSidebar() {
+        return ''; // Sidebar kaldırıldı, header'da tab navigation var
+    },
+
+    /**
+     * Mobile Bottom Navigation - Fixed bottom (lg:hidden)
+     */
+    renderMobileBottomNav() {
+        return `
+            <nav class="teacher-mobile-nav lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-700 flex items-center justify-around px-2 z-40">
+                
+                <button onclick="TeacherView.showSection('classrooms')"
+                    class="teacher-mobile-nav-item flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-all"
+                    data-section="classrooms">
+                    <span class="text-xl">🏫</span>
+                    <span class="text-[10px] font-medium">Sınıflar</span>
+                </button>
+                
+                <button onclick="TeacherView.showSection('students')"
+                    class="teacher-mobile-nav-item flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-all"
+                    data-section="students">
+                    <span class="text-xl">👨‍🎓</span>
+                    <span class="text-[10px] font-medium">Öğrenciler</span>
+                </button>
+                
+                <button onclick="TeacherView.showSection('courses')"
+                    class="teacher-mobile-nav-item flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-all"
+                    data-section="courses">
+                    <span class="text-xl">📚</span>
+                    <span class="text-[10px] font-medium">Kurslar</span>
+                </button>
+                
+                <button onclick="TeacherView.showSection('analytics')"
+                    class="teacher-mobile-nav-item flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-all"
+                    data-section="analytics">
+                    <span class="text-xl">📈</span>
+                    <span class="text-[10px] font-medium">Analiz</span>
+                </button>
+                
+            </nav>
+        `;
+    },
+
+    /**
+     * Legacy support - Tab Navigation (kullanılmıyor artık)
+     */
+    renderTabNav() {
+        return ''; // Header'da tab navigation var
     },
 
     /**
      * User bilgilerini güncelle (header'daki bilgiler için)
      */
     updateUserInfo() {
-        // Main header'daki kullanıcı bilgileri Navbar tarafından yönetiliyor
-        // Bu fonksiyon geriye dönük uyumluluk için bırakıldı
         console.log('[TeacherLayout] User info updated via main navbar');
     },
 
     /**
-     * Tab aktif durumunu güncelle
+     * Nav item ve section title güncelle
      */
     updateActiveTab(section) {
-        document.querySelectorAll('.teacher-tab-btn').forEach((btn) => {
-            btn.classList.remove('active', 'bg-theme/10', 'text-theme');
-            btn.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        // Update header tab items
+        document.querySelectorAll('.teacher-header-tab').forEach((btn) => {
+            btn.classList.remove(
+                'active',
+                'bg-emerald-100',
+                'dark:bg-emerald-900/40',
+                'text-emerald-700',
+                'dark:text-emerald-400'
+            );
+            btn.classList.add('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-700');
 
             if (btn.dataset && btn.dataset.section === section) {
-                btn.classList.add('active', 'bg-theme/10', 'text-theme');
-                btn.classList.remove('text-gray-600', 'dark:text-gray-300');
+                btn.classList.add(
+                    'active',
+                    'bg-emerald-100',
+                    'dark:bg-emerald-900/40',
+                    'text-emerald-700',
+                    'dark:text-emerald-400'
+                );
+                btn.classList.remove(
+                    'text-slate-600',
+                    'dark:text-slate-300',
+                    'hover:bg-slate-100',
+                    'dark:hover:bg-slate-700'
+                );
             }
         });
+
+        // Update mobile nav items
+        document.querySelectorAll('.teacher-mobile-nav-item').forEach((btn) => {
+            btn.classList.remove(
+                'active',
+                'bg-emerald-50',
+                'dark:bg-emerald-900/30',
+                'text-emerald-600',
+                'dark:text-emerald-400'
+            );
+            btn.classList.add('text-slate-500', 'dark:text-slate-400');
+
+            if (btn.dataset && btn.dataset.section === section) {
+                btn.classList.add(
+                    'active',
+                    'bg-emerald-50',
+                    'dark:bg-emerald-900/30',
+                    'text-emerald-600',
+                    'dark:text-emerald-400'
+                );
+                btn.classList.remove('text-slate-500', 'dark:text-slate-400');
+            }
+        });
+    },
+
+    /**
+     * Sidebar stats güncelle (artık header'da yok ama uyumluluk için)
+     */
+    updateSidebarStats(classes, students) {
+        // Header'da stat gösterimi yok, ama fonksiyon uyumluluk için kalıyor
+        console.log('[TeacherLayout] Stats:', classes, 'classes,', students, 'students');
     },
 };
 

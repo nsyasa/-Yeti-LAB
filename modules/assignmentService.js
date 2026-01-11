@@ -34,10 +34,8 @@ export const AssignmentService = {
                 .select(
                     `
                     *,
-                    classroom:classrooms!assignments_classroom_id_fkey(id, name, code),
-                    course:courses!assignments_course_id_fkey(id, title, slug),
-                    submission_count:submissions(count),
-                    rubric:rubrics(*)
+                    classroom:classrooms(id, name, code),
+                    course:courses(id, title, slug)
                 `
                 )
                 .order(orderBy, { ascending: orderDirection === 'asc' })
@@ -58,11 +56,8 @@ export const AssignmentService = {
 
             if (error) throw error;
 
-            // Submission count'ı düzelt
-            return data.map((assignment) => ({
-                ...assignment,
-                submission_count: assignment.submission_count?.[0]?.count || 0,
-            }));
+            // Return data directly
+            return data || [];
         } catch (error) {
             console.error('[AssignmentService] getAssignments error:', error);
             throw error;
@@ -84,13 +79,8 @@ export const AssignmentService = {
                 .select(
                     `
                     *,
-                    classroom:classrooms!assignments_classroom_id_fkey(id, name, code),
-                    course:courses!assignments_course_id_fkey(id, title, slug),
-                    rubric:rubrics(*),
-                    submissions(
-                        id, status, grade, submitted_at, graded_at,
-                        student:profiles!submissions_student_id_fkey(id, display_name, avatar_url)
-                    )
+                    classroom:classrooms(id, name, code),
+                    course:courses(id, title, slug)
                 `
                 )
                 .eq('id', assignmentId)
@@ -517,11 +507,7 @@ export const AssignmentService = {
             const supabase = window.SupabaseClient?.client;
             if (!supabase) throw new Error('Supabase client not initialized');
 
-            const { data, error } = await supabase
-                .from('courses')
-                .select('id, title, slug')
-                .eq('is_active', true)
-                .order('title');
+            const { data, error } = await supabase.from('courses').select('id, title, slug').order('title');
 
             if (error) throw error;
             return data || [];

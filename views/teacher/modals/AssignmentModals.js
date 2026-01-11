@@ -17,6 +17,74 @@ const AssignmentModals = {
             ${this.createEditModal()}
             ${this.submissionsModal()}
             ${this.gradeModal()}
+            ${this.bulkAssignModal()}
+        `;
+    },
+
+    /**
+     * Toplu ödev atama modalı - Öğrenci seçimi ile
+     */
+    bulkAssignModal() {
+        return `
+            <div id="bulkAssignModal" class="modal-overlay hidden">
+                <div class="modal-content max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-start mb-6 sticky top-0 bg-white dark:bg-gray-800 pb-4 border-b border-gray-200 dark:border-gray-700 z-10">
+                        <div>
+                            <h3 id="bulkAssignTitle" class="text-xl font-bold text-gray-800 dark:text-white">📋 Ödev Ata</h3>
+                            <p id="bulkAssignSubtitle" class="text-sm text-gray-500 mt-1">Öğrencileri seçin ve ödev atayın</p>
+                        </div>
+                        <button onclick="AssignmentModals.close('bulkAssignModal')" 
+                            class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+                    </div>
+                    
+                    <!-- Sınıf Filtresi -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf Seçin</label>
+                        <select id="bulkAssignClassroomFilter"
+                            onchange="AssignmentModals.loadStudentsForBulkAssign()"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <option value="">Sınıf seçin...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Select All / Deselect All -->
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <button onclick="AssignmentModals.selectAllStudents(true)" 
+                                class="text-sm text-theme hover:underline font-medium">
+                                ✓ Tümünü Seç
+                            </button>
+                            <span class="text-gray-300">|</span>
+                            <button onclick="AssignmentModals.selectAllStudents(false)" 
+                                class="text-sm text-gray-500 hover:underline">
+                                Seçimi Kaldır
+                            </button>
+                        </div>
+                        <span id="bulkAssignSelectedCount" class="text-sm text-gray-500">0 öğrenci seçili</span>
+                    </div>
+                    
+                    <!-- Öğrenci Listesi (Checkbox ile) -->
+                    <div id="bulkAssignStudentsList" class="border-2 border-gray-200 dark:border-gray-600 rounded-xl max-h-[300px] overflow-y-auto mb-6">
+                        <div class="p-8 text-center text-gray-500">
+                            Önce bir sınıf seçin
+                        </div>
+                    </div>
+                    
+                    <!-- Aksiyonlar -->
+                    <div class="flex gap-3">
+                        <button type="button" onclick="AssignmentModals.close('bulkAssignModal')"
+                            class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                            İptal
+                        </button>
+                        <button type="button" onclick="AssignmentModals.confirmBulkAssign()"
+                            id="bulkAssignConfirmBtn"
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                            📋 Seçili Öğrencilere Ata
+                        </button>
+                    </div>
+                </div>
+            </div>
         `;
     },
 
@@ -25,7 +93,7 @@ const AssignmentModals = {
      */
     createEditModal() {
         return `
-            <div id="assignmentFormModal" class="modal-overlay">
+            <div id="assignmentFormModal" class="modal-overlay hidden">
                 <div class="modal-content max-w-4xl max-h-[90vh] overflow-y-auto">
                     <div class="flex justify-between items-start mb-6 sticky top-0 bg-white dark:bg-gray-800 pb-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 id="assignmentFormTitle" class="text-xl font-bold text-gray-800 dark:text-white">📋 Yeni Ödev</h3>
@@ -214,7 +282,7 @@ const AssignmentModals = {
      */
     submissionsModal() {
         return `
-            <div id="submissionsModal" class="modal-overlay">
+            <div id="submissionsModal" class="modal-overlay hidden">
                 <div class="modal-content max-w-5xl max-h-[90vh] overflow-y-auto">
                     <div class="flex justify-between items-start mb-6 sticky top-0 bg-white dark:bg-gray-800 pb-4 border-b border-gray-200 dark:border-gray-700 z-10">
                         <div>
@@ -244,7 +312,7 @@ const AssignmentModals = {
      */
     gradeModal() {
         return `
-            <div id="gradeModal" class="modal-overlay">
+            <div id="gradeModal" class="modal-overlay hidden">
                 <div class="modal-content max-w-3xl max-h-[90vh] overflow-y-auto">
                     <div class="flex justify-between items-start mb-6">
                         <div>
@@ -903,6 +971,7 @@ const AssignmentModals = {
     open(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
+            modal.classList.remove('hidden');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -914,8 +983,250 @@ const AssignmentModals = {
     close(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
-            modal.classList.remove('active');
+            modal.classList.remove('active', 'open');
+            modal.classList.add('hidden');
             document.body.style.overflow = '';
+        }
+    },
+
+    // ==========================================
+    // BULK ASSIGN FONKSİYONLARI
+    // ==========================================
+
+    selectedStudents: [],
+    bulkAssignmentId: null,
+    bulkStudentsList: [],
+
+    /**
+     * Bulk assign modalını aç
+     */
+    async openBulkAssign(assignmentId) {
+        this.bulkAssignmentId = assignmentId;
+        this.selectedStudents = [];
+        this.bulkStudentsList = [];
+
+        // Assignment bilgisini al
+        const assignment = window.AssignmentsSection?.assignments?.find((a) => a.id === assignmentId);
+        if (assignment) {
+            document.getElementById('bulkAssignTitle').textContent = `📋 ${this.escapeHtml(assignment.title)}`;
+            document.getElementById('bulkAssignSubtitle').textContent = 'Öğrencileri seçin ve ödev atayın';
+        }
+
+        // Sınıf dropdown'ını doldur
+        const classrooms = window.AssignmentsSection?.classrooms || [];
+        const select = document.getElementById('bulkAssignClassroomFilter');
+        if (select) {
+            select.innerHTML =
+                '<option value="">Sınıf seçin...</option>' +
+                classrooms.map((c) => `<option value="${c.id}">${this.escapeHtml(c.name)}</option>`).join('');
+        }
+
+        // Öğrenci listesini sıfırla
+        document.getElementById('bulkAssignStudentsList').innerHTML = `
+            <div class="p-8 text-center text-gray-500">
+                Önce bir sınıf seçin
+            </div>
+        `;
+
+        this.updateBulkAssignUI();
+        this.open('bulkAssignModal');
+    },
+
+    /**
+     * Sınıfa göre öğrencileri yükle
+     */
+    async loadStudentsForBulkAssign() {
+        const classroomId = document.getElementById('bulkAssignClassroomFilter')?.value;
+        const container = document.getElementById('bulkAssignStudentsList');
+
+        if (!classroomId) {
+            container.innerHTML = '<div class="p-8 text-center text-gray-500">Önce bir sınıf seçin</div>';
+            this.bulkStudentsList = [];
+            this.selectedStudents = [];
+            this.updateBulkAssignUI();
+            return;
+        }
+
+        // Loading
+        container.innerHTML = `
+            <div class="p-8 text-center">
+                <div class="teacher-spinner mx-auto mb-2"></div>
+                <p class="text-gray-500 text-sm">Öğrenciler yükleniyor...</p>
+            </div>
+        `;
+
+        try {
+            // Supabase'den öğrencileri çek
+            const supabase = window.SupabaseClient?.client;
+            if (!supabase) throw new Error('Supabase not initialized');
+
+            const { data: students, error } = await supabase
+                .from('students')
+                .select('id, display_name, avatar_emoji, classroom_id')
+                .eq('classroom_id', classroomId)
+                .order('display_name');
+
+            if (error) throw error;
+
+            this.bulkStudentsList = students || [];
+            this.selectedStudents = [];
+
+            if (this.bulkStudentsList.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-gray-500">
+                        <div class="text-3xl mb-2">👨‍🎓</div>
+                        <p>Bu sınıfta henüz öğrenci yok</p>
+                    </div>
+                `;
+            } else {
+                this.renderBulkStudentsList();
+            }
+        } catch (error) {
+            console.error('[AssignmentModals] Load students error:', error);
+            container.innerHTML = '<div class="p-8 text-center text-red-500">Öğrenciler yüklenirken hata oluştu</div>';
+        }
+
+        this.updateBulkAssignUI();
+    },
+
+    /**
+     * Öğrenci listesini render et (checkbox ile)
+     */
+    renderBulkStudentsList() {
+        const container = document.getElementById('bulkAssignStudentsList');
+        if (!container) return;
+
+        container.innerHTML = this.bulkStudentsList
+            .map((student) => {
+                const isSelected = this.selectedStudents.includes(student.id);
+                const checkboxClass = isSelected
+                    ? 'bg-emerald-500 border-emerald-500 text-white'
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600';
+
+                // Check if already submitted for this assignment (green indicator)
+                const isSubmitted = false; // TODO: Check from submissions data
+                const submittedBadge = isSubmitted
+                    ? '<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">✅ Gönderildi</span>'
+                    : '';
+
+                return `
+                <label class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors ${isSelected ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}"
+                    onclick="AssignmentModals.toggleStudentSelection('${student.id}')">
+                    <div class="w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${checkboxClass}">
+                        ${isSelected ? '<span class="text-xs">✓</span>' : ''}
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xl flex-shrink-0">
+                        ${student.avatar_emoji || '🎓'}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-800 dark:text-white truncate">
+                            ${this.escapeHtml(student.display_name)}
+                        </p>
+                        ${submittedBadge}
+                    </div>
+                </label>
+            `;
+            })
+            .join('');
+    },
+
+    /**
+     * Öğrenci seçimini toggle et
+     */
+    toggleStudentSelection(studentId) {
+        const index = this.selectedStudents.indexOf(studentId);
+        if (index > -1) {
+            this.selectedStudents.splice(index, 1);
+        } else {
+            this.selectedStudents.push(studentId);
+        }
+        this.renderBulkStudentsList();
+        this.updateBulkAssignUI();
+    },
+
+    /**
+     * Tümünü seç / kaldır
+     */
+    selectAllStudents(selectAll) {
+        if (selectAll) {
+            this.selectedStudents = this.bulkStudentsList.map((s) => s.id);
+        } else {
+            this.selectedStudents = [];
+        }
+        this.renderBulkStudentsList();
+        this.updateBulkAssignUI();
+    },
+
+    /**
+     * UI güncelle (buton, sayaç)
+     */
+    updateBulkAssignUI() {
+        const countEl = document.getElementById('bulkAssignSelectedCount');
+        const btn = document.getElementById('bulkAssignConfirmBtn');
+
+        if (countEl) {
+            countEl.textContent = `${this.selectedStudents.length} öğrenci seçili`;
+        }
+
+        if (btn) {
+            btn.disabled = this.selectedStudents.length === 0;
+        }
+    },
+
+    /**
+     * Bulk assign onayla ve kaydet
+     */
+    async confirmBulkAssign() {
+        if (this.selectedStudents.length === 0) {
+            if (window.Toast) Toast.warning('Lütfen en az bir öğrenci seçin');
+            return;
+        }
+
+        const btn = document.getElementById('bulkAssignConfirmBtn');
+        const originalText = btn?.innerHTML;
+
+        try {
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="teacher-spinner inline-block w-4 h-4 mr-2"></span> Atanıyor...';
+            }
+
+            // Supabase'e ödev atamalarını kaydet
+            const supabase = window.SupabaseClient?.client;
+            if (!supabase) throw new Error('Supabase not initialized');
+
+            const assignments = this.selectedStudents.map((studentId) => ({
+                assignment_id: this.bulkAssignmentId,
+                student_id: studentId,
+                status: 'pending',
+                created_at: new Date().toISOString(),
+            }));
+
+            // Upsert - varsa güncelle, yoksa ekle
+            const { error } = await supabase
+                .from('student_assignments')
+                .upsert(assignments, { onConflict: 'assignment_id,student_id' });
+
+            if (error) throw error;
+
+            if (window.Toast) {
+                Toast.success(`${this.selectedStudents.length} öğrenciye ödev atandı!`);
+            }
+
+            this.close('bulkAssignModal');
+
+            // Listeyi yenile
+            if (window.AssignmentsSection) {
+                AssignmentsSection.loadData();
+            }
+        } catch (error) {
+            console.error('[AssignmentModals] Bulk assign error:', error);
+            if (window.Toast) Toast.error('Ödev atama işlemi başarısız');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText || '📋 Seçili Öğrencilere Ata';
+            }
         }
     },
 

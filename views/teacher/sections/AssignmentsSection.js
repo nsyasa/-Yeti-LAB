@@ -1,5 +1,5 @@
 /**
- * AssignmentsSection - Öğretmen paneli ödev yönetimi
+ * AssignmentsSection - Öğretmen paneli ödev yönetimi (Single Screen Layout)
  * Ödev listesi, filtreleme ve temel işlemler
  */
 const AssignmentsSection = {
@@ -14,37 +14,38 @@ const AssignmentsSection = {
     isLoading: false,
 
     /**
-     * Ana render
+     * Ana render - Single Screen Layout
      */
     render() {
         return `
-            <div class="space-y-3">
-                <!-- Filters -->
-                <div class="glass-card rounded-xl p-3">
+            <div class="h-full flex flex-col p-4 pb-20 lg:pb-4">
+                
+                <!-- Filters Bar -->
+                <div class="teacher-panel-card rounded-xl p-3 mb-4 flex-shrink-0">
                     <div class="flex flex-col sm:flex-row gap-2">
                         <!-- Search -->
                         <div class="flex-1">
                             <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
                                 <input type="text" 
                                     id="assignmentSearchInput"
                                     placeholder="Ödev ara..." 
                                     onkeyup="AssignmentsSection.onSearchChange(event)"
-                                    class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:border-theme focus:ring-1 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
+                                    class="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 dark:bg-slate-800 dark:text-white text-sm" />
                             </div>
                         </div>
 
                         <!-- Classroom Filter -->
                         <select id="assignmentClassroomFilter"
                             onchange="AssignmentsSection.onFilterChange()"
-                            class="px-3 py-2 border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm min-w-[130px]">
+                            class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg focus:border-emerald-500 dark:bg-slate-800 dark:text-white text-sm min-w-[130px]">
                             <option value="">Tüm Sınıflar</option>
                         </select>
 
                         <!-- Status Filter -->
                         <select id="assignmentStatusFilter"
                             onchange="AssignmentsSection.onFilterChange()"
-                            class="px-3 py-2 border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm min-w-[110px]">
+                            class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg focus:border-emerald-500 dark:bg-slate-800 dark:text-white text-sm min-w-[110px]">
                             <option value="">Tüm Durumlar</option>
                             <option value="draft">📝 Taslak</option>
                             <option value="active">✅ Aktif</option>
@@ -53,7 +54,7 @@ const AssignmentsSection = {
                         
                         <!-- Create Button -->
                         <button onclick="AssignmentsSection.openCreateModal()"
-                            class="flex items-center justify-center gap-1.5 px-3 py-2 bg-theme text-white rounded-lg font-semibold hover:brightness-110 transition-all shadow-sm text-sm">
+                            class="flex items-center justify-center gap-1.5 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-orange-500/30 relative z-50">
                             <span>+</span>
                             <span>Yeni Ödev</span>
                         </button>
@@ -61,13 +62,15 @@ const AssignmentsSection = {
                 </div>
 
                 <!-- Stats Bar -->
-                <div id="assignmentStatsBar" class="flex flex-wrap gap-2">
+                <div id="assignmentStatsBar" class="flex flex-wrap gap-2 mb-4 flex-shrink-0">
                     ${this.renderStatsBar()}
                 </div>
 
-                <!-- Assignments List -->
-                <div id="assignmentsList" class="space-y-2">
-                    ${this.renderEmptyState()}
+                <!-- Assignments List with internal scroll -->
+                <div class="flex-1 overflow-y-auto min-h-0">
+                    <div id="assignmentsList" class="space-y-2">
+                        ${this.renderEmptyState()}
+                    </div>
                 </div>
             </div>
         `;
@@ -140,8 +143,29 @@ const AssignmentsSection = {
         const statusBadge = window.AssignmentService?.getStatusBadge(assignment.status) || '';
         const typeBadge = window.AssignmentService?.getTypeBadge(assignment.assignment_type) || '';
 
+        // GREEN LIGHT: Visual feedback for submission status
+        const submissionCount = assignment.submission_count || 0;
+        const hasSubmissions = submissionCount > 0;
+        const allGraded = assignment.graded_count === submissionCount && submissionCount > 0;
+
+        // Determine card border style based on submission status
+        let cardStatusClass = '';
+        let statusIndicator = '';
+        if (allGraded && hasSubmissions) {
+            // All submitted and graded - GREEN
+            cardStatusClass = 'border-l-4 border-l-green-500 bg-green-50/50 dark:bg-green-900/10';
+            statusIndicator =
+                '<span class="absolute top-3 right-3 w-3 h-3 bg-green-500 rounded-full animate-pulse" title="Tüm gönderiler değerlendirildi"></span>';
+        } else if (hasSubmissions) {
+            // Has submissions pending review - YELLOW
+            cardStatusClass = 'border-l-4 border-l-yellow-500 bg-yellow-50/30 dark:bg-yellow-900/10';
+            statusIndicator =
+                '<span class="absolute top-3 right-3 w-3 h-3 bg-yellow-500 rounded-full" title="Değerlendirilmeyi bekleyen gönderiler var"></span>';
+        }
+
         return `
-            <div class="glass-card rounded-2xl p-5 hover:shadow-lg transition-all duration-200" data-assignment-id="${assignment.id}">
+            <div class="glass-card rounded-2xl p-5 hover:shadow-lg transition-all duration-200 relative ${cardStatusClass}" data-assignment-id="${assignment.id}">
+                ${statusIndicator}
                 <div class="flex flex-col lg:flex-row lg:items-center gap-4">
                     <!-- Sol: Ana Bilgiler -->
                     <div class="flex-1 min-w-0">
@@ -201,6 +225,13 @@ const AssignmentsSection = {
                         `
                                 : ''
                         }
+                        
+                        <!-- Bulk Assign Button -->
+                        <button onclick="AssignmentModals.openBulkAssign('${assignment.id}')"
+                            class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-medium hover:bg-purple-200 transition-colors text-sm"
+                            title="Öğrencilere Ata">
+                            👨‍🎓 Ata
+                        </button>
                         
                         <button onclick="AssignmentsSection.viewSubmissions('${assignment.id}')"
                             class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors text-sm"

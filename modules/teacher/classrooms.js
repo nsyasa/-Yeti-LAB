@@ -24,7 +24,16 @@ export const ClassroomManager = {
 
     renderList: () => {
         const container = document.getElementById('classroomsList');
-        if (!container) return;
+        console.log(
+            '[ClassroomManager] renderList called, container found:',
+            !!container,
+            'classrooms count:',
+            ClassroomManager.classrooms?.length
+        );
+        if (!container) {
+            console.error('[ClassroomManager] #classroomsList container NOT FOUND!');
+            return;
+        }
 
         if (ClassroomManager.classrooms.length === 0) {
             container.innerHTML = `

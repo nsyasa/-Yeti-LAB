@@ -8,6 +8,13 @@ import SupabaseClient from '../supabaseClient.js';
 // Lazy getter - her çağrıda client'a erişir
 const getSupabase = () => SupabaseClient.getClient();
 
+// Proxy for backward compatibility - delegates to getSupabase()
+const supabase = {
+    from: (...args) => getSupabase().from(...args),
+    auth: { getUser: () => getSupabase().auth.getUser() },
+    rpc: (...args) => getSupabase().rpc(...args),
+};
+
 const AnalyticsService = {
     _cache: {},
     _cacheExpiry: 5 * 60 * 1000, // 5 dakika
@@ -119,11 +126,14 @@ const AnalyticsService = {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
 
+        // Öğretmenin sınıflarını al
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+
+        if (!classrooms || classrooms.length === 0) return [];
+        const classroomIds = classrooms.map((c) => c.id);
+
         // Öğretmenin ödevlerini al
-        const { data: assignments } = await supabase
-            .from('assignments')
-            .select('id, classroom_id, classrooms!inner(teacher_id)')
-            .eq('classrooms.teacher_id', user.id);
+        const { data: assignments } = await supabase.from('assignments').select('id').in('classroom_id', classroomIds);
 
         if (!assignments || assignments.length === 0) return [];
 
@@ -218,6 +228,16 @@ const AnalyticsService = {
         } = await getSupabase().auth.getUser();
         if (!user) return [];
 
+        // Öğretmenin sınıflarını al
+        const { data: classrooms } = await supabase
+            .from('classrooms')
+            .select('id, name, students(count)')
+            .eq('teacher_id', user.id);
+
+        if (!classrooms || classrooms.length === 0) return [];
+        const classroomIds = classrooms.map((c) => c.id);
+        const classroomMap = Object.fromEntries(classrooms.map((c) => [c.id, c]));
+
         const { data } = await supabase
             .from('assignments')
             .select(
@@ -228,18 +248,18 @@ const AnalyticsService = {
                 due_date,
                 max_score,
                 classroom_id,
-                classrooms!inner(name, teacher_id, students(count)),
                 submissions(id, status, score, submitted_at)
             `
             )
-            .eq('classrooms.teacher_id', user.id)
+            .in('classroom_id', classroomIds)
             .order('created_at', { ascending: false })
             .limit(10);
 
         if (!data) return [];
 
         return data.map((assignment) => {
-            const studentCount = assignment.classrooms?.students?.[0]?.count || 0;
+            const classroom = classroomMap[assignment.classroom_id];
+            const studentCount = classroom?.students?.[0]?.count || 0;
             const submissions = assignment.submissions || [];
             const gradedSubs = submissions.filter((s) => s.status === 'graded' && s.score !== null);
             const avgScore =
@@ -281,20 +301,17 @@ const AnalyticsService = {
         } = await getSupabase().auth.getUser();
         if (!user) return [];
 
+        // Öğretmenin sınıflarını al
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+
+        if (!classrooms || classrooms.length === 0) return [];
+        const classroomIds = classrooms.map((c) => c.id);
+
         // Öğretmenin sınıflarındaki öğrencileri al
         const { data: students } = await supabase
             .from('students')
-            .select(
-                `
-                id,
-                name,
-                username,
-                avatar_url,
-                classroom_id,
-                classrooms!inner(teacher_id)
-            `
-            )
-            .eq('classrooms.teacher_id', user.id);
+            .select('id, name, username, avatar_url, classroom_id')
+            .in('classroom_id', classroomIds);
 
         if (!students || students.length === 0) return [];
 
@@ -338,10 +355,15 @@ const AnalyticsService = {
         } = await getSupabase().auth.getUser();
         if (!user) return { submitted: 0, graded: 0, late: 0, draft: 0 };
 
-        const { data: assignments } = await supabase
-            .from('assignments')
-            .select('id, classrooms!inner(teacher_id)')
-            .eq('classrooms.teacher_id', user.id);
+        // Öğretmenin sınıflarını al
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+
+        if (!classrooms || classrooms.length === 0) {
+            return { submitted: 0, graded: 0, late: 0, draft: 0 };
+        }
+        const classroomIds = classrooms.map((c) => c.id);
+
+        const { data: assignments } = await supabase.from('assignments').select('id').in('classroom_id', classroomIds);
 
         if (!assignments || assignments.length === 0) {
             return { submitted: 0, graded: 0, late: 0, draft: 0 };
@@ -384,17 +406,22 @@ const AnalyticsService = {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - 28); // Son 4 hafta
 
+        // Öğretmenin sınıflarını al
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+
+        if (!classrooms || classrooms.length === 0) return [];
+        const classroomIds = classrooms.map((c) => c.id);
+
+        // Öğretmenin ödevlerini al
+        const { data: assignments } = await supabase.from('assignments').select('id').in('classroom_id', classroomIds);
+
+        if (!assignments || assignments.length === 0) return [];
+        const assignmentIds = assignments.map((a) => a.id);
+
         const { data: submissions } = await supabase
             .from('submissions')
-            .select(
-                `
-                created_at,
-                assignments!inner(
-                    classrooms!inner(teacher_id)
-                )
-            `
-            )
-            .eq('assignments.classrooms.teacher_id', user.id)
+            .select('created_at')
+            .in('assignment_id', assignmentIds)
             .gte('created_at', startDate.toISOString());
 
         // Gün ve saat bazlı gruplama
@@ -462,6 +489,18 @@ const AnalyticsService = {
         } = await getSupabase().auth.getUser();
         if (!user) return [];
 
+        // Öğretmenin sınıflarını al
+        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+
+        if (!classrooms || classrooms.length === 0) return [];
+        const classroomIds = classrooms.map((c) => c.id);
+
+        // Öğretmenin ödevlerini al
+        const { data: assignments } = await supabase.from('assignments').select('id').in('classroom_id', classroomIds);
+
+        if (!assignments || assignments.length === 0) return [];
+        const assignmentIds = assignments.map((a) => a.id);
+
         const { data: submissions } = await supabase
             .from('submissions')
             .select(
@@ -473,13 +512,10 @@ const AnalyticsService = {
                 submitted_at,
                 graded_at,
                 students(name, avatar_url),
-                assignments!inner(
-                    title,
-                    classrooms!inner(teacher_id)
-                )
+                assignments(title)
             `
             )
-            .eq('assignments.classrooms.teacher_id', user.id)
+            .in('assignment_id', assignmentIds)
             .order('created_at', { ascending: false })
             .limit(limit);
 

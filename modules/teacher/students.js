@@ -33,10 +33,22 @@ export const StudentManager = {
 
     renderList: () => {
         const container = document.getElementById('studentsList');
-        if (!container) return;
+        console.log(
+            '[StudentManager] renderList called, container found:',
+            !!container,
+            'students count:',
+            StudentManager.students?.length
+        );
+        if (!container) {
+            console.error('[StudentManager] #studentsList container NOT FOUND!');
+            return;
+        }
 
         const filterSelect = document.getElementById('classroomFilter');
         const selectedClassroom = filterSelect ? filterSelect.value : 'all';
+
+        // Get search query from StudentsSection
+        const searchQuery = window.StudentsSection?.getSearchQuery?.() || '';
 
         // Update filter options if only default exists or option count mismatch
         if (
@@ -54,18 +66,25 @@ export const StudentManager = {
             // Re-attach listener? better to rely on onchange="loadStudents()" which delegates here
         }
 
-        // Filter students
+        // Filter students by classroom
         let filteredStudents = StudentManager.students;
         if (selectedClassroom !== 'all') {
             filteredStudents = StudentManager.students.filter((s) => s.classroom_id === selectedClassroom);
         }
 
+        // Filter by search query
+        if (searchQuery) {
+            filteredStudents = filteredStudents.filter((s) => s.display_name?.toLowerCase().includes(searchQuery));
+        }
+
         if (filteredStudents.length === 0) {
+            // Differentiate between no students at all vs no matches
+            const hasStudents = StudentManager.students.length > 0;
             container.innerHTML = `
                 <div class="empty-state py-8">
-                    <div class="text-4xl opacity-50 mb-2">👨‍🎓</div>
-                    <p class="text-sm text-gray-500">Henüz öğrenci yok</p>
-                    <p class="text-xs mt-1 text-gray-400">Öğrenciler sınıf kodunu kullanarak katılabilir</p>
+                    <div class="text-4xl opacity-50 mb-2">${hasStudents ? '🔍' : '👨‍🎓'}</div>
+                    <p class="text-sm text-gray-500">${hasStudents ? 'Filtreye uygun öğrenci bulunamadı' : 'Henüz öğrenci yok'}</p>
+                    <p class="text-xs mt-1 text-gray-400">${hasStudents ? 'Farklı bir sınıf seçin veya arama terimini değiştirin' : 'Öğrenciler sınıf kodunu kullanarak katılabilir'}</p>
                 </div>
             `;
             return;

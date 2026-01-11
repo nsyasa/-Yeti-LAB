@@ -9,6 +9,13 @@ import SupabaseClient from './supabaseClient.js';
 // Lazy getter - her çağrıda client'a erişir
 const getSupabase = () => SupabaseClient.getClient();
 
+// Proxy for backward compatibility - delegates to getSupabase()
+const supabase = {
+    from: (...args) => getSupabase().from(...args),
+    auth: { getUser: () => getSupabase().auth.getUser() },
+    rpc: (...args) => getSupabase().rpc(...args),
+};
+
 const CourseEnrollmentService = {
     /**
      * Tüm kursları getir (atama için)

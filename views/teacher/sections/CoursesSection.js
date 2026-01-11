@@ -1,23 +1,25 @@
 /**
  * CoursesSection - Öğretmen paneli kurs atama yönetimi
- * Kurslara öğrenci/sınıf atama ve kayıt yönetimi
+ * Master-Detail Layout: Sol menü (kurs listesi) + Sağ önizleme
  */
 const CoursesSection = {
     courses: [],
     classrooms: [],
     enrollmentStats: {},
     selectedCourse: null,
+    selectedCourseIndex: 0,
     isLoading: false,
 
     /**
-     * Ana render
+     * Ana render - Master-Detail Layout
      */
     render() {
         return `
-            <div class="space-y-3">
-                <!-- Info + Stats combined -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="px-3 py-1.5 rounded-lg text-sm bg-theme/10 text-theme flex items-center gap-1.5">
+            <div class="h-full flex flex-col p-4 pb-20 lg:pb-4">
+                
+                <!-- Header with Stats -->
+                <div class="flex flex-wrap items-center gap-2 mb-4 flex-shrink-0">
+                    <div class="px-3 py-1.5 rounded-lg text-xs bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 flex items-center gap-1.5 font-medium">
                         <span>💡</span>
                         <span>Kursu sınıfa atayın → tüm öğrenciler erişir</span>
                     </div>
@@ -26,9 +28,32 @@ const CoursesSection = {
                     </div>
                 </div>
 
-                <!-- Courses Grid -->
-                <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    ${this.renderLoading()}
+                <!-- Master-Detail Container -->
+                <div class="flex-1 flex gap-4 min-h-0 overflow-hidden">
+                    
+                    <!-- Left: Course List (Master) -->
+                    <div class="w-64 lg:w-72 flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
+                        <div class="teacher-panel-card flex-1 flex flex-col overflow-hidden">
+                            <div class="p-3 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                    📚 Kurslar
+                                </h3>
+                            </div>
+                            <div id="coursesMasterList" class="flex-1 overflow-y-auto p-2 space-y-1">
+                                ${this.renderMasterListLoading()}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Course Detail (Detail) -->
+                    <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
+                        <div class="teacher-panel-card flex-1 flex flex-col overflow-hidden">
+                            <div id="courseDetailContent" class="flex-1 overflow-y-auto">
+                                ${this.renderDetailEmpty()}
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
 
@@ -55,22 +80,236 @@ const CoursesSection = {
         );
 
         return `
-            <div class="px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 bg-purple-100 dark:bg-purple-900/30">
-                <span class="text-lg">📚</span>
-                <span class="font-bold text-purple-700 dark:text-purple-400">${totalCourses}</span>
-                <span class="text-sm text-purple-600 dark:text-purple-400">Kurs</span>
+            <div class="px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 bg-purple-100 dark:bg-purple-900/30">
+                <span class="text-sm">📚</span>
+                <span class="font-bold text-purple-700 dark:text-purple-400 text-sm">${totalCourses}</span>
+                <span class="text-xs text-purple-600 dark:text-purple-400">Kurs</span>
             </div>
-            <div class="px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 bg-green-100 dark:bg-green-900/30">
-                <span class="text-lg">👥</span>
-                <span class="font-bold text-green-700 dark:text-green-400">${activeEnrollments}</span>
-                <span class="text-sm text-green-600 dark:text-green-400">Aktif Kayıt</span>
-            </div>
-            <div class="px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30">
-                <span class="text-lg">📊</span>
-                <span class="font-bold text-blue-700 dark:text-blue-400">${totalEnrollments}</span>
-                <span class="text-sm text-blue-600 dark:text-blue-400">Toplam Kayıt</span>
+            <div class="px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 bg-green-100 dark:bg-green-900/30">
+                <span class="text-sm">👥</span>
+                <span class="font-bold text-green-700 dark:text-green-400 text-sm">${activeEnrollments}</span>
+                <span class="text-xs text-green-600 dark:text-green-400">Aktif</span>
             </div>
         `;
+    },
+
+    /**
+     * Master list loading
+     */
+    renderMasterListLoading() {
+        return `
+            <div class="flex items-center justify-center py-8">
+                <div class="teacher-spinner"></div>
+            </div>
+        `;
+    },
+
+    /**
+     * Master list item render
+     */
+    renderMasterListItem(course, isSelected = false) {
+        const stats = this.enrollmentStats[course.id] || { total: 0, active: 0 };
+        const themeColor = course.theme_color || '#00979c';
+
+        return `
+            <button onclick="CoursesSection.selectCourse('${course.id}')"
+                class="w-full text-left p-3 rounded-xl transition-all flex items-center gap-3 group ${
+                    isSelected
+                        ? 'bg-emerald-50 dark:bg-emerald-900/30 border-l-4 border-emerald-500'
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-transparent'
+                }">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0"
+                     style="background: ${themeColor}20">
+                    📚
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-sm text-slate-800 dark:text-white truncate ${isSelected ? 'text-emerald-700 dark:text-emerald-400' : ''}">
+                        ${course.title || 'İsimsiz Kurs'}
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        ${stats.active} aktif kayıt
+                    </p>
+                </div>
+            </button>
+        `;
+    },
+
+    /**
+     * Master list render
+     */
+    renderMasterList() {
+        if (!this.courses || this.courses.length === 0) {
+            return `
+                <div class="text-center py-8">
+                    <div class="text-3xl mb-2">📚</div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Kurs bulunamadı</p>
+                </div>
+            `;
+        }
+
+        return this.courses
+            .map((course, index) => this.renderMasterListItem(course, this.selectedCourse?.id === course.id))
+            .join('');
+    },
+
+    /**
+     * Detail empty state
+     */
+    renderDetailEmpty() {
+        return `
+            <div class="h-full flex items-center justify-center">
+                <div class="text-center py-8">
+                    <div class="text-5xl mb-4">👈</div>
+                    <p class="text-slate-500 dark:text-slate-400">Detayları görmek için sol taraftan bir kurs seçin</p>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Detail content render
+     */
+    renderDetailContent(course) {
+        if (!course) return this.renderDetailEmpty();
+
+        const stats = this.enrollmentStats[course.id] || { total: 0, active: 0, completed: 0 };
+        const themeColor = course.theme_color || '#00979c';
+
+        return `
+            <div class="p-6">
+                <!-- Course Header -->
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0"
+                         style="background: ${themeColor}20">
+                        📚
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1">
+                            ${course.title || 'İsimsiz Kurs'}
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">
+                            ${course.description || 'Açıklama yok'}
+                        </p>
+                    </div>
+                    <button onclick="CoursesSection.openAssignmentModal('${course.id}')"
+                        class="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-orange-500/30 flex items-center gap-2 relative z-50">
+                        <span>➕</span>
+                        <span>Sınıfa Ata</span>
+                    </button>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="bg-green-50 dark:bg-green-900/30 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600 dark:text-green-400">${stats.active}</div>
+                        <div class="text-xs text-green-700 dark:text-green-400">Aktif Kayıt</div>
+                    </div>
+                    <div class="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${stats.completed}</div>
+                        <div class="text-xs text-blue-700 dark:text-blue-400">Tamamlayan</div>
+                    </div>
+                    <div class="bg-purple-50 dark:bg-purple-900/30 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">${stats.total}</div>
+                        <div class="text-xs text-purple-700 dark:text-purple-400">Toplam Kayıt</div>
+                    </div>
+                </div>
+                
+                <!-- Assigned Classrooms -->
+                <div>
+                    <h3 class="font-semibold text-sm text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                        🏫 Atanan Sınıflar
+                    </h3>
+                    <div id="courseDetailClassrooms" class="space-y-2">
+                        <div class="text-center py-4 text-slate-400 dark:text-slate-500 text-sm">
+                            Yükleniyor...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Kurs seç
+     */
+    async selectCourse(courseId) {
+        const course = this.courses.find((c) => c.id === courseId);
+        if (!course) return;
+
+        this.selectedCourse = course;
+
+        // Update master list
+        const masterList = document.getElementById('coursesMasterList');
+        if (masterList) {
+            masterList.innerHTML = this.renderMasterList();
+        }
+
+        // Update detail
+        const detailContent = document.getElementById('courseDetailContent');
+        if (detailContent) {
+            detailContent.innerHTML = this.renderDetailContent(course);
+        }
+
+        // Load assigned classrooms for this course
+        await this.loadCourseClassrooms(courseId);
+    },
+
+    /**
+     * Kursun atandığı sınıfları yükle
+     */
+    async loadCourseClassrooms(courseId) {
+        const container = document.getElementById('courseDetailClassrooms');
+        if (!container) return;
+
+        try {
+            const { default: CourseEnrollmentService } = await import('/modules/courseEnrollmentService.js');
+
+            const assignedClassrooms = [];
+
+            for (const classroom of this.classrooms) {
+                const enrollments = await CourseEnrollmentService.getClassroomEnrollments(classroom.id);
+                const courseEnrollments = enrollments.filter((e) => e.course_id === courseId);
+                if (courseEnrollments.length > 0) {
+                    assignedClassrooms.push({
+                        ...classroom,
+                        enrolledCount: courseEnrollments.length,
+                    });
+                }
+            }
+
+            if (assignedClassrooms.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4 text-slate-400 dark:text-slate-500 text-sm">
+                        Bu kurs henüz hiçbir sınıfa atanmamış.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = assignedClassrooms
+                .map(
+                    (classroom) => `
+                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <span>🏫</span>
+                        <span class="font-medium text-sm text-slate-700 dark:text-slate-300">${classroom.name}</span>
+                        <span class="text-xs text-slate-500">(${classroom.enrolledCount} kayıt)</span>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                        ✓ Aktif
+                    </span>
+                </div>
+            `
+                )
+                .join('');
+        } catch (error) {
+            console.error('Sınıf yükleme hatası:', error);
+            container.innerHTML = `
+                <div class="text-center py-4 text-red-500 text-sm">
+                    Yüklenirken hata oluştu
+                </div>
+            `;
+        }
     },
 
     /**
@@ -88,67 +327,29 @@ const CoursesSection = {
     },
 
     /**
-     * Kurs kartı render
-     * @param {Object} course - Kurs verisi
+     * UI güncelle
      */
-    renderCourseCard(course) {
-        const stats = this.enrollmentStats[course.id] || { total: 0, active: 0, completed: 0 };
-        const themeColor = course.theme_color || '#00979c';
+    updateUI() {
+        // Stats bar
+        const statsBar = document.getElementById('courseStatsBar');
+        if (statsBar) {
+            statsBar.innerHTML = this.renderStatsBar();
+        }
 
-        return `
-            <div class="glass-card rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer group"
-                 onclick="CoursesSection.openAssignmentModal('${course.id}')"
-                 style="border-left: 4px solid ${themeColor}">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-                         style="background: ${themeColor}20">
-                        📚
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-theme"
-                                title="Öğrenci Ata">
-                            <span>➕</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <h3 class="font-bold text-gray-800 dark:text-white mb-1 line-clamp-2">
-                    ${course.title || 'İsimsiz Kurs'}
-                </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">
-                    ${course.description || 'Açıklama yok'}
-                </p>
-                
-                <!-- Stats -->
-                <div class="flex items-center gap-4 text-sm">
-                    <div class="flex items-center gap-1">
-                        <span class="text-green-500">👥</span>
-                        <span class="font-semibold text-gray-700 dark:text-gray-300">${stats.active}</span>
-                        <span class="text-gray-500 dark:text-gray-400">aktif</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <span class="text-blue-500">✅</span>
-                        <span class="font-semibold text-gray-700 dark:text-gray-300">${stats.completed}</span>
-                        <span class="text-gray-500 dark:text-gray-400">tamamladı</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
+        // Master list (sol menü)
+        const masterList = document.getElementById('coursesMasterList');
+        if (masterList) {
+            if (this.isLoading) {
+                masterList.innerHTML = this.renderMasterListLoading();
+            } else {
+                masterList.innerHTML = this.renderMasterList();
 
-    /**
-     * Boş durum render
-     */
-    renderEmptyState() {
-        return `
-            <div class="col-span-full glass-card rounded-2xl p-12">
-                <div class="empty-state text-center">
-                    <div class="text-6xl mb-4">📚</div>
-                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Henüz kurs bulunamadı</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Sistemde yayınlanmış kurs bulunmuyor.</p>
-                </div>
-            </div>
-        `;
+                // İlk kursu otomatik seç
+                if (this.courses.length > 0 && !this.selectedCourse) {
+                    this.selectCourse(this.courses[0].id);
+                }
+            }
+        }
     },
 
     /**
@@ -163,6 +364,7 @@ const CoursesSection = {
      */
     async loadData() {
         this.isLoading = true;
+        this.selectedCourse = null;
         this.updateUI();
 
         try {
@@ -210,33 +412,6 @@ const CoursesSection = {
         } catch (error) {
             console.error('İstatistik yükleme hatası:', error);
         }
-    },
-
-    /**
-     * UI güncelle
-     */
-    updateUI() {
-        // Stats bar
-        const statsBar = document.getElementById('courseStatsBar');
-        if (statsBar) {
-            statsBar.innerHTML = this.renderStatsBar();
-        }
-
-        // Courses list
-        const list = document.getElementById('coursesList');
-        if (!list) return;
-
-        if (this.isLoading) {
-            list.innerHTML = this.renderLoading();
-            return;
-        }
-
-        if (!this.courses || this.courses.length === 0) {
-            list.innerHTML = this.renderEmptyState();
-            return;
-        }
-
-        list.innerHTML = this.courses.map((course) => this.renderCourseCard(course)).join('');
     },
 
     /**

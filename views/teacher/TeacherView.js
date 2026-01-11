@@ -1,65 +1,78 @@
 /**
  * TeacherView - Ana teacher panel view container
  * SPA entegrasyonu için mount/unmount lifecycle metodları
- * (Sidebar kaldırıldı, index header kullanılıyor)
+ * Single Screen Dashboard - 100vh, overflow-hidden yapısı
  */
 const TeacherView = {
     isLoaded: false,
-    currentSection: 'dashboard',
+    currentSection: 'classrooms',
     scriptsLoaded: false,
 
     /**
-     * Template - Ana layout (sidebar yok, main-header kullanılıyor)
+     * Template - Single Screen Dashboard Layout (100vh, no body scroll)
      */
     template() {
         return `
-            <div id="teacher-view" class="teacher-bg min-h-screen">
-                <!-- Tab Navigation (Sidebar yerine) -->
-                ${TeacherLayout.renderTabNav()}
+            <div id="teacher-view" class="teacher-dashboard-container h-screen overflow-hidden flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
                 
-                <!-- Main Content -->
-                <div class="teacher-content max-w-7xl mx-auto px-4 sm:px-6 py-3">
-                    <!-- Content Area -->
-                    <div id="teacherContent" class="space-y-4">
-                        <!-- Loading State -->
-                        <div id="teacherLoadingState" class="flex items-center justify-center h-32">
-                            <div class="text-center">
-                                <div class="teacher-spinner mx-auto mb-2"></div>
-                                <p class="text-gray-500 text-sm">Yükleniyor...</p>
+                <!-- Compact Header Bar -->
+                ${TeacherLayout.renderCompactHeader()}
+                
+                <!-- Main Container: Sidebar + Content -->
+                <div class="flex-1 flex overflow-hidden">
+                    
+                    <!-- Left Sidebar Navigation (Desktop) -->
+                    ${TeacherLayout.renderSidebar()}
+                    
+                    <!-- Main Content Area -->
+                    <main class="flex-1 overflow-hidden flex flex-col relative">
+                        
+                        <!-- Content Area with internal scroll -->
+                        <div id="teacherContent" class="flex-1 overflow-y-auto overflow-x-hidden">
+                            
+                            <!-- Loading State -->
+                            <div id="teacherLoadingState" class="flex items-center justify-center h-full">
+                                <div class="text-center">
+                                    <div class="teacher-spinner mx-auto mb-3"></div>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Yükleniyor...</p>
+                                </div>
                             </div>
+                            
+                            <!-- Dashboard Section -->
+                            <section id="teacherDashboardSection" class="hidden h-full">
+                                ${DashboardSection.render()}
+                            </section>
+                            
+                            <!-- Classrooms Section -->
+                            <section id="teacherClassroomsSection" class="hidden h-full">
+                                ${ClassroomsSection.render()}
+                            </section>
+                            
+                            <!-- Students Section -->
+                            <section id="teacherStudentsSection" class="hidden h-full">
+                                ${StudentsSection.render()}
+                            </section>
+
+                            <!-- Assignments Section -->
+                            <section id="teacherAssignmentsSection" class="hidden h-full">
+                                ${AssignmentsSection.render()}
+                            </section>
+
+                            <!-- Courses Section -->
+                            <section id="teacherCoursesSection" class="hidden h-full">
+                                ${CoursesSection.render()}
+                            </section>
+
+                            <!-- Analytics Section -->
+                            <section id="teacherAnalyticsSection" class="hidden h-full">
+                                ${AnalyticsSection.render()}
+                            </section>
                         </div>
-                        
-                        <!-- Dashboard Section -->
-                        <section id="teacherDashboardSection" class="hidden">
-                            ${DashboardSection.render()}
-                        </section>
-                        
-                        <!-- Classrooms Section -->
-                        <section id="teacherClassroomsSection" class="hidden">
-                            ${ClassroomsSection.render()}
-                        </section>
-                        
-                        <!-- Students Section -->
-                        <section id="teacherStudentsSection" class="hidden">
-                            ${StudentsSection.render()}
-                        </section>
-
-                        <!-- Assignments Section -->
-                        <section id="teacherAssignmentsSection" class="hidden">
-                            ${AssignmentsSection.render()}
-                        </section>
-
-                        <!-- Courses Section -->
-                        <section id="teacherCoursesSection" class="hidden">
-                            ${CoursesSection.render()}
-                        </section>
-
-                        <!-- Analytics Section -->
-                        <section id="teacherAnalyticsSection" class="hidden">
-                            ${AnalyticsSection.render()}
-                        </section>
-                    </div>
+                    </main>
                 </div>
+                
+                <!-- Mobile Bottom Navigation -->
+                ${TeacherLayout.renderMobileBottomNav()}
                 
                 <!-- Modals -->
                 ${TeacherModals.renderAll()}
@@ -244,7 +257,7 @@ const TeacherView = {
                 }
             }
         }
-        return 'dashboard';
+        return 'classrooms';
     },
 
     /**
@@ -253,10 +266,22 @@ const TeacherView = {
      * @param {boolean} updateUrl - URL'yi güncellesin mi (default: true)
      */
     showSection(section, updateUrl = true) {
+        console.log('[TeacherView] showSection called:', section, 'updateUrl:', updateUrl);
         this.currentSection = section;
 
+        // CRITICAL: Close all open modals before switching sections
+        // Note: TeacherModals use 'open' class, AssignmentModals use 'active' class
+        document.querySelectorAll('.modal-overlay.open, .modal-overlay.active').forEach((modal) => {
+            modal.classList.remove('open', 'active');
+            modal.classList.add('hidden');
+        });
+        // Restore body scroll if any modal had locked it
+        document.body.style.overflow = '';
+
         // Hide all sections
-        document.querySelectorAll('[id^="teacher"][id$="Section"]').forEach((el) => {
+        const allSections = document.querySelectorAll('[id^="teacher"][id$="Section"]');
+        console.log('[TeacherView] Hiding all sections, count:', allSections.length);
+        allSections.forEach((el) => {
             el.classList.add('hidden');
         });
 
@@ -266,9 +291,19 @@ const TeacherView = {
 
         // Show target section
         const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
-        const sectionEl = document.getElementById(`teacher${sectionName}Section`);
+        const targetId = `teacher${sectionName}Section`;
+        const sectionEl = document.getElementById(targetId);
+        console.log('[TeacherView] Target section:', targetId, 'Found:', !!sectionEl);
         if (sectionEl) {
             sectionEl.classList.remove('hidden');
+            console.log('[TeacherView] After remove hidden, classList:', sectionEl.classList.toString());
+            // Double check - force remove hidden
+            if (sectionEl.classList.contains('hidden')) {
+                console.error('[TeacherView] CRITICAL: hidden class still present after remove!');
+                sectionEl.classList.remove('hidden');
+            }
+        } else {
+            console.error('[TeacherView] Section NOT FOUND:', targetId);
         }
 
         // Update tab active state
@@ -311,8 +346,26 @@ const TeacherView = {
 
     /**
      * Hide footer and mobile nav (but keep main-header visible)
+     * Also lock body scroll for compact dashboard experience
      */
     hideMainLayout() {
+        // CRITICAL: Lock body scroll for compact dashboard (h-screen overflow-hidden)
+        document.body.classList.add('h-screen', 'overflow-hidden');
+        document.body.classList.remove('min-h-screen');
+
+        // CRITICAL: Set parent containers to full height for flex layout to work
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.classList.add('h-full');
+        }
+
+        // The parent <main> element also needs height
+        const mainEl = mainContent?.parentElement;
+        if (mainEl && mainEl.tagName === 'MAIN') {
+            mainEl.classList.add('h-full', 'flex-1', 'overflow-hidden');
+            mainEl.classList.remove('py-6'); // Remove padding that interferes with full height
+        }
+
         // KEEP main-header visible (index style top bar)
         // const header = document.getElementById('main-header');
         // if (header) header.style.display = 'none';
@@ -337,9 +390,25 @@ const TeacherView = {
     },
 
     /**
-     * Show footer again
+     * Show footer again and unlock body scroll
      */
     showMainLayout() {
+        // CRITICAL: Unlock body scroll (restore normal scrolling)
+        document.body.classList.remove('h-screen', 'overflow-hidden');
+        document.body.classList.add('min-h-screen');
+
+        // Remove full height from parent containers
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.classList.remove('h-full');
+        }
+
+        const mainEl = mainContent?.parentElement;
+        if (mainEl && mainEl.tagName === 'MAIN') {
+            mainEl.classList.remove('h-full', 'overflow-hidden');
+            mainEl.classList.add('py-6'); // Restore padding
+        }
+
         // Footer göster
         const footer = document.getElementById('main-footer');
         if (footer) footer.style.display = '';

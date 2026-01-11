@@ -269,14 +269,21 @@ const ViewLoader = {
     /**
      * Handle teacher section routing
      * @private
+     * NOTE: Always pass updateUrl=false to prevent re-triggering router
      */
     _handleTeacherSection: (route) => {
         if (!window.TeacherView?.showSection) return;
 
         if (route === 'teacher-classrooms') {
-            TeacherView.showSection('classrooms');
+            TeacherView.showSection('classrooms', false);
         } else if (route === 'teacher-students') {
-            TeacherView.showSection('students');
+            TeacherView.showSection('students', false);
+        } else if (route === 'teacher-assignments') {
+            TeacherView.showSection('assignments', false);
+        } else if (route === 'teacher-courses') {
+            TeacherView.showSection('courses', false);
+        } else if (route === 'teacher-analytics') {
+            TeacherView.showSection('analytics', false);
         }
     },
 

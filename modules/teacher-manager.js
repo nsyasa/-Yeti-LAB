@@ -56,7 +56,8 @@ async function init() {
                 await loadDashboardData();
                 await loadProjects(); // Load projects from database
                 hideLoading();
-                showSection('dashboard');
+                // NOTE: Section switching is now handled by TeacherView.mount()
+                // The old showSection() call is removed to prevent conflicts
             }
         }
     } catch (e) {
@@ -72,38 +73,39 @@ async function init() {
 // UI FUNCTIONS
 // ==========================================
 
+/**
+ * Show a section in the teacher panel
+ * IMPORTANT: This function now delegates to TeacherView.showSection for SPA compatibility
+ * Legacy section ID patterns (dashboardSection) are converted to new patterns (teacherDashboardSection)
+ */
 function showSection(section) {
-    // Hide all sections
-    document.querySelectorAll('[id$="Section"]').forEach((el) => el.classList.add('hidden'));
+    // Delegate to TeacherView.showSection if available (SPA mode)
+    if (window.TeacherView?.showSection) {
+        TeacherView.showSection(section, false);
+        return;
+    }
 
-    // Show selected section
-    const sectionEl = document.getElementById(section + 'Section');
+    // Legacy fallback (only used if TeacherView is not loaded)
+    // Use new section ID pattern: teacher{SectionName}Section
+    const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
+
+    // Hide all teacher sections
+    document.querySelectorAll('[id^="teacher"][id$="Section"]').forEach((el) => el.classList.add('hidden'));
+
+    // Show selected section with new ID pattern
+    const sectionEl = document.getElementById(`teacher${sectionName}Section`);
     if (sectionEl) {
         sectionEl.classList.remove('hidden');
     }
 
-    // Update title
-    const titles = {
-        dashboard: 'Kontrol Paneli',
-        classrooms: 'Sınıflarım',
-        students: 'Öğrenciler',
-        progress: 'İlerleme Takibi',
-    };
-    const titleEl = document.getElementById('sectionTitle');
-    if (titleEl) titleEl.textContent = titles[section] || section;
-
-    // Update nav
-    document.querySelectorAll('.nav-item').forEach((item) => {
-        item.classList.remove('bg-theme/10', 'text-theme');
-        if (item.dataset.section === section) {
-            item.classList.add('bg-theme/10', 'text-theme');
-        }
-    });
+    // Update nav (TeacherLayout handles this in SPA mode)
+    if (typeof TeacherLayout !== 'undefined' && TeacherLayout.updateActiveTab) {
+        TeacherLayout.updateActiveTab(section);
+    }
 
     // Load section data
     if (section === 'classrooms') loadClassrooms();
     if (section === 'students') loadStudents();
-    // Progress section removed
 }
 
 function hideLoading() {
@@ -289,6 +291,11 @@ async function loadDashboardData() {
         if (elActiveToday) elActiveToday.textContent = activeToday;
         if (elCompletedLessons) elCompletedLessons.textContent = '0'; // Will be updated by loadProgress if needed
 
+        // Update sidebar stats
+        if (typeof TeacherLayout !== 'undefined' && TeacherLayout.updateSidebarStats) {
+            TeacherLayout.updateSidebarStats(totalClassrooms, totalStudents);
+        }
+
         // Render dashboard classrooms list
         renderDashboardClassrooms(classrooms);
 
@@ -316,14 +323,20 @@ async function loadDashboardData() {
 }
 
 function loadClassrooms() {
-    if (typeof ClassroomManager !== 'undefined') {
+    console.log('[TeacherManager] loadClassrooms called, ClassroomManager available:', !!window.ClassroomManager);
+    if (window.ClassroomManager) {
         ClassroomManager.renderList();
+    } else {
+        console.warn('[TeacherManager] ClassroomManager not available');
     }
 }
 
 function loadStudents() {
-    if (typeof StudentManager !== 'undefined') {
+    console.log('[TeacherManager] loadStudents called, StudentManager available:', !!window.StudentManager);
+    if (window.StudentManager) {
         StudentManager.renderList();
+    } else {
+        console.warn('[TeacherManager] StudentManager not available');
     }
 }
 
@@ -338,13 +351,18 @@ async function loadProgress() {
 // ==========================================
 
 function openCreateClassroomModal() {
-    document.getElementById('createClassroomModal').classList.add('open');
+    const modal = document.getElementById('createClassroomModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('open');
     document.getElementById('classroomName').focus();
 }
 
 function closeModal(modalId) {
     const el = document.getElementById(modalId);
-    if (el) el.classList.remove('open');
+    if (el) {
+        el.classList.remove('open', 'active');
+        el.classList.add('hidden');
+    }
 }
 
 async function createClassroom(event) {
@@ -383,7 +401,9 @@ function viewClassroom(classroomId) {
 
     document.getElementById('viewClassroomName').textContent = currentClassroom.name;
     document.getElementById('viewClassroomCode').textContent = currentClassroom.code;
-    document.getElementById('viewClassroomModal').classList.add('open');
+    const viewModal = document.getElementById('viewClassroomModal');
+    viewModal.classList.remove('hidden');
+    viewModal.classList.add('open');
 }
 
 async function toggleClassroom(classroomId, isActive) {
@@ -425,10 +445,10 @@ function renderDashboardClassrooms(classroomsList) {
 
     if (!classroomsList || classroomsList.length === 0) {
         container.innerHTML = `
-            <div class="empty-state py-4">
-                <div class="icon text-2xl mb-1">🏫</div>
-                <p class="text-gray-500 text-sm">Henüz sınıf oluşturmadınız</p>
-                <p class="text-xs text-gray-400 mt-0.5">Üst menüden "Yeni Sınıf" butonuna tıklayın</p>
+            <div class="empty-state py-6">
+                <div class="icon text-3xl mb-2">🏫</div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">Henüz sınıf oluşturmadınız</p>
+                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Sağ üstteki "Yeni Sınıf" butonuna tıklayın</p>
             </div>
         `;
         return;
@@ -438,15 +458,15 @@ function renderDashboardClassrooms(classroomsList) {
         .map((classroom) => {
             const studentCount = classroom.students?.[0]?.count || 0;
             return `
-            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer" onclick="viewClassroom('${classroom.id}')">
+            <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer group" onclick="viewClassroom('${classroom.id}')">
                 <div class="flex items-center gap-3">
-                    <span class="text-2xl">${classroom.is_active ? '✅' : '⏸️'}</span>
+                    <span class="text-xl">${classroom.is_active ? '✅' : '⏸️'}</span>
                     <div>
-                        <p class="font-semibold text-gray-800 dark:text-white">${escapeHtml(classroom.name)}</p>
-                        <p class="text-sm text-gray-500">👨‍🎓 ${studentCount} öğrenci • ${classroom.code}</p>
+                        <p class="font-semibold text-sm text-slate-800 dark:text-white">${escapeHtml(classroom.name)}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">👨‍🎓 ${studentCount} öğrenci • <span class="font-mono">${classroom.code}</span></p>
                     </div>
                 </div>
-                <button onclick="event.stopPropagation(); openClassroomSettings('${classroom.id}')" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors" title="Ayarlar">
+                <button onclick="event.stopPropagation(); openClassroomSettings('${classroom.id}')" class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors opacity-0 group-hover:opacity-100" title="Ayarlar">
                     ⚙️
                 </button>
             </div>
@@ -517,7 +537,9 @@ function openAddStudentModal(classroomId) {
     const password = typeof StudentManager !== 'undefined' ? StudentManager.generatePassword() : '123456';
     document.getElementById('studentPassword').value = password;
 
-    document.getElementById('addStudentModal').classList.add('open');
+    const addModal = document.getElementById('addStudentModal');
+    addModal.classList.remove('hidden');
+    addModal.classList.add('open');
 }
 
 async function addStudent(event) {
@@ -615,7 +637,9 @@ function openBulkAddModal(classroomId = null) {
     }
 
     if (typeof resetBulkForm === 'function') resetBulkForm(); // Ensure reset
-    document.getElementById('bulkAddModal').classList.add('open');
+    const bulkModal = document.getElementById('bulkAddModal');
+    bulkModal.classList.remove('hidden');
+    bulkModal.classList.add('open');
 }
 
 function previewBulkStudents() {
@@ -751,7 +775,9 @@ function openEditStudentModal(studentId) {
         if (input) input.value = editSelectedAvatarEmoji;
         selectEditAvatar(editSelectedAvatarEmoji);
 
-        document.getElementById('editStudentModal').classList.add('open');
+        const editModal = document.getElementById('editStudentModal');
+        editModal.classList.remove('hidden');
+        editModal.classList.add('open');
     }
 }
 
@@ -841,7 +867,9 @@ async function openStudentDetailModal(studentId) {
     document.getElementById('detailCourseProgress').innerHTML = '<div class="spinner"></div>';
     document.getElementById('detailRecentLessons').innerHTML = '';
 
-    document.getElementById('studentDetailModal').classList.add('open');
+    const detailModal = document.getElementById('studentDetailModal');
+    detailModal.classList.remove('hidden');
+    detailModal.classList.add('open');
 
     // Load details
     if (typeof TeacherAnalytics !== 'undefined') {
@@ -903,7 +931,9 @@ function openClassroomSettings(classroomId) {
         }
     }
 
-    document.getElementById('classroomSettingsModal').classList.add('open');
+    const settingsModal = document.getElementById('classroomSettingsModal');
+    settingsModal.classList.remove('hidden');
+    settingsModal.classList.add('open');
 }
 
 async function saveClassroomSettings(event) {
@@ -1016,19 +1046,26 @@ window.openClassroomSettings = openClassroomSettings;
 window.toggleClassroom = toggleClassroom;
 window.deleteClassroom = deleteClassroom;
 window.viewClassroom = viewClassroom;
+window.copyCode = copyCode;
+window.shareClassroomCode = shareClassroomCode;
 window.previewBulkStudents = previewBulkStudents;
 window.resetBulkForm = resetBulkForm;
 window.copyBulkList = copyBulkList;
 window.saveBulkStudents = saveBulkStudents;
 window.saveClassroomSettings = saveClassroomSettings;
+window.openCreateClassroomModal = openCreateClassroomModal;
 
 // Student management functions
+window.selectAvatar = selectAvatar;
+window.generateRandomPassword = generateRandomPassword;
 window.selectEditAvatar = selectEditAvatar;
 window.openEditStudentModal = openEditStudentModal;
 window.saveStudentEdit = saveStudentEdit;
 window.openStudentDetailModal = openStudentDetailModal;
 window.openEditStudentFromDetail = openEditStudentFromDetail;
-// ... (others are implicitly exposed by being functions in global scope)
+window.addStudent = addStudent;
+window.deleteStudent = deleteStudent;
+window.printStudentList = printStudentList;
 
 // Helper: Ensure other modules used are available or mocked if needed for safe init
 // Already handled in init() check
