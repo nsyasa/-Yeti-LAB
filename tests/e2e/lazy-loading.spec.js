@@ -11,7 +11,8 @@ test.describe('Lazy Loading & SPA Navigation', () => {
 
     test('should load home page quickly (Main Bundle)', async ({ page }) => {
         // Confirm home page elements are present
-        await expect(page.locator("text=İçindeki Yeti'yi Keşfetmeye Hazır Mısın?")).toBeVisible();
+        // Hero section text varies by screen size, check for key elements instead
+        await expect(page.locator("text=İçindeki Yeti'yi")).toBeVisible();
         await expect(page.locator('#course-list')).toBeVisible();
     });
 
