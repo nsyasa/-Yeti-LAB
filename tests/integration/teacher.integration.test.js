@@ -7,10 +7,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-// Import Real Managers
-import { ClassroomManager } from '../../modules/teacher/classrooms.js';
-import { StudentManager } from '../../modules/teacher/students.js';
-
 let TeacherManager;
 
 describe('Teacher Manager Integration', () => {
@@ -38,6 +34,8 @@ describe('Teacher Manager Integration', () => {
             <input id="studentName" />
             <input id="studentPassword" />
             <div id="classroomsList"></div>
+            <div id="studentsList"></div>
+            <select id="classroomFilter"><option value="all">Tüm</option></select>
         `;
 
         // Setup Globals
@@ -103,21 +101,34 @@ describe('Teacher Manager Integration', () => {
             load: vi.fn(),
         };
 
-        // EXPOSE REAL MANAGERS TO GLOBAL (since TeacherManager expects them globally)
+        // DYNAMICALLY IMPORT MODULES
+        // This ensures they are fresh and use the mocks we just set up
+        const { ClassroomManager } = await import('../../modules/teacher/classrooms.js');
+        const { StudentManager } = await import('../../modules/teacher/students.js');
+
+        // EXPOSE REAL MANAGERS TO GLOBAL
         global.ClassroomManager = ClassroomManager;
         global.StudentManager = StudentManager;
+
+        // Spy on init methods
+        vi.spyOn(global.ClassroomManager, 'init');
+        vi.spyOn(global.StudentManager, 'init');
 
         // Ensure window functionality
         window.location = { pathname: '/teacher.html' };
         window.ClassroomManager = ClassroomManager;
         window.StudentManager = StudentManager;
+        window.SupabaseClient = global.SupabaseClient;
+        window.Auth = global.Auth;
+        window.Toast = global.Toast;
 
-        // Load Module
+        // Load Main Module
         await import('../../modules/teacher-manager.js');
         TeacherManager = window.TeacherManager;
     });
 
     afterEach(() => {
+        vi.restoreAllMocks();
         delete global.Toast;
         delete global.Auth;
         delete global.Router;

@@ -3,7 +3,7 @@
  * Sınıf oluşturma, düzenleme, silme ve listeleme işlemlerini yönetir.
  */
 
-const ClassroomManager = {
+export const ClassroomManager = {
     classrooms: [],
     currentUser: null,
     onStateChange: null, // Callback to update parent state/UI (e.g. dashboard stats)

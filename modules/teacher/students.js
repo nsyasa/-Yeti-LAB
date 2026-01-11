@@ -3,7 +3,7 @@
  * Öğrenci listeleme, ekleme, düzenleme ve silme işlemlerini yönetir.
  */
 
-const StudentManager = {
+export const StudentManager = {
     students: [],
     classrooms: [],
     currentUser: null,
