@@ -211,6 +211,18 @@
         @apply bg-theme-light text-theme border-r-4 border-theme;
     }
 
+    /* Sidebar dark mode glassmorphism */
+    #lesson-sidebar {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #sidebar-content {
+        @apply py-2;
+    }
+
     /* ============================================
        BRANDING & TYPOGRAPHY
        ============================================ */
@@ -284,5 +296,129 @@
     html.dark .code-box-display,
     html.dark-mode .code-box-display {
         @apply bg-emerald-950/40 border-emerald-400 text-emerald-300 hover:bg-emerald-900/60;
+    }
+
+    /* ============================================
+       DASHBOARD LESSON CARDS - Glassmorphism
+       ============================================ */
+    .lesson-card {
+        @apply relative overflow-hidden transition-all duration-300 rounded-xl cursor-pointer;
+        background: rgba(30, 41, 59, 0.75);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .lesson-card:hover {
+        @apply -translate-y-1 scale-[1.03];
+        background: rgba(30, 41, 59, 0.85);
+        border-color: rgba(255, 140, 0, 0.4);
+        box-shadow:
+            0 8px 32px rgba(255, 140, 0, 0.15),
+            0 0 0 1px rgba(255, 140, 0, 0.2);
+    }
+
+    .lesson-card .lesson-icon {
+        @apply text-2xl mb-2 transition-transform duration-300;
+    }
+
+    .lesson-card:hover .lesson-icon {
+        @apply scale-110;
+    }
+
+    .lesson-card .lesson-title {
+        @apply font-bold text-white text-sm leading-tight transition-colors duration-300;
+    }
+
+    .lesson-card:hover .lesson-title {
+        color: var(--cta-start, #ff8c00);
+    }
+
+    .lesson-card .lesson-meta {
+        @apply text-xs text-slate-400;
+    }
+
+    /* Lesson card mini progress bar */
+    .lesson-progress {
+        @apply absolute bottom-0 left-0 right-0 h-1 overflow-hidden;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .lesson-progress-fill {
+        @apply h-full transition-all duration-500;
+        background: linear-gradient(90deg, var(--cta-start, #ff8c00), var(--cta-end, #ff4500));
+    }
+
+    /* Completed lesson checkmark */
+    .lesson-complete-badge {
+        @apply absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Locked lesson overlay */
+    .lesson-locked {
+        @apply relative;
+    }
+
+    .lesson-locked::before {
+        content: '';
+        @apply absolute inset-0 z-20 rounded-xl;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(3px);
+    }
+
+    .lesson-lock-icon {
+        @apply absolute inset-0 z-30 flex items-center justify-center text-2xl opacity-80;
+    }
+
+    .lesson-locked .lesson-title,
+    .lesson-locked .lesson-meta {
+        @apply opacity-40;
+    }
+
+    /* ============================================
+       DASHBOARD SECTION HEADERS - Glow Effect
+       ============================================ */
+    .phase-header {
+        @apply flex items-center gap-3 mt-8 mb-4 pb-3 relative;
+    }
+
+    .phase-header::after {
+        content: '';
+        @apply absolute bottom-0 left-0 h-0.5;
+        width: 60%;
+        background: linear-gradient(90deg, var(--cta-start, #ff8c00), transparent);
+        opacity: 0.6;
+    }
+
+    .phase-header-icon {
+        @apply text-2xl relative;
+        filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.5));
+        animation: icon-glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes icon-glow {
+        0% {
+            filter: drop-shadow(0 0 5px rgba(255, 140, 0, 0.3));
+        }
+        100% {
+            filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.7));
+        }
+    }
+
+    .phase-header-title {
+        @apply text-lg font-bold text-white tracking-tight;
+    }
+
+    .phase-header-desc {
+        @apply text-sm text-slate-400;
+    }
+
+    /* Dashboard container dark mode */
+    .dashboard-content {
+        @apply p-4;
     }
 }

@@ -436,11 +436,15 @@ const UI = {
 
         const container = document.getElementById('dashboard-content');
         container.innerHTML = '';
+        container.classList.add('dashboard-content');
 
         if (phases.length === 0) {
-            container.innerHTML = `<div class="text-center text-gray-500 py-10">${I18n.t('no_content')}</div>`;
+            container.innerHTML = `<div class="text-center text-slate-400 py-10">${I18n.t('no_content')}</div>`;
             return;
         }
+
+        // Check if user is logged in
+        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent();
 
         phases.forEach((phase, index) => {
             const phaseProjects = projects.filter((p) => p.phase === index);
@@ -452,32 +456,37 @@ const UI = {
                 phase.icon || (phase.title && typeof phase.title === 'string' ? phase.title.split(' ')[0] : '📂');
             const pDesc = phase.description || '';
 
+            // Phase header with glow effect
             let sectionHTML = `
-                <div class="mt-6 mb-3 border-b border-gray-200 pb-2 flex items-center gap-2">
-                    <span class="text-xl">${pIcon}</span>
-                    <h3 class="text-lg font-bold text-gray-700">${fixedName}</h3>
-                    <span class="text-sm text-gray-400">${pDesc}</span>
+                <div class="phase-header">
+                    <span class="phase-header-icon">${pIcon}</span>
+                    <h3 class="phase-header-title">${fixedName}</h3>
+                    <span class="phase-header-desc">${pDesc}</span>
                 </div>
                 <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" style="-webkit-overflow-scrolling: touch;">`;
 
             phaseProjects.forEach((p) => {
                 const isComplete = progressModule.isComplete(p.id);
-                const borderColor =
-                    phase.color === 'green'
-                        ? 'border-green-400'
-                        : phase.color === 'blue'
-                          ? 'border-blue-400'
-                          : 'border-purple-400';
+                // Calculate progress (0-100) - if complete, 100%, else random demo progress
+                const progressPercent = isComplete ? 100 : 0;
+
+                // Check if lesson requires login and user is not logged in
+                const requiresLogin = !isLoggedIn && index > 0; // Lock non-intro lessons for guests
+                const lockedClass = requiresLogin ? 'lesson-locked' : '';
 
                 sectionHTML += `
-                    <div onclick="app.loadProject(${p.id})" 
-                         class="flex-shrink-0 w-32 sm:w-36 cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border-l-4 ${borderColor} p-3 group relative hover:scale-105">
-                        ${isComplete ? '<div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white text-xs rounded-full flex items-center justify-center z-10">✓</div>' : ''}
-                        <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">${p.icon}</div>
-                        <h3 class="font-bold text-gray-800 text-sm leading-tight group-hover:text-theme transition-colors line-clamp-2">${p.title}</h3>
-                        <div class="flex items-center justify-between mt-2">
-                            <span class="text-xs text-gray-400">#${p.id}</span>
-                            ${p.simType !== 'none' ? '<span class="text-xs text-blue-500">🔬</span>' : ''}
+                    <div onclick="${requiresLogin ? "Router.redirectTo('auth.html')" : `app.loadProject(${p.id})`}" 
+                         class="lesson-card flex-shrink-0 w-32 sm:w-36 p-3 ${lockedClass}">
+                        ${isComplete ? '<div class="lesson-complete-badge">✓</div>' : ''}
+                        ${requiresLogin ? '<div class="lesson-lock-icon">🔒</div>' : ''}
+                        <div class="lesson-icon">${p.icon}</div>
+                        <h3 class="lesson-title line-clamp-2">${p.title}</h3>
+                        <div class="flex items-center justify-between mt-2 lesson-meta">
+                            <span>#${p.id}</span>
+                            ${p.simType !== 'none' ? '<span class="text-blue-400">🔬</span>' : ''}
+                        </div>
+                        <div class="lesson-progress">
+                            <div class="lesson-progress-fill" style="width: ${progressPercent}%"></div>
                         </div>
                     </div>
                 `;
@@ -517,15 +526,15 @@ const UI = {
             const phaseProjects = projects.filter((p) => p.phase === index);
             if (phaseProjects.length === 0) return;
 
-            // Header
-            container.innerHTML += `<div class="font-bold text-gray-500 uppercase text-xs mt-4 mb-2 px-2 tracking-wider">${phase.title}</div>`;
+            // Header with dark mode support
+            container.innerHTML += `<div class="font-bold text-slate-400 uppercase text-xs mt-4 mb-2 px-2 tracking-wider">${phase.title}</div>`;
 
             // List
             phaseProjects.forEach((p) => {
                 const isActive = currentProjectId === p.id;
                 const activeClass = isActive
-                    ? 'active-lesson bg-theme-light text-theme font-bold border-r-4 border-theme'
-                    : 'text-gray-600 hover:bg-gray-50 border-r-4 border-transparent';
+                    ? 'active-lesson bg-orange-500/20 text-orange-400 font-bold border-r-4 border-orange-500'
+                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white border-r-4 border-transparent';
 
                 container.innerHTML += `
                 <div onclick="app.loadProject(${p.id}); app.toggleSidebar();" 
