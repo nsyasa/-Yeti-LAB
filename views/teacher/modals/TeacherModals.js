@@ -100,7 +100,7 @@ const TeacherModals = {
                     <form id="addStudentForm" onsubmit="TeacherManager.addStudent(event)">
                         <div class="mb-4">
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf</label>
-                            <select id="studentClassroom" required
+                            <select id="newStudentClassroom" required
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <option value="">Sınıf seçin...</option>
                             </select>
