@@ -17,80 +17,75 @@ const AnalyticsSection = {
      */
     render() {
         return `
-            <div class="space-y-6">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            📊 Analytics Dashboard
-                        </h2>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                            Ödev, gönderim ve öğrenci performans metrikleri
-                        </p>
-                    </div>
+            <div class="space-y-3">
+                <!-- Header with Refresh -->
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        📊 Analytics Dashboard
+                    </h2>
                     <button onclick="AnalyticsSection.refresh()"
-                        class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+                        class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-sm">
                         <span>🔄</span>
                         <span>Yenile</span>
                     </button>
                 </div>
 
                 <!-- Summary Stats Grid -->
-                <div id="analyticsSummaryGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div id="analyticsSummaryGrid" class="grid grid-cols-2 md:grid-cols-4 gap-2">
                     ${this.renderSummaryLoading()}
                 </div>
 
                 <!-- Charts Row -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <!-- Submission Trend -->
-                    <div class="glass-card rounded-2xl p-6">
-                        <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <div class="glass-card rounded-xl p-4">
+                        <h3 class="font-semibold text-sm text-gray-800 dark:text-white mb-2 flex items-center gap-1.5">
                             📈 Gönderim Trendi (Son 7 Gün)
                         </h3>
-                        <div id="submissionTrendChart" class="h-64">
+                        <div id="submissionTrendChart" class="h-40">
                             ${this.renderChartLoading()}
                         </div>
                     </div>
 
                     <!-- Status Distribution -->
-                    <div class="glass-card rounded-2xl p-6">
-                        <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <div class="glass-card rounded-xl p-4">
+                        <h3 class="font-semibold text-sm text-gray-800 dark:text-white mb-2 flex items-center gap-1.5">
                             📊 Gönderim Durumu Dağılımı
                         </h3>
-                        <div id="statusDistributionChart" class="h-64">
+                        <div id="statusDistributionChart" class="h-40">
                             ${this.renderChartLoading()}
                         </div>
                     </div>
                 </div>
 
                 <!-- Classroom Performance -->
-                <div class="glass-card rounded-2xl p-6">
-                    <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                <div class="glass-card rounded-xl p-4">
+                    <h3 class="font-semibold text-sm text-gray-800 dark:text-white mb-2 flex items-center gap-1.5">
                         🏫 Sınıf Performansı
                     </h3>
-                    <div id="classroomPerformanceTable">
+                    <div id="classroomPerformanceTable" class="max-h-48 overflow-y-auto">
                         ${this.renderTableLoading()}
                     </div>
                 </div>
 
                 <!-- Two Column Layout -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <!-- Top Students -->
-                    <div class="glass-card rounded-2xl p-6">
-                        <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <div class="glass-card rounded-xl p-4">
+                        <h3 class="font-semibold text-sm text-gray-800 dark:text-white mb-2 flex items-center gap-1.5">
                             🏆 En Başarılı Öğrenciler
                         </h3>
-                        <div id="topStudentsList">
+                        <div id="topStudentsList" class="max-h-40 overflow-y-auto">
                             ${this.renderListLoading()}
                         </div>
                     </div>
 
                     <!-- Recent Activity -->
-                    <div class="glass-card rounded-2xl p-6">
-                        <h3 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <div class="glass-card rounded-xl p-4">
+                        <h3 class="font-semibold text-sm text-gray-800 dark:text-white mb-2 flex items-center gap-1.5">
                             ⚡ Son Aktiviteler
                         </h3>
-                        <div id="recentActivityList">
+                        <div id="recentActivityList" class="max-h-40 overflow-y-auto">
                             ${this.renderListLoading()}
                         </div>
                     </div>

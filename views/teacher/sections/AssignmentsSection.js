@@ -18,65 +18,55 @@ const AssignmentsSection = {
      */
     render() {
         return `
-            <div class="space-y-6">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            📋 Ödevler
-                        </h2>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                            Ödevlerinizi oluşturun, yönetin ve öğrenci gönderilerini değerlendirin
-                        </p>
-                    </div>
-                    <button onclick="AssignmentsSection.openCreateModal()"
-                        class="flex items-center justify-center gap-2 px-5 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all shadow-md hover:shadow-lg">
-                        <span>+</span>
-                        <span>Yeni Ödev</span>
-                    </button>
-                </div>
-
+            <div class="space-y-3">
                 <!-- Filters -->
-                <div class="glass-card rounded-2xl p-4">
-                    <div class="flex flex-col sm:flex-row gap-3">
+                <div class="glass-card rounded-xl p-3">
+                    <div class="flex flex-col sm:flex-row gap-2">
                         <!-- Search -->
                         <div class="flex-1">
                             <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
                                 <input type="text" 
                                     id="assignmentSearchInput"
                                     placeholder="Ödev ara..." 
                                     onkeyup="AssignmentsSection.onSearchChange(event)"
-                                    class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
+                                    class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:border-theme focus:ring-1 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
                             </div>
                         </div>
 
                         <!-- Classroom Filter -->
                         <select id="assignmentClassroomFilter"
                             onchange="AssignmentsSection.onFilterChange()"
-                            class="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm min-w-[150px]">
+                            class="px-3 py-2 border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm min-w-[130px]">
                             <option value="">Tüm Sınıflar</option>
                         </select>
 
                         <!-- Status Filter -->
                         <select id="assignmentStatusFilter"
                             onchange="AssignmentsSection.onFilterChange()"
-                            class="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm min-w-[130px]">
+                            class="px-3 py-2 border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm min-w-[110px]">
                             <option value="">Tüm Durumlar</option>
                             <option value="draft">📝 Taslak</option>
                             <option value="active">✅ Aktif</option>
                             <option value="closed">🔒 Kapalı</option>
                         </select>
+                        
+                        <!-- Create Button -->
+                        <button onclick="AssignmentsSection.openCreateModal()"
+                            class="flex items-center justify-center gap-1.5 px-3 py-2 bg-theme text-white rounded-lg font-semibold hover:brightness-110 transition-all shadow-sm text-sm">
+                            <span>+</span>
+                            <span>Yeni Ödev</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Stats Bar -->
-                <div id="assignmentStatsBar" class="flex flex-wrap gap-3">
+                <div id="assignmentStatsBar" class="flex flex-wrap gap-2">
                     ${this.renderStatsBar()}
                 </div>
 
                 <!-- Assignments List -->
-                <div id="assignmentsList" class="space-y-4">
+                <div id="assignmentsList" class="space-y-2">
                     ${this.renderEmptyState()}
                 </div>
             </div>
@@ -117,15 +107,11 @@ const AssignmentsSection = {
      */
     renderEmptyState() {
         return `
-            <div class="glass-card rounded-2xl p-12">
+            <div class="glass-card rounded-xl p-6">
                 <div class="empty-state text-center">
-                    <div class="text-6xl mb-4">📋</div>
-                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Henüz ödev oluşturmadınız</h3>
-                    <p class="text-gray-500 dark:text-gray-400 mb-6">İlk ödevinizi oluşturarak öğrencilerinize görev atayın</p>
-                    <button onclick="AssignmentsSection.openCreateModal()"
-                        class="px-6 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
-                        + İlk Ödevi Oluştur
-                    </button>
+                    <div class="text-3xl mb-2">📋</div>
+                    <h3 class="text-base font-bold text-gray-800 dark:text-white mb-1">Henüz ödev oluşturmadınız</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Yukarıdaki "Yeni Ödev" butonuna tıklayın</p>
                 </div>
             </div>
         `;
@@ -136,10 +122,10 @@ const AssignmentsSection = {
      */
     renderLoading() {
         return `
-            <div class="glass-card rounded-2xl p-12">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex flex-col items-center justify-center">
-                    <div class="teacher-spinner mb-4"></div>
-                    <p class="text-gray-500">Ödevler yükleniyor...</p>
+                    <div class="teacher-spinner mb-2"></div>
+                    <p class="text-gray-500 text-sm">Ödevler yükleniyor...</p>
                 </div>
             </div>
         `;

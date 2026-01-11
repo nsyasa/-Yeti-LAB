@@ -18,14 +18,14 @@ const TeacherView = {
                 ${TeacherLayout.renderTabNav()}
                 
                 <!-- Main Content -->
-                <div class="teacher-content max-w-7xl mx-auto px-4 sm:px-6 py-6">
+                <div class="teacher-content max-w-7xl mx-auto px-4 sm:px-6 py-3">
                     <!-- Content Area -->
-                    <div id="teacherContent" class="space-y-6">
+                    <div id="teacherContent" class="space-y-4">
                         <!-- Loading State -->
-                        <div id="teacherLoadingState" class="flex items-center justify-center h-64">
+                        <div id="teacherLoadingState" class="flex items-center justify-center h-32">
                             <div class="text-center">
-                                <div class="teacher-spinner mx-auto mb-4"></div>
-                                <p class="text-gray-500">Yükleniyor...</p>
+                                <div class="teacher-spinner mx-auto mb-2"></div>
+                                <p class="text-gray-500 text-sm">Yükleniyor...</p>
                             </div>
                         </div>
                         

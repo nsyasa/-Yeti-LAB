@@ -1219,7 +1219,8 @@ a:hover .rocket-icon {
     overflow-y: auto;
 }
 
-.modal-overlay.active {
+.modal-overlay.active,
+.modal-overlay.open {
     display: flex;
 }
 
@@ -1298,6 +1299,90 @@ a:hover .rocket-icon {
 
 .dark .glass-card {
     background: var(--glass-bg);
+    border-color: var(--glass-border);
+}
+
+/* Teacher Dashboard Stats */
+.teacher-stat-card {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.teacher-stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.teacher-stat-card.stat-classrooms {
+    background: linear-gradient(135deg, #14b8a6 0%, #10b981 100%);
+}
+
+.teacher-stat-card.stat-students {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.teacher-stat-card.stat-active {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+}
+
+.teacher-stat-card.stat-completed {
+    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+}
+
+.teacher-stat-card .stat-icon {
+    font-size: 1.125rem;
+}
+
+.teacher-stat-card .stat-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.teacher-stat-card .stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* Classroom Card Dropdown Menu */
+.classroom-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    width: 12rem;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.25rem;
+    z-index: 50;
+    animation: dropdownSlide 0.2s ease;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.classroom-dropdown-menu.show {
+    display: block;
+}
+
+.dark .classroom-dropdown-menu {
+    background: var(--lab-surface);
     border-color: var(--glass-border);
 }
 

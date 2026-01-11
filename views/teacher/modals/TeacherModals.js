@@ -172,7 +172,7 @@ const TeacherModals = {
     bulkAddModal() {
         return `
             <div id="bulkAddModal" class="modal-overlay">
-                <div class="modal-content" style="max-width: 800px">
+                <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-bold">📋 Toplu Öğrenci Ekle</h3>
                         <button onclick="TeacherManager.closeModal('bulkAddModal')" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
@@ -259,13 +259,15 @@ const TeacherModals = {
     classroomSettingsModal() {
         return `
             <div id="classroomSettingsModal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="flex justify-between items-start mb-4">
+                <div class="modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
+                    <div class="flex justify-between items-start mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2 z-10 border-b border-gray-100 dark:border-gray-700">
                         <h3 class="text-xl font-bold">⚙️ Sınıf Ayarları</h3>
                         <button onclick="TeacherManager.closeModal('classroomSettingsModal')" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
                     </div>
-                    <form id="classroomSettingsForm" onsubmit="TeacherManager.saveClassroomSettings(event)">
+                    <form id="classroomSettingsForm" onsubmit="TeacherManager.saveClassroomSettings(event)" class="px-1">
                         <input type="hidden" id="settingsClassroomId" />
+                        
+                        <!-- Temel Bilgiler -->
                         <div class="mb-4">
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf Adı</label>
                             <input type="text" id="settingsClassroomName" required maxlength="100"
@@ -273,10 +275,10 @@ const TeacherModals = {
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Açıklama</label>
-                            <textarea id="settingsClassroomDesc" rows="2"
+                            <textarea id="settingsClassroomDescription" rows="2"
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                         </div>
-                        <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <div class="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
                             <label class="flex items-center gap-3 cursor-pointer">
                                 <input type="checkbox" id="settingsRequirePassword" class="w-5 h-5 text-theme rounded focus:ring-theme" />
                                 <div>
@@ -285,7 +287,61 @@ const TeacherModals = {
                                 </div>
                             </label>
                         </div>
-                        <div class="flex gap-3">
+
+                        <!-- Tab Ayarları Bölümü (Açılır/Kapanır) -->
+                        <details class="mb-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                            <summary class="cursor-pointer p-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl flex items-center gap-2 font-semibold text-gray-700 dark:text-gray-300">
+                                <span class="text-lg">📑</span>
+                                <span>Tab Ayarları (İsteğe Bağlı)</span>
+                                <span class="ml-auto text-xs text-gray-400">Ders sayfası tablarını özelleştir</span>
+                            </summary>
+                            <div class="p-4 pt-2 space-y-2 max-h-56 overflow-y-auto">
+                                <!-- Genel Tab -->
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <input type="checkbox" id="tabVisGeneral" checked class="w-4 h-4 text-theme rounded focus:ring-theme flex-shrink-0" />
+                                    <input type="text" id="tabNameGeneral" value="Genel" maxlength="20"
+                                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    <span class="text-gray-400 text-sm">📋</span>
+                                </div>
+                                <!-- İçerik Tab -->
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <input type="checkbox" id="tabVisContent" checked class="w-4 h-4 text-theme rounded focus:ring-theme flex-shrink-0" />
+                                    <input type="text" id="tabNameContent" value="İçerik" maxlength="20"
+                                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    <span class="text-gray-400 text-sm">📖</span>
+                                </div>
+                                <!-- Donanım Tab -->
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <input type="checkbox" id="tabVisHardware" checked class="w-4 h-4 text-theme rounded focus:ring-theme flex-shrink-0" />
+                                    <input type="text" id="tabNameHardware" value="Donanım" maxlength="20"
+                                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    <span class="text-gray-400 text-sm">🔧</span>
+                                </div>
+                                <!-- Devre Tab -->
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <input type="checkbox" id="tabVisCircuit" checked class="w-4 h-4 text-theme rounded focus:ring-theme flex-shrink-0" />
+                                    <input type="text" id="tabNameCircuit" value="Devre" maxlength="20"
+                                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    <span class="text-gray-400 text-sm">⚡</span>
+                                </div>
+                                <!-- Kod Tab -->
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <input type="checkbox" id="tabVisCode" checked class="w-4 h-4 text-theme rounded focus:ring-theme flex-shrink-0" />
+                                    <input type="text" id="tabNameCode" value="Kod" maxlength="20"
+                                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    <span class="text-gray-400 text-sm">💻</span>
+                                </div>
+                                <!-- Test Tab -->
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <input type="checkbox" id="tabVisTest" checked class="w-4 h-4 text-theme rounded focus:ring-theme flex-shrink-0" />
+                                    <input type="text" id="tabNameTest" value="Test" maxlength="20"
+                                        class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-theme dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    <span class="text-gray-400 text-sm">✅</span>
+                                </div>
+                            </div>
+                        </details>
+
+                        <div class="flex gap-3 sticky bottom-0 bg-white dark:bg-gray-800 py-3 border-t border-gray-100 dark:border-gray-700 -mx-1 px-1">
                             <button type="button" onclick="TeacherManager.closeModal('classroomSettingsModal')"
                                 class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
                                 İptal
@@ -385,7 +441,7 @@ const TeacherModals = {
     studentDetailModal() {
         return `
             <div id="studentDetailModal" class="modal-overlay">
-                <div class="modal-content" style="max-width: 600px">
+                <div class="modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center gap-3">
                             <span id="detailStudentAvatar" class="text-4xl">🎓</span>

@@ -14,40 +14,20 @@ const CoursesSection = {
      */
     render() {
         return `
-            <div class="space-y-6">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            📚 Kurs Atamaları
-                        </h2>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                            Sınıflarınıza kurs atayın ve öğrenci kayıtlarını yönetin
-                        </p>
+            <div class="space-y-3">
+                <!-- Info + Stats combined -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="px-3 py-1.5 rounded-lg text-sm bg-theme/10 text-theme flex items-center gap-1.5">
+                        <span>💡</span>
+                        <span>Kursu sınıfa atayın → tüm öğrenciler erişir</span>
                     </div>
-                </div>
-
-                <!-- Info Banner -->
-                <div class="glass-card rounded-2xl p-4 border-l-4 border-theme bg-theme/5">
-                    <div class="flex items-start gap-3">
-                        <span class="text-2xl">💡</span>
-                        <div>
-                            <p class="font-semibold text-gray-800 dark:text-white">Kurs Atama Nasıl Çalışır?</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                Bir kursu sınıfa atadığınızda, o sınıftaki tüm öğrenciler kursa erişim kazanır. 
-                                Bireysel öğrenci atamaları için öğrenci detay sayfasını kullanabilirsiniz.
-                            </p>
-                        </div>
+                    <div id="courseStatsBar" class="flex flex-wrap gap-2 ml-auto">
+                        ${this.renderStatsBar()}
                     </div>
-                </div>
-
-                <!-- Stats Bar -->
-                <div id="courseStatsBar" class="flex flex-wrap gap-3">
-                    ${this.renderStatsBar()}
                 </div>
 
                 <!-- Courses Grid -->
-                <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     ${this.renderLoading()}
                 </div>
             </div>

@@ -425,13 +425,10 @@ function renderDashboardClassrooms(classroomsList) {
 
     if (!classroomsList || classroomsList.length === 0) {
         container.innerHTML = `
-            <div class="empty-state py-8">
-                <div class="icon text-4xl mb-2">🏫</div>
-                <p class="text-gray-500">Henüz sınıf oluşturmadınız</p>
-                <button onclick="TeacherManager?.openCreateClassroomModal()"
-                    class="mt-3 px-4 py-2 bg-theme text-white rounded-lg text-sm font-semibold hover:brightness-110 transition">
-                    İlk Sınıfı Oluştur
-                </button>
+            <div class="empty-state py-4">
+                <div class="icon text-2xl mb-1">🏫</div>
+                <p class="text-gray-500 text-sm">Henüz sınıf oluşturmadınız</p>
+                <p class="text-xs text-gray-400 mt-0.5">Üst menüden "Yeni Sınıf" butonuna tıklayın</p>
             </div>
         `;
         return;
