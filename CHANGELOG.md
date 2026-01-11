@@ -6,6 +6,43 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.2.1] - 2026-01-12
+
+### 🐛 Bug Fixes
+
+#### Modal Visibility Bug (Tailwind CSS v4 Uyumluluk)
+
+- **Sorun**: Teacher panel modalları sayfa yüklendiğinde görünür olarak kalıyordu
+- **Kök Neden**: Tailwind CSS v4'ün `@layer` sistemi, custom CSS'deki `display: none` kuralını override ediyordu
+- **Çözüm**: Tüm modal-overlay elementlerine Tailwind'in `hidden` class'ı eklendi
+- **Etkilenen Dosyalar**:
+    - `views/teacher/modals/TeacherModals.js` - 7 modal güncellendi
+    - `views/teacher/modals/AssignmentModals.js` - 4 modal güncellendi
+    - `modules/teacher-manager.js` - Modal açma/kapama fonksiyonları güncellendi
+    - `views/teacher/TeacherView.js` - Section değişiminde modal kapatma güncellendi
+
+#### Teacher Panel Section Display Fix
+
+- **Sorun**: Sınıflar, Öğrenciler vb. bölümler görünmüyordu (height: 0)
+- **Çözüm**: Parent container'lara `h-full` class'ı eklendi
+
+#### Supabase Query Fixes
+
+- **analyticsService.js**: Nested relation filtering `!inner` yerine classroomIds pattern'ine çevrildi
+- **assignmentService.js**: Var olmayan `rubrics` tablo referansı kaldırıldı
+- **courseEnrollmentService.js**: Supabase proxy objesi eklendi
+
+#### Router & Navigation Fixes
+
+- `router.js`: Eksik teacher route'ları eklendi (teacher-assignments, teacher-courses, teacher-analytics)
+- `viewLoader.js`: Tüm 5 teacher section'ı için handler eklendi
+
+#### Auth Race Condition Fix
+
+- `app.js`: `app.initAuth()` async/await ile düzgün bekletildi
+
+---
+
 ## [1.2.0] - 2026-01-11
 
 ### 🧪 Ödev Sistemi - Test & Optimizasyon (Faz 8)

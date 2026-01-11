@@ -1205,13 +1205,25 @@ a:hover .rocket-icon {
 /* ============================================
    MODAL OVERLAY SYSTEM
    Teacher Panel Modals
+   
+   ⚠️ TAILWIND CSS v4 UYARISI:
+   Tailwind v4'ün @layer sistemi bu CSS kurallarını override edebilir!
+   
+   ÖNERİLEN YAKLAŞIM:
+   1. Visibility için HER ZAMAN Tailwind class'larını kullan:
+      - hidden, block, flex, inline-flex vb.
+   2. Modal açarken: element.classList.remove('hidden')
+   3. Modal kapatırken: element.classList.add('hidden')
+   4. Sadece 'open/active' class'ı yetmez, 'hidden' yönetimi şart!
+   
+   Bkz: TeacherModals.js, AssignmentModals.js, teacher-manager.js
    ============================================ */
 .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    display: none;
+    display: none; /* ⚠️ Tailwind 'hidden' class ile desteklenmeli! */
     align-items: center;
     justify-content: center;
     z-index: var(--z-modal);
@@ -1221,7 +1233,7 @@ a:hover .rocket-icon {
 
 .modal-overlay.active,
 .modal-overlay.open {
-    display: flex;
+    display: flex; /* ⚠️ Çalışması için HTML'de 'hidden' class kaldırılmalı! */
 }
 
 .modal-content {

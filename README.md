@@ -38,10 +38,12 @@ Yeti LAB, öğrencilere **Arduino**, **Micro:bit**, **Scratch**, **mBlock** ve *
 | -------------- | --------------------------------------------------- |
 | **Frontend**   | Vanilla JS (ES6+), HTML5, CSS3                      |
 | **Build Tool** | **Vite 5** (Production Optimization)                |
-| **Styling**    | **Tailwind CSS v4** (Custom Theme)                  |
+| **Styling**    | **Tailwind CSS v4** (Custom Theme) ⚠️               |
 | **Backend**    | **Supabase** (Auth, Postgres DB, Realtime)          |
 | **Testing**    | **Playwright** (E2E), **Vitest** (Unit/Integration) |
 | **CI/CD**      | **GitHub Actions** (Automated Testing & Deployment) |
+
+> ⚠️ **Tailwind CSS v4 Uyarısı**: Tailwind v4'ün `@layer` sistemi custom CSS kurallarını override edebilir. Element visibility için **her zaman Tailwind utility class'larını kullanın** (`hidden`, `block`, `flex` vb.). Custom CSS'de `display: none` yetersiz kalabilir. Detaylar için `src/input.css` içindeki modal bölümüne bakın.
 
 ---
 
