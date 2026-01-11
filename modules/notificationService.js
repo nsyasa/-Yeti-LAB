@@ -248,7 +248,7 @@ const NotificationService = {
      */
     _stopRealtimeSubscription() {
         if (this._subscription) {
-            supabase.removeChannel(this._subscription);
+            getSupabase().removeChannel(this._subscription);
             this._subscription = null;
         }
     },
@@ -404,7 +404,7 @@ const NotificationService = {
      */
     init() {
         // Auth state değişikliğinde subscription'ı yenile
-        supabase.auth.onAuthStateChange((event, session) => {
+        getSupabase().auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN') {
                 this._startRealtimeSubscription();
                 this.getUnreadCount();

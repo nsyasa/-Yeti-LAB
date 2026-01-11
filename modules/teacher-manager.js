@@ -961,6 +961,26 @@ window.showToast = showToast;
 // window.escapeHtml = escapeHtml; // Conflict with Utils
 window.formatRelativeTime = formatRelativeTime;
 window.loadDashboardData = loadDashboardData;
+
+// Classroom management functions for inline event handlers
+window.openAddStudentModal = openAddStudentModal;
+window.openBulkAddModal = openBulkAddModal;
+window.openClassroomSettings = openClassroomSettings;
+window.toggleClassroom = toggleClassroom;
+window.deleteClassroom = deleteClassroom;
+window.viewClassroomDetail = viewClassroomDetail;
+window.previewBulkStudents = previewBulkStudents;
+window.resetBulkForm = resetBulkForm;
+window.copyBulkList = copyBulkList;
+window.saveBulkStudents = saveBulkStudents;
+window.saveClassroomSettings = saveClassroomSettings;
+
+// Student management functions
+window.selectEditAvatar = selectEditAvatar;
+window.openEditStudentModal = openEditStudentModal;
+window.saveStudentEdit = saveStudentEdit;
+window.openStudentDetailModal = openStudentDetailModal;
+window.openEditStudentFromDetail = openEditStudentFromDetail;
 // ... (others are implicitly exposed by being functions in global scope)
 
 // Helper: Ensure other modules used are available or mocked if needed for safe init
