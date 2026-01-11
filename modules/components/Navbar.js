@@ -71,7 +71,7 @@ const Navbar = {
                         </div>
                     </div>
                     <div class="flex flex-col brand-logo">
-                        <span class="text-2xl font-bold text-gray-800 dark:text-white tracking-tight leading-none group-hover:text-theme transition-colors">Yeti<span class="brand-lab text-theme">LAB</span></span>
+                        <span class="text-2xl font-bold text-gray-800 dark:text-white tracking-tight leading-none group-hover:text-theme transition-colors">Yeti<span class="brand-lab text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400 font-black">LAB</span></span>
                     </div>
                 </a>
 
@@ -212,8 +212,8 @@ const Navbar = {
         } else {
             // Logged Out
             container.innerHTML = `
-                <a href="auth.html" class="flex items-center gap-2 px-5 py-2.5 bg-theme text-white rounded-xl font-bold shadow-lg shadow-theme/20 hover:shadow-theme/40 hover:-translate-y-0.5 transition-all">
-                    <span>🚀</span>
+                <a href="auth.html" class="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-400 text-white rounded-xl font-bold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 transition-all">
+                    <span class="rocket-icon inline-block transition-transform group-hover:rotate-[-15deg] group-hover:-translate-y-0.5">🚀</span>
                     <span>Giriş Yap</span>
                 </a>
             `;

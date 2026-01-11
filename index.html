@@ -176,27 +176,36 @@
 
             <div id="course-selection-view" class="fade-in pb-10">
                 <div class="flex flex-col lg:flex-row items-center justify-center gap-6 max-w-5xl mx-auto mb-8 mt-4">
-                    <!-- Yeti Mascot (decorative, shows on all screens) -->
+                    <!-- Yeti Mascot (Fixed high-quality asset with floating animation) -->
                     <div class="flex-shrink-0">
                         <img
                             src="img/yeti-mascot.png"
                             alt="Yeti Maskot"
-                            class="w-20 lg:w-40 h-auto object-contain animate-bounce-slow opacity-90 drop-shadow-lg"
-                            style="min-width: 5rem; max-width: 10rem; width: clamp(5rem, 10vw, 10rem)"
+                            class="w-24 lg:w-48 h-auto object-contain animate-float opacity-95 drop-shadow-2xl"
+                            style="
+                                min-width: 6rem;
+                                max-width: 12rem;
+                                width: clamp(6rem, 12vw, 12rem);
+                                filter: drop-shadow(0 20px 40px rgba(0, 151, 156, 0.3));
+                            "
                         />
                     </div>
 
-                    <!-- Title Section -->
+                    <!-- Title Section - Z-Pattern Flow -->
                     <div class="text-center lg:text-left space-y-4">
                         <h2
                             class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
                         >
-                            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                            <span
+                                class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400"
+                            >
                                 İçindeki Yeti'yi
                             </span>
-                            <br />Keşfetmeye Hazır Mısın? 🚀
+                            <br />Keşfetmeye Hazır Mısın? <span class="rocket-icon">🚀</span>
                         </h2>
-                        <p class="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+                        <p
+                            class="text-lg md:text-xl text-gray-400 dark:text-gray-300 max-w-2xl leading-relaxed font-medium"
+                        >
                             Sadece video izleme, yaparak öğren. Kendi hızında ilerle, simülasyonlarla dene ve rozetleri
                             topla.
                         </p>

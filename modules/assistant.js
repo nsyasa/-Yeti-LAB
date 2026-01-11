@@ -154,15 +154,17 @@ const Assistant = {
         const div = document.createElement('div');
         div.id = 'assistant-container';
         div.innerHTML = `
-            <!-- Chat Button -->
+            <!-- Chat Button with Notification Dot -->
             <button id="chat-btn" onclick="Assistant.toggle()" 
-                class="fixed bottom-20 md:bottom-4 right-4 w-20 md:w-32 h-auto transform hover:scale-110 active:scale-95 transition z-40 drop-shadow-2xl cursor-pointer hover:drop-shadow-3xl"
-                style="animation: pulse-glow 3s infinite;">
+                class="fixed bottom-20 md:bottom-4 right-4 w-20 md:w-32 h-auto transform hover:scale-110 active:scale-95 transition z-40 drop-shadow-2xl cursor-pointer hover:drop-shadow-3xl animate-gentle-bounce"
+                style="filter: drop-shadow(0 0 15px rgba(0, 151, 156, 0.4));">
+                <div class="notification-dot"></div>
                 <img src="img/yeti-ask.png" class="w-full h-full object-contain filter drop-shadow-lg" alt="Bana Sor">
+                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs md:text-sm font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap">BANA SOR</span>
             </button>
 
             <!-- Chat Window -->
-            <div id="chat-window" class="fixed bottom-24 right-6 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 hidden flex flex-col z-50 transform transition-all origin-bottom-right scale-95 opacity-0" 
+            <div id="chat-window" class="fixed bottom-24 right-6 w-80 md:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 hidden flex flex-col z-50 transform transition-all origin-bottom-right scale-95 opacity-0" 
                  style="height: 520px; max-height: 80vh;">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-teal-500 to-teal-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
