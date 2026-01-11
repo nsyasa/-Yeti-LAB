@@ -429,9 +429,10 @@ function renderDashboardClassrooms(classroomsList) {
         return;
     }
 
-    container.innerHTML = classroomsList.map(classroom => {
-        const studentCount = classroom.students?.[0]?.count || 0;
-        return `
+    container.innerHTML = classroomsList
+        .map((classroom) => {
+            const studentCount = classroom.students?.[0]?.count || 0;
+            return `
             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer" onclick="viewClassroom('${classroom.id}')">
                 <div class="flex items-center gap-3">
                     <span class="text-2xl">${classroom.is_active ? '✅' : '⏸️'}</span>
@@ -445,7 +446,8 @@ function renderDashboardClassrooms(classroomsList) {
                 </button>
             </div>
         `;
-    }).join('');
+        })
+        .join('');
 }
 
 function copyCode(element) {
