@@ -83,6 +83,17 @@ export default [
                 StudentDashboardView: 'readonly',
                 // View Manager (SPA Lifecycle)
                 ViewManager: 'readonly',
+                // Assignment System Components
+                AssignmentService: 'readonly',
+                AssignmentModals: 'readonly',
+                AssignmentsSection: 'readonly',
+                CoursesSection: 'readonly',
+                AnalyticsSection: 'readonly',
+                StudentAssignmentsSection: 'readonly',
+                StudentSubmissionModal: 'readonly',
+                StudentCoursesSection: 'readonly',
+                NotificationDropdown: 'readonly',
+                DOMPurify: 'readonly',
                 // Test globals
                 describe: 'readonly',
                 it: 'readonly',

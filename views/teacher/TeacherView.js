@@ -43,11 +43,27 @@ const TeacherView = {
                         <section id="teacherStudentsSection" class="hidden">
                             ${StudentsSection.render()}
                         </section>
+
+                        <!-- Assignments Section -->
+                        <section id="teacherAssignmentsSection" class="hidden">
+                            ${AssignmentsSection.render()}
+                        </section>
+
+                        <!-- Courses Section -->
+                        <section id="teacherCoursesSection" class="hidden">
+                            ${CoursesSection.render()}
+                        </section>
+
+                        <!-- Analytics Section -->
+                        <section id="teacherAnalyticsSection" class="hidden">
+                            ${AnalyticsSection.render()}
+                        </section>
                     </div>
                 </div>
                 
                 <!-- Modals -->
                 ${TeacherModals.renderAll()}
+                ${AssignmentModals.renderAll()}
             </div>
         `;
     },
@@ -164,11 +180,16 @@ const TeacherView = {
             'views/teacher/sections/DashboardSection.js',
             'views/teacher/sections/ClassroomsSection.js',
             'views/teacher/sections/StudentsSection.js',
+            'views/teacher/sections/AssignmentsSection.js',
+            'views/teacher/sections/CoursesSection.js',
+            'views/teacher/sections/AnalyticsSection.js',
             'views/teacher/modals/TeacherModals.js',
+            'views/teacher/modals/AssignmentModals.js',
             'modules/teacher/classrooms.js',
             'modules/teacher/students.js',
             'modules/teacher/analytics.js',
             'modules/teacher-manager.js',
+            'modules/assignmentService.js',
         ];
 
         for (const src of scripts) {
@@ -210,12 +231,15 @@ const TeacherView = {
         const hash = window.location.hash;
         // #/teacher/classrooms → classrooms
         // #/teacher/students → students
+        // #/teacher/assignments → assignments
+        // #/teacher/courses → courses
+        // #/teacher/analytics → analytics
         // #/teacher → dashboard
         if (hash.includes('/teacher/')) {
             const parts = hash.split('/teacher/');
             if (parts[1]) {
                 const section = parts[1].split('/')[0]; // İlk segment
-                if (['classrooms', 'students'].includes(section)) {
+                if (['classrooms', 'students', 'assignments', 'courses', 'analytics'].includes(section)) {
                     return section;
                 }
             }
@@ -258,6 +282,21 @@ const TeacherView = {
             if (section === 'students' && TeacherManager.loadStudents) {
                 TeacherManager.loadStudents();
             }
+        }
+
+        // Load assignments data
+        if (section === 'assignments' && window.AssignmentsSection) {
+            AssignmentsSection.loadData();
+        }
+
+        // Load courses data
+        if (section === 'courses' && window.CoursesSection) {
+            CoursesSection.mount();
+        }
+
+        // Load analytics data
+        if (section === 'analytics' && window.AnalyticsSection) {
+            AnalyticsSection.mount();
         }
 
         // Update URL hash (if requested)

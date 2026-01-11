@@ -6,6 +6,73 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.2.0] - 2026-01-11
+
+### 🧪 Ödev Sistemi - Test & Optimizasyon (Faz 8)
+
+#### Unit Test Coverage
+
+- **assignmentService.test.js**: AssignmentService için 35 kapsamlı test
+  - Validasyon testleri (required fields, assignment types, status values)
+  - Filtreleme testleri (classroom, course, status, upcoming)
+  - Sıralama testleri (due_date ascending, created_at descending)
+  - Due date hesaplamaları (overdue, due today, days until due)
+  - Geç gönderim ceza hesaplamaları
+  - Status geçiş validasyonları
+  - Max attempts kontrolü
+
+- **submissionService.test.js**: StudentSubmissionService için 34 kapsamlı test
+  - Dosya validasyonu (allowed types, max file size, extension extraction)
+  - Status geçişleri (draft → submitted → graded, resubmit flows)
+  - Deneme sayısı kontrolü (max attempts, unlimited attempts)
+  - Geç gönderim tespiti ve süre hesabı
+  - Puan hesaplamaları ve geç ceza uygulaması
+  - Feedback ve içerik yönetimi
+  - Timestamp takibi
+
+#### E2E Test Suite
+
+- **assignment-flow.spec.js**: Playwright ile uçtan uca ödev akışı testleri
+  - Öğretmen ödev oluşturma ve listeleme
+  - Öğretmen notlandırma akışı
+  - Öğrenci ödev görüntüleme ve gönderim
+  - Bildirim sistemi testleri
+
+#### Performans Optimizasyonları
+
+- **lazyLoader.js**: Lazy loading ve pagination yardımcıları
+  - IntersectionObserver tabanlı lazy loading
+  - Infinite scroll desteği
+  - Görüntü lazy loading (placeholder ile)
+  - Pagination state yönetimi ve UI render
+  - CSS stilleri dahil
+
+- **imageOptimizer.js**: Görüntü optimizasyon servisi
+  - WebP/AVIF format desteği kontrolü
+  - Responsive srcset oluşturma
+  - Blur-up efekti ile progressive loading
+  - Thumbnail ve resize işlemleri
+  - Dominant renk çıkarma
+
+- **bundleAnalyzer.js**: Bundle analiz ve optimizasyon önerileri
+  - Modül kataloglama ve boyut analizi
+  - Lazy load adayları tespiti
+  - Vite konfigürasyon önerileri
+  - Performans bütçesi kontrolü
+  - Detaylı analiz raporu oluşturma
+
+#### Yeni UI Bileşenleri
+
+- **StudentSubmissionModal**: Öğrenci ödev detay ve gönderim modalı
+- **StudentAssignmentsSection**: Öğrenci ödev listesi ve filtreleme
+- **StudentCoursesSection**: Kayıtlı kurslar görünümü
+- **AssignmentModals**: Öğretmen ödev CRUD modalları
+- **AssignmentsSection**: Öğretmen ödev yönetim paneli
+- **AnalyticsSection**: Kapsamlı analytics dashboard
+- **CoursesSection**: Kurs atama yönetimi
+
+---
+
 ## [1.1.0] - 2026-01-11
 
 ### 🎨 Tasarım Sistemi Güncellemesi

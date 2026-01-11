@@ -76,6 +76,14 @@ const StudentDashboardView = {
                         </div>
                     </div>
 
+                    <!-- My Assignments Section -->
+                    <h3 class="text-xl font-bold mb-4">📋 Ödevlerim</h3>
+                    <div id="sd-assignments" class="mb-8">
+                        <div class="flex justify-center py-12">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-theme"></div>
+                        </div>
+                    </div>
+
                     <!-- Recent Activity -->
                     <h3 class="text-xl font-bold mb-4">📝 Son Aktiviteler</h3>
                     <div id="sd-recentActivity" class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -142,6 +150,7 @@ const StudentDashboardView = {
         // 5. Render sections
         this.renderStats();
         this.renderCourseProgress();
+        this.renderAssignments();
         this.renderRecentActivity();
         this.renderQuizHistory();
 
@@ -474,6 +483,130 @@ const StudentDashboardView = {
         } else {
             window.location.href = `index.html#/course/${courseKey}`;
         }
+    },
+
+    /**
+     * Render assignments section with pending assignments
+     */
+    async renderAssignments() {
+        const container = document.getElementById('sd-assignments');
+        if (!container) return;
+
+        try {
+            // Load assignments via service
+            const assignments = await window.StudentSubmissionService?.getMyAssignments({ status: 'active' }) || [];
+
+            if (assignments.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
+                        <div class="text-4xl mb-3">📭</div>
+                        <p class="text-gray-500 dark:text-gray-400">Henüz bekleyen ödevin yok</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // En fazla 3 tane göster, kalanlar için "tümünü gör" linki
+            const displayAssignments = assignments.slice(0, 3);
+            const hasMore = assignments.length > 3;
+
+            container.innerHTML = `
+                <div class="space-y-3">
+                    ${displayAssignments.map(assignment => this.renderAssignmentCard(assignment)).join('')}
+                </div>
+                ${hasMore ? `
+                    <div class="text-center mt-4">
+                        <button onclick="StudentDashboardView.showAllAssignments()"
+                            class="text-theme hover:underline font-medium text-sm">
+                            Tüm Ödevleri Gör (${assignments.length}) →
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+
+        } catch (error) {
+            console.error('[StudentDashboardView] renderAssignments error:', error);
+            container.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
+                    <p class="text-red-500">Ödevler yüklenirken hata oluştu</p>
+                </div>
+            `;
+        }
+    },
+
+    /**
+     * Render a single assignment card for dashboard
+     */
+    renderAssignmentCard(assignment) {
+        const service = window.StudentSubmissionService;
+        const status = service?.getAssignmentStatus(assignment) || { label: '-', icon: '📋', color: 'gray' };
+        const timeRemaining = service?.getTimeRemaining(assignment.due_date) || { text: '-' };
+        const submission = assignment.my_submission;
+        const hasGrade = submission?.grade !== null && submission?.grade !== undefined;
+
+        const typeIcons = { project: '🎯', homework: '📚', quiz: '❓', exam: '📝' };
+        const icon = typeIcons[assignment.assignment_type] || '📋';
+
+        return `
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 hover:shadow-lg transition-all cursor-pointer flex items-center justify-between gap-4"
+                onclick="StudentSubmissionModal?.open('${assignment.id}')">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="text-2xl">${icon}</span>
+                    <div class="min-w-0">
+                        <h4 class="font-semibold text-gray-800 dark:text-white truncate">${this.escapeHtml(assignment.title)}</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium 
+                                ${status.color === 'green' ? 'bg-green-100 text-green-700' : 
+                                  status.color === 'orange' ? 'bg-orange-100 text-orange-700' : 
+                                  status.color === 'red' ? 'bg-red-100 text-red-700' : 
+                                  status.color === 'blue' ? 'bg-blue-100 text-blue-700' : 
+                                  'bg-gray-100 text-gray-700'}">
+                                ${status.icon} ${status.label}
+                            </span>
+                            ${assignment.due_date ? `
+                                <span class="${timeRemaining.overdue ? 'text-red-500' : timeRemaining.urgent ? 'text-orange-500' : 'text-gray-400'} text-xs">
+                                    ⏰ ${timeRemaining.text}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    ${hasGrade ? `
+                        <span class="font-bold ${submission.grade >= assignment.max_points * 0.6 ? 'text-green-600' : 'text-orange-600'}">
+                            ${submission.grade}/${assignment.max_points}
+                        </span>
+                    ` : status.canSubmit ? `
+                        <span class="px-3 py-1 bg-theme text-white rounded-lg text-sm font-medium">Gönder</span>
+                    ` : ''}
+                    <span class="text-gray-400">→</span>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Show all assignments (navigate to full view or open modal)
+     */
+    showAllAssignments() {
+        // Ödevler bölümünü tam görünümde aç
+        if (window.StudentAssignmentsSection) {
+            const container = document.getElementById('sd-assignments');
+            if (container) {
+                container.innerHTML = StudentAssignmentsSection.render();
+                StudentAssignmentsSection.loadData();
+            }
+        }
+    },
+
+    /**
+     * Escape HTML
+     */
+    escapeHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     },
 };
 

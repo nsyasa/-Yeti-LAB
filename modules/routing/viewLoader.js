@@ -302,14 +302,21 @@ const ViewLoader = {
             await import('../../modules/teacher/classrooms.js');
             await import('../../modules/teacher/students.js');
             await import('../../modules/teacher/analytics.js');
+            await import('../../modules/teacher/analyticsService.js');
             await import('../../modules/teacher-manager.js');
+            await import('../../modules/assignmentService.js');
+            await import('../../modules/courseEnrollmentService.js');
 
             // View Components
             await import('../../views/teacher/TeacherLayout.js');
             await import('../../views/teacher/sections/DashboardSection.js');
             await import('../../views/teacher/sections/ClassroomsSection.js');
             await import('../../views/teacher/sections/StudentsSection.js');
+            await import('../../views/teacher/sections/AssignmentsSection.js');
+            await import('../../views/teacher/sections/CoursesSection.js');
+            await import('../../views/teacher/sections/AnalyticsSection.js');
             await import('../../views/teacher/modals/TeacherModals.js');
+            await import('../../views/teacher/modals/AssignmentModals.js');
             await import('../../views/teacher/TeacherView.js');
 
             console.log('[ViewLoader] Teacher scripts loaded via dynamic import');
@@ -426,6 +433,11 @@ const ViewLoader = {
 
         try {
             await import('../../modules/courseLoader.js');
+            await import('../../modules/studentSubmissionService.js');
+            await import('../../modules/courseEnrollmentService.js');
+            await import('../../views/student/sections/StudentAssignmentsSection.js');
+            await import('../../views/student/sections/StudentCoursesSection.js');
+            await import('../../views/student/modals/StudentSubmissionModal.js');
             await import('../../views/student/StudentDashboardView.js');
 
             console.log('[ViewLoader] Student dashboard scripts loaded via dynamic import');

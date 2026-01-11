@@ -27,6 +27,8 @@ Yeti LAB, öğrencilere **Arduino**, **Micro:bit**, **Scratch**, **mBlock** ve *
 - 🏆 **Oyunlaştırma**: Rozetler, puan sistemi ve interaktif quizler.
 - 🤖 **AI Yardımcı (BANA SOR)**: Yeti maskotu ile kontekst-duyarlı öğrenme desteği.
 - 🧪 **Test Odaklı Geliştirme**: Kapsamlı E2E (Playwright) ve Entegrasyon (Vitest) testleri.
+- 📋 **Ödev Sistemi**: Öğretmen ödev oluşturma, öğrenci gönderim, notlandırma ve analytics.
+- 📊 **Analytics Dashboard**: Gerçek zamanlı performans metrikleri ve raporlama.
 
 ---
 

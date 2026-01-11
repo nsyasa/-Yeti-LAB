@@ -36,6 +36,30 @@ const TeacherLayout = {
                                 <span class="hidden sm:inline">Öğrenciler</span>
                                 <span class="sm:hidden">Öğrenci</span>
                             </button>
+
+                            <button onclick="TeacherView.showSection('assignments')"
+                                class="teacher-tab-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                                data-section="assignments">
+                                <span>📋</span>
+                                <span class="hidden sm:inline">Ödevler</span>
+                                <span class="sm:hidden">Ödev</span>
+                            </button>
+
+                            <button onclick="TeacherView.showSection('courses')"
+                                class="teacher-tab-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                                data-section="courses">
+                                <span>📚</span>
+                                <span class="hidden sm:inline">Kurslar</span>
+                                <span class="sm:hidden">Kurs</span>
+                            </button>
+
+                            <button onclick="TeacherView.showSection('analytics')"
+                                class="teacher-tab-btn flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
+                                data-section="analytics">
+                                <span>📊</span>
+                                <span class="hidden sm:inline">Analytics</span>
+                                <span class="sm:hidden">Stats</span>
+                            </button>
                         </div>
                         
                         <!-- Action Buttons -->
