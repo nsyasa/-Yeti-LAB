@@ -175,43 +175,41 @@
             <!-- DERS SEÇİM EKRANI (Ana Sayfa) -->
 
             <div id="course-selection-view" class="fade-in pb-10">
-                <div class="flex flex-col lg:flex-row items-center justify-center gap-6 max-w-5xl mx-auto mb-8 mt-4">
+                <!-- Hero Section - Responsive -->
+                <div
+                    class="flex flex-row items-center justify-center gap-3 lg:gap-6 max-w-5xl mx-auto mb-6 lg:mb-8 mt-2 lg:mt-4 px-2"
+                >
                     <!-- Yeti Mascot (Fixed high-quality asset with floating animation) -->
                     <div class="flex-shrink-0">
                         <img
                             src="img/yeti-mascot.png"
                             alt="Yeti Maskot"
-                            class="w-24 lg:w-48 h-auto object-contain animate-float opacity-95 drop-shadow-2xl"
-                            style="
-                                min-width: 6rem;
-                                max-width: 12rem;
-                                width: clamp(6rem, 12vw, 12rem);
-                                filter: drop-shadow(0 20px 40px rgba(0, 151, 156, 0.3));
-                            "
+                            class="w-16 sm:w-20 lg:w-48 h-auto object-contain animate-float opacity-95 drop-shadow-2xl"
+                            style="filter: drop-shadow(0 20px 40px rgba(0, 151, 156, 0.3))"
                         />
                     </div>
 
-                    <!-- Title Section - Z-Pattern Flow -->
-                    <div class="text-center lg:text-left space-y-4">
+                    <!-- Title Section - Compact on mobile -->
+                    <div class="text-left lg:text-left space-y-1 lg:space-y-4 flex-1">
                         <h2
-                            class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
+                            class="text-xl sm:text-2xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
                         >
                             <span
                                 class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400"
                             >
                                 İçindeki Yeti'yi
                             </span>
-                            <br />Keşfetmeye Hazır Mısın? <span class="rocket-icon">🚀</span>
+                            <br class="hidden sm:block" /><span class="sm:hidden"> </span>Keşfet!
+                            <span class="rocket-icon text-base sm:text-xl lg:text-4xl">🚀</span>
                         </h2>
                         <p
-                            class="text-lg md:text-xl text-gray-400 dark:text-gray-300 max-w-2xl leading-relaxed font-medium"
+                            class="hidden sm:block text-sm md:text-lg lg:text-xl text-gray-400 dark:text-gray-300 max-w-2xl leading-relaxed font-medium"
                         >
-                            Sadece video izleme, yaparak öğren. Kendi hızında ilerle, simülasyonlarla dene ve rozetleri
-                            topla.
+                            Yaparak öğren, simülasyonlarla dene ve rozetleri topla.
                         </p>
                     </div>
                 </div>
-                <div id="course-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div id="course-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
                     <!-- SKELETON LOADER (JS yüklenene kadar görünür) -->
                     <div
                         class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center"
@@ -394,36 +392,36 @@
         <!-- Mobile Bottom Navigation -->
         <nav
             id="mobile-bottom-nav"
-            class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40 md:hidden"
+            class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/10 shadow-lg z-40 md:hidden"
         >
             <div class="grid grid-cols-4 h-16">
                 <button
                     onclick="app.renderCourseSelection()"
-                    class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
                 >
                     <span class="text-xl">🏠</span>
-                    <span class="text-xs mt-0.5">Ana Sayfa</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Ana Sayfa</span>
                 </button>
                 <button
                     onclick="app.toggleSidebar()"
-                    class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
                 >
                     <span class="text-xl">📚</span>
-                    <span class="text-xs mt-0.5">Dersler</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Dersler</span>
                 </button>
                 <button
                     onclick="app.toggleMobileSearch()"
-                    class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
                 >
                     <span class="text-xl">🔍</span>
-                    <span class="text-xs mt-0.5">Ara</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Ara</span>
                 </button>
                 <button
                     onclick="Assistant?.toggle()"
-                    class="flex flex-col items-center justify-center text-gray-600 hover:text-theme active:bg-gray-100"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
                 >
                     <span class="text-xl">💬</span>
-                    <span class="text-xs mt-0.5">Asistan</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Asistan</span>
                 </button>
             </div>
         </nav>

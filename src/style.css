@@ -77,28 +77,29 @@
         transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* Dark mode glassmorphism */
+    /* Dark mode glassmorphism - Balanced for content visibility */
     .dark .course-card,
     .dark-mode .course-card,
     html.dark .course-card {
-        background: rgba(30, 41, 59, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .course-card::before {
         content: '';
         @apply absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none z-0;
-        background: linear-gradient(135deg, transparent 0%, rgba(0, 212, 255, 0.08) 100%);
+        background: linear-gradient(135deg, transparent 0%, rgba(0, 212, 255, 0.05) 100%);
     }
 
     .course-card:hover {
         @apply -translate-y-2 scale-105;
+        filter: brightness(1.1);
         box-shadow:
-            0 0 30px rgba(0, 151, 156, 0.25),
-            0 20px 40px -10px rgba(0, 0, 0, 0.3);
-        border-color: rgba(0, 212, 255, 0.4);
+            0 0 35px rgba(0, 151, 156, 0.3),
+            0 20px 50px -10px rgba(0, 0, 0, 0.4);
+        border-color: rgba(0, 212, 255, 0.5);
     }
 
     .course-card:hover::before {

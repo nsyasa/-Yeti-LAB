@@ -158,27 +158,27 @@ const UI = {
             const levelInfo = getLevel(percentage);
             const ctaText = getCTA(key, percentage);
 
-            // Mobile: Compact card (icon + title only)
-            // Desktop: Full card with description, progress, CTA
-            const hiddenClass = isHidden ? 'hidden md:flex' : '';
+            // Mobile: First 4 visible, rest hidden with "Load More" button
+            // Desktop: All courses visible
+            const hiddenClass = isHidden ? 'hidden' : '';
 
             // Calculate XP needed for next level
             const xpForNextLevel = levelInfo.level * 50;
 
             return `
                 <div onclick="app.selectCourse('${key}', event)" 
-                     class="course-card card-glow bg-white dark:bg-slate-800/80 dark:backdrop-blur-md dark:border dark:border-white/10 rounded-2xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible transition-all duration-300 hover:-translate-y-2 hover:scale-105 ${hiddenClass}" 
+                     class="course-card card-glow bg-white dark:bg-slate-800/70 rounded-2xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible transition-all duration-300 hover:-translate-y-2 hover:scale-105 ${hiddenClass}" 
                      data-course="${key}"
                      data-index="${index}">
                     
-                    <!-- Level Badge with Tooltip -->
-                    <div class="level-badge absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 lg:px-2 lg:py-1 bg-${levelInfo.color}-100 dark:bg-${levelInfo.color}-900/30 text-${levelInfo.color}-700 dark:text-${levelInfo.color}-300 rounded-full text-xs font-bold cursor-pointer hover:scale-110 transition-transform" data-tooltip="Sonraki Seviye: ${xpForNextLevel} XP">
-                        <span class="hidden lg:inline">${levelInfo.icon}</span>
-                        <span>Lv.${levelInfo.level}</span>
+                    <!-- Enhanced Level Badge with High Contrast (larger on mobile) -->
+                    <div class="level-badge level-badge-enhanced absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 lg:px-2.5 lg:py-1 rounded-full text-[11px] lg:text-xs cursor-pointer hover:scale-110 transition-transform z-30 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-500 shadow-md" data-tooltip="Sonraki Seviye: ${xpForNextLevel} XP">
+                        <span class="text-xs">${levelInfo.icon}</span>
+                        <span class="font-bold text-slate-700 dark:text-slate-100">Lv.${levelInfo.level}</span>
                     </div>
                     
                     <!-- Icon -->
-                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-gray-50 dark:bg-gray-700/50 p-3 lg:p-4 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-gray-100 dark:bg-gray-700/80 p-3 lg:p-4 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative z-20">
                         ${icon}
                     </div>
                     
@@ -196,8 +196,15 @@ const UI = {
                         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 hidden lg:block">${completed > 0 ? `${completed}/${total} ders` : 'Henüz başlamadın'}</p>
                     </div>
                     
-                    <!-- Peek Yeti (appears on hover, smaller on mobile) -->
-                    <div class="absolute -bottom-2 -right-2 lg:-bottom-4 lg:-right-4 w-12 h-12 lg:w-24 lg:h-24 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 group-hover:translate-y-[-4px]">
+                    <!-- CTA Button with Vibrant Orange-Red Gradient (visible on all screens) -->
+                    <div class="mt-3 w-full relative z-10">
+                        <span class="block w-full py-2 lg:py-2.5 px-3 lg:px-4 bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white rounded-xl font-bold text-xs lg:text-sm shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 group-hover:brightness-110 transition-all text-center">
+                            ${ctaText} 🚀
+                        </span>
+                    </div>
+                    
+                    <!-- Peek Yeti (appears on hover, on top of button) -->
+                    <div class="absolute -bottom-2 -right-2 lg:-bottom-4 lg:-right-4 w-12 h-12 lg:w-24 lg:h-24 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 group-hover:translate-y-[-4px]">
                         <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain drop-shadow-lg" />
                     </div>
                 </div>`;
@@ -216,7 +223,7 @@ const UI = {
             showAllBtn.className = 'col-span-2 flex items-center justify-center';
             showAllBtn.innerHTML = `
                 <button onclick="UI.toggleAllCourses()" 
-                        class="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                        class="w-full py-3 px-4 bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:brightness-110 transition-all flex items-center justify-center gap-2">
                     <span>📚 Tüm Kursları Gör</span>
                     <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs">${courses.length - initialCount} daha</span>
                 </button>
@@ -257,7 +264,7 @@ const UI = {
                 const remainingCount = allCards.length - 4;
                 showAllBtn.innerHTML = `
                     <button onclick="UI.toggleAllCourses()" 
-                            class="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                            class="w-full py-3 px-4 bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:brightness-110 transition-all flex items-center justify-center gap-2">
                         <span>📚 Tüm Kursları Gör</span>
                         <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs">${remainingCount} daha</span>
                     </button>
