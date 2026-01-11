@@ -4,7 +4,10 @@
  * Real-time subscription desteği
  */
 
-import { supabase } from './supabaseClient.js';
+import SupabaseClient from './supabaseClient.js';
+
+// Lazy getter - her çağrıda client'a erişir
+const getSupabase = () => SupabaseClient.getClient();
 
 const NotificationService = {
     // Real-time subscription reference
@@ -23,7 +26,7 @@ const NotificationService = {
     async getNotifications({ limit = 20, offset = 0, unreadOnly = false } = {}) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         // Kullanıcının student mi user mi olduğunu belirle
@@ -58,7 +61,7 @@ const NotificationService = {
     async getUnreadCount() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return 0;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
@@ -114,7 +117,7 @@ const NotificationService = {
     async markAllAsRead() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
@@ -144,7 +147,7 @@ const NotificationService = {
      * @returns {Promise<void>}
      */
     async deleteNotification(notificationId) {
-        const { error } = await supabase.from('notifications').delete().eq('id', notificationId);
+        const { error } = await getSupabase().from('notifications').delete().eq('id', notificationId);
 
         if (error) {
             console.error('Bildirim silme hatası:', error);
@@ -162,13 +165,13 @@ const NotificationService = {
     async clearAll() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
         if (!recipientField) return;
 
-        const { error } = await supabase.from('notifications').delete().eq(recipientField, recipientId);
+        const { error } = await getSupabase().from('notifications').delete().eq(recipientField, recipientId);
 
         if (error) {
             console.error('Tüm bildirimleri silme hatası:', error);
@@ -208,7 +211,7 @@ const NotificationService = {
     async _startRealtimeSubscription() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return;
 
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
@@ -307,14 +310,14 @@ const NotificationService = {
      */
     async _getRecipientInfo(userId) {
         // Önce user_profiles'da kontrol et (öğretmen/admin)
-        const { data: profile } = await supabase.from('user_profiles').select('id').eq('id', userId).single();
+        const { data: profile } = await getSupabase().from('user_profiles').select('id').eq('id', userId).single();
 
         if (profile) {
             return { recipientField: 'recipient_user_id', recipientId: profile.id };
         }
 
         // students tablosunda kontrol et
-        const { data: student } = await supabase.from('students').select('id').eq('user_id', userId).single();
+        const { data: student } = await getSupabase().from('students').select('id').eq('user_id', userId).single();
 
         if (student) {
             return { recipientField: 'recipient_student_id', recipientId: student.id };

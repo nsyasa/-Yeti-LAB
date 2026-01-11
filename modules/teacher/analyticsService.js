@@ -3,7 +3,10 @@
  * Ödev, gönderim, öğrenci aktivite metrikleri
  */
 
-import { supabase } from '../supabaseClient.js';
+import SupabaseClient from '../supabaseClient.js';
+
+// Lazy getter - her çağrıda client'a erişir
+const getSupabase = () => SupabaseClient.getClient();
 
 const AnalyticsService = {
     _cache: {},
@@ -16,11 +19,11 @@ const AnalyticsService = {
     async getDashboardSummary() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Öğretmenin sınıflarını al
-        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+        const { data: classrooms } = await getSupabase().from('classrooms').select('id').eq('teacher_id', user.id);
 
         if (!classrooms || classrooms.length === 0) {
             return this._getEmptySummary();
@@ -42,7 +45,7 @@ const AnalyticsService = {
                 .select('id, status, score')
                 .in(
                     'assignment_id',
-                    (await supabase.from('assignments').select('id').in('classroom_id', classroomIds)).data?.map(
+                    (await getSupabase().from('assignments').select('id').in('classroom_id', classroomIds)).data?.map(
                         (a) => a.id
                     ) || []
                 ),
@@ -107,7 +110,7 @@ const AnalyticsService = {
     async getSubmissionTrend(days = 7) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         const startDate = new Date();
@@ -157,7 +160,7 @@ const AnalyticsService = {
     async getClassroomPerformance() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         const { data: classrooms } = await supabase
@@ -209,7 +212,7 @@ const AnalyticsService = {
     async getAssignmentStats() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         const { data } = await supabase
@@ -272,7 +275,7 @@ const AnalyticsService = {
     async getTopStudents(limit = 5) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         // Öğretmenin sınıflarındaki öğrencileri al
@@ -329,7 +332,7 @@ const AnalyticsService = {
     async getSubmissionStatusDistribution() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return { submitted: 0, graded: 0, late: 0, draft: 0 };
 
         const { data: assignments } = await supabase
@@ -372,7 +375,7 @@ const AnalyticsService = {
     async getWeeklyActivityHeatmap() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         const startDate = new Date();
@@ -436,11 +439,11 @@ const AnalyticsService = {
     async getCourseCompletionRates() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         // View kullan
-        const { data } = await supabase.from('course_completion_rates').select('*');
+        const { data } = await getSupabase().from('course_completion_rates').select('*');
 
         return data || [];
     },
@@ -453,7 +456,7 @@ const AnalyticsService = {
     async getRecentActivity(limit = 10) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) return [];
 
         const { data: submissions } = await supabase

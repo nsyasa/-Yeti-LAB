@@ -765,5 +765,7 @@ if (typeof window !== 'undefined') {
 }
 
 // ES Module exports for Vite/Rollup bundling
-export const supabase = SupabaseClient.getClient();
+// NOT: supabase client'ı doğrudan export etmek yerine getter fonksiyonu kullanılmalı
+// çünkü modül yüklendiğinde supabase CDN henüz yüklenmemiş olabilir
+export const getSupabaseClient = () => SupabaseClient.getClient();
 export default SupabaseClient;

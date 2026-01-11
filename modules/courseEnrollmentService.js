@@ -4,7 +4,10 @@
  * Öğrenciler için kayıtlı kursları görme
  */
 
-import { supabase } from './supabaseClient.js';
+import SupabaseClient from './supabaseClient.js';
+
+// Lazy getter - her çağrıda client'a erişir
+const getSupabase = () => SupabaseClient.getClient();
 
 const CourseEnrollmentService = {
     /**
@@ -31,7 +34,7 @@ const CourseEnrollmentService = {
     async getTeacherClassrooms() {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         const { data, error } = await supabase
@@ -145,7 +148,7 @@ const CourseEnrollmentService = {
     async enrollClassroom(classroomId, courseId) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Sınıftaki tüm öğrencileri al
@@ -187,7 +190,7 @@ const CourseEnrollmentService = {
             };
         }
 
-        const { data, error } = await supabase.from('course_enrollments').insert(newEnrollments).select();
+        const { data, error } = await getSupabase().from('course_enrollments').insert(newEnrollments).select();
 
         if (error) {
             console.error('Toplu kayıt hatası:', error);
@@ -211,7 +214,7 @@ const CourseEnrollmentService = {
     async enrollStudent(studentId, courseId, classroomId = null) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Mevcut kayıt kontrolü
@@ -265,7 +268,7 @@ const CourseEnrollmentService = {
     async enrollMultipleStudents(studentIds, courseId, classroomId = null) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Mevcut kayıtları kontrol et
@@ -296,7 +299,7 @@ const CourseEnrollmentService = {
             };
         }
 
-        const { data, error } = await supabase.from('course_enrollments').insert(newEnrollments).select();
+        const { data, error } = await getSupabase().from('course_enrollments').insert(newEnrollments).select();
 
         if (error) {
             console.error('Toplu kayıt hatası:', error);
@@ -343,7 +346,7 @@ const CourseEnrollmentService = {
      * @param {string} enrollmentId - Kayıt ID
      */
     async removeEnrollment(enrollmentId) {
-        const { error } = await supabase.from('course_enrollments').delete().eq('id', enrollmentId);
+        const { error } = await getSupabase().from('course_enrollments').delete().eq('id', enrollmentId);
 
         if (error) {
             console.error('Kayıt silme hatası:', error);
@@ -380,11 +383,11 @@ const CourseEnrollmentService = {
     async getCourseEnrollmentStats(courseId) {
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await getSupabase().auth.getUser();
         if (!user) throw new Error('Oturum bulunamadı');
 
         // Öğretmenin sınıflarındaki kayıtları al
-        const { data: classrooms } = await supabase.from('classrooms').select('id').eq('teacher_id', user.id);
+        const { data: classrooms } = await getSupabase().from('classrooms').select('id').eq('teacher_id', user.id);
 
         if (!classrooms || classrooms.length === 0) {
             return { total: 0, active: 0, completed: 0, dropped: 0, paused: 0 };
