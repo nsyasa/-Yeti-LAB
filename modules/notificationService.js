@@ -33,7 +33,7 @@ const NotificationService = {
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
         if (!recipientField) return [];
 
-        let query = supabase
+        let query = getSupabase()
             .from('notifications')
             .select('*')
             .eq(recipientField, recipientId)
@@ -67,7 +67,7 @@ const NotificationService = {
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
         if (!recipientField) return 0;
 
-        const { count, error } = await supabase
+        const { count, error } = await getSupabase()
             .from('notifications')
             .select('*', { count: 'exact', head: true })
             .eq(recipientField, recipientId)
@@ -88,7 +88,7 @@ const NotificationService = {
      * @returns {Promise<Object>}
      */
     async markAsRead(notificationId) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
             .from('notifications')
             .update({
                 is_read: true,
@@ -123,7 +123,7 @@ const NotificationService = {
         const { recipientField, recipientId } = await this._getRecipientInfo(user.id);
         if (!recipientField) return;
 
-        const { error } = await supabase
+        const { error } = await getSupabase()
             .from('notifications')
             .update({
                 is_read: true,
@@ -218,7 +218,7 @@ const NotificationService = {
         if (!recipientField) return;
 
         // Channel oluştur
-        this._subscription = supabase
+        this._subscription = getSupabase()
             .channel('notifications')
             .on(
                 'postgres_changes',

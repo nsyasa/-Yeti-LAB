@@ -968,7 +968,6 @@ window.openBulkAddModal = openBulkAddModal;
 window.openClassroomSettings = openClassroomSettings;
 window.toggleClassroom = toggleClassroom;
 window.deleteClassroom = deleteClassroom;
-window.viewClassroomDetail = viewClassroomDetail;
 window.previewBulkStudents = previewBulkStudents;
 window.resetBulkForm = resetBulkForm;
 window.copyBulkList = copyBulkList;
