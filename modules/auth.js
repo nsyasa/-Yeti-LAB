@@ -40,7 +40,7 @@ const Auth = {
                 // Add timeout for session check (10 seconds max)
                 const sessionPromise = this.checkSession();
                 const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Session check timeout')), 10000)
+                    setTimeout(() => reject(new Error('Session check timeout')), 15000)
                 );
 
                 try {

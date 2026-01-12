@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-    base: '/-Yeti-LAB/', // GitHub Pages base path
+    base: process.env.NODE_ENV === 'production' ? '/-Yeti-LAB/' : '/', // GitHub Pages base path for prod, root for dev
     plugins: [tailwindcss()],
     // Multi-page app configuration
     build: {
@@ -19,13 +19,12 @@ export default defineConfig({
                 assetFileNames: 'assets/[name]-[hash].[ext]',
                 // Define global variables for external dependencies
                 globals: {
-                    '@supabase/supabase-js': 'supabase', // Global variable name from CDN
                     'chart.js': 'Chart',
                 },
             },
             // External dependencies (loaded from CDN)
             // Prevent bundling if accidentally imported
-            external: ['@supabase/supabase-js', 'chart.js'],
+            external: ['chart.js'],
         },
         outDir: 'dist',
         emptyOutDir: true,
