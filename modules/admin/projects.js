@@ -224,6 +224,23 @@ const ProjectManager = {
         setVal('p-hasGraph', p.hasGraph ? 'true' : 'false');
         setVal('p-challenge', p.challenge); // Duplicate set? Keep for safety aligned with original
         setVal('p-circuitImage', p.circuitImage || `devre${p.id}.jpg`);
+
+        // Circuit Section - Auto-enable if circuitImage exists
+        const circuitEnabled = document.getElementById('p-circuitEnabled');
+        const circuitContent = document.getElementById('circuit-section-content');
+        const hasCircuit = p.circuitImage && p.circuitImage !== '';
+
+        if (circuitEnabled) {
+            circuitEnabled.checked = hasCircuit;
+        }
+        if (circuitContent) {
+            if (hasCircuit) {
+                circuitContent.classList.remove('hidden');
+            } else {
+                circuitContent.classList.add('hidden');
+            }
+        }
+
         setVal('p-hotspots', p.hotspots ? JSON.stringify(p.hotspots) : '');
         setVal('p-youtubeUrl', p.youtubeUrl || '');
 
@@ -780,6 +797,23 @@ const ProjectManager = {
             if (typeof HotspotEditor !== 'undefined') HotspotEditor.init();
         } else {
             editorContent.classList.add('hidden');
+        }
+        this.update();
+    },
+
+    /**
+     * Toggle circuit section visibility
+     */
+    toggleCircuitSection() {
+        const enabled = document.getElementById('p-circuitEnabled').checked;
+        const content = document.getElementById('circuit-section-content');
+
+        if (content) {
+            if (enabled) {
+                content.classList.remove('hidden');
+            } else {
+                content.classList.add('hidden');
+            }
         }
         this.update();
     },

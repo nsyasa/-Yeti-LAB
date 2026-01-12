@@ -104,6 +104,7 @@ const ProjectsSection = {
         return `
             <div class="overflow-y-auto flex-grow pr-2 space-y-8">
                 ${this.renderGeneralSection()}
+                ${this.renderSimulationSection()}
                 ${this.renderContentSection()}
                 ${this.renderHardwareSection()}
                 ${this.renderCircuitSection()}
@@ -276,6 +277,72 @@ const ProjectsSection = {
     },
 
     /**
+     * Simülasyon Bölümü
+     */
+    renderSimulationSection() {
+        return `
+            <div id="pcontent-simulation" class="space-y-4">
+                <h3 class="text-lg font-bold text-purple-600 dark:text-purple-400 border-b pb-2 flex items-center gap-2">
+                    🎮 Simülasyon
+                </h3>
+                <div>
+                    <label id="lbl-simulation" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Simülasyon Tipi</label>
+                    <div class="flex gap-2">
+                        <select id="p-simType" class="flex-1 border border-gray-200 dark:border-gray-600 p-2 rounded text-sm bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 transition text-gray-900 dark:text-gray-100"
+                                onchange="admin.toggleCustomSimType()">
+                            <option value="led">LED Yakma</option>
+                            <option value="button">Buton Kullanımı</option>
+                            <option value="pot">Potansiyometre</option>
+                            <option value="streetLight">Sokak Lambası</option>
+                            <option value="traffic">Trafik Lambası</option>
+                            <option value="rgb">RGB Led</option>
+                            <option value="dht">Sıcaklık Sensörü</option>
+                            <option value="ultrasonic">Mesafe Sensörü</option>
+                            <option value="servo">Servo Motor</option>
+                            <option value="countdown">Geri Sayım</option>
+                            <option value="melody">Melodi Çal</option>
+                            <option value="radar">Radar Ekranı</option>
+                            <option value="clap">Alkış Sensörü</option>
+                            <option value="fire">Ateş Sensörü</option>
+                            <option value="moisture">Toprak Nem</option>
+                            <option value="flood">Su Seviyesi</option>
+                            <option value="theremin">Theremin</option>
+                            <option value="hourglass">Kum Saati</option>
+                            <option value="knight_rider">Kara Şimşek</option>
+                            <option value="explorer_board">Kart Keşfi</option>
+                            <option value="custom">-- Özel Gir --</option>
+                        </select>
+                        <input type="text" id="p-simType-custom" 
+                               class="flex-1 border border-gray-200 dark:border-gray-600 p-2 rounded text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hidden"
+                               placeholder="Simülasyon Kodu..." />
+                    </div>
+                </div>
+
+                <!-- YouTube Video -->
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded border border-red-200 dark:border-red-800">
+                    <div class="mb-3">
+                        <label class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
+                            🎬 YouTube Video (Opsiyonel)
+                        </label>
+                    </div>
+                    <input type="text" id="p-youtubeUrl" 
+                           class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           placeholder="https://www.youtube.com/watch?v=... veya https://youtu.be/..."
+                           onchange="ProjectManager.validateYouTubeUrl(this)" />
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Simülasyon ile ilgili açıklayıcı video ekleyebilirsiniz. URL girildiğinde ders sayfasında video gösterilecek.
+                    </p>
+                    <div id="youtube-preview" class="mt-3 hidden">
+                        <div class="aspect-video bg-black rounded overflow-hidden">
+                            <iframe id="youtube-preview-iframe" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
      * İçerik Detayları Bölümü
      */
     renderContentSection() {
@@ -339,49 +406,25 @@ const ProjectsSection = {
     },
 
     /**
-     * Devre & Simülasyon Bölümü
+     * Devre Şeması Bölümü
      */
     renderCircuitSection() {
         return `
             <div id="pcontent-devre" class="space-y-4">
-                <h3 class="text-lg font-bold text-blue-600 border-b pb-2 flex items-center gap-2">
-                    ⚡ Devre Şeması ve Simülasyon
-                </h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="flex items-center justify-between border-b pb-2">
+                    <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                        ⚡ Devre Şeması
+                    </h3>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="p-circuitEnabled" class="rounded" 
+                               onchange="ProjectManager.toggleCircuitSection()" />
+                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Devre şeması kullan</span>
+                    </label>
+                </div>
+                
+                <div id="circuit-section-content" class="space-y-4 hidden">
                     <div>
-                        <label id="lbl-circuit" class="block text-xs font-bold text-gray-500 uppercase mb-1">Simülasyon Tipi</label>
-                        <div class="flex gap-2">
-                            <select id="p-simType" class="flex-1 border border-gray-200 dark:border-gray-600 p-2 rounded text-sm bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 transition text-gray-900 dark:text-gray-100"
-                                    onchange="admin.toggleCustomSimType()">
-                                <option value="led">LED Yakma</option>
-                                <option value="button">Buton Kullanımı</option>
-                                <option value="pot">Potansiyometre</option>
-                                <option value="streetLight">Sokak Lambası</option>
-                                <option value="traffic">Trafik Lambası</option>
-                                <option value="rgb">RGB Led</option>
-                                <option value="dht">Sıcaklık Sensörü</option>
-                                <option value="ultrasonic">Mesafe Sensörü</option>
-                                <option value="servo">Servo Motor</option>
-                                <option value="countdown">Geri Sayım</option>
-                                <option value="melody">Melodi Çal</option>
-                                <option value="radar">Radar Ekranı</option>
-                                <option value="clap">Alkış Sensörü</option>
-                                <option value="fire">Ateş Sensörü</option>
-                                <option value="moisture">Toprak Nem</option>
-                                <option value="flood">Su Seviyesi</option>
-                                <option value="theremin">Theremin</option>
-                                <option value="hourglass">Kum Saati</option>
-                                <option value="knight_rider">Kara Şimşek</option>
-                                <option value="explorer_board">Kart Keşfi</option>
-                                <option value="custom">-- Özel Gir --</option>
-                            </select>
-                            <input type="text" id="p-simType-custom" 
-                                   class="flex-1 border border-gray-200 dark:border-gray-600 p-2 rounded text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hidden"
-                                   placeholder="Simülasyon Kodu..." />
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase">Devre/Blok Resmi</label>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Devre/Blok Resmi</label>
                         <p class="text-xs text-gray-400 mb-1">Dosya adı (led.jpg) veya tam URL (https://...)</p>
                         <div class="flex gap-1">
                             <input type="text" id="p-circuitImage" 
@@ -389,7 +432,7 @@ const ProjectsSection = {
                                    placeholder="devre1.jpg veya https://example.com/img.png"
                                    onchange="admin.previewCircuitImage()" />
                             <button type="button" onclick="admin.openImageSelector('p-circuitImage')"
-                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-2 rounded text-xs whitespace-nowrap">
+                                    class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-1 px-2 rounded text-xs whitespace-nowrap">
                                 🖼️ Seç
                             </button>
                             <label class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-2 rounded text-xs cursor-pointer whitespace-nowrap">
@@ -401,46 +444,25 @@ const ProjectsSection = {
                             <img id="circuit-preview-img" src="" class="max-h-32 rounded border shadow-sm" />
                         </div>
                     </div>
-                </div>
 
-                <!-- Hotspots -->
-                <div id="container-hotspots" class="transition-all duration-300 bg-orange-50 p-4 rounded border border-orange-200 mt-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="p-hotspotEnabled" class="rounded" 
-                                       onchange="ProjectManager.toggleHotspotEnabled()" />
-                                <span class="text-sm font-bold">🎯 Etkileşimli Hotspotlar</span>
-                            </label>
+                    <!-- Hotspots -->
+                    <div id="container-hotspots" class="transition-all duration-300 bg-orange-50 dark:bg-orange-900/20 p-4 rounded border border-orange-200 dark:border-orange-800">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="p-hotspotEnabled" class="rounded" 
+                                           onchange="ProjectManager.toggleHotspotEnabled()" />
+                                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300">🎯 Etkileşimli Hotspotlar</span>
+                                </label>
+                            </div>
+                            <button type="button" id="btn-open-hotspot-editor" onclick="HotspotManager.openEditor()"
+                                    class="hidden text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded font-bold">
+                                ✏️ Hotspot Düzenle
+                            </button>
                         </div>
-                        <button type="button" id="btn-open-hotspot-editor" onclick="HotspotManager.openEditor()"
-                                class="hidden text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded font-bold">
-                            ✏️ Hotspot Düzenle
-                        </button>
-                    </div>
-                    <p class="text-xs text-gray-500">
-                        Devre bileşenlerinin üzerine tıklanabilir bilgi noktaları ekleyin.
-                    </p>
-                </div>
-
-                <!-- YouTube Video -->
-                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded border border-red-200 dark:border-red-800 mt-4">
-                    <div class="mb-3">
-                        <label class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
-                            🎬 YouTube Video (Opsiyonel)
-                        </label>
-                    </div>
-                    <input type="text" id="p-youtubeUrl" 
-                           class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                           placeholder="https://www.youtube.com/watch?v=... veya https://youtu.be/..."
-                           onchange="ProjectManager.validateYouTubeUrl(this)" />
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Simülasyon ile ilgili açıklayıcı video ekleyebilirsiniz. URL girildiğinde ders sayfasında video gösterilecek.
-                    </p>
-                    <div id="youtube-preview" class="mt-3 hidden">
-                        <div class="aspect-video bg-black rounded overflow-hidden">
-                            <iframe id="youtube-preview-iframe" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Devre bileşenlerinin üzerine tıklanabilir bilgi noktaları ekleyin.
+                        </p>
                     </div>
                 </div>
             </div>
