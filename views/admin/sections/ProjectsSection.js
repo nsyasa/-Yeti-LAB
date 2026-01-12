@@ -453,17 +453,17 @@ const ProjectsSection = {
 
                 <!-- Block Code Section -->
                 <div id="block-code-section" class="">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Blok Kodu (JSON)</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Blok Kodu (JSON)</label>
                     <textarea id="p-blockCode" rows="10" 
                               class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm font-mono bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                               placeholder="Scratch/Blockly JSON kodu..."></textarea>
                     <div class="flex gap-2 mt-2">
                         <button type="button" onclick="admin.formatBlockCode()"
-                                class="text-xs bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
+                                class="text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1 rounded font-medium transition-colors">
                             📐 Formatla
                         </button>
                         <button type="button" onclick="admin.validateBlockCode()"
-                                class="text-xs bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
+                                class="text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1 rounded font-medium transition-colors">
                             ✅ Doğrula
                         </button>
                     </div>
@@ -471,7 +471,7 @@ const ProjectsSection = {
 
                 <!-- Text Code Section -->
                 <div id="text-code-section" class="hidden">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Metin Kodu</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Metin Kodu</label>
                     <textarea id="p-textCode" rows="12" 
                               class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm font-mono bg-gray-900 dark:bg-gray-950 text-green-400 focus:ring-2 focus:ring-theme focus:border-transparent"
                               placeholder="Arduino/Python/JavaScript kodu..."></textarea>
@@ -479,7 +479,7 @@ const ProjectsSection = {
 
                 <!-- Code Explanation -->
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Kod Açıklaması</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Kod Açıklaması</label>
                     <div class="lang-field lang-tr">
                         <div id="p-codeExplanation-tr-editor" class="rte-container"></div>
                     </div>
