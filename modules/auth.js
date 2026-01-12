@@ -34,11 +34,20 @@ const Auth = {
         // If initialization is already in progress, return the existing promise
         if (this.initPromise) return this.initPromise;
 
-        // Create a new initialization promise
+        // Create a new initialization promise with timeout
         this.initPromise = (async () => {
             try {
-                // Check for existing Supabase session (teachers/admins)
-                await this.checkSession();
+                // Add timeout for session check (10 seconds max)
+                const sessionPromise = this.checkSession();
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Session check timeout')), 10000)
+                );
+
+                try {
+                    await Promise.race([sessionPromise, timeoutPromise]);
+                } catch (timeoutErr) {
+                    console.warn('[Auth] Session check timed out, continuing without session');
+                }
 
                 // Check for existing student session
                 this.checkStudentSession();
