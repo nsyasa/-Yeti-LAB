@@ -78,10 +78,18 @@ const UI = {
 
     // --- Course Selection Screen ---
     renderCourseSelection: (manifest) => {
+        console.log('[UI] renderCourseSelection called with manifest:', manifest);
+        console.log('[UI] Manifest entries:', Object.entries(manifest || {}).length);
+
         UI.switchView('course-selection-view');
 
         const container = document.getElementById('course-list');
+        if (!container) {
+            console.error('[UI] course-list container not found!');
+            return;
+        }
         container.innerHTML = '';
+        console.log('[UI] course-list cleared, rendering cards...');
 
         // Remove any existing "Show All" buttons (prevent duplicates)
         document.querySelectorAll('#show-all-courses-btn').forEach((el) => el.remove());
