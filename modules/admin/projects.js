@@ -707,7 +707,10 @@ const ProjectManager = {
         phases.forEach((phase, index) => {
             const option = document.createElement('option');
             option.value = index;
-            option.textContent = `${index}: ${phase.title || 'Faz ' + (index + 1)}`;
+            // Title zaten emoji içerebilir, icon ayrıca göstermeye gerek yok
+            // Sadece title'ı göster (emoji varsa title içinde zaten var)
+            const title = phase.title || phase.name || `Faz ${index + 1}`;
+            option.textContent = `${index}: ${title}`;
             if (index === selectedPhase) {
                 option.selected = true;
             }

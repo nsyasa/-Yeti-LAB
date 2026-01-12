@@ -440,21 +440,54 @@ const app = {
         document.getElementById('project-icon').innerText = p.icon;
 
         // Reset UI
-        ['simCanvas', 'interactive-area', 'interactive-info', 'chart-card'].forEach((elementId) =>
-            document.getElementById(elementId).classList.add('hidden')
-        );
+        ['simCanvas', 'interactive-area', 'interactive-info', 'chart-card', 'video-container'].forEach((elementId) => {
+            const el = document.getElementById(elementId);
+            if (el) el.classList.add('hidden');
+        });
         document.getElementById('simControls').innerHTML = '';
 
-        // Artık Explorer da bir simülasyon (Canvas tabanlı)
-        document.getElementById('sim-container').classList.remove('hidden');
-        document.getElementById('simCanvas').classList.remove('hidden');
-        if (p.hasGraph) document.getElementById('chart-card').classList.remove('hidden');
-        app.setupSimulation(p.simType);
+        // === VIDEO / SIMÜLASYON / HOTSPOT GÖRÜNTÜLEME MANTIĞI ===
+        const hasVideo = p.youtubeUrl && p.youtubeUrl.trim();
+        const hasSimulation = p.hasSim !== false && p.simType && p.simType !== 'none';
+        const hasHotspots = p.showHotspotsInLab && p.hotspots && p.hotspots.length > 0;
 
-        // Show custom hotspots in Virtual Lab if enabled
-        if (p.showHotspotsInLab && p.hotspots && p.hotspots.length > 0) {
-            UI.setupCustomHotspots(p);
+        // Video container (simülasyonun üstünde)
+        const videoContainer = document.getElementById('video-container');
+        const videoIframe = document.getElementById('video-iframe');
+        if (hasVideo && videoContainer && videoIframe) {
+            const videoId = UI.extractYouTubeId(p.youtubeUrl);
+            if (videoId) {
+                videoIframe.src = `https://www.youtube.com/embed/${videoId}`;
+                videoContainer.classList.remove('hidden');
+            }
         }
+
+        // Simülasyon container
+        const simContainer = document.getElementById('sim-container');
+        const simCanvas = document.getElementById('simCanvas');
+
+        // Hotspots simülasyonun YERİNDE gösterilir (simülasyonu gizler)
+        if (hasHotspots) {
+            // Hotspot varsa, simülasyonu gizle ve hotspotları göster
+            simContainer.classList.remove('hidden');
+            simCanvas.classList.add('hidden');
+            UI.setupCustomHotspots(p);
+        } else if (hasSimulation) {
+            // Hotspot yoksa ve simülasyon varsa normal davran
+            simContainer.classList.remove('hidden');
+            simCanvas.classList.remove('hidden');
+            app.setupSimulation(p.simType);
+        } else if (hasVideo) {
+            // Sadece video varsa simülasyonu gizle
+            simContainer.classList.add('hidden');
+        } else {
+            // Ne video ne simülasyon varsa, container'ı göster ama canvas'ı gizle
+            simContainer.classList.remove('hidden');
+            simCanvas.classList.add('hidden');
+        }
+
+        // Graf kartı
+        if (p.hasGraph) document.getElementById('chart-card').classList.remove('hidden');
 
         app.renderTabs(p);
         window.scrollTo(0, 0);

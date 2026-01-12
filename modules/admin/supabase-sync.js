@@ -13,6 +13,10 @@ const SupabaseSync = {
         downloadFallback: null, // (courseKey, courseData) => void - fallback on error
     },
 
+    // Save lock to prevent concurrent saves
+    _isSaving: false,
+    _pendingSave: null, // { courseKey, courseData } - queued save request
+
     /**
      * Initialize with configuration
      */
@@ -161,10 +165,35 @@ const SupabaseSync = {
             // Use position-based slug for consistency with syncProjects
             const position = project.id !== undefined ? project.id : 0;
             const slug = `p-${position}`;
-            const phaseId = phaseIdMap[project.phase] || Object.values(phaseIdMap)[0];
+
+            // Try to get phase ID from map, or use first available phase
+            let phaseId = phaseIdMap[project.phase] || Object.values(phaseIdMap)[0];
+
+            // If no phase ID found, fetch phases from database
+            if (!phaseId) {
+                console.warn('[SupabaseSync] No phase ID in map, fetching from database...');
+                try {
+                    const { data: phases, error } = await SupabaseClient.getClient()
+                        .from('phases')
+                        .select('id')
+                        .eq('course_id', courseId)
+                        .order('position', { ascending: true })
+                        .limit(1);
+
+                    if (error) throw error;
+                    if (phases && phases.length > 0) {
+                        phaseId = phases[0].id;
+                        console.log('[SupabaseSync] Using first phase from database:', phaseId);
+                    }
+                } catch (dbError) {
+                    console.error('[SupabaseSync] Failed to fetch phases:', dbError);
+                }
+            }
 
             if (!phaseId) {
-                throw new Error('No valid phase found for project');
+                throw new Error(
+                    'No valid phase found for project. Please ensure the course has at least one phase defined.'
+                );
             }
 
             const projectData = {
@@ -354,9 +383,21 @@ const SupabaseSync = {
 
     /**
      * Save course data to Supabase
+     * With lock mechanism to prevent concurrent saves
      */
     async saveToSupabase(courseKey, courseData) {
         console.log('[SupabaseSync] saveToSupabase called:', courseKey);
+
+        // If already saving, queue this request
+        if (this._isSaving) {
+            console.log('[SupabaseSync] Save already in progress, queuing...');
+            this._pendingSave = { courseKey, courseData };
+            this.updateStatus('⏳ Sırada bekliyor...', 'yellow');
+            return false;
+        }
+
+        // Set save lock
+        this._isSaving = true;
 
         try {
             this.updateStatus("☁️ Supabase'e kaydediliyor...", 'yellow');
@@ -454,6 +495,20 @@ const SupabaseSync = {
             }
 
             return false;
+        } finally {
+            // Release save lock
+            this._isSaving = false;
+
+            // Process pending save if any
+            if (this._pendingSave) {
+                const pending = this._pendingSave;
+                this._pendingSave = null;
+                console.log('[SupabaseSync] Processing queued save...');
+                // Use setTimeout to avoid stack overflow on rapid saves
+                setTimeout(() => {
+                    this.saveToSupabase(pending.courseKey, pending.courseData);
+                }, 100);
+            }
         }
     },
 

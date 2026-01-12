@@ -114,9 +114,9 @@ const ComponentsSection = {
                  onclick="if(event.target === this) ComponentManager.closeEditModal()">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-lg">🔧 Devre Elemanı Düzenle</h3>
+                        <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100">🔧 Devre Elemanı Düzenle</h3>
                         <button onclick="ComponentManager.closeEditModal()" 
-                                class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl">&times;</button>
                     </div>
                     
                     <form id="component-edit-form" class="space-y-4">
@@ -124,22 +124,22 @@ const ComponentsSection = {
                         
                         <div class="grid grid-cols-4 gap-4">
                             <div class="col-span-1">
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Simge</label>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Simge</label>
                                 <input type="text" id="comp-edit-icon" 
-                                       class="w-full border rounded p-2 text-center text-2xl"
+                                       class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-center text-2xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                        placeholder="🔌" maxlength="2" />
                             </div>
                             <div class="col-span-3">
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Eleman Adı</label>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Eleman Adı</label>
                                 <input type="text" id="comp-edit-name" 
-                                       class="w-full border rounded p-2 font-bold"
+                                       class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 font-bold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                        placeholder="LED" />
                             </div>
                         </div>
                         
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Kategori</label>
-                            <select id="comp-edit-category" class="w-full border rounded p-2">
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Kategori</label>
+                            <select id="comp-edit-category" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 <option value="basic">Temel</option>
                                 <option value="sensor">Sensör</option>
                                 <option value="actuator">Aktüatör</option>
@@ -151,30 +151,30 @@ const ComponentsSection = {
                         </div>
                         
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Açıklama</label>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Açıklama</label>
                             <textarea id="comp-edit-description" rows="3" 
-                                      class="w-full border rounded p-2 text-sm"
+                                      class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                       placeholder="Eleman hakkında kısa açıklama..."></textarea>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Varsayılan Miktar</label>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Varsayılan Miktar</label>
                                 <input type="number" id="comp-edit-quantity" 
-                                       class="w-full border rounded p-2"
+                                       class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                        placeholder="1" min="1" />
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Birim</label>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Birim</label>
                                 <input type="text" id="comp-edit-unit" 
-                                       class="w-full border rounded p-2"
+                                       class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                        placeholder="adet" />
                             </div>
                         </div>
                         
                         <div class="flex gap-2 pt-4">
                             <button type="button" onclick="ComponentManager.closeEditModal()"
-                                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-lg transition">
+                                    class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-2 rounded-lg transition">
                                 İptal
                             </button>
                             <button type="submit"

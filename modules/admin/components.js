@@ -4,26 +4,43 @@
  */
 
 const ComponentManager = {
-    data: {}, // componentInfo object
+    // Configuration (getter functions like PhaseManager)
+    config: {
+        getComponentInfo: () => ({}), // Function to get componentInfo object
+        onUpdate: null, // Callback for autosave
+        onComponentSelect: null, // Callback when a component is loaded
+    },
+
+    // State
     currentKey: null,
-    onUpdate: null, // Callback specifically for when data changes (autosave trigger)
-    onLoad: null, // Callback when a component is loaded for editing (to switch UI tabs)
+
+    // Legacy compatibility getters
+    get data() {
+        return this.config.getComponentInfo() || {};
+    },
+    get onUpdate() {
+        return this.config.onUpdate;
+    },
+    get onLoad() {
+        return this.config.onComponentSelect;
+    },
 
     /**
      * Initialize the component manager
-     * @param {Object} componentData - Initial data (admin.currentData.componentInfo)
-     * @param {Object} callbacks - { onUpdate, onLoad }
+     * @param {Object} config - Configuration object with getter functions
      */
-    init: (componentData, callbacks) => {
-        ComponentManager.data = componentData || {};
-        ComponentManager.currentKey = null;
-
-        if (callbacks) {
-            ComponentManager.onUpdate = callbacks.onUpdate;
-            ComponentManager.onLoad = callbacks.onLoad;
+    init(config) {
+        // New mode: init({ getComponentInfo, onUpdate, onComponentSelect })
+        if (config && config.getComponentInfo) {
+            this.config = { ...this.config, ...config };
+        } else {
+            // Legacy mode: init(componentData, callbacks) - keep for backwards compatibility
+            // This shouldn't happen with the new admin.js but just in case
+            console.warn('[ComponentManager] Using legacy init mode');
         }
 
-        ComponentManager.renderList();
+        this.currentKey = null;
+        this.renderList();
     },
 
     renderList: () => {

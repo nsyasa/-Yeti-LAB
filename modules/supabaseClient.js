@@ -1,4 +1,3 @@
-/* global supabase */
 /**
  * Supabase Client Module
  * Merkezi Supabase bağlantı yönetimi
@@ -8,8 +7,7 @@
  * - VITE_SUPABASE_ANON_KEY: Public anon key (RLS ile güvenli)
  */
 
-// Supabase CDN'den yüklenir (admin.html ve index.html'de script tag ile)
-// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+import { createClient } from '@supabase/supabase-js';
 
 // Default credentials (public - anon key)
 // Bu değerler production'da kullanılır
@@ -50,14 +48,9 @@ const SupabaseClient = {
             return true;
         }
 
-        if (typeof supabase === 'undefined') {
-            console.error('Supabase SDK yüklenmedi! Script tag ekleyin.');
-            return false;
-        }
-
         try {
             // Create client with auth options to prevent AbortError
-            this.client = supabase.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY, {
+            this.client = createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY, {
                 auth: {
                     autoRefreshToken: true,
                     persistSession: true,

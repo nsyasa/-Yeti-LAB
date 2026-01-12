@@ -443,8 +443,8 @@ const UI = {
             return;
         }
 
-        // Check if user is logged in
-        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent();
+        // Check if user is logged in (student, teacher, or admin)
+        const isLoggedIn = typeof Auth !== 'undefined' && (Auth.isStudent() || Auth.isTeacher() || Auth.isAdmin());
 
         phases.forEach((phase, index) => {
             const phaseProjects = projects.filter((p) => p.phase === index);
@@ -500,8 +500,8 @@ const UI = {
         const bar = document.getElementById('course-progress-bar');
         const text = document.getElementById('course-progress-text');
 
-        // Check if user is logged in as a student
-        const isLoggedIn = typeof Auth !== 'undefined' && Auth.isStudent();
+        // Check if user is logged in (student, teacher, or admin)
+        const isLoggedIn = typeof Auth !== 'undefined' && (Auth.isStudent() || Auth.isTeacher() || Auth.isAdmin());
 
         if (bar) bar.style.width = `${rate}%`;
         if (text) {

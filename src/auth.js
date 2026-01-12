@@ -20,9 +20,13 @@ import '../modules/core/localStorage.js';
 import '../modules/store/store.js';
 
 // Auth & Supabase
-import '../modules/supabaseClient.js';
-import '../modules/auth.js';
+import SupabaseClient from '../modules/supabaseClient.js';
+import Auth from '../modules/auth.js';
 import '../modules/router.js'; // Router is needed for redirection
+
+// Make SupabaseClient and Auth globally available for auth.html inline scripts
+window.SupabaseClient = SupabaseClient;
+window.Auth = Auth;
 
 // Export for debugging
 if (import.meta.env.DEV) {

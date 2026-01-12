@@ -45,6 +45,11 @@ const AdminView = {
                     <section id="adminComponentsSection" class="hidden">
                         <div id="adminComponentsContent"></div>
                     </section>
+
+                    <!-- Settings Section -->
+                    <section id="adminSettingsSection" class="hidden">
+                        <div id="adminSettingsContent"></div>
+                    </section>
                 </div>
 
                 <!-- Modals -->
@@ -199,6 +204,7 @@ const AdminView = {
             // View components
             'views/admin/AdminLayout.js',
             'views/admin/modals/AdminModals.js',
+            'views/admin/sections/SettingsSection.js',
 
             // Main Admin Coordinator (Must be last)
             'modules/admin.js',
@@ -281,7 +287,7 @@ const AdminView = {
             const parts = hash.split('/admin/');
             if (parts[1]) {
                 const section = parts[1].split('/')[0]; // İlk segment
-                if (['phases', 'components', 'projects'].includes(section)) {
+                if (['phases', 'components', 'projects', 'settings'].includes(section)) {
                     return section;
                 }
             }
@@ -354,6 +360,15 @@ const AdminView = {
                     if (container) {
                         container.innerHTML = ComponentsSection.render();
                         ComponentManager.renderList();
+                    }
+                }
+                break;
+            case 'settings':
+                if (window.SettingsSection) {
+                    const container = document.getElementById('adminSettingsContent');
+                    if (container) {
+                        container.innerHTML = window.SettingsSection.render();
+                        window.SettingsSection.mount();
                     }
                 }
                 break;

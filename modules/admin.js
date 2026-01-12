@@ -196,6 +196,7 @@ const admin = {
                     getComponentInfo: () => admin.currentData?.componentInfo || {},
                     getCourseKey: () => admin.currentCourseKey,
                     getCourseId: () => admin.allCourseData[admin.currentCourseKey]?._supabaseId,
+                    getPhaseIdMap: () => admin.allCourseData[admin.currentCourseKey]?._phaseIds || {},
                     onUpdate: () => admin.triggerAutoSave(),
                     onProjectSelect: (id) => admin.loadProject(id),
                 });
@@ -205,6 +206,8 @@ const admin = {
             if (typeof PhaseManager !== 'undefined') {
                 PhaseManager.init({
                     getPhases: () => admin.currentData?.phases || [],
+                    getPhaseIdMap: () => admin.allCourseData[admin.currentCourseKey]?._phaseIds || {},
+                    getCourseId: () => admin.allCourseData[admin.currentCourseKey]?._supabaseId,
                     onUpdate: () => admin.triggerAutoSave(),
                     onPhaseSelect: (index) => admin.loadPhase(index),
                 });

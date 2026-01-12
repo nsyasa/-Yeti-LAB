@@ -366,6 +366,54 @@ const PhaseManager = {
 
         return deletedPhase;
     },
+
+    // === DRAG AND DROP SUPPORT ===
+
+    /**
+     * Drag start handler for phase reordering
+     */
+    dragStart(event, index) {
+        event.dataTransfer.setData('text/plain', index.toString());
+        event.dataTransfer.effectAllowed = 'move';
+    },
+
+    /**
+     * Allow drop handler
+     */
+    allowDrop(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    },
+
+    /**
+     * Drop handler for phase reordering
+     */
+    async drop(event, targetIndex) {
+        event.preventDefault();
+        const sourceIndex = parseInt(event.dataTransfer.getData('text/plain'), 10);
+
+        if (isNaN(sourceIndex) || sourceIndex === targetIndex) return;
+
+        const phases = this.config.getPhases();
+        if (!phases) return;
+
+        // Remove from source and insert at target
+        const [movedPhase] = phases.splice(sourceIndex, 1);
+        phases.splice(targetIndex, 0, movedPhase);
+
+        this.renderList();
+        if (this.config.onUpdate) this.config.onUpdate();
+
+        // Save all affected phases to Supabase (position changed)
+        const affectedIndices = [];
+        const minIdx = Math.min(sourceIndex, targetIndex);
+        const maxIdx = Math.max(sourceIndex, targetIndex);
+        for (let i = minIdx; i <= maxIdx; i++) {
+            affectedIndices.push(i);
+        }
+
+        await Promise.all(affectedIndices.map((idx) => this.savePhaseToSupabase(idx, phases[idx])));
+    },
 };
 
 window.PhaseManager = PhaseManager;

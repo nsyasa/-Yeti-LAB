@@ -14,7 +14,7 @@ const AdminLayout = {
                         <!-- Admin Label -->
                         <div class="flex items-center gap-4">
                             <span class="text-sm font-bold px-3 py-1 rounded-full" style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white;">
-                                🔧 Yönetim Paneli
+                                🔧 Yönetim
                             </span>
                             
                             <!-- Tab Buttons -->
@@ -34,11 +34,11 @@ const AdminLayout = {
                                     📁 Fazlar
                                 </button>
                                 <button
-                                    onclick="AdminView.showSection('components')"
-                                    data-section="components"
+                                    onclick="AdminView.showSection('settings')"
+                                    data-section="settings"
                                     class="admin-tab-btn px-3 py-1.5 rounded-md text-sm font-semibold transition"
                                 >
-                                    🔧 Devre
+                                    ⚙️ Ayarlar
                                 </button>
                             </div>
                         </div>
