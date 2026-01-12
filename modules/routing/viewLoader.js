@@ -194,6 +194,7 @@ const ViewLoader = {
             await import('../../modules/admin/state.js'); // Ensure State is loaded first!
             await import('../../modules/admin/ui.js');
             await import('../../modules/admin/backup.js'); // NEW: Backup Service
+            await import('../../modules/admin/richTextEditor.js'); // NEW: Rich Text Editor
             await import('../../modules/admin/projectEditor.js'); // NEW: Project Editor
             await import('../../modules/admin/storage.js');
             await import('../../modules/admin/courses.js');

@@ -39,11 +39,14 @@ CREATE TABLE IF NOT EXISTS projects (
     slug VARCHAR(255) NOT NULL,
     title VARCHAR(500),
     description TEXT,
+    mission TEXT,              -- NEW: Proje amacı (Markdown destekli)
+    theory TEXT,               -- NEW: Teorik bilgi (Markdown destekli)
+    challenge TEXT,            -- Meydan okuma
+    code_explanation TEXT,     -- NEW: Kod açıklaması (Markdown destekli)
     materials JSONB DEFAULT '[]'::jsonb,
     circuit TEXT,
     code TEXT,
     simulation VARCHAR(255),
-    challenge TEXT,
     component_info JSONB DEFAULT '{}'::jsonb,
     is_published BOOLEAN DEFAULT false,
     position INTEGER DEFAULT 0,

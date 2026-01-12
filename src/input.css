@@ -1899,3 +1899,252 @@ button[class*='bg-gradient-to-r'][class*='orange'] {
 .dark .bulk-assign-student-row.selected {
     background: rgba(16, 185, 129, 0.2);
 }
+
+/* ============================================
+   RICH TEXT EDITOR (Admin Panel)
+   ============================================ */
+
+/* Container */
+.admin-rte-wrapper,
+.rte-container .admin-rte-wrapper {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: white;
+    font-size: 0.875rem;
+}
+
+.dark .admin-rte-wrapper,
+.dark .rte-container .admin-rte-wrapper {
+    border-color: #4b5563;
+    background: #1f2937;
+}
+
+/* Toolbar */
+.admin-rte-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .admin-rte-toolbar {
+    background: #111827;
+    border-bottom-color: #374151;
+}
+
+.admin-rte-toolbar-group {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.admin-rte-toolbar-spacer {
+    flex: 1;
+}
+
+/* Toolbar Buttons */
+.admin-rte-btn {
+    padding: 0.375rem 0.625rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background: white;
+    color: #374151;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.admin-rte-btn:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+.admin-rte-btn.active {
+    background: #00979c;
+    border-color: #00979c;
+    color: white;
+}
+
+.dark .admin-rte-btn {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+.dark .admin-rte-btn:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+    color: white;
+}
+
+.dark .admin-rte-btn.active {
+    background: #00979c;
+    border-color: #00979c;
+}
+
+/* Status Indicator */
+.admin-rte-status {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.dark .admin-rte-status {
+    color: #9ca3af;
+}
+
+/* Editor Body */
+.admin-rte-body {
+    position: relative;
+    min-height: 200px;
+}
+
+/* Textarea */
+.admin-rte-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 0.75rem;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-family:
+        'Inter',
+        -apple-system,
+        sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background: white;
+    color: #111827;
+}
+
+.dark .admin-rte-textarea {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+.admin-rte-textarea::placeholder {
+    color: #9ca3af;
+}
+
+.dark .admin-rte-textarea::placeholder {
+    color: #6b7280;
+}
+
+/* Preview */
+.admin-rte-preview {
+    padding: 0.75rem;
+    min-height: 200px;
+    line-height: 1.6;
+    color: #111827;
+}
+
+.dark .admin-rte-preview {
+    color: #f3f4f6;
+}
+
+/* Preview Content Styles */
+.admin-rte-preview h1,
+.admin-rte-preview h2,
+.admin-rte-preview h3,
+.admin-rte-preview h4 {
+    font-weight: 700;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.admin-rte-preview h1 {
+    font-size: 1.5rem;
+}
+.admin-rte-preview h2 {
+    font-size: 1.25rem;
+}
+.admin-rte-preview h3 {
+    font-size: 1.125rem;
+}
+.admin-rte-preview h4 {
+    font-size: 1rem;
+}
+
+.admin-rte-preview p {
+    margin: 0.75em 0;
+}
+
+.admin-rte-preview strong {
+    font-weight: 700;
+}
+
+.admin-rte-preview em {
+    font-style: italic;
+}
+
+.admin-rte-preview code {
+    background: #f3f4f6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.85em;
+}
+
+.dark .admin-rte-preview code {
+    background: #374151;
+}
+
+.admin-rte-preview pre {
+    background: #1f2937;
+    color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+.admin-rte-preview pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+.admin-rte-preview ul,
+.admin-rte-preview ol {
+    margin: 0.75em 0;
+    padding-left: 1.5em;
+}
+
+.admin-rte-preview li {
+    margin: 0.25em 0;
+}
+
+.admin-rte-preview a {
+    color: #00979c;
+    text-decoration: underline;
+}
+
+.admin-rte-preview a:hover {
+    color: #006b6f;
+}
+
+.admin-rte-preview blockquote {
+    border-left: 4px solid #00979c;
+    padding-left: 1rem;
+    margin: 1em 0;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.dark .admin-rte-preview blockquote {
+    color: #9ca3af;
+}
+
+.admin-rte-preview hr {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    margin: 1.5em 0;
+}
+
+.dark .admin-rte-preview hr {
+    border-top-color: #374151;
+}

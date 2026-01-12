@@ -262,6 +262,32 @@ const ProjectManager = {
             });
         }
 
+        // Rich Text Editors - Initialize after DOM is ready
+        setTimeout(() => {
+            if (typeof ProjectsSection !== 'undefined' && ProjectsSection.initializeRichTextEditors) {
+                ProjectsSection.destroyRichTextEditors(); // Clean up old instances
+                ProjectsSection.initializeRichTextEditors();
+
+                // Load content into editors
+                if (window.projectEditors) {
+                    const loadEditorContent = (editors, value) => {
+                        if (typeof value === 'object' && value !== null) {
+                            if (editors.tr?.setContent) editors.tr.setContent(value.tr || '');
+                            if (editors.en?.setContent) editors.en.setContent(value.en || '');
+                        } else {
+                            if (editors.tr?.setContent) editors.tr.setContent(value || '');
+                            if (editors.en?.setContent) editors.en.setContent('');
+                        }
+                    };
+
+                    loadEditorContent(window.projectEditors.mission, p.mission);
+                    loadEditorContent(window.projectEditors.theory, p.theory);
+                    loadEditorContent(window.projectEditors.challenge, p.challenge);
+                    loadEditorContent(window.projectEditors.codeExplanation, p.codeExplanation);
+                }
+            }
+        }, 100);
+
         // Re-render list to highlight active
         this.renderList(this.currentProjectId);
     },
@@ -277,6 +303,15 @@ const ProjectManager = {
         p.phase = phaseEl ? parseInt(phaseEl.value) || 0 : p.phase || 0;
 
         const getLocalizedField = (fieldName) => {
+            // Önce RichTextEditor'dan al
+            if (window.projectEditors && window.projectEditors[fieldName]) {
+                const trVal = window.projectEditors[fieldName].tr?.getContent() || '';
+                const enVal = window.projectEditors[fieldName].en?.getContent() || '';
+                if (enVal && enVal.trim()) return { tr: trVal, en: enVal };
+                return trVal;
+            }
+
+            // RTE yoksa textarea'lardan al (fallback)
             const trEl = document.getElementById(`p-${fieldName}-tr`);
             const enEl = document.getElementById(`p-${fieldName}-en`);
             const trVal = trEl ? trEl.value : '';
@@ -290,6 +325,7 @@ const ProjectManager = {
         p.mission = getLocalizedField('mission');
         p.theory = getLocalizedField('theory');
         p.challenge = getLocalizedField('challenge');
+        p.codeExplanation = getLocalizedField('codeExplanation');
 
         p.icon = document.getElementById('p-icon').value;
         p.difficulty = document.getElementById('p-difficulty')?.value || 'beginner';

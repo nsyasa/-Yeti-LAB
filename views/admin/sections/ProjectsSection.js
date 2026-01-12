@@ -285,36 +285,30 @@ const ProjectsSection = {
                     📖 İçerik Detayları
                 </h3>
                 <div>
-                    <label id="lbl-mission" class="block text-xs font-bold text-gray-500 uppercase">🎯 Amaç</label>
+                    <label id="lbl-mission" class="block text-xs font-bold text-gray-500 uppercase mb-2">🎯 Amaç</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-mission-tr" rows="4" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="Türkçe amaç açıklaması..."></textarea>
+                        <div id="p-mission-tr-editor" class="rte-container"></div>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-mission-en" rows="4" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="English mission description..."></textarea>
+                        <div id="p-mission-en-editor" class="rte-container"></div>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase">📚 Teorik Bilgi</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">📚 Teorik Bilgi</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-theory-tr" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="Türkçe teori..."></textarea>
+                        <div id="p-theory-tr-editor" class="rte-container"></div>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-theory-en" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="English theory..."></textarea>
+                        <div id="p-theory-en-editor" class="rte-container"></div>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase">🏆 Meydan Okuma Bilgi</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">🏆 Meydan Okuma Bilgi</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-challenge-tr" rows="3" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="Türkçe meydan okuma açıklaması..."></textarea>
+                        <div id="p-challenge-tr-editor" class="rte-container"></div>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-challenge-en" rows="3" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="English challenge description..."></textarea>
+                        <div id="p-challenge-en-editor" class="rte-container"></div>
                     </div>
                 </div>
             </div>
@@ -485,16 +479,12 @@ const ProjectsSection = {
 
                 <!-- Code Explanation -->
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase">Kod Açıklaması</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Kod Açıklaması</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-codeExplanation-tr" rows="3" 
-                                  class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="Türkçe kod açıklaması..."></textarea>
+                        <div id="p-codeExplanation-tr-editor" class="rte-container"></div>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-codeExplanation-en" rows="3" 
-                                  class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
-                                  placeholder="English code explanation..."></textarea>
+                        <div id="p-codeExplanation-en-editor" class="rte-container"></div>
                     </div>
                 </div>
             </div>
@@ -533,6 +523,108 @@ const ProjectsSection = {
                 </div>
             </div>
         `;
+    },
+
+    /**
+     * Initialize Rich Text Editors
+     * Textarea'ları zengin metin editörlerine dönüştürür
+     */
+    initializeRichTextEditors() {
+        // RichTextEditor modülünün yüklü olduğunu kontrol et
+        if (typeof window.AdminRichTextEditor === 'undefined') {
+            console.warn('[ProjectsSection] AdminRichTextEditor modülü bulunamadı, textarea kullanılacak');
+            return;
+        }
+
+        const editors = {
+            mission: { tr: null, en: null },
+            theory: { tr: null, en: null },
+            challenge: { tr: null, en: null },
+            codeExplanation: { tr: null, en: null },
+        };
+
+        // Amaç (Mission)
+        const missionTrContainer = document.getElementById('p-mission-tr-editor');
+        const missionEnContainer = document.getElementById('p-mission-en-editor');
+        if (missionTrContainer) {
+            editors.mission.tr = window.AdminRichTextEditor.create(missionTrContainer, {
+                placeholder: 'Türkçe amaç açıklaması (Markdown destekli)...',
+                autosave: false,
+            });
+        }
+        if (missionEnContainer) {
+            editors.mission.en = window.AdminRichTextEditor.create(missionEnContainer, {
+                placeholder: 'English mission description (Markdown supported)...',
+                autosave: false,
+            });
+        }
+
+        // Teorik Bilgi (Theory)
+        const theoryTrContainer = document.getElementById('p-theory-tr-editor');
+        const theoryEnContainer = document.getElementById('p-theory-en-editor');
+        if (theoryTrContainer) {
+            editors.theory.tr = window.AdminRichTextEditor.create(theoryTrContainer, {
+                placeholder: 'Türkçe teorik bilgi (Markdown destekli)...',
+                autosave: false,
+            });
+        }
+        if (theoryEnContainer) {
+            editors.theory.en = window.AdminRichTextEditor.create(theoryEnContainer, {
+                placeholder: 'English theory (Markdown supported)...',
+                autosave: false,
+            });
+        }
+
+        // Meydan Okuma (Challenge)
+        const challengeTrContainer = document.getElementById('p-challenge-tr-editor');
+        const challengeEnContainer = document.getElementById('p-challenge-en-editor');
+        if (challengeTrContainer) {
+            editors.challenge.tr = window.AdminRichTextEditor.create(challengeTrContainer, {
+                placeholder: 'Türkçe meydan okuma (Markdown destekli)...',
+                autosave: false,
+            });
+        }
+        if (challengeEnContainer) {
+            editors.challenge.en = window.AdminRichTextEditor.create(challengeEnContainer, {
+                placeholder: 'English challenge (Markdown supported)...',
+                autosave: false,
+            });
+        }
+
+        // Kod Açıklaması (Code Explanation)
+        const codeExpTrContainer = document.getElementById('p-codeExplanation-tr-editor');
+        const codeExpEnContainer = document.getElementById('p-codeExplanation-en-editor');
+        if (codeExpTrContainer) {
+            editors.codeExplanation.tr = window.AdminRichTextEditor.create(codeExpTrContainer, {
+                placeholder: 'Türkçe kod açıklaması (Markdown destekli)...',
+                autosave: false,
+            });
+        }
+        if (codeExpEnContainer) {
+            editors.codeExplanation.en = window.AdminRichTextEditor.create(codeExpEnContainer, {
+                placeholder: 'English code explanation (Markdown supported)...',
+                autosave: false,
+            });
+        }
+
+        // Editörleri global olarak sakla (Admin modülü tarafından erişilebilir)
+        window.projectEditors = editors;
+
+        console.log('[ProjectsSection] Rich Text Editors initialized:', editors);
+    },
+
+    /**
+     * Destroy Rich Text Editors
+     * Editörleri temizle
+     */
+    destroyRichTextEditors() {
+        if (window.projectEditors) {
+            Object.values(window.projectEditors).forEach((langEditors) => {
+                if (langEditors.tr?.destroy) langEditors.tr.destroy();
+                if (langEditors.en?.destroy) langEditors.en.destroy();
+            });
+            window.projectEditors = null;
+        }
     },
 };
 
