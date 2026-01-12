@@ -321,11 +321,11 @@ const ProjectsSection = {
     renderHardwareSection() {
         return `
             <div id="pcontent-donanim" class="space-y-4">
-                <h3 class="text-lg font-bold text-gray-700 border-b pb-2 flex items-center gap-2">
+                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2 flex items-center gap-2">
                     🧩 Donanım Bilgileri
                 </h3>
-                <label id="lbl-materials" class="block text-xs font-bold text-gray-500 uppercase mb-1">Devre Elemanları</label>
-                <div class="bg-gray-50 border rounded p-2">
+                <label id="lbl-materials" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Devre Elemanları</label>
+                <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded p-2">
                     <div id="p-materials-list" class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2 max-h-60 overflow-y-auto"></div>
                     <input
                         type="text"

@@ -702,15 +702,15 @@ const ProjectManager = {
                 const safeName = name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
                 htmlContent += `
-                    <label class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer bg-white">
-                        <input type="checkbox" value="${safeName}" class="material-checkbox w-4 h-4 text-blue-600 rounded" ${isChecked ? 'checked' : ''} onchange="ProjectManager.update()">
+                    <label class="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer bg-white dark:bg-gray-800 transition-colors">
+                        <input type="checkbox" value="${safeName}" class="material-checkbox w-4 h-4 text-blue-600 dark:text-blue-400 rounded dark:bg-gray-700 dark:border-gray-600" ${isChecked ? 'checked' : ''} onchange="ProjectManager.update()">
                         <span class="text-lg">${icon}</span>
-                        <span class="text-sm font-medium text-gray-700 select-none">${name}</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none">${name}</span>
                     </label>`;
             });
             matList.innerHTML = htmlContent;
         } else {
-            matList.innerHTML = `<div class="col-span-full p-4 text-center text-gray-400 text-sm border-2 border-dashed rounded bg-gray-50">
+            matList.innerHTML = `<div class="col-span-full p-4 text-center text-gray-400 dark:text-gray-500 text-sm border-2 border-dashed border-gray-300 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-800">
                 <p>Henüz kayıtlı malzeme yok.</p>
                 <div class="mt-2 text-xs">Sol menüdeki <b>Devre Elemanları</b> kısmından malzeme ekleyebilirsiniz.</div>
              </div>`;
