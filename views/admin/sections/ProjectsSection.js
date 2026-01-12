@@ -138,7 +138,7 @@ const ProjectsSection = {
                         <input
                             type="text"
                             id="p-icon"
-                            class="w-full border rounded p-2 text-center"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-center bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                         />
                     </div>
                     <div class="col-span-8">
@@ -147,7 +147,7 @@ const ProjectsSection = {
                             <input
                                 type="text"
                                 id="p-title-tr"
-                                class="w-full border rounded p-2"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                 placeholder="Türkçe başlık..."
                             />
                         </div>
@@ -155,7 +155,7 @@ const ProjectsSection = {
                             <input
                                 type="text"
                                 id="p-title-en"
-                                class="w-full border rounded p-2"
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                 placeholder="English title..."
                             />
                         </div>
@@ -164,7 +164,7 @@ const ProjectsSection = {
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">Faz (Phase)</label>
-                        <select id="p-phase" class="w-full border rounded p-2 bg-white">
+                        <select id="p-phase" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent">
                             <option value="0">Faz seçin...</option>
                         </select>
                     </div>
@@ -173,7 +173,7 @@ const ProjectsSection = {
                         <input
                             type="number"
                             id="p-week"
-                            class="w-full border rounded p-2"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                             placeholder="1"
                         />
                     </div>
@@ -181,7 +181,7 @@ const ProjectsSection = {
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">Zorluk Seviyesi</label>
-                        <select id="p-difficulty" class="w-full border rounded p-2">
+                        <select id="p-difficulty" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent">
                             <option value="beginner">🟢 Başlangıç</option>
                             <option value="intermediate">🟡 Orta</option>
                             <option value="advanced">🔴 İleri</option>
@@ -192,7 +192,7 @@ const ProjectsSection = {
                         <input
                             type="text"
                             id="p-duration"
-                            class="w-full border rounded p-2"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                             placeholder="30 dakika"
                         />
                     </div>
@@ -202,7 +202,7 @@ const ProjectsSection = {
                     <input
                         type="text"
                         id="p-tags"
-                        class="w-full border rounded p-2"
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                         placeholder="led, temel, dijital"
                     />
                 </div>
@@ -211,7 +211,7 @@ const ProjectsSection = {
                     <input
                         type="text"
                         id="p-prerequisites"
-                        class="w-full border rounded p-2"
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                         placeholder="1, 2, 3"
                     />
                 </div>
@@ -221,7 +221,7 @@ const ProjectsSection = {
                         <input
                             type="text"
                             id="p-desc-tr"
-                            class="w-full border rounded p-2"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                             placeholder="Türkçe açıklama..."
                         />
                     </div>
@@ -229,43 +229,43 @@ const ProjectsSection = {
                         <input
                             type="text"
                             id="p-desc-en"
-                            class="w-full border rounded p-2"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                             placeholder="English description..."
                         />
                     </div>
                 </div>
 
                 <!-- Tab Visibility Toggles -->
-                <div class="bg-gray-50 p-3 rounded border border-gray-200">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Sekme Görünürlük Ayarları</label>
+                <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700">
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Sekme Görünürlük Ayarları</label>
                     <div class="flex flex-wrap gap-4">
-                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                            <input type="checkbox" id="p-show-mission" class="rounded text-green-600" 
+                        <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-mission" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
                                    onchange="ProjectManager.toggleSection('mission')" checked />
                             <span id="lbl-chk-mission">🎯 Amaç</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                            <input type="checkbox" id="p-show-materials" class="rounded text-green-600" 
+                        <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-materials" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
                                    onchange="ProjectManager.toggleSection('materials')" checked />
                             <span id="lbl-chk-materials">🧩 Donanım</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                            <input type="checkbox" id="p-show-circuit" class="rounded text-green-600" 
+                        <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-circuit" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
                                    onchange="ProjectManager.toggleSection('circuit')" checked />
                             <span id="lbl-chk-circuit">⚡ Devre</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                            <input type="checkbox" id="p-show-code" class="rounded text-green-600" 
+                        <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-code" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
                                    onchange="ProjectManager.toggleSection('code')" checked />
                             <span id="lbl-chk-code">💻 Kod</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                            <input type="checkbox" id="p-show-challenge" class="rounded text-green-600" 
+                        <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-challenge" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
                                    onchange="ProjectManager.toggleSection('challenge')" checked />
                             <span id="lbl-chk-challenge">🏆 Görev</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                            <input type="checkbox" id="p-show-quiz" class="rounded text-green-600" 
+                        <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-quiz" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
                                    onchange="ProjectManager.toggleSection('quiz')" checked />
                             <span id="lbl-chk-quiz">📝 Test</span>
                         </label>
@@ -287,33 +287,33 @@ const ProjectsSection = {
                 <div>
                     <label id="lbl-mission" class="block text-xs font-bold text-gray-500 uppercase">🎯 Amaç</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-mission-tr" rows="4" class="w-full border rounded p-2 text-sm"
+                        <textarea id="p-mission-tr" rows="4" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="Türkçe amaç açıklaması..."></textarea>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-mission-en" rows="4" class="w-full border rounded p-2 text-sm"
+                        <textarea id="p-mission-en" rows="4" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="English mission description..."></textarea>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase">📚 Teorik Bilgi</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-theory-tr" rows="5" class="w-full border rounded p-2 text-sm"
+                        <textarea id="p-theory-tr" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="Türkçe teori..."></textarea>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-theory-en" rows="5" class="w-full border rounded p-2 text-sm"
+                        <textarea id="p-theory-en" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="English theory..."></textarea>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase">🏆 Meydan Okuma Bilgi</label>
                     <div class="lang-field lang-tr">
-                        <textarea id="p-challenge-tr" rows="3" class="w-full border rounded p-2 text-sm"
+                        <textarea id="p-challenge-tr" rows="3" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="Türkçe meydan okuma açıklaması..."></textarea>
                     </div>
                     <div class="lang-field lang-en hidden">
-                        <textarea id="p-challenge-en" rows="3" class="w-full border rounded p-2 text-sm"
+                        <textarea id="p-challenge-en" rows="3" class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="English challenge description..."></textarea>
                     </div>
                 </div>
@@ -337,7 +337,7 @@ const ProjectsSection = {
                         type="text"
                         id="p-materials-custom"
                         placeholder="Diğer malzemeler (virgül ile ayırın...)"
-                        class="w-full border-t pt-2 mt-2 bg-transparent text-sm"
+                        class="w-full border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 bg-transparent text-sm text-gray-900 dark:text-gray-100 focus:outline-none"
                     />
                 </div>
             </div>
@@ -391,7 +391,7 @@ const ProjectsSection = {
                         <p class="text-xs text-gray-400 mb-1">Dosya adı (led.jpg) veya tam URL (https://...)</p>
                         <div class="flex gap-1">
                             <input type="text" id="p-circuitImage" 
-                                   class="flex-1 border rounded p-2 text-sm"
+                                   class="flex-1 border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                    placeholder="devre1.jpg veya https://example.com/img.png"
                                    onchange="admin.previewCircuitImage()" />
                             <button type="button" onclick="admin.openImageSelector('p-circuitImage')"
@@ -461,7 +461,7 @@ const ProjectsSection = {
                 <div id="block-code-section" class="">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Blok Kodu (JSON)</label>
                     <textarea id="p-blockCode" rows="10" 
-                              class="w-full border rounded p-2 text-sm font-mono bg-gray-50"
+                              class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm font-mono bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                               placeholder="Scratch/Blockly JSON kodu..."></textarea>
                     <div class="flex gap-2 mt-2">
                         <button type="button" onclick="admin.formatBlockCode()"
@@ -479,7 +479,7 @@ const ProjectsSection = {
                 <div id="text-code-section" class="hidden">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Metin Kodu</label>
                     <textarea id="p-textCode" rows="12" 
-                              class="w-full border rounded p-2 text-sm font-mono bg-gray-900 text-green-400"
+                              class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm font-mono bg-gray-900 dark:bg-gray-950 text-green-400 focus:ring-2 focus:ring-theme focus:border-transparent"
                               placeholder="Arduino/Python/JavaScript kodu..."></textarea>
                 </div>
 
@@ -488,12 +488,12 @@ const ProjectsSection = {
                     <label class="block text-xs font-bold text-gray-500 uppercase">Kod Açıklaması</label>
                     <div class="lang-field lang-tr">
                         <textarea id="p-codeExplanation-tr" rows="3" 
-                                  class="w-full border rounded p-2 text-sm"
+                                  class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="Türkçe kod açıklaması..."></textarea>
                     </div>
                     <div class="lang-field lang-en hidden">
                         <textarea id="p-codeExplanation-en" rows="3" 
-                                  class="w-full border rounded p-2 text-sm"
+                                  class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-theme focus:border-transparent"
                                   placeholder="English code explanation..."></textarea>
                     </div>
                 </div>
