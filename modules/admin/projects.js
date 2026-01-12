@@ -225,6 +225,15 @@ const ProjectManager = {
         setVal('p-challenge', p.challenge); // Duplicate set? Keep for safety aligned with original
         setVal('p-circuitImage', p.circuitImage || `devre${p.id}.jpg`);
         setVal('p-hotspots', p.hotspots ? JSON.stringify(p.hotspots) : '');
+        setVal('p-youtubeUrl', p.youtubeUrl || '');
+
+        // YouTube preview
+        if (p.youtubeUrl) {
+            const youtubeInput = document.getElementById('p-youtubeUrl');
+            if (youtubeInput) {
+                setTimeout(() => this.validateYouTubeUrl(youtubeInput), 100);
+            }
+        }
 
         // Hotspots
         const enableHotspots = document.getElementById('p-enableHotspots');
@@ -379,6 +388,12 @@ const ProjectManager = {
         const circuitEl = document.getElementById('p-circuitImage');
         if (circuitEl) {
             p.circuitImage = circuitEl.value;
+        }
+
+        // YouTube URL (with null safety)
+        const youtubeEl = document.getElementById('p-youtubeUrl');
+        if (youtubeEl) {
+            p.youtubeUrl = youtubeEl.value.trim() || null;
         }
 
         // Hotspots (with null safety)
@@ -814,6 +829,72 @@ const ProjectManager = {
             if (textSpan) textSpan.textContent = `#${p.id} ${pTitle}`;
             if (iconSpan) iconSpan.textContent = p.icon || '📄';
         }
+    },
+
+    /**
+     * YouTube URL Validation and Preview
+     * Extracts video ID and shows preview
+     */
+    validateYouTubeUrl(input) {
+        const url = input.value.trim();
+        const preview = document.getElementById('youtube-preview');
+        const iframe = document.getElementById('youtube-preview-iframe');
+
+        if (!url) {
+            preview.classList.add('hidden');
+            return;
+        }
+
+        // Extract YouTube video ID
+        const videoId = this.extractYouTubeId(url);
+
+        if (videoId) {
+            // Valid YouTube URL - show preview
+            iframe.src = `https://www.youtube.com/embed/${videoId}`;
+            preview.classList.remove('hidden');
+            input.classList.remove('border-red-500');
+            input.classList.add('border-green-500');
+        } else {
+            // Invalid URL
+            preview.classList.add('hidden');
+            input.classList.add('border-red-500');
+            input.classList.remove('border-green-500');
+
+            // Show error briefly
+            const parent = input.parentElement;
+            let errorMsg = parent.querySelector('.error-message');
+            if (!errorMsg) {
+                errorMsg = document.createElement('p');
+                errorMsg.className = 'error-message text-xs text-red-500 mt-1';
+                parent.appendChild(errorMsg);
+            }
+            errorMsg.textContent = '❌ Geçersiz YouTube URL. Örnek: https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
+            setTimeout(() => {
+                if (errorMsg && errorMsg.parentElement) {
+                    errorMsg.remove();
+                }
+            }, 3000);
+        }
+    },
+
+    /**
+     * Extract YouTube Video ID from various URL formats
+     * Supports: youtube.com/watch?v=, youtu.be/, youtube.com/embed/
+     */
+    extractYouTubeId(url) {
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+            /youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})/,
+        ];
+
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match && match[1]) {
+                return match[1];
+            }
+        }
+        return null;
     },
 };
 

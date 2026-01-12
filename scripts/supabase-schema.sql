@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS projects (
     theory TEXT,               -- NEW: Teorik bilgi (Markdown destekli)
     challenge TEXT,            -- Meydan okuma
     code_explanation TEXT,     -- NEW: Kod açıklaması (Markdown destekli)
+    youtube_url TEXT,          -- NEW: YouTube video linki
     materials JSONB DEFAULT '[]'::jsonb,
     circuit TEXT,
     code TEXT,

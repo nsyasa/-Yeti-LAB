@@ -422,6 +422,27 @@ const ProjectsSection = {
                         Devre bileşenlerinin üzerine tıklanabilir bilgi noktaları ekleyin.
                     </p>
                 </div>
+
+                <!-- YouTube Video -->
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded border border-red-200 dark:border-red-800 mt-4">
+                    <div class="mb-3">
+                        <label class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
+                            🎬 YouTube Video (Opsiyonel)
+                        </label>
+                    </div>
+                    <input type="text" id="p-youtubeUrl" 
+                           class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           placeholder="https://www.youtube.com/watch?v=... veya https://youtu.be/..."
+                           onchange="ProjectManager.validateYouTubeUrl(this)" />
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Simülasyon ile ilgili açıklayıcı video ekleyebilirsiniz. URL girildiğinde ders sayfasında video gösterilecek.
+                    </p>
+                    <div id="youtube-preview" class="mt-3 hidden">
+                        <div class="aspect-video bg-black rounded overflow-hidden">
+                            <iframe id="youtube-preview-iframe" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     },

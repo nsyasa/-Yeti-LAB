@@ -606,6 +606,33 @@ const UI = {
         const imgSrc = resolveImg(project.circuitImage || `devre${project.id}.jpg`);
         const circHTML = createImg(imgSrc, I18n.t('header_circuit'));
 
+        // YouTube Video HTML (if exists)
+        let youtubeHTML = '';
+        if (project.youtubeUrl) {
+            const videoId = UI.extractYouTubeId(project.youtubeUrl);
+            if (videoId) {
+                youtubeHTML = `
+                    <div class="mt-6 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 p-4 rounded-xl border-2 border-red-200 dark:border-red-800">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-2xl">🎬</span>
+                            <h4 class="font-bold text-gray-800 dark:text-gray-200">Video Açıklama</h4>
+                        </div>
+                        <div class="aspect-video rounded-lg overflow-hidden shadow-lg bg-black">
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                                class="w-full h-full"
+                            ></iframe>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         // Materials
         let materialsHTML = '<div class="space-y-4">';
         project.materials.forEach((m) => {
@@ -644,7 +671,7 @@ const UI = {
         // Base Content
         const baseContent = {
             mission: `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('header_mission')}</h3><p>${project.mission}</p><div class="bg-gray-50 p-4 rounded mt-4 border-l-4 border-theme">${project.theory}</div></div>`,
-            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${I18n.t('header_circuit')}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`,
+            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${I18n.t('header_circuit')}</h3>${circHTML}<p>${project.circuit_desc}</p>${youtubeHTML}</div>`,
             code: (() => {
                 const c = project.code || '';
                 if (c.match(/\.(jpeg|jpg|gif|png)$/) != null) {
@@ -730,7 +757,7 @@ const UI = {
         const content = {
             mission: baseContent.mission,
             materials: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.materials || 'Devre Elemanları'}</h3>${materialsHTML}</div>`,
-            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit || 'Bağlantı Şeması'}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`,
+            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${headers.circuit || 'Bağlantı Şeması'}</h3>${circHTML}<p>${project.circuit_desc}</p>${youtubeHTML}</div>`,
             code: headers.code
                 ? `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${headers.code}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`
                 : baseContent.code,
@@ -937,6 +964,32 @@ const UI = {
             </div>`;
 
         UI.showInfo(I18n.t('exp_hotspot_msg'), I18n.t('sim_discover'));
+    },
+
+    /**
+     * Extract YouTube video ID from various URL formats
+     * @param {string} url - YouTube URL
+     * @returns {string|null} Video ID or null if invalid
+     */
+    extractYouTubeId: (url) => {
+        if (!url) return null;
+
+        // Remove whitespace
+        url = url.trim();
+
+        // Pattern 1: youtube.com/watch?v=VIDEO_ID
+        const watchMatch = url.match(/[?&]v=([^&#]+)/);
+        if (watchMatch) return watchMatch[1];
+
+        // Pattern 2: youtu.be/VIDEO_ID
+        const shortMatch = url.match(/youtu\.be\/([^?&#]+)/);
+        if (shortMatch) return shortMatch[1];
+
+        // Pattern 3: youtube.com/embed/VIDEO_ID
+        const embedMatch = url.match(/youtube\.com\/embed\/([^?&#]+)/);
+        if (embedMatch) return embedMatch[1];
+
+        return null;
     },
 };
 
