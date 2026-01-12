@@ -223,6 +223,7 @@ const UI = {
             const isHidden = isMobile && index >= initialCount;
             container.innerHTML += renderCourseCard(key, manifestCourse, index, isHidden);
         });
+        console.log('[UI] Rendered', courses.length, 'course cards');
 
         // Add "Show All" button for mobile (inside grid)
         if (isMobile && courses.length > initialCount) {
