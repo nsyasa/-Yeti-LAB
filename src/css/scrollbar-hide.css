@@ -1,10 +1,9 @@
-
 /* Hide scrollbar for tabs container */
 #project-tabs-container::-webkit-scrollbar {
     display: none;
 }
 
 #project-tabs-container {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }

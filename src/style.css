@@ -56,7 +56,6 @@
 
 /* Custom CSS Layers */
 @layer base {
-
     /* Global body - Deep navy background by default */
     body {
         @apply font-sans transition-colors duration-300;
@@ -102,7 +101,6 @@
 }
 
 @layer components {
-
     /* ============================================
      COURSE CARDS - Premium Glassmorphism & Hover Effects
      ============================================ */
@@ -665,7 +663,6 @@
     }
 
     @keyframes live-pulse {
-
         0%,
         100% {
             opacity: 1;
@@ -783,7 +780,7 @@
 }
 
 /* 3. Butonlar (Asla Sıkışma!) */
-#project-tabs-container>button {
+#project-tabs-container > button {
     flex: 0 0 auto !important;
     min-width: max-content !important;
     flex-shrink: 0 !important;
@@ -794,8 +791,8 @@
 }
 
 /* 4. AKTİF SEKME AYARI (Seçili Olan Parlasın) */
-#project-tabs-container>button.active,
-#project-tabs-container>button:hover {
+#project-tabs-container > button.active,
+#project-tabs-container > button:hover {
     opacity: 1 !important;
     /* Tam görünür yap */
     background-color: rgba(255, 140, 0, 0.15) !important;

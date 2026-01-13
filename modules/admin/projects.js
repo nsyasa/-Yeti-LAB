@@ -375,17 +375,17 @@ const ProjectManager = {
         const tagsVal = document.getElementById('p-tags')?.value || '';
         p.tags = tagsVal
             ? tagsVal
-                .split(',')
-                .map((t) => t.trim())
-                .filter((t) => t)
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter((t) => t)
             : [];
 
         const prereqVal = document.getElementById('p-prerequisites')?.value || '';
         p.prerequisites = prereqVal
             ? prereqVal
-                .split(',')
-                .map((t) => parseInt(t.trim()))
-                .filter((n) => !isNaN(n))
+                  .split(',')
+                  .map((t) => parseInt(t.trim()))
+                  .filter((n) => !isNaN(n))
             : [];
 
         // Sim Type (with null safety)
@@ -444,9 +444,9 @@ const ProjectManager = {
         const materialsCustomEl = document.getElementById('p-materials-custom');
         const custom = materialsCustomEl
             ? materialsCustomEl.value
-                .split(',')
-                .map((s) => s.trim())
-                .filter((s) => s !== '')
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter((s) => s !== '')
             : [];
         p.materials = [...selected, ...custom];
 

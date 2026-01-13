@@ -739,16 +739,16 @@ const UI = {
                             <p class="font-bold text-gray-800 mb-3">${idx + 1}. ${q.q}</p>
                             <div class="space-y-2">
                                 ${q.options
-                            .map(
-                                (opt, optIdx) => `
+                                    .map(
+                                        (opt, optIdx) => `
                                     <button onclick="app.checkAnswer(${idx}, ${optIdx}, ${q.answer}, this)" 
                                             class="w-full text-left p-3 rounded bg-white border border-gray-200 hover:bg-gray-100 transition flex items-center group">
                                         <span class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center mr-3 text-xs font-bold bg-gray-50 group-hover:bg-theme group-hover:text-white transition-colors">${['A', 'B', 'C', 'D'][optIdx]}</span>
                                         ${opt}
                                     </button>
                                 `
-                            )
-                            .join('')}
+                                    )
+                                    .join('')}
                             </div>
                             <div class="quiz-feedback hidden mt-3 p-3 rounded font-bold text-sm"></div>
                         </div>`;
@@ -819,7 +819,8 @@ const UI = {
 
             // Support both new meta.customTabNames and potential settings.tab_names
             if (courseData) {
-                customTabNames = courseData.customTabNames ||
+                customTabNames =
+                    courseData.customTabNames ||
                     courseData.settings?.tab_names ||
                     courseData.meta?.customTabNames ||
                     {};
@@ -850,7 +851,7 @@ const UI = {
 
                 // Check for custom tab name first
                 // Normalize keys (handle case where DB might have 'Circuit' vs 'circuit')
-                const customKey = Object.keys(customTabNames).find(k => k.toLowerCase() === t.id.toLowerCase());
+                const customKey = Object.keys(customTabNames).find((k) => k.toLowerCase() === t.id.toLowerCase());
 
                 if (customKey && customTabNames[customKey]) {
                     label = customTabNames[customKey];

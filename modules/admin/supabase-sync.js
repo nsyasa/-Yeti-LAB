@@ -392,7 +392,7 @@ const SupabaseSync = {
         // DEADLOCK FIX: Check if lock is stuck (held > 15s)
         const LOCK_TIMEOUT = 15000;
         const now = Date.now();
-        if (this._isSaving && this._lockTimestamp && (now - this._lockTimestamp > LOCK_TIMEOUT)) {
+        if (this._isSaving && this._lockTimestamp && now - this._lockTimestamp > LOCK_TIMEOUT) {
             console.warn('[SupabaseSync] Lock stuck for >15s. Forcing reset.');
             this._isSaving = false;
         }
@@ -411,7 +411,10 @@ const SupabaseSync = {
 
         // Create a timeout promise to race against the actual operation
         const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('İstek zaman aşımına uğradı (60sn). İnternet bağlantınızı kontrol edin.')), 60000)
+            setTimeout(
+                () => reject(new Error('İstek zaman aşımına uğradı (60sn). İnternet bağlantınızı kontrol edin.')),
+                60000
+            )
         );
 
         // The actual save logic wrapped in a function
@@ -451,7 +454,7 @@ const SupabaseSync = {
             console.log('[SupabaseSync] Step 2 Payload:', {
                 title: courseData.title,
                 description: courseData.description,
-                metaIcon: courseData.icon
+                metaIcon: courseData.icon,
             });
 
             // DIRECT UPDATE TRIGGER with VERIFICATION
@@ -472,12 +475,14 @@ const SupabaseSync = {
 
             // SILENT FAILURE CHECK
             if (!updatedData || updatedData.length === 0) {
-                console.error("🚨 CRITICAL: Update returned no data. Possible ID mismatch or RLS issue.");
-                console.error("Attempted to update ID:", courseId);
-                throw new Error("Update failed: Course not found or permission denied (RLS). Server returned 0 updated rows.");
+                console.error('🚨 CRITICAL: Update returned no data. Possible ID mismatch or RLS issue.');
+                console.error('Attempted to update ID:', courseId);
+                throw new Error(
+                    'Update failed: Course not found or permission denied (RLS). Server returned 0 updated rows.'
+                );
             }
 
-            console.log("✅ Supabase Confirmed Update:", updatedData);
+            console.log('✅ Supabase Confirmed Update:', updatedData);
             console.log('[SupabaseSync] Step 2 complete');
 
             // 3. Sync phases

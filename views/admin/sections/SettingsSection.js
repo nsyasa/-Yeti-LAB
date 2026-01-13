@@ -244,9 +244,10 @@ const SettingsSection = {
             const card = document.createElement('div');
             card.className = `
                 p-4 rounded-lg border-2 cursor-pointer transition-all text-center
-                ${isActive
-                    ? 'border-theme bg-theme/10 dark:bg-theme/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-theme/50 bg-gray-50 dark:bg-gray-700'
+                ${
+                    isActive
+                        ? 'border-theme bg-theme/10 dark:bg-theme/20'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-theme/50 bg-gray-50 dark:bg-gray-700'
                 }
             `;
             card.innerHTML = `

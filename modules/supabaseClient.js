@@ -197,7 +197,7 @@ const SupabaseClient = {
         const client = this.getClient();
         if (!client) {
             console.warn('[SupabaseClient] Auth not available - skipping onAuthStateChange');
-            return { data: { subscription: { unsubscribe: () => { } } } };
+            return { data: { subscription: { unsubscribe: () => {} } } };
         }
 
         return client.auth.onAuthStateChange((event, session) => {
