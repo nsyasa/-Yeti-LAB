@@ -514,6 +514,5 @@ const SettingsSection = {
     },
 };
 
-
 window.SettingsSection = SettingsSection;
 export default SettingsSection;
