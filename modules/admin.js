@@ -79,6 +79,15 @@ const admin = {
         if (window.AdminState) window.AdminState.undoStack = val;
     },
 
+    // Mod: Unsaved Changes State
+    get hasUnsavedChanges() {
+        return window.AdminState?.hasUnsavedChanges || false;
+    },
+    set hasUnsavedChanges(val) {
+        if (window.AdminState) window.AdminState.hasUnsavedChanges = val;
+        admin.updateSaveButtonUI();
+    },
+
     // Timer state
     get supabaseAutoSaveTimer() {
         return window.AdminState?.autoSaveTimer;
@@ -95,23 +104,26 @@ const admin = {
         if (window.AdminState) window.AdminState.isInitialized = val;
     },
 
-    triggerAutoSave: () => {
-        // Local Save (Immediate / Fast)
+    triggerAutoSave: (forceCloud = false) => {
+        // 1. Local Save (Always active for safety)
         if (typeof StorageManager !== 'undefined') {
             StorageManager.triggerAutoSave();
         }
 
-        // Remote Save to Supabase (Debounced)
-        if (admin.supabaseAutoSaveTimer) clearTimeout(admin.supabaseAutoSaveTimer);
+        // 2. Mark as Dirty (Unsaved Changes)
+        admin.hasUnsavedChanges = true;
 
-        // Only autosave to Supabase if user is admin
-        if (window.Auth && Auth.isAdmin()) {
-            admin.supabaseAutoSaveTimer = setTimeout(() => {
-                console.log('[Admin] Triggering Supabase auto-save...');
-                if (typeof SupabaseSync !== 'undefined') {
-                    admin.saveData(true); // true = silent mode
-                }
-            }, 3000); // 3 seconds debounce
+        // 3. Remote Save (Only if forced or manual)
+        if (forceCloud) {
+            if (admin.supabaseAutoSaveTimer) clearTimeout(admin.supabaseAutoSaveTimer);
+
+            // Only autosave to Supabase if user is admin
+            if (window.Auth && Auth.isAdmin()) {
+                console.log('[Admin] Triggering Cloud Save (Force/Manual)...');
+                admin.supabaseAutoSaveTimer = setTimeout(() => {
+                    admin.saveData(true); // true = silent/status-bar mode
+                }, 100);
+            }
         }
     },
 
@@ -140,6 +152,26 @@ const admin = {
 
     hideLoading() {
         if (window.AdminUI) window.AdminUI.hideLoading();
+    },
+
+    updateSaveButtonUI() {
+        const btn = document.getElementById('btn-save-cloud');
+        if (btn) {
+            if (admin.hasUnsavedChanges) {
+                // Active / Dirty State
+                btn.classList.remove('bg-gray-600', 'hover:bg-gray-700', 'opacity-50', 'cursor-not-allowed');
+                btn.classList.add('bg-orange-500', 'hover:bg-orange-600', 'animate-pulse');
+                btn.innerHTML = '💾 Kaydet *';
+                btn.disabled = false;
+            } else {
+                // Saved / Clean State
+                btn.classList.remove('bg-orange-500', 'hover:bg-orange-600', 'animate-pulse');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                btn.innerHTML = '✅ Kayıtlı';
+                // Optional: Disable button to prevent redundant saves
+                // btn.disabled = true;
+            }
+        }
     },
 
     init: async () => {
@@ -242,6 +274,19 @@ const admin = {
 
             // 5. Finalize
             admin._isInitialized = true;
+
+            // Safety Net for Unsaved Changes
+            window.addEventListener('beforeunload', (e) => {
+                if (admin.hasUnsavedChanges) {
+                    const msg = 'Kaydedilmemiş değişiklikleriniz var! Çıkmak istediğinize emin misiniz?';
+                    e.returnValue = msg;
+                    return msg;
+                }
+            });
+
+            // Initial UI Update
+            admin.updateSaveButtonUI();
+
             console.log('[Admin] Initialized successfully');
         } catch (error) {
             console.error('[Admin] Init error:', error);
@@ -583,16 +628,21 @@ const admin = {
             }
 
             try {
+                // Call SupabaseSync directly logic
                 await admin.saveToSupabase(key, courseData);
 
                 if (silent && typeof StorageManager !== 'undefined') {
                     StorageManager.updateStatus('Buluta kaydedildi ✓', 'green');
                 }
+
+                // Reset Dirty State on Success
+                admin.hasUnsavedChanges = false;
             } catch (err) {
                 console.error('Save failed:', err);
                 if (silent && typeof StorageManager !== 'undefined') {
                     StorageManager.updateStatus('Bulut kaydı başarısız!', 'red');
                 }
+                // Don't reset dirty state heavily if failed
             } finally {
                 if (!silent) admin.hideLoading();
             }

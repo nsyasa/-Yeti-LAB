@@ -64,10 +64,11 @@ const AdminLayout = {
                                 title="Tüm verileri JSON olarak indir">
                                 📥 Yedekle
                             </button>
-                            <button onclick="admin.saveData()"
-                                class="text-sm px-3 py-1.5 rounded-lg font-semibold transition"
-                                style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white;">
-                                💾 Kaydet
+                            </button>
+                            <button onclick="admin.triggerAutoSave(true)" id="btn-save-cloud"
+                                class="text-sm px-3 py-1.5 rounded-lg font-semibold transition bg-green-600 hover:bg-green-700 text-white"
+                                title="Değişiklikleri Veritabanına Yaz">
+                                ✅ Kayıtlı
                             </button>
                             <button onclick="AdminView.handleLogout()"
                                 class="text-sm p-1.5 rounded-lg font-semibold transition text-gray-500 hover:bg-red-100 hover:text-red-600"

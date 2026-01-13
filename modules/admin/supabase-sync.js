@@ -519,7 +519,7 @@ const SupabaseSync = {
 
             console.log('[SupabaseSync] All steps complete!');
             this.updateStatus(`☁️ Supabase'e kaydedildi: ${new Date().toLocaleTimeString()}`, 'green');
-            alert("✅ Değişiklikler Supabase'e kaydedildi!");
+            // alert("✅ Değişiklikler Supabase'e kaydedildi!"); // Kirlilik önlendi
 
             return true;
         };
@@ -612,9 +612,12 @@ const SupabaseSync = {
 
             // Optional: Update status in console or UI
             if (this.updateStatus) {
-                // Determine color based on progress
-                const progress = Math.min(i + CHUNK_SIZE, projects.length);
-                this.updateStatus(`💾 Kaydediliyor... (${progress}/${projects.length})`, 'blue');
+                // Kirlilik Önleme: Sadece konsola yaz, UI'ı güncelleme
+                // const progress = Math.min(i + CHUNK_SIZE, projects.length);
+                // this.updateStatus(`💾 Kaydediliyor... (${progress}/${projects.length})`, 'blue');
+                console.log(
+                    `[SupabaseSync] Saving progress: ${Math.min(i + CHUNK_SIZE, projects.length)}/${projects.length}`
+                );
             }
 
             // Small delay to release event loop

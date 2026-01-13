@@ -147,6 +147,11 @@ const Router = {
             Store.emit('route:change', this.currentRoute);
         }
 
+        // ===== NEW: Assistant Visibility Check =====
+        if (window.Assistant && window.Assistant.checkRouteVisibility) {
+            window.Assistant.checkRouteVisibility();
+        }
+
         // ===== FAZ 2: Centralized Route Logic =====
         this.handleRouteLogic(route, params);
     },

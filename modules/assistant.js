@@ -144,13 +144,66 @@ const Assistant = {
     },
 
     // ============================================
+    // UTILS
+    // ============================================
+    isAdminContext: () => {
+        // Check URL/Route specifically for Admin Panel
+        const hash = window.location.hash;
+        if (hash.startsWith('#/admin') || hash.includes('/admin')) {
+            return true;
+        }
+
+        // Also check legacy/separate page if any
+        if (window.location.pathname.includes('admin.html')) {
+            return true;
+        }
+
+        return false;
+    },
+
+    // ============================================
     // INITIALIZATION
     // ============================================
     init: () => {
         Assistant.renderUI();
+
+        // Initial check
+        Assistant.checkRouteVisibility();
+
+        // Listen for route changes
+        window.addEventListener('hashchange', () => Assistant.checkRouteVisibility());
+        window.addEventListener('popstate', () => Assistant.checkRouteVisibility());
+
+        // Listen for custom route events if available
+        window.addEventListener('route-changed', () => Assistant.checkRouteVisibility());
+    },
+
+    checkRouteVisibility: () => {
+        const btn = document.getElementById('chat-btn');
+        const container = document.getElementById('chat-window');
+
+        if (!btn && !container) return; // Not rendered yet
+
+        if (Assistant.isAdminContext()) {
+            // Hide everything in admin
+            if (btn) btn.classList.add('hidden');
+            if (container) {
+                container.classList.add('hidden');
+                Assistant.isOpen = false; // Reset state
+            }
+        } else {
+            // Show button (if chat window is closed)
+            if (!Assistant.isOpen && btn) {
+                btn.classList.remove('hidden');
+            }
+            // If chat was open, we leave it as is or handle logic to reopen
+        }
     },
 
     renderUI: () => {
+        // ALWAYS Create DOM elements, but hide them initially if needed
+        // This allows us to show them later when navigating out of Admin
+
         const div = document.createElement('div');
         div.id = 'assistant-container';
         div.innerHTML = `
