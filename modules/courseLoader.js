@@ -162,28 +162,43 @@ const CourseLoader = {
             if (window.Performance) window.Performance.mark('load_course_' + key);
 
             // 1. Try to load from Supabase (Supabase-First Strategy)
+            // FIX: Add 5-second timeout to prevent infinite spinner
             if (typeof SupabaseClient !== 'undefined' && SupabaseClient.client) {
                 try {
-                    // Use key directly as slug (most reliable matching with Supabase)
-                    // The key (e.g., 'arduino', 'minecraft-edu') should match the DB slug.
                     const slug = key;
 
-                    const course = await SupabaseClient.getCourseBySlug(slug);
-                    if (course) {
-                        const fullData = await SupabaseClient.getFullCourseData(course.id);
-                        if (fullData) {
-                            const legacyData = SupabaseClient.convertToLegacyFormat(fullData);
-                            window.courseData[key] = legacyData;
-                            CourseLoader.loadedCourses.add(key);
+                    // Timeout wrapper: 5 seconds max for Supabase load
+                    const LOAD_TIMEOUT_MS = 5000;
+                    const timeoutPromise = new Promise((_, timeoutReject) => {
+                        setTimeout(() => timeoutReject(new Error('Supabase load timeout (5s)')), LOAD_TIMEOUT_MS);
+                    });
 
-                            if (window.Performance)
-                                window.Performance.measure('Load Course (Supabase): ' + key, 'load_course_' + key);
-                            resolve(legacyData);
-                            return;
+                    const supabaseLoadPromise = (async () => {
+                        const course = await SupabaseClient.getCourseBySlug(slug);
+                        if (course) {
+                            const fullData = await SupabaseClient.getFullCourseData(course.id);
+                            if (fullData) {
+                                return SupabaseClient.convertToLegacyFormat(fullData);
+                            }
                         }
+                        return null;
+                    })();
+
+                    const legacyData = await Promise.race([supabaseLoadPromise, timeoutPromise]);
+
+                    if (legacyData) {
+                        window.courseData[key] = legacyData;
+                        CourseLoader.loadedCourses.add(key);
+
+                        if (window.Performance)
+                            window.Performance.measure('Load Course (Supabase): ' + key, 'load_course_' + key);
+                        resolve(legacyData);
+                        return;
                     }
                 } catch (e) {
-                    console.warn(`[CourseLoader] Supabase load failed for ${key}, falling back to local file.`, e);
+                    console.warn(
+                        `[CourseLoader] Supabase load failed for ${key} (${e.message}), falling back to local file.`
+                    );
                 }
             }
 

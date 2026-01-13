@@ -30,7 +30,9 @@ const ProjectManager = {
 
     bindEvents() {
         // Use event delegation for SPA compatibility
-        // This works even if #project-form is not yet in the DOM
+        // Debounce input handling to prevent UI lag on fast typing
+        let inputTimer = null;
+
         document.addEventListener('input', (e) => {
             const form = document.getElementById('project-form');
             if (!form) return;
@@ -39,7 +41,10 @@ const ProjectManager = {
             if (form.contains(e.target)) {
                 const tag = e.target.tagName.toLowerCase();
                 if (tag === 'input' || tag === 'textarea' || tag === 'select') {
-                    this.update();
+                    if (inputTimer) clearTimeout(inputTimer);
+                    inputTimer = setTimeout(() => {
+                        this.update();
+                    }, 300); // 300ms debounce
                 }
             }
         });
@@ -472,16 +477,17 @@ const ProjectManager = {
         // Trigger local autosave
         if (this.config.onUpdate) this.config.onUpdate();
 
-        // Debounced Supabase sync
-        this.scheduleSaveToSupabase(p);
+        // Debounced Supabase sync - DISABLED for Manual Save Architecture
+        // this.scheduleSaveToSupabase(p);
     },
 
     /**
      * Schedule a debounced save to Supabase (500ms delay)
+     * DISABLED: We now use manual global save
      */
     scheduleSaveToSupabase(project) {
-        if (this.saveTimer) clearTimeout(this.saveTimer);
-        this.saveTimer = setTimeout(() => this.saveProjectToSupabase(project), 500);
+        // if (this.saveTimer) clearTimeout(this.saveTimer);
+        // this.saveTimer = setTimeout(() => this.saveProjectToSupabase(project), 500);
     },
 
     /**

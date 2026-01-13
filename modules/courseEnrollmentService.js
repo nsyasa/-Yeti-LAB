@@ -71,16 +71,20 @@ const CourseEnrollmentService = {
     async getStudentsByClassroom(classroomId) {
         const { data, error } = await supabase
             .from('students')
-            .select('id, name, username, avatar_url')
+            .select('id, display_name, avatar_emoji, classroom_id')
             .eq('classroom_id', classroomId)
-            .order('name');
+            .order('display_name');
 
         if (error) {
             console.error('Öğrenciler yüklenemedi:', error);
             throw error;
         }
 
-        return data || [];
+        // Map to provide backward compatible 'name' field
+        return (data || []).map((student) => ({
+            ...student,
+            name: student.display_name, // Virtual field for compatibility
+        }));
     },
 
     /**

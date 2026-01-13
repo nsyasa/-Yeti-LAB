@@ -22,7 +22,7 @@ Yeti LAB, öğrencilere **Arduino**, **Micro:bit**, **Scratch**, **mBlock** ve *
 - 🎯 **Global Design System**: Tutarlı CSS değişkenleri ile tüm sayfalarda unified tasarım.
 - ⚡ **Lazy Loading & Code Splitting**: Yüksek performanslı ve optimize edilmiş yükleme süreleri.
 - 🤖 **Kapsamlı Müfredat**: 6+ farklı kurs modülü (Arduino, Micro:bit, App Inventor vb.).
-- 🏫 **Öğretmen Paneli**: Sınıf yönetimi, öğrenci ekleme, ilerleme takibi ve detaylı analizler.
+- 🏫 **Öğretmen Paneli**: Modal-free inline UX, accordion sınıf yönetimi, gerçek zamanlı öğrenci sayısı güncelleme.
 - 👨‍💼 **Admin Paneli**: Kurs içeriği, proje ve faz yönetimi için güçlü araçlar.
 - 🏆 **Oyunlaştırma**: Rozetler, puan sistemi ve interaktif quizler.
 - 🤖 **AI Yardımcı (BANA SOR)**: Yeti maskotu ile kontekst-duyarlı öğrenme desteği.

@@ -178,25 +178,35 @@ const Assistant = {
         window.addEventListener('route-changed', () => Assistant.checkRouteVisibility());
     },
 
+    // Route Change Visibility Check (Debounced)
     checkRouteVisibility: () => {
+        if (Assistant.checkRouteTimer) clearTimeout(Assistant.checkRouteTimer);
+        Assistant.checkRouteTimer = setTimeout(() => {
+            Assistant._performRouteCheck();
+        }, 100);
+    },
+
+    _performRouteCheck: () => {
         const btn = document.getElementById('chat-btn');
-        const container = document.getElementById('chat-window');
+        const windowEl = document.getElementById('chat-window');
+        const notification = document.getElementById('chat-notification'); // Assuming a notification dot element might exist
 
-        if (!btn && !container) return; // Not rendered yet
+        if (!btn || !windowEl) return;
 
-        if (Assistant.isAdminContext()) {
-            // Hide everything in admin
-            if (btn) btn.classList.add('hidden');
-            if (container) {
-                container.classList.add('hidden');
-                Assistant.isOpen = false; // Reset state
-            }
+        // Check if we are in admin context (URL based)
+        const isAdmin = Assistant.isAdminContext();
+
+        if (isAdmin) {
+            // Hide in Admin Panel
+            btn.classList.add('hidden');
+            windowEl.classList.add('hidden');
+            if (notification) notification.classList.add('hidden');
+            Assistant.isOpen = false; // Reset state when hidden
         } else {
-            // Show button (if chat window is closed)
-            if (!Assistant.isOpen && btn) {
-                btn.classList.remove('hidden');
-            }
-            // If chat was open, we leave it as is or handle logic to reopen
+            // Show in other areas (Student/Teacher/Home)
+            // Only ensure button is visible so they CAN open it
+            // Do NOT touch window class, let user control open/close state
+            btn.classList.remove('hidden');
         }
     },
 

@@ -6,6 +6,51 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.2.2] - 2026-01-13
+
+### 🎨 Teacher Panel UX Overhaul
+
+#### Modal-Free Fluid UX
+
+- **Tüm modallar kaldırıldı**: Artık hiçbir pop-up yok, tüm işlemler inline gerçekleşiyor
+- **Accordion Row Layout**: Sınıf listesi kart gridinden yatay satır görünümüne geçti
+- **Inline Forms**: Öğrenci ekleme, toplu ekleme ve ayarlar artık satır altında açılıyor
+
+#### Yeni Özellikler
+
+- **Top-Inline New Classroom Form**: Yeni sınıf oluşturma formu listenin tepesinde açılıyor
+- **Settings Inline Form**: Sınıf ayarları (ad, açıklama, aktif durumu) inline düzenlenebilir
+- **Real-time Student Count**: Öğrenci eklerken sayı anında güncelleniyor
+- **Copy to Clipboard**: Sınıf kodu tıklanarak kopyalanıyor (Toast feedback)
+
+#### Text-Based Action Buttons
+
+| Buton          | Renk       | İşlem                      |
+| -------------- | ---------- | -------------------------- |
+| + Öğrenci Ekle | 🟢 Yeşil   | Tek öğrenci inline form    |
+| Toplu Ekle     | 🟣 Mor     | Textarea ile çoklu ekleme  |
+| Ayarlar        | 🔵 Mavi    | Inline ayar formu          |
+| Sil            | 🔴 Kırmızı | Onay dialogu sonrası silme |
+
+#### Focus Mode
+
+- Bir panel açıldığında diğer tüm paneller otomatik kapanıyor
+- Tek bir işleme odaklanmayı kolaylaştırıyor
+
+### 🐛 Bug Fixes
+
+- **courseEnrollmentService.js**: `students.name` → `students.display_name` kolon hatası düzeltildi
+- **Dropdown Z-Index**: Dropdown menüler artık kart altında kalmıyor (z-50)
+- **Menu Overlap**: Aynı anda sadece 1 menü açık olabiliyor
+
+### 🛠️ Technical Changes
+
+- `ClassroomManager.renderList()` tamamen yeniden yazıldı
+- Yeni fonksiyonlar: `togglePanel`, `closeAllPanels`, `showNewClassroomForm`, `createNewClassroom`, `saveSettings`
+- CSS: `.classroom-row`, `.classroom-accordion`, `.classroom-panel` stilleri eklendi
+
+---
+
 ## [1.2.1] - 2026-01-12
 
 ### 🐛 Bug Fixes

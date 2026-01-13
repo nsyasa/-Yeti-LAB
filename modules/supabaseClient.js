@@ -50,6 +50,17 @@ const SupabaseClient = {
 
         try {
             // Create client with auth options to prevent AbortError
+            // FIX: Add custom fetch with extended timeout for large data operations
+            const customFetch = (url, options = {}) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minutes
+
+                return fetch(url, {
+                    ...options,
+                    signal: controller.signal,
+                }).finally(() => clearTimeout(timeoutId));
+            };
+
             this.client = createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY, {
                 auth: {
                     autoRefreshToken: true,
@@ -63,6 +74,7 @@ const SupabaseClient = {
                     headers: {
                         'x-client-info': 'yeti-lab-web',
                     },
+                    fetch: customFetch, // Use custom fetch with extended timeout
                 },
             });
             console.log('[SupabaseClient] Initialized successfully');
@@ -726,6 +738,7 @@ const SupabaseClient = {
             circuitImage: proj.circuit,
             hotspots: proj.component_info?.hotspots || null,
             quiz: proj.component_info?.quiz || [],
+            hiddenTabs: proj.component_info?.hiddenTabs || [], // FIX: Map hiddenTabs for visibility settings
             youtubeUrl: proj.youtube_url || null, // FIX: Map Supabase youtube_url to legacy youtubeUrl
         }));
 

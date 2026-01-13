@@ -32,7 +32,8 @@ const StorageManager = {
      * Trigger autosave with debounce
      */
     triggerAutoSave() {
-        this.updateStatus('Kaydediliyor...', 'yellow');
+        // UX FIX: Use 'Taslak Güncellendi' for local save (orange) to distinguish from cloud save (green)
+        this.updateStatus('📝 Taslak Güncellendi', 'orange');
 
         if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
         this.autoSaveTimer = setTimeout(() => this.saveToLocal(), this.config.debounceMs);
@@ -57,7 +58,8 @@ const StorageManager = {
             localStorage.setItem(this.config.storageKey, JSON.stringify(dataToSave));
 
             const timeStr = new Date().toLocaleTimeString();
-            this.updateStatus(`Son otomatik kayıt: ${timeStr}`, 'green');
+            // UX FIX: Clarify this is local draft, use gray/neutral color
+            this.updateStatus(`📋 Yerel Taslak: ${timeStr}`, 'gray');
             return true;
         } catch (e) {
             console.error('StorageManager: AutoSave Error:', e);
@@ -157,7 +159,14 @@ const StorageManager = {
         statusEl.textContent = message;
 
         // Remove all color classes
-        statusEl.classList.remove('text-green-400', 'text-red-400', 'text-blue-400', 'text-yellow-400');
+        statusEl.classList.remove(
+            'text-green-400',
+            'text-red-400',
+            'text-blue-400',
+            'text-yellow-400',
+            'text-orange-400',
+            'text-gray-400'
+        );
 
         // Add new color class
         if (color) {

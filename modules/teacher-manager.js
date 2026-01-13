@@ -239,13 +239,31 @@ async function loadDashboardData() {
             return;
         }
 
+        console.log('[TeacherManager] loadDashboardData - Starting with user:', {
+            id: currentUser.id,
+            email: currentUser.email,
+        });
+
         // Load classrooms
+        console.log('[TeacherManager] Querying classrooms with teacher_id:', currentUser.id);
+
         const { data: classroomsData, error: classroomsError } = await SupabaseClient.getClient()
             .from('classrooms')
             .select('*, students(count)')
             .eq('teacher_id', currentUser.id);
 
-        if (classroomsError) throw classroomsError;
+        // DEBUG: Log query results
+        console.log('[TeacherManager] Classrooms query result:', {
+            success: !classroomsError,
+            count: classroomsData?.length || 0,
+            error: classroomsError,
+            data: classroomsData,
+        });
+
+        if (classroomsError) {
+            console.error('[TeacherManager] ❌ Classrooms query ERROR:', classroomsError);
+            throw classroomsError;
+        }
 
         classrooms = classroomsData || [];
 

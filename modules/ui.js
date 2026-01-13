@@ -82,7 +82,20 @@ const UI = {
 
         const container = document.getElementById('course-list');
         if (!container) return;
-        container.innerHTML = '';
+        // ============================================
+        // STALE-WHILE-REVALIDATE PATTERN
+        // Prevent flickering: Don't replace existing content unnecessarily
+        // ============================================
+        const existingCards = container.querySelectorAll('.course-card');
+        const hasValidContent = existingCards.length > 0 && !container.querySelector('.skeleton-card');
+        const courseCount = Object.keys(manifest).length;
+
+        // Skip full re-render if content already matches (same card count)
+        // This prevents the flicker: content -> blank -> content
+        if (hasValidContent && existingCards.length === courseCount) {
+            console.log('[UI] Stale-While-Revalidate: Content already rendered, skipping re-render');
+            return; // Content is already good, no need to re-render
+        }
 
         // Remove any existing "Show All" buttons (prevent duplicates)
         document.querySelectorAll('#show-all-courses-btn').forEach((el) => el.remove());
@@ -206,16 +219,20 @@ const UI = {
                     
                     <!-- Peek Yeti (appears on hover, on top of button) -->
                     <div class="absolute -bottom-2 -right-2 lg:-bottom-4 lg:-right-4 w-12 h-12 lg:w-24 lg:h-24 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 group-hover:translate-y-[-4px]">
-                        <img src="img/yeti-peek.png" alt="" class="w-full h-full object-contain drop-shadow-lg" />
+                        <img src="img/yeti-peek.png" alt="" width="96" height="96" class="w-full h-full object-contain drop-shadow-lg" />
                     </div>
                 </div>`;
         };
 
-        // Render courses
+        // Render courses - Build HTML string first, then batch update
+        let coursesHTML = '';
         courses.forEach(([key, manifestCourse], index) => {
             const isHidden = isMobile && index >= initialCount;
-            container.innerHTML += renderCourseCard(key, manifestCourse, index, isHidden);
+            coursesHTML += renderCourseCard(key, manifestCourse, index, isHidden);
         });
+
+        // Replace content in one operation (prevents partial renders)
+        container.innerHTML = coursesHTML;
 
         // Add "Show All" button for mobile (inside grid)
         if (isMobile && courses.length > initialCount) {

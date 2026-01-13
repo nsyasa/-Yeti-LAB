@@ -206,6 +206,7 @@ const ViewLoader = {
             await import('../../modules/admin/hotspots.js');
             await import('../../modules/admin/images.js');
             await import('../../modules/admin/quizzes.js');
+            await import('../../modules/admin/quizManager.js'); // FIX: QuizManager for inline onclick handlers
             await import('../../modules/admin.js');
 
             // View components

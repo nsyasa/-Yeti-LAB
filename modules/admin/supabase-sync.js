@@ -410,10 +410,12 @@ const SupabaseSync = {
         this._lockTimestamp = Date.now();
 
         // Create a timeout promise to race against the actual operation
+        // FIX: Increased timeout from 60s to 180s (3 minutes) for large datasets
+        const SAVE_TIMEOUT_MS = 180000;
         const timeoutPromise = new Promise((_, reject) =>
             setTimeout(
-                () => reject(new Error('İstek zaman aşımına uğradı (60sn). İnternet bağlantınızı kontrol edin.')),
-                60000
+                () => reject(new Error('TIMEOUT: İstek zaman aşımına uğradı (3 dk). Bağlantınız yavaş olabilir.')),
+                SAVE_TIMEOUT_MS
             )
         );
 
@@ -540,6 +542,20 @@ const SupabaseSync = {
                 return false;
             }
 
+            // Timeout / Connection Error Handling
+            if (
+                error.message?.includes('TIMEOUT') ||
+                error.message?.includes('timeout') ||
+                error.name === 'AbortError'
+            ) {
+                this.updateStatus('⏱️ Bağlantı yavaş - Tekrar deneyin', 'yellow');
+                if (confirm('Bağlantı yavaş olduğu için işlem uzun sürdü.\n\nTekrar denemek ister misiniz?')) {
+                    // Retry after brief delay
+                    setTimeout(() => this.saveToSupabase(courseKey, courseData), 1000);
+                    return false;
+                }
+            }
+
             this.updateStatus(`❌ Kaydetme hatası: ${error.message}`, 'red');
 
             // Offer fallback download
@@ -594,8 +610,8 @@ const SupabaseSync = {
      * Sync projects to Supabase
      */
     async syncProjects(courseId, projects, phaseIdMap) {
-        // Process in chunks (batches) to ensure stability and avoid timeouts
-        const CHUNK_SIZE = 4;
+        // FIX: Reduced chunk size from 4 to 2 for more stable saving on slow connections
+        const CHUNK_SIZE = 2;
         const results = [];
 
         console.log(`[SupabaseSync] Syncing ${projects.length} projects in chunks of ${CHUNK_SIZE}...`);

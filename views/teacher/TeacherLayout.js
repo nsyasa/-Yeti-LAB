@@ -146,8 +146,13 @@ const TeacherLayout = {
      * Nav item ve section title güncelle
      */
     updateActiveTab(section) {
+        console.log('[TeacherLayout] updateActiveTab called with section:', section);
+
         // Update header tab items
-        document.querySelectorAll('.teacher-header-tab').forEach((btn) => {
+        const headerTabs = document.querySelectorAll('.teacher-header-tab');
+        console.log('[TeacherLayout] Found header tabs:', headerTabs.length);
+
+        headerTabs.forEach((btn) => {
             btn.classList.remove(
                 'active',
                 'bg-emerald-100',
@@ -158,6 +163,7 @@ const TeacherLayout = {
             btn.classList.add('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-700');
 
             if (btn.dataset && btn.dataset.section === section) {
+                console.log('[TeacherLayout] Activating tab:', btn.dataset.section);
                 btn.classList.add(
                     'active',
                     'bg-emerald-100',

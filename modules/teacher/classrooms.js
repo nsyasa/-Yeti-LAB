@@ -9,6 +9,11 @@ export const ClassroomManager = {
     onStateChange: null, // Callback to update parent state/UI (e.g. dashboard stats)
 
     init: (user, initialClassrooms, callbacks) => {
+        console.log('[ClassroomManager] init called with:', {
+            user_id: user?.id,
+            classrooms_count: initialClassrooms?.length || 0,
+            classrooms: initialClassrooms,
+        });
         ClassroomManager.currentUser = user;
         ClassroomManager.classrooms = initialClassrooms || [];
         if (callbacks) {
@@ -35,82 +40,231 @@ export const ClassroomManager = {
             return;
         }
 
+        // Change container to flex column layout (Row View)
+        container.className = 'flex flex-col gap-3';
+
+        // Build HTML: New Classroom Form + Classroom Rows
+        let html = '';
+
+        // =============================================
+        // TOP: New Classroom Inline Form (Always Present, Hidden by Default)
+        // =============================================
+        html += `
+            <div id="new-classroom-panel" class="new-classroom-form hidden">
+                <div class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-indigo-900/30 rounded-xl border-2 border-dashed border-blue-300 dark:border-indigo-600">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-xl">✨</span>
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-white">Yeni Sınıf Oluştur</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Sınıf Adı *</label>
+                            <input type="text" 
+                                id="new-classroom-name"
+                                placeholder="Örn: 7-A Sınıfı"
+                                class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Açıklama (opsiyonel)</label>
+                            <input type="text" 
+                                id="new-classroom-description"
+                                placeholder="Örn: Matematik dersi için"
+                                class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="ClassroomManager.createNewClassroom()"
+                            id="btn-create-classroom"
+                            class="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm">
+                            Oluştur
+                        </button>
+                        <button onclick="ClassroomManager.hideNewClassroomForm()"
+                            class="px-4 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                            İptal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // =============================================
+        // Empty State
+        // =============================================
         if (ClassroomManager.classrooms.length === 0) {
-            container.innerHTML = `
-                <div class="col-span-full">
-                    <div class="empty-state py-8">
-                        <div class="icon text-4xl mb-2">🏫</div>
-                        <p class="text-gray-500">Henüz sınıf oluşturmadınız</p>
-                        <p class="text-xs text-gray-400 mt-1">Üst menüden "Yeni Sınıf" butonuna tıklayın</p>
+            html += `
+                <div class="w-full">
+                    <div class="empty-state py-12 text-center">
+                        <div class="text-5xl mb-3">🏫</div>
+                        <p class="text-gray-500 dark:text-gray-400 font-medium">Henüz sınıf oluşturmadınız</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Yukarıdan "Yeni Sınıf" butonuna tıklayın</p>
                     </div>
                 </div>
             `;
+            container.innerHTML = html;
             return;
         }
 
-        container.innerHTML = ClassroomManager.classrooms
+        // =============================================
+        // Classroom Rows
+        // =============================================
+        html += ClassroomManager.classrooms
             .map((classroom) => {
                 const studentCount = classroom.students?.[0]?.count || 0;
-                const requiresPassword = classroom.requires_password ? '🔒' : '';
                 const statusIcon = classroom.is_active ? '✅' : '⏸️';
+                const statusText = classroom.is_active ? 'Aktif' : 'Duraklatıldı';
+                const escapedName = ClassroomManager.escapeHtml(classroom.name);
+                const escapedDesc = ClassroomManager.escapeHtml(classroom.description || '');
+
                 return `
-                <div class="glass-card rounded-xl p-3 hover:shadow-md transition-all">
-                    <!-- Header + Code inline -->
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-1.5">
-                                <h4 class="font-bold text-sm text-gray-800 dark:text-white truncate">${ClassroomManager.escapeHtml(classroom.name)}</h4>
-                                ${requiresPassword ? '<span class="text-xs">🔒</span>' : ''}
-                                <span class="text-sm ml-auto">${statusIcon}</span>
+                <div class="classroom-accordion" data-classroom-id="${classroom.id}">
+                    <!-- Main Row -->
+                    <div class="classroom-row w-full flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all">
+                        
+                        <!-- Left: Icon + Name + Student Count -->
+                        <div class="flex items-center gap-3 min-w-0 flex-1">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-lg shrink-0">
+                                🏫
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-sm text-slate-800 dark:text-white truncate" id="name-display-${classroom.id}">${escapedName}</h4>
+                                    <span class="text-xs" title="${statusText}">${statusIcon}</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400" id="student-count-${classroom.id}">
+                                    👨‍🎓 <span class="student-count-value">${studentCount}</span> öğrenci • ${ClassroomManager.formatDate(classroom.created_at)}
+                                </p>
                             </div>
                         </div>
-                        <div class="code-box text-sm px-2 py-1 cursor-pointer hover:bg-theme/10 transition-colors shrink-0" 
-                             onclick="event.stopPropagation(); copyCode(this)" 
-                             title="Kopyala">
-                            ${classroom.code}
+                        
+                        <!-- Center: Classroom Code Badge -->
+                        <div class="shrink-0">
+                            <button onclick="ClassroomManager.copyCode('${classroom.code}', event)" 
+                                class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg font-mono text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-100 dark:hover:bg-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer"
+                                title="Kodu Kopyala">
+                                ${classroom.code}
+                            </button>
+                        </div>
+                        
+                        <!-- Right: Action Buttons (Text-based) -->
+                        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                            <!-- Add Single Student (Green) -->
+                            <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'single')"
+                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors">
+                                + Öğrenci Ekle
+                            </button>
+                            
+                            <!-- Bulk Add (Purple) -->
+                            <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'bulk')"
+                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors">
+                                Toplu Ekle
+                            </button>
+                            
+                            <!-- Settings (Blue/Gray) - Now Inline -->
+                            <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'settings')"
+                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
+                                Ayarlar
+                            </button>
+                            
+                            <!-- Delete (Red) -->
+                            <button onclick="ClassroomManager.confirmDelete('${classroom.id}', '${escapedName}')"
+                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">
+                                Sil
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Stats + Actions inline -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-gray-500">👨‍🎓 ${studentCount}</span>
-                        <span class="text-xs text-gray-400">${ClassroomManager.formatDate(classroom.created_at)}</span>
+                    <!-- Expand Panel (Hidden by default) -->
+                    <div id="panel-${classroom.id}" class="classroom-panel hidden mt-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
                         
-                        <div class="ml-auto flex gap-1">
-                            <button onclick="viewClassroom('${classroom.id}')" 
-                                class="px-2 py-1 text-xs bg-theme/10 text-theme rounded font-medium hover:bg-theme/20 transition-colors">
-                                Görüntüle
-                            </button>
-                            <button onclick="openAddStudentModal('${classroom.id}')"
-                                class="px-2 py-1 text-xs bg-green-50 text-green-600 rounded hover:bg-green-100 transition-colors"
-                                title="Öğrenci Ekle">
-                                +
-                            </button>
-                            <div class="relative inline-block">
-                                <button onclick="this.nextElementSibling.classList.toggle('hidden')"
-                                    class="px-2 py-1 text-xs border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                    title="Diğer">
-                                    ⋯
+                        <!-- Single Add Form (Green theme) -->
+                        <div id="single-form-${classroom.id}" class="hidden">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-sm">👤</span>
+                                <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Tek Öğrenci Ekle</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="text" 
+                                    id="input-name-${classroom.id}"
+                                    placeholder="Öğrenci adı girin..."
+                                    class="flex-1 px-3 py-2 text-sm rounded-lg border border-emerald-300 dark:border-emerald-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+                                <button onclick="ClassroomManager.addSingleStudent('${classroom.id}')"
+                                    class="px-4 py-2 text-sm font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors">
+                                    Kaydet
                                 </button>
-                                <div class="hidden absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
-                                    <button onclick="openBulkAddModal('${classroom.id}'); this.parentElement.classList.add('hidden')"
-                                        class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                        📋 Toplu Ekle
+                                <button onclick="ClassroomManager.closePanel('${classroom.id}')"
+                                    class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                    İptal
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Bulk Add Form (Purple theme) -->
+                        <div id="bulk-form-${classroom.id}" class="hidden">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-sm">👥</span>
+                                <span class="text-xs font-semibold text-purple-700 dark:text-purple-400">Toplu Öğrenci Ekle</span>
+                            </div>
+                            <div class="space-y-3">
+                                <textarea 
+                                    id="input-bulk-${classroom.id}"
+                                    rows="4"
+                                    placeholder="Her satıra bir öğrenci adı yazın...&#10;Ali Veli&#10;Ayşe Fatma&#10;Mehmet Yılmaz"
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-purple-300 dark:border-purple-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none resize-none"></textarea>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="ClassroomManager.addBulkStudents('${classroom.id}')"
+                                        class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+                                        Tümünü Ekle
                                     </button>
-                                    <button onclick="openClassroomSettings('${classroom.id}'); this.parentElement.classList.add('hidden')"
-                                        class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                        ⚙️ Ayarlar
+                                    <button onclick="ClassroomManager.closePanel('${classroom.id}')"
+                                        class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                        İptal
                                     </button>
-                                    <hr class="my-1 border-gray-200 dark:border-gray-700">
-                                    <button onclick="toggleClassroom('${classroom.id}', ${!classroom.is_active}); this.parentElement.classList.add('hidden')"
-                                        class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                        ${classroom.is_active ? '⏸️ Duraklat' : '▶️ Aktifleştir'}
-                                    </button>
-                                    <button onclick="deleteClassroom('${classroom.id}')"
-                                        class="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                        🗑️ Sil
-                                    </button>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400 ml-auto">Her satır = 1 öğrenci</span>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings Form (Blue theme) -->
+                        <div id="settings-form-${classroom.id}" class="hidden">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-sm">⚙️</span>
+                                <span class="text-xs font-semibold text-blue-700 dark:text-blue-400">Sınıf Ayarları</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Sınıf Adı</label>
+                                    <input type="text" 
+                                        id="settings-name-${classroom.id}"
+                                        value="${escapedName}"
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Açıklama</label>
+                                    <input type="text" 
+                                        id="settings-desc-${classroom.id}"
+                                        value="${escapedDesc}"
+                                        placeholder="Açıklama ekleyin..."
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" 
+                                        id="settings-active-${classroom.id}"
+                                        ${classroom.is_active ? 'checked' : ''}
+                                        class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                    <span class="text-xs text-slate-600 dark:text-slate-400">Sınıf Aktif</span>
+                                </label>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="ClassroomManager.saveSettings('${classroom.id}')"
+                                    class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors">
+                                    Güncelle
+                                </button>
+                                <button onclick="ClassroomManager.closePanel('${classroom.id}')"
+                                    class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                    İptal
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -118,6 +272,8 @@ export const ClassroomManager = {
             `;
             })
             .join('');
+
+        container.innerHTML = html;
     },
 
     create: async (name, description, submitBtn) => {
@@ -286,6 +442,411 @@ export const ClassroomManager = {
             return dateString;
         }
     },
+
+    // ============================================
+    // MENU MANAGEMENT - Single menu open at a time
+    // ============================================
+
+    /**
+     * Close all open dropdown menus
+     */
+    closeAllMenus: () => {
+        document.querySelectorAll('.dropdown-menu').forEach((menu) => {
+            menu.classList.add('hidden');
+        });
+    },
+
+    // ============================================
+    // ACCORDION PANEL MANAGEMENT
+    // ============================================
+
+    /**
+     * Close all open accordion panels
+     */
+    closeAllPanels: () => {
+        // Close new classroom form
+        const newClassroomPanel = document.getElementById('new-classroom-panel');
+        if (newClassroomPanel) newClassroomPanel.classList.add('hidden');
+
+        // Close all classroom panels
+        document.querySelectorAll('.classroom-panel').forEach((panel) => {
+            panel.classList.add('hidden');
+        });
+        document.querySelectorAll('.classroom-panel [id^="single-form-"]').forEach((form) => {
+            form.classList.add('hidden');
+        });
+        document.querySelectorAll('.classroom-panel [id^="bulk-form-"]').forEach((form) => {
+            form.classList.add('hidden');
+        });
+        document.querySelectorAll('.classroom-panel [id^="settings-form-"]').forEach((form) => {
+            form.classList.add('hidden');
+        });
+    },
+
+    /**
+     * Close a specific panel
+     */
+    closePanel: (classroomId) => {
+        const panel = document.getElementById(`panel-${classroomId}`);
+        if (panel) {
+            panel.classList.add('hidden');
+        }
+        const singleForm = document.getElementById(`single-form-${classroomId}`);
+        const bulkForm = document.getElementById(`bulk-form-${classroomId}`);
+        const settingsForm = document.getElementById(`settings-form-${classroomId}`);
+        if (singleForm) singleForm.classList.add('hidden');
+        if (bulkForm) bulkForm.classList.add('hidden');
+        if (settingsForm) settingsForm.classList.add('hidden');
+    },
+
+    /**
+     * Toggle accordion panel (single, bulk, or settings form)
+     * @param {string} classroomId - Classroom ID
+     * @param {string} formType - 'single', 'bulk', or 'settings'
+     */
+    togglePanel: (classroomId, formType) => {
+        const panel = document.getElementById(`panel-${classroomId}`);
+        const singleForm = document.getElementById(`single-form-${classroomId}`);
+        const bulkForm = document.getElementById(`bulk-form-${classroomId}`);
+        const settingsForm = document.getElementById(`settings-form-${classroomId}`);
+
+        if (!panel) {
+            console.error('[ClassroomManager] Panel not found for:', classroomId);
+            return;
+        }
+
+        // Determine target form
+        let targetForm;
+        if (formType === 'single') targetForm = singleForm;
+        else if (formType === 'bulk') targetForm = bulkForm;
+        else if (formType === 'settings') targetForm = settingsForm;
+
+        if (!targetForm) {
+            console.error('[ClassroomManager] Form not found:', formType, classroomId);
+            return;
+        }
+
+        // Check if this specific form is already open
+        const isCurrentlyOpen = !panel.classList.contains('hidden') && !targetForm.classList.contains('hidden');
+
+        // Close ALL panels first (Focus Mode)
+        ClassroomManager.closeAllPanels();
+
+        // If it wasn't open, open it now
+        if (!isCurrentlyOpen) {
+            panel.classList.remove('hidden');
+            targetForm.classList.remove('hidden');
+
+            // Focus on appropriate input
+            if (formType === 'single') {
+                const input = document.getElementById(`input-name-${classroomId}`);
+                if (input) input.focus();
+            } else if (formType === 'bulk') {
+                const textarea = document.getElementById(`input-bulk-${classroomId}`);
+                if (textarea) textarea.focus();
+            } else if (formType === 'settings') {
+                const nameInput = document.getElementById(`settings-name-${classroomId}`);
+                if (nameInput) nameInput.focus();
+            }
+        }
+    },
+
+    /**
+     * Copy classroom code to clipboard with feedback
+     */
+    copyCode: (code, event) => {
+        if (event) event.stopPropagation();
+
+        navigator.clipboard
+            .writeText(code)
+            .then(() => {
+                if (window.Toast) {
+                    Toast.success(`Kod kopyalandı: ${code}`);
+                } else {
+                    alert(`Kopyalandı: ${code}`);
+                }
+            })
+            .catch(() => {
+                if (window.Toast) {
+                    Toast.error('Kopyalama başarısız');
+                }
+            });
+    },
+
+    /**
+     * Add a single student via inline form
+     */
+    addSingleStudent: async (classroomId) => {
+        const input = document.getElementById(`input-name-${classroomId}`);
+        const displayName = input?.value?.trim();
+
+        if (!displayName) {
+            if (window.Toast) Toast.error('Öğrenci adı gerekli');
+            return;
+        }
+
+        try {
+            // Get current user
+            const user = ClassroomManager.currentUser || (typeof Auth !== 'undefined' ? Auth.currentUser : null);
+            if (!user) throw new Error('Kullanıcı bulunamadı');
+
+            // Insert student
+            const { data, error } = await SupabaseClient.getClient()
+                .from('students')
+                .insert({
+                    classroom_id: classroomId,
+                    display_name: displayName,
+                    avatar_emoji: '🎓',
+                    added_by_teacher: true,
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Success: Clear input, close panel, update count
+            input.value = '';
+            ClassroomManager.closePanel(classroomId);
+            ClassroomManager.updateStudentCount(classroomId, 1);
+
+            if (window.Toast) Toast.success(`${data.display_name} eklendi!`);
+        } catch (error) {
+            console.error('[ClassroomManager] addSingleStudent error:', error);
+            if (window.Toast) Toast.error('Ekleme hatası: ' + error.message);
+        }
+    },
+
+    /**
+     * Add multiple students via bulk form (one per line)
+     */
+    addBulkStudents: async (classroomId) => {
+        const textarea = document.getElementById(`input-bulk-${classroomId}`);
+        const text = textarea?.value?.trim();
+
+        if (!text) {
+            if (window.Toast) Toast.error('En az bir öğrenci adı girin');
+            return;
+        }
+
+        const names = text
+            .split('\n')
+            .map((n) => n.trim())
+            .filter((n) => n.length > 0);
+
+        if (names.length === 0) {
+            if (window.Toast) Toast.error('Geçerli isim bulunamadı');
+            return;
+        }
+
+        try {
+            const records = names.map((name) => ({
+                classroom_id: classroomId,
+                display_name: name,
+                avatar_emoji: '🎓',
+                added_by_teacher: true,
+            }));
+
+            const { data, error } = await SupabaseClient.getClient().from('students').insert(records).select();
+
+            if (error) throw error;
+
+            // Success: Clear textarea, close panel, update count
+            textarea.value = '';
+            ClassroomManager.closePanel(classroomId);
+            ClassroomManager.updateStudentCount(classroomId, data.length);
+
+            if (window.Toast) Toast.success(`${data.length} öğrenci eklendi!`);
+        } catch (error) {
+            console.error('[ClassroomManager] addBulkStudents error:', error);
+            if (window.Toast) Toast.error('Toplu ekleme hatası: ' + error.message);
+        }
+    },
+
+    /**
+     * Update student count display after adding
+     */
+    updateStudentCount: (classroomId, addedCount) => {
+        const countEl = document.querySelector(`#student-count-${classroomId} .student-count-value`);
+        if (countEl) {
+            const currentCount = parseInt(countEl.textContent) || 0;
+            countEl.textContent = currentCount + addedCount;
+        }
+
+        // Also update the local state
+        const classroom = ClassroomManager.classrooms.find((c) => c.id === classroomId);
+        if (classroom && classroom.students && classroom.students[0]) {
+            classroom.students[0].count = (classroom.students[0].count || 0) + addedCount;
+        }
+    },
+
+    /**
+     * Confirm delete with user confirmation dialog
+     */
+    confirmDelete: (classroomId, classroomName) => {
+        ClassroomManager.closeAllPanels();
+
+        const confirmed = confirm(
+            `⚠️ "${classroomName}" sınıfını silmek istediğinize emin misiniz?\n\n` +
+                'Bu işlem geri alınamaz ve:\n' +
+                '• Sınıftaki tüm öğrenciler silinecek\n' +
+                '• Tüm ilerleme verileri kaybolacak'
+        );
+
+        if (confirmed) {
+            ClassroomManager.delete(classroomId);
+        }
+    },
+
+    // ============================================
+    // NEW CLASSROOM FORM (Top Inline)
+    // ============================================
+
+    /**
+     * Show the new classroom form at the top
+     */
+    showNewClassroomForm: () => {
+        ClassroomManager.closeAllPanels();
+        const panel = document.getElementById('new-classroom-panel');
+        if (panel) {
+            panel.classList.remove('hidden');
+            const nameInput = document.getElementById('new-classroom-name');
+            if (nameInput) {
+                nameInput.value = '';
+                nameInput.focus();
+            }
+            const descInput = document.getElementById('new-classroom-description');
+            if (descInput) descInput.value = '';
+        }
+    },
+
+    /**
+     * Hide the new classroom form
+     */
+    hideNewClassroomForm: () => {
+        const panel = document.getElementById('new-classroom-panel');
+        if (panel) {
+            panel.classList.add('hidden');
+        }
+    },
+
+    /**
+     * Create new classroom from inline form
+     */
+    createNewClassroom: async () => {
+        const nameInput = document.getElementById('new-classroom-name');
+        const descInput = document.getElementById('new-classroom-description');
+        const btn = document.getElementById('btn-create-classroom');
+
+        const name = nameInput?.value?.trim();
+        const description = descInput?.value?.trim();
+
+        if (!name) {
+            if (window.Toast) Toast.error('Sınıf adı gerekli');
+            nameInput?.focus();
+            return;
+        }
+
+        // Show loading
+        const originalText = btn?.textContent;
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Oluşturuluyor...';
+        }
+
+        try {
+            const result = await ClassroomManager.create(name, description, null);
+
+            if (result.success) {
+                ClassroomManager.hideNewClassroomForm();
+                if (window.Toast) Toast.success(`"${name}" sınıfı oluşturuldu!`);
+
+                // Add to local state and re-render
+                if (result.classroom) {
+                    ClassroomManager.classrooms.unshift({
+                        ...result.classroom,
+                        students: [{ count: 0 }],
+                    });
+                    ClassroomManager.renderList();
+                }
+            } else {
+                if (window.Toast) Toast.error('Oluşturma hatası: ' + (result.error?.message || 'Bilinmeyen hata'));
+            }
+        } catch (error) {
+            console.error('[ClassroomManager] createNewClassroom error:', error);
+            if (window.Toast) Toast.error('Oluşturma hatası: ' + error.message);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+    },
+
+    // ============================================
+    // SETTINGS (Inline Form)
+    // ============================================
+
+    /**
+     * Save classroom settings from inline form
+     */
+    saveSettings: async (classroomId) => {
+        const nameInput = document.getElementById(`settings-name-${classroomId}`);
+        const descInput = document.getElementById(`settings-desc-${classroomId}`);
+        const activeCheckbox = document.getElementById(`settings-active-${classroomId}`);
+
+        const name = nameInput?.value?.trim();
+        const description = descInput?.value?.trim();
+        const isActive = activeCheckbox?.checked ?? true;
+
+        if (!name) {
+            if (window.Toast) Toast.error('Sınıf adı gerekli');
+            nameInput?.focus();
+            return;
+        }
+
+        try {
+            const { data, error } = await SupabaseClient.getClient()
+                .from('classrooms')
+                .update({
+                    name: name,
+                    description: description,
+                    is_active: isActive,
+                })
+                .eq('id', classroomId)
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Update local state
+            const classroom = ClassroomManager.classrooms.find((c) => c.id === classroomId);
+            if (classroom) {
+                classroom.name = name;
+                classroom.description = description;
+                classroom.is_active = isActive;
+            }
+
+            // Update display
+            const nameDisplay = document.getElementById(`name-display-${classroomId}`);
+            if (nameDisplay) nameDisplay.textContent = data.name;
+
+            ClassroomManager.closePanel(classroomId);
+            if (window.Toast) Toast.success('Ayarlar güncellendi!');
+
+            // Re-render to update status icons
+            ClassroomManager.renderList();
+        } catch (error) {
+            console.error('[ClassroomManager] saveSettings error:', error);
+            if (window.Toast) Toast.error('Güncelleme hatası: ' + error.message);
+        }
+    },
+
+    // Legacy - kept for backward compatibility
+    closeAllMenus: () => {
+        ClassroomManager.closeAllPanels();
+    },
+    toggleMenu: () => {},
+    initClickOutsideHandler: () => {},
 };
 
 window.ClassroomManager = ClassroomManager;
