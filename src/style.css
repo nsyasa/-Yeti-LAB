@@ -56,6 +56,7 @@
 
 /* Custom CSS Layers */
 @layer base {
+
     /* Global body - Deep navy background by default */
     body {
         @apply font-sans transition-colors duration-300;
@@ -101,6 +102,7 @@
 }
 
 @layer components {
+
     /* ============================================
      COURSE CARDS - Premium Glassmorphism & Hover Effects
      ============================================ */
@@ -436,6 +438,7 @@
         0% {
             filter: drop-shadow(0 0 5px rgba(255, 140, 0, 0.3));
         }
+
         100% {
             filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.7));
         }
@@ -662,11 +665,13 @@
     }
 
     @keyframes live-pulse {
+
         0%,
         100% {
             opacity: 1;
             transform: translateY(-50%) scale(1);
         }
+
         50% {
             opacity: 0.5;
             transform: translateY(-50%) scale(1.3);
@@ -726,4 +731,79 @@
     .chart-card h4 {
         @apply text-slate-400;
     }
+}
+
+/* =========================================
+   YATAY KAYDIRMA VE GÖRSELLİK (GELİŞMİŞ VERSİYON)
+   ========================================= */
+
+/* 1. Kapsayıcı (Container) */
+#project-tabs-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    gap: 12px !important;
+    /* Butonlar arası boşluğu biraz açtık */
+    padding-bottom: 5px !important;
+    /* Scrollbar ile butonlar arasına mesafe */
+    padding-right: 50px !important;
+
+    /* Standart Scrollbar Ayarı */
+    scrollbar-width: auto !important;
+    scrollbar-color: rgba(255, 140, 0, 0.6) rgba(0, 0, 0, 0.1);
+}
+
+/* 2. Scrollbar Tasarımı (Chrome/Safari/Edge) */
+#project-tabs-container::-webkit-scrollbar {
+    display: block !important;
+    height: 10px !important;
+    /* DAHA KALIN (Eskisi 6px idi) */
+}
+
+#project-tabs-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    /* Arkaplan çok silik */
+    border-radius: 10px;
+}
+
+#project-tabs-container::-webkit-scrollbar-thumb {
+    /* Turuncu renk + %60 Görünürlük (Hafif Saydam) */
+    background-color: rgba(255, 140, 0, 0.6) !important;
+    border-radius: 10px;
+    /* Yuvarlak köşeler */
+    border: 2px solid transparent;
+    /* Etrafına boşluk bırakır, daha şık durur */
+    background-clip: content-box;
+}
+
+#project-tabs-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 140, 0, 0.9) !important;
+    /* Üstüne gelince netleşsin */
+}
+
+/* 3. Butonlar (Asla Sıkışma!) */
+#project-tabs-container>button {
+    flex: 0 0 auto !important;
+    min-width: max-content !important;
+    flex-shrink: 0 !important;
+    opacity: 0.7;
+    /* Pasif sekmeler biraz sönük dursun */
+    transition: all 0.3s ease;
+    /* Yumuşak geçiş efekti */
+}
+
+/* 4. AKTİF SEKME AYARI (Seçili Olan Parlasın) */
+#project-tabs-container>button.active,
+#project-tabs-container>button:hover {
+    opacity: 1 !important;
+    /* Tam görünür yap */
+    background-color: rgba(255, 140, 0, 0.15) !important;
+    /* Arkasına hafif turuncu fon */
+    border-bottom: 2px solid #ff8c00 !important;
+    /* Altına turuncu çizgi çek */
+    color: #ff8c00 !important;
+    /* Yazı rengini turuncu yap */
+    transform: translateY(-2px);
+    /* Hafifçe yukarı kalksın */
 }

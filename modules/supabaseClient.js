@@ -197,7 +197,7 @@ const SupabaseClient = {
         const client = this.getClient();
         if (!client) {
             console.warn('[SupabaseClient] Auth not available - skipping onAuthStateChange');
-            return { data: { subscription: { unsubscribe: () => {} } } };
+            return { data: { subscription: { unsubscribe: () => { } } } };
         }
 
         return client.auth.onAuthStateChange((event, session) => {
@@ -726,6 +726,7 @@ const SupabaseClient = {
             circuitImage: proj.circuit,
             hotspots: proj.component_info?.hotspots || null,
             quiz: proj.component_info?.quiz || [],
+            youtubeUrl: proj.youtube_url || null, // FIX: Map Supabase youtube_url to legacy youtubeUrl
         }));
 
         return {

@@ -125,7 +125,6 @@ const SettingsSection = {
                             id="settings-edit-icon"
                             class="w-full border border-gray-300 dark:border-gray-600 rounded p-3 text-center text-3xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                             placeholder="📚"
-                            onchange="SettingsSection.updateCourseInfo()"
                         />
                     </div>
                     <div class="col-span-4">
@@ -135,7 +134,6 @@ const SettingsSection = {
                             id="settings-edit-title"
                             class="w-full border border-gray-300 dark:border-gray-600 rounded p-3 font-bold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                             placeholder="Kurs Başlığı"
-                            oninput="SettingsSection.updateCourseInfo()"
                         />
                     </div>
                     <div class="col-span-6">
@@ -145,7 +143,6 @@ const SettingsSection = {
                             id="settings-edit-desc"
                             class="w-full border border-gray-300 dark:border-gray-600 rounded p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                             placeholder="Kurs Açıklaması"
-                            oninput="SettingsSection.updateCourseInfo()"
                         />
                     </div>
                 </div>
@@ -247,10 +244,9 @@ const SettingsSection = {
             const card = document.createElement('div');
             card.className = `
                 p-4 rounded-lg border-2 cursor-pointer transition-all text-center
-                ${
-                    isActive
-                        ? 'border-theme bg-theme/10 dark:bg-theme/20'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-theme/50 bg-gray-50 dark:bg-gray-700'
+                ${isActive
+                    ? 'border-theme bg-theme/10 dark:bg-theme/20'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-theme/50 bg-gray-50 dark:bg-gray-700'
                 }
             `;
             card.innerHTML = `
@@ -322,31 +318,44 @@ const SettingsSection = {
         const container = document.getElementById('settings-tab-names');
         if (!container) return;
 
-        const course = window.admin?.allCourseData?.[window.admin?.currentCourseKey];
+        const currentKey = window.admin?.currentCourseKey;
+        const course = window.admin?.allCourseData?.[currentKey];
         const customTabNames = course?.customTabNames || {};
 
-        const defaultTabs = [
-            { id: 'mission', label: '🎯 Amaç', default: 'Amaç' },
-            { id: 'materials', label: '🧩 Donanım', default: 'Donanım' },
-            { id: 'circuit', label: '⚡ Devre', default: 'Devre' },
-            { id: 'code', label: '💻 Kod', default: 'Kod' },
-            { id: 'challenge', label: '🏆 Görev', default: 'Görev' },
-            { id: 'quiz', label: '📝 Test', default: 'Test' },
-        ];
+        // Use TabConfig to get the exact tabs for this course type
+        // This ensures Admin ID matches Frontend ID (e.g. 'design' vs 'circuit')
+        let tabsToRender = [];
+        if (window.TabConfig && window.TabConfig.getConfig) {
+            tabsToRender = window.TabConfig.getConfig(currentKey).tabs;
+        } else {
+            // Fallback if TabConfig is missing
+            tabsToRender = [
+                { id: 'mission', label: '🎯 Amaç' },
+                { id: 'materials', label: '🧩 Donanım' },
+                { id: 'circuit', label: '⚡ Devre' },
+                { id: 'code', label: '💻 Kod' },
+                { id: 'challenge', label: '🏆 Görev' },
+                { id: 'quiz', label: '📝 Test' },
+            ];
+        }
 
         container.innerHTML = '';
 
-        defaultTabs.forEach((tab) => {
-            const currentName = customTabNames[tab.id] || tab.default;
+        tabsToRender.forEach((tab) => {
+            // Extract text from label for default placeholder (remove emojis)
+            const cleanLabel = tab.label.replace(/[\p{Emoji}\u2580-\u2FFF\u200d\uFE0F]/gu, '').trim();
+            const currentName = customTabNames[tab.id] || cleanLabel;
+
             const div = document.createElement('div');
             div.className = 'flex flex-col gap-1';
             div.innerHTML = `
-                <label class="text-xs text-gray-500 dark:text-gray-400">${tab.label.split(' ')[0]}</label>
+                <label class="text-xs text-gray-500 dark:text-gray-400">${cleanLabel} (ID: ${tab.id})</label>
                 <input
                     type="text"
                     id="tab-name-${tab.id}"
+                    data-key="${tab.id}"
                     value="${currentName}"
-                    placeholder="${tab.default}"
+                    placeholder="${cleanLabel}"
                     class="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     oninput="SettingsSection.updateTabName('${tab.id}', this.value)"
                 />
@@ -473,12 +482,34 @@ const SettingsSection = {
     },
 
     /**
+     * Event Listeners Bağla
+     */
+    bindEvents() {
+        const attachListener = (id, event, handler) => {
+            const el = document.getElementById(id);
+            if (el) {
+                // Remove old listener to be safe (though simpler to just add new one on clean fresh DOM)
+                el.removeEventListener(event, handler);
+                el.addEventListener(event, handler);
+            }
+        };
+
+        // Course Info Inputs
+        attachListener('settings-edit-icon', 'input', () => this.updateCourseInfo());
+        attachListener('settings-edit-title', 'input', () => this.updateCourseInfo());
+        attachListener('settings-edit-desc', 'input', () => this.updateCourseInfo());
+    },
+
+    /**
      * Section mount olduğunda çağrılır
      */
     mount() {
         this.renderCourseCards();
         this.renderTabNames();
         this.renderComponents();
+
+        // Bind events after rendering
+        setTimeout(() => this.bindEvents(), 100);
     },
 };
 

@@ -671,8 +671,12 @@ const UI = {
 
         // Base Content
         const baseContent = {
-            mission: `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('header_mission')}</h3><p>${project.mission}</p><div class="bg-gray-50 p-4 rounded mt-4 border-l-4 border-theme">${project.theory}</div></div>`,
-            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${I18n.t('header_circuit')}</h3>${circHTML}<p>${project.circuit_desc}</p>${youtubeHTML}</div>`,
+            mission: `<div class="fade-in">
+                <h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('header_mission')}</h3>
+                <p>${project.mission}</p>
+                <div class="bg-gray-50 p-4 rounded mt-4 border-l-4 border-theme">${project.theory}</div>
+            </div>`,
+            circuit: `<div class="fade-in"><h3 class="font-bold mb-4 text-theme">${I18n.t('header_circuit')}</h3>${circHTML}<p>${project.circuit_desc}</p></div>`,
             code: (() => {
                 const c = project.code || '';
                 if (c.match(/\.(jpeg|jpg|gif|png)$/) != null) {
@@ -735,16 +739,16 @@ const UI = {
                             <p class="font-bold text-gray-800 mb-3">${idx + 1}. ${q.q}</p>
                             <div class="space-y-2">
                                 ${q.options
-                                    .map(
-                                        (opt, optIdx) => `
+                            .map(
+                                (opt, optIdx) => `
                                     <button onclick="app.checkAnswer(${idx}, ${optIdx}, ${q.answer}, this)" 
                                             class="w-full text-left p-3 rounded bg-white border border-gray-200 hover:bg-gray-100 transition flex items-center group">
                                         <span class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center mr-3 text-xs font-bold bg-gray-50 group-hover:bg-theme group-hover:text-white transition-colors">${['A', 'B', 'C', 'D'][optIdx]}</span>
                                         ${opt}
                                     </button>
                                 `
-                                    )
-                                    .join('')}
+                            )
+                            .join('')}
                             </div>
                             <div class="quiz-feedback hidden mt-3 p-3 rounded font-bold text-sm"></div>
                         </div>`;
@@ -779,7 +783,7 @@ const UI = {
         // Custom Mappings
         if (config.mapping) {
             Object.keys(config.mapping).forEach((key) => {
-                const target = config.mapping[key];
+                // const target = config.mapping[key]; // Unused
                 if (key === 'blocks' && !content.blocks) {
                     content[key] =
                         `<div class="fade-in"><h3 class="font-bold text-xl mb-2 text-theme">${I18n.t('tab_blocks')}</h3>${baseContent.code.replace(/<div class="fade-in">|<\/div>/g, '')}</div>`;
@@ -795,30 +799,40 @@ const UI = {
         }
 
         // Get custom tab names from course data (if any)
-        // Priority: localStorage autosave > static courseData
+        // Priority: localStorage autosave > static courseData > settings.tab_names (legacy)
         let customTabNames = {};
 
-        // Try localStorage first (admin autosave data)
+        // Try localStorage first (admin autosave data - immediate preview)
         try {
             const savedData = localStorage.getItem('mucit_atolyesi_autosave');
             if (savedData) {
                 const parsed = JSON.parse(savedData);
                 customTabNames = parsed.data?.[currentCourseKey]?.customTabNames || {};
             }
-        } catch (e) {
-            // Silently fail, will use static data
+        } catch (_e) {
+            // Silently fail
         }
 
-        // Fallback to static course data
+        // Fallback to static course data (DB source)
         if (Object.keys(customTabNames).length === 0) {
             const courseData = window.courseData?.[currentCourseKey];
-            customTabNames = courseData?.customTabNames || {};
+
+            // Support both new meta.customTabNames and potential settings.tab_names
+            if (courseData) {
+                customTabNames = courseData.customTabNames ||
+                    courseData.settings?.tab_names ||
+                    courseData.meta?.customTabNames ||
+                    {};
+
+                // Debug: Log found tab names to trace issues
+                // console.log(`[UI] RenderTabs for ${currentCourseKey}. Custom Names:`, customTabNames);
+            }
         }
 
         // Tab icons mapping
         const tabIcons = {
             mission: '🎯',
-            materials: '🔧',
+            materials: '🧩',
             circuit: '⚡',
             design: '🎨',
             code: '💻',
@@ -835,9 +849,20 @@ const UI = {
                 let label = t.label;
 
                 // Check for custom tab name first
-                if (customTabNames[t.id]) {
-                    label = customTabNames[t.id];
-                } else {
+                // Normalize keys (handle case where DB might have 'Circuit' vs 'circuit')
+                const customKey = Object.keys(customTabNames).find(k => k.toLowerCase() === t.id.toLowerCase());
+
+                if (customKey && customTabNames[customKey]) {
+                    label = customTabNames[customKey];
+                }
+                // Specific fix for Circuit/Simulation tab persistent legacy issues
+                else if (t.id === 'circuit') {
+                    // Check known aliases if main key is missing
+                    if (customTabNames['simulation']) label = customTabNames['simulation'];
+                    else if (customTabNames['phases']) label = customTabNames['phases'];
+                }
+
+                if (!label || label === t.label) {
                     // Fall back to I18n translation
                     const labelKey = 'tab_' + t.id;
                     if (I18n.translations['tr'][labelKey]) {
@@ -846,7 +871,11 @@ const UI = {
                 }
 
                 const icon = tabIcons[t.id] || '📄';
-                return `<button class="lesson-tab whitespace-nowrap" data-tab="${t.id}"><span class="lesson-tab-icon">${icon}</span>${label}</button>`;
+                // Double Icon Fix: If label already has an emoji, don't show default icon
+                const hasEmoji = /[\p{Emoji}\u2580-\u2FFF\u200d\uFE0F]/u.test(label);
+                const iconHtml = hasEmoji ? '' : `<span class="lesson-tab-icon">${icon}</span>`;
+
+                return `<button class="lesson-tab whitespace-nowrap" data-tab="${t.id}">${iconHtml}${label}</button>`;
             })
             .join('');
 

@@ -191,6 +191,7 @@ const CourseSettings = {
             code: ['lbl-code', 'lbl-chk-code'],
             quiz: ['lbl-quiz', 'lbl-chk-quiz'],
             challenge: ['lbl-challenge', 'lbl-chk-challenge'],
+            tip: ['lbl-tip', 'lbl-chk-tip'],
         };
 
         // Default Labels (to restore if custom name is deleted)
@@ -201,6 +202,7 @@ const CourseSettings = {
             code: '💻 Kod',
             quiz: '📝 Test',
             challenge: '🏆 Görev',
+            tip: '💡 İpucu',
         };
 
         // Apply custom names to targets

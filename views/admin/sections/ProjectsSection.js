@@ -270,6 +270,11 @@ const ProjectsSection = {
                                    onchange="ProjectManager.toggleSection('quiz')" checked />
                             <span id="lbl-chk-quiz">📝 Test</span>
                         </label>
+                         <label class="flex items-center space-x-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                            <input type="checkbox" id="p-show-tip" class="rounded text-green-600 dark:bg-gray-700 dark:border-gray-600" 
+                                   onchange="ProjectManager.toggleSection('tip')" checked />
+                            <span id="lbl-chk-tip">💡 İpucu</span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -654,6 +659,11 @@ const ProjectsSection = {
         window.projectEditors = editors;
 
         console.log('[ProjectsSection] Rich Text Editors initialized:', editors);
+
+        // Apply custom tab names if available
+        if (window.CourseSettings && window.CourseSettings.applyCustomTabNames) {
+            window.CourseSettings.applyCustomTabNames();
+        }
     },
 
     /**

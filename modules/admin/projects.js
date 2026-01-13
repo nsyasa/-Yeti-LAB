@@ -138,6 +138,11 @@ const ProjectManager = {
             if (el) el.value = val !== undefined && val !== null ? val : '';
         };
 
+        // RESET FORM STATE FIRST to prevent contamination
+        setVal('p-youtubeUrl', '');
+        setVal('p-code-image-input', '');
+        setVal('p-simType-custom', '');
+
         setVal('p-id', p.id); // Read-only ID
 
         // Localized fields
@@ -242,13 +247,23 @@ const ProjectManager = {
         }
 
         setVal('p-hotspots', p.hotspots ? JSON.stringify(p.hotspots) : '');
-        setVal('p-youtubeUrl', p.youtubeUrl || '');
+        // FIX: Support both camelCase (legacy) and snake_case (Supabase) keys
+        setVal('p-youtubeUrl', p.youtubeUrl || p.youtube_url || '');
 
         // YouTube preview
-        if (p.youtubeUrl) {
-            const youtubeInput = document.getElementById('p-youtubeUrl');
+        const youtubePreview = document.getElementById('youtube-preview');
+        const youtubeInput = document.getElementById('p-youtubeUrl');
+
+        if (p.youtubeUrl || p.youtube_url) {
             if (youtubeInput) {
                 setTimeout(() => this.validateYouTubeUrl(youtubeInput), 100);
+            }
+        } else {
+            // FIX: Explicitly clear preview if no URL
+            if (youtubePreview) youtubePreview.classList.add('hidden');
+            if (youtubeInput) {
+                youtubeInput.value = ''; // Ensure input is empty
+                youtubeInput.classList.remove('border-green-500', 'border-red-500');
             }
         }
 
@@ -360,17 +375,17 @@ const ProjectManager = {
         const tagsVal = document.getElementById('p-tags')?.value || '';
         p.tags = tagsVal
             ? tagsVal
-                  .split(',')
-                  .map((t) => t.trim())
-                  .filter((t) => t)
+                .split(',')
+                .map((t) => t.trim())
+                .filter((t) => t)
             : [];
 
         const prereqVal = document.getElementById('p-prerequisites')?.value || '';
         p.prerequisites = prereqVal
             ? prereqVal
-                  .split(',')
-                  .map((t) => parseInt(t.trim()))
-                  .filter((n) => !isNaN(n))
+                .split(',')
+                .map((t) => parseInt(t.trim()))
+                .filter((n) => !isNaN(n))
             : [];
 
         // Sim Type (with null safety)
@@ -429,9 +444,9 @@ const ProjectManager = {
         const materialsCustomEl = document.getElementById('p-materials-custom');
         const custom = materialsCustomEl
             ? materialsCustomEl.value
-                  .split(',')
-                  .map((s) => s.trim())
-                  .filter((s) => s !== '')
+                .split(',')
+                .map((s) => s.trim())
+                .filter((s) => s !== '')
             : [];
         p.materials = [...selected, ...custom];
 

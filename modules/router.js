@@ -26,6 +26,7 @@ const Router = {
         'admin/projects': 'admin-projects', // Ders yönetimi
         'admin/phases': 'admin-phases', // Faz yönetimi
         'admin/components': 'admin-components', // Bileşen yönetimi
+        'admin/settings': 'admin-settings', // Ayarlar
         // Profile Routes (SPA) - FAZ: Profile Migration
         profile: 'profile', // Profile settings
         'profile/wizard': 'profile-wizard', // First-time setup wizard

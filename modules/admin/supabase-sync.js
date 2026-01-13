@@ -206,6 +206,7 @@ const SupabaseSync = {
                 circuit: project.circuitImage || null,
                 code: project.code || null,
                 simulation: project.simType || null,
+                youtube_url: project.youtubeUrl || null,
                 challenge: typeof project.challenge === 'object' ? project.challenge.tr : project.challenge,
                 component_info: {
                     id: project.id,
@@ -388,6 +389,14 @@ const SupabaseSync = {
     async saveToSupabase(courseKey, courseData) {
         console.log('[SupabaseSync] saveToSupabase called:', courseKey);
 
+        // DEADLOCK FIX: Check if lock is stuck (held > 15s)
+        const LOCK_TIMEOUT = 15000;
+        const now = Date.now();
+        if (this._isSaving && this._lockTimestamp && (now - this._lockTimestamp > LOCK_TIMEOUT)) {
+            console.warn('[SupabaseSync] Lock stuck for >15s. Forcing reset.');
+            this._isSaving = false;
+        }
+
         // If already saving, queue this request
         if (this._isSaving) {
             console.log('[SupabaseSync] Save already in progress, queuing...');
@@ -398,10 +407,15 @@ const SupabaseSync = {
 
         // Set save lock
         this._isSaving = true;
+        this._lockTimestamp = Date.now();
 
-        try {
-            this.updateStatus("☁️ Supabase'e kaydediliyor...", 'yellow');
+        // Create a timeout promise to race against the actual operation
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('İstek zaman aşımına uğradı (60sn). İnternet bağlantınızı kontrol edin.')), 60000)
+        );
 
+        // The actual save logic wrapped in a function
+        const performSave = async () => {
             // 1. Get or create course
             // FIX: Always use the stable courseKey as slug, don't generate from title
             // This prevents creating duplicate courses when title is updated
@@ -434,14 +448,36 @@ const SupabaseSync = {
 
             // 2. Update course metadata
             console.log('[SupabaseSync] Step 2: Updating course metadata...');
-            await SupabaseClient.updateCourse(courseId, {
+            console.log('[SupabaseSync] Step 2 Payload:', {
                 title: courseData.title,
                 description: courseData.description,
-                meta: {
-                    icon: courseData.icon,
-                    customTabNames: courseData.customTabNames || null,
-                },
+                metaIcon: courseData.icon
             });
+
+            // DIRECT UPDATE TRIGGER with VERIFICATION
+            const { data: updatedData, error: updateError } = await SupabaseClient.getClient()
+                .from('courses')
+                .update({
+                    title: courseData.title,
+                    description: courseData.description,
+                    meta: {
+                        icon: courseData.icon,
+                        customTabNames: courseData.customTabNames || null, // FIX: Ensure customTabNames are saved
+                    },
+                })
+                .eq('id', courseId) // Use ID for absolute certainty
+                .select(); // <--- CRITICAL: Returns the updated header
+
+            if (updateError) throw updateError;
+
+            // SILENT FAILURE CHECK
+            if (!updatedData || updatedData.length === 0) {
+                console.error("🚨 CRITICAL: Update returned no data. Possible ID mismatch or RLS issue.");
+                console.error("Attempted to update ID:", courseId);
+                throw new Error("Update failed: Course not found or permission denied (RLS). Server returned 0 updated rows.");
+            }
+
+            console.log("✅ Supabase Confirmed Update:", updatedData);
             console.log('[SupabaseSync] Step 2 complete');
 
             // 3. Sync phases
@@ -464,16 +500,30 @@ const SupabaseSync = {
 
             // 6. Invalidate cache to ensure fresh data on next load
             if (typeof Cache !== 'undefined') {
+                // Clear Single Course Cache
+                Cache.clear(`course_${slug}`);
+                console.log(`[SupabaseSync] Cache invalidated for course_${slug}`);
+
+                // Clear Global Course Lists (All variants to be safe)
                 Cache.clear('courses_true');
                 Cache.clear('courses_false');
-                Cache.clear(`course_${slug}`);
-                console.log('[SupabaseSync] Cache invalidated for courses');
+                Cache.clear('courses_list');
+                Cache.clear('courses');
+                console.log('[SupabaseSync] Global course list cache invalidated.');
             }
 
             console.log('[SupabaseSync] All steps complete!');
             this.updateStatus(`☁️ Supabase'e kaydedildi: ${new Date().toLocaleTimeString()}`, 'green');
             alert("✅ Değişiklikler Supabase'e kaydedildi!");
 
+            return true;
+        };
+
+        try {
+            this.updateStatus("☁️ Supabase'e kaydediliyor...", 'yellow');
+
+            // Race the save operation against the timeout
+            await Promise.race([performSave(), timeoutPromise]);
             return true;
         } catch (error) {
             console.error('Supabase save error:', error);

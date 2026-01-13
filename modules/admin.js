@@ -222,6 +222,15 @@ const admin = {
                 });
             }
 
+            // Initialize Course Settings (Legacy Top Bar)
+            if (typeof CourseSettings !== 'undefined') {
+                CourseSettings.init({
+                    getCourseData: () => admin.allCourseData[admin.currentCourseKey],
+                    getCourseKey: () => admin.currentCourseKey,
+                    onUpdate: () => admin.triggerAutoSave(),
+                });
+            }
+
             // Initialize Image Manager
             if (typeof ImageManager !== 'undefined') {
                 ImageManager.init({
@@ -284,13 +293,19 @@ const admin = {
             if (iconEl) iconEl.textContent = courseData.icon || '📦';
 
             // Render settings form inputs
-            const inputTitle = document.getElementById('admin-course-title');
-            const inputDesc = document.getElementById('admin-course-description');
-            const inputIcon = document.getElementById('admin-course-icon');
+            // FIX: Re-mount SettingsSection if needed to ensure event listeners are bound
+            if (window.SettingsSection && document.getElementById('settings-edit-title')) {
+                SettingsSection.mount();
+            } else {
+                // Fallback for when not on settings page but these elements exist (unlikely but safe)
+                const inputTitle = document.getElementById('admin-course-title');
+                const inputDesc = document.getElementById('admin-course-description');
+                const inputIcon = document.getElementById('admin-course-icon');
 
-            if (inputTitle) inputTitle.value = courseData.title || '';
-            if (inputDesc) inputDesc.value = courseData.description || '';
-            if (inputIcon) inputIcon.value = courseData.icon || '📦';
+                if (inputTitle) inputTitle.value = courseData.title || '';
+                if (inputDesc) inputDesc.value = courseData.description || '';
+                if (inputIcon) inputIcon.value = courseData.icon || '📦';
+            }
 
             // 4. Initial Render of content
             admin.renderProjectList();
