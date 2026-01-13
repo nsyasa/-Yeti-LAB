@@ -1,4 +1,6 @@
 /* global SupabaseClient, CourseManager */
+import SettingsSection from '../views/admin/sections/SettingsSection.js';
+
 /**
  * Admin Panel Coordinator Module
  *
