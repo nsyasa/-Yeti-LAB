@@ -227,7 +227,11 @@ export const StudentManager = {
         }
 
         if (filteredStudents.length === 0) {
-            alert('Yazdırılacak öğrenci yok');
+            if (window.Toast) {
+                Toast.warning('Yazdırılacak öğrenci yok');
+            } else {
+                alert('Yazdırılacak öğrenci yok');
+            }
             return;
         }
 
@@ -236,40 +240,172 @@ export const StudentManager = {
                 ? 'Tüm Sınıflar'
                 : StudentManager.classrooms.find((c) => c.id === selectedClassroom)?.name || 'Sınıf';
 
-        const printWindow = window.open('', '', 'height=600,width=800');
-        printWindow.document.write('<html><head><title>Öğrenci Listesi</title>');
-        printWindow.document.write('<style>');
-        printWindow.document.write(`
-            body { font-family: sans-serif; padding: 20px; }
-            h1 { text-align: center; color: #333; margin-bottom: 5px; }
-            h2 { text-align: center; color: #666; margin-top: 0; font-size: 16px; font-weight: normal; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-            th { background-color: #f5f5f5; font-weight: bold; }
-            .password-col { font-family: monospace; font-size: 14px; letter-spacing: 1px; }
-            @media print { button { display: none; } }
-        `);
-        printWindow.document.write('</style></head><body>');
-        printWindow.document.write('<h1>Yeti LAB Öğrenci Listesi</h1>');
-        printWindow.document.write(`<h2>${classroomName} (${StudentManager.formatDate(new Date())})</h2>`);
-        printWindow.document.write(
-            '<table><thead><tr><th>Öğrenci Adı</th><th>Sınıf</th><th>Şifre</th></tr></thead><tbody>'
-        );
-
-        filteredStudents.forEach((s) => {
-            const cName = StudentManager.classrooms.find((c) => c.id === s.classroom_id)?.name || '-';
-            printWindow.document.write(`
-            <tr>
-                <td>${StudentManager.escapeHtml(s.display_name)}</td>
-                <td>${StudentManager.escapeHtml(cName)}</td>
-                <td class="password-col">${s.password || '<span style="color:#999;font-style:italic">Şifresiz</span>'}</td>
-            </tr>
-        `);
+        const currentDate = new Date().toLocaleDateString('tr-TR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
         });
 
-        printWindow.document.write('</tbody></table>');
-        printWindow.document.write('<script>window.onload = function() { window.print(); }</script>');
-        printWindow.document.write('</body></html>');
+        // FİŞ TASARIMI - Kesilebilir kartlar
+        const printWindow = window.open('', '', 'height=700,width=900');
+        if (!printWindow) {
+            if (window.Toast) Toast.error('Pop-up engelleyici aktif olabilir');
+            return;
+        }
+
+        // Build cards HTML
+        let cardsHTML = '';
+        filteredStudents.forEach((student) => {
+            const cName = StudentManager.classrooms.find((c) => c.id === student.classroom_id)?.name || 'Sınıfsız';
+            cardsHTML += `
+                <div class="student-card">
+                    <div class="card-header">
+                        <div class="classroom-name">🏫 ${StudentManager.escapeHtml(cName)}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-row">
+                            <span class="card-label">👤 Öğrenci:</span>
+                            <span class="card-value">${StudentManager.escapeHtml(student.display_name)}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">🔑 Şifre:</span>
+                            <span class="card-value password">${student.password || 'Şifresiz'}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        🌐 yetilab.com
+                    </div>
+                    <div class="cut-line">✂️ - - - - - - - - - - - - - - - -</div>
+                </div>
+            `;
+        });
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="tr">
+            <head>
+                <meta charset="UTF-8">
+                <title>${classroomName} - Öğrenci Şifre Fişleri</title>
+                <style>
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
+                    body { 
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                        padding: 20px; 
+                        background: #fff;
+                        color: #333;
+                    }
+                    .header { 
+                        text-align: center; 
+                        margin-bottom: 20px;
+                        padding-bottom: 15px;
+                        border-bottom: 2px solid #333;
+                    }
+                    .header h1 { 
+                        font-size: 22px; 
+                        color: #1f2937; 
+                        margin-bottom: 5px;
+                    }
+                    .header .info {
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    .cards-container {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px;
+                        justify-content: flex-start;
+                    }
+                    .student-card {
+                        border: 2px dashed #333;
+                        padding: 15px;
+                        page-break-inside: avoid;
+                        width: 45%;
+                        margin: 10px;
+                        background: #f9f9f9;
+                        border-radius: 8px;
+                    }
+                    .card-header {
+                        text-align: center;
+                        padding-bottom: 10px;
+                        margin-bottom: 10px;
+                        border-bottom: 1px solid #ddd;
+                    }
+                    .card-header .classroom-name {
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: #ea580c;
+                    }
+                    .card-body {
+                        font-size: 13px;
+                    }
+                    .card-row {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 5px 0;
+                        border-bottom: 1px dotted #ccc;
+                    }
+                    .card-row:last-child {
+                        border-bottom: none;
+                    }
+                    .card-label {
+                        color: #666;
+                        font-weight: 500;
+                    }
+                    .card-value {
+                        font-weight: 600;
+                        color: #1f2937;
+                    }
+                    .card-value.password {
+                        font-family: 'Courier New', monospace;
+                        font-size: 15px;
+                        letter-spacing: 1px;
+                        color: #dc2626;
+                        background: #fef2f2;
+                        padding: 2px 8px;
+                        border-radius: 4px;
+                    }
+                    .card-footer {
+                        margin-top: 10px;
+                        padding-top: 10px;
+                        border-top: 1px solid #ddd;
+                        text-align: center;
+                        font-size: 11px;
+                        color: #999;
+                    }
+                    .cut-line {
+                        margin-top: 8px;
+                        text-align: center;
+                        font-size: 10px;
+                        color: #bbb;
+                    }
+                    @media print { 
+                        body { padding: 10px; }
+                        .student-card { 
+                            width: 48% !important; 
+                            margin: 5px 1%;
+                        }
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>✂️ ${classroomName} - Öğrenci Şifre Fişleri</h1>
+                    <div class="info">${currentDate} • ${filteredStudents.length} öğrenci • Yeti LAB</div>
+                </div>
+                
+                <div class="cards-container">
+                    ${cardsHTML}
+                </div>
+                
+                <script>
+                    window.onload = function() { 
+                        setTimeout(function() { window.print(); }, 500);
+                    }
+                </script>
+            </body>
+            </html>
+        `);
         printWindow.document.close();
     },
 

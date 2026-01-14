@@ -47,44 +47,34 @@ export const ClassroomManager = {
         let html = '';
 
         // =============================================
-        // TOP: New Classroom Inline Form (Always Present, Hidden by Default)
+        // TOP: New Classroom Inline Form (FORM FIRST)
         // =============================================
         html += `
-            <div id="new-classroom-panel" class="new-classroom-form hidden">
-                <div class="w-full p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-indigo-900/30 rounded-xl border-2 border-dashed border-blue-300 dark:border-indigo-600">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-xl">✨</span>
-                        <h3 class="font-bold text-sm text-slate-800 dark:text-white">Yeni Sınıf Oluştur</h3>
+        <div id="new-class-form-row" class="hidden w-full bg-slate-800 border-l-4 border-orange-500 rounded-lg p-6 mb-6 shadow-xl transition-all duration-300">
+            <div class="flex flex-col gap-4">
+                <h3 class="text-white font-bold text-lg border-b border-slate-700 pb-2">✨ Yeni Sınıf Oluştur</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Sınıf Adı</label>
+                        <input type="text" id="new-class-name" placeholder="Örn: 5-A" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white outline-none focus:border-orange-500">
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Sınıf Adı *</label>
-                            <input type="text" 
-                                id="new-classroom-name"
-                                placeholder="Örn: 7-A Sınıfı"
-                                class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Açıklama (opsiyonel)</label>
-                            <input type="text" 
-                                id="new-classroom-description"
-                                placeholder="Örn: Matematik dersi için"
-                                class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Açıklama</label>
+                        <input type="text" id="new-class-desc" placeholder="Açıklama..." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white outline-none focus:border-orange-500">
                     </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="ClassroomManager.createNewClassroom()"
-                            id="btn-create-classroom"
-                            class="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm">
-                            Oluştur
-                        </button>
-                        <button onclick="ClassroomManager.hideNewClassroomForm()"
-                            class="px-4 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                            İptal
-                        </button>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <label class="flex items-center gap-2 cursor-pointer bg-slate-900 px-3 py-2 rounded border border-slate-700 select-none">
+                        <input type="checkbox" id="new-class-password" class="w-4 h-4 text-orange-500 rounded focus:ring-orange-500 bg-slate-800 border-slate-600">
+                        <span class="text-sm text-slate-300">🔒 Şifreli Giriş</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <button onclick="ClassroomManager.toggleNewClassForm()" class="px-4 py-2 rounded text-slate-400 hover:text-white hover:bg-slate-700 transition-colors text-sm">İptal</button>
+                        <button onclick="ClassroomManager.createFromForm()" class="px-6 py-2 rounded bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm shadow-lg hover:scale-105 transition-transform">✓ Sınıfı Oluştur</button>
                     </div>
                 </div>
             </div>
+        </div>
         `;
 
         // =============================================
@@ -465,7 +455,7 @@ export const ClassroomManager = {
      */
     closeAllPanels: () => {
         // Close new classroom form
-        const newClassroomPanel = document.getElementById('new-classroom-panel');
+        const newClassroomPanel = document.getElementById('new-class-form-row');
         if (newClassroomPanel) newClassroomPanel.classList.add('hidden');
 
         // Close all classroom panels
@@ -702,28 +692,74 @@ export const ClassroomManager = {
     // ============================================
 
     /**
-     * Show the new classroom form at the top
+     * Toggle new classroom form visibility
      */
-    showNewClassroomForm: () => {
-        ClassroomManager.closeAllPanels();
-        const panel = document.getElementById('new-classroom-panel');
-        if (panel) {
+    toggleNewClassForm: () => {
+        const panel = document.getElementById('new-class-form-row');
+        if (!panel) {
+            console.error('[ClassroomManager] new-class-form-row not found');
+            return;
+        }
+
+        const isHidden = panel.classList.contains('hidden');
+
+        if (isHidden) {
+            ClassroomManager.closeAllPanels();
             panel.classList.remove('hidden');
-            const nameInput = document.getElementById('new-classroom-name');
+            const nameInput = document.getElementById('new-class-name');
             if (nameInput) {
                 nameInput.value = '';
                 nameInput.focus();
             }
-            const descInput = document.getElementById('new-classroom-description');
+            const descInput = document.getElementById('new-class-desc');
             if (descInput) descInput.value = '';
+            const pwdCheckbox = document.getElementById('new-class-password');
+            if (pwdCheckbox) pwdCheckbox.checked = false;
+        } else {
+            panel.classList.add('hidden');
         }
     },
 
     /**
-     * Hide the new classroom form
+     * Create classroom from new form (with password checkbox)
+     */
+    createFromForm: async () => {
+        const nameInput = document.getElementById('new-class-name');
+        const descInput = document.getElementById('new-class-desc');
+        const pwdCheckbox = document.getElementById('new-class-password');
+
+        const name = nameInput?.value?.trim();
+        const description = descInput?.value?.trim() || '';
+        const passwordRequired = pwdCheckbox?.checked || false;
+
+        if (!name) {
+            if (window.Toast) Toast.warning('Lütfen sınıf adı girin');
+            nameInput?.focus();
+            return;
+        }
+
+        try {
+            await ClassroomManager.create(name, description, null);
+            ClassroomManager.toggleNewClassForm(); // Hide form
+            if (window.Toast) Toast.success(`"${name}" sınıfı oluşturuldu!`);
+        } catch (error) {
+            console.error('[ClassroomManager] createFromForm error:', error);
+            if (window.Toast) Toast.error('Sınıf oluşturulamadı: ' + error.message);
+        }
+    },
+
+    /**
+     * Show the new classroom form at the top (legacy - calls toggleNewClassForm)
+     */
+    showNewClassroomForm: () => {
+        ClassroomManager.toggleNewClassForm();
+    },
+
+    /**
+     * Hide the new classroom form (legacy - calls toggleNewClassForm)
      */
     hideNewClassroomForm: () => {
-        const panel = document.getElementById('new-classroom-panel');
+        const panel = document.getElementById('new-class-form-row');
         if (panel) {
             panel.classList.add('hidden');
         }
