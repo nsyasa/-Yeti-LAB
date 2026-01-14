@@ -14,7 +14,7 @@ const ClassroomsSection = {
                             💡 Öğrencileriniz sınıf kodunu kullanarak katılabilir
                         </p>
                     </div>
-                    <button onclick="TeacherManager?.openCreateClassroomModal()"
+                    <button onclick="ClassroomManager?.toggleNewClassForm()"
                         class="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold text-xs hover:brightness-110 transition-all shadow-sm shadow-emerald-500/30 relative z-50">
                         <span>+</span>
                         <span>Yeni Sınıf</span>
