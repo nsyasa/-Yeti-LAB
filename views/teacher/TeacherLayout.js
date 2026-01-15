@@ -24,13 +24,7 @@ const TeacherLayout = {
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-2">
-                        
-                        <!-- Back to Main -->
-                        <a href="/#/" 
-                            class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
-                            title="Ana Sayfaya Dön">
-                            <span class="text-sm">🏠</span>
-                        </a>
+                        <!-- Action Buttons Cleaned -->
                     </div>
                 </div>
                 
