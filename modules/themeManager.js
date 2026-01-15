@@ -18,38 +18,54 @@ const ThemeManager = {
             return;
         }
 
-        // Sync with Store: check both localStorage keys
-        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme') || 'dark';
+        // 1. Get saved preference
+        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme');
 
-        // Sync localStorage keys and ensure default is dark
-        const theme = savedTheme || 'dark';
-
-        // Ensure consistency across storage keys
-        if (localStorage.getItem(this.STORAGE_KEY) !== theme) {
-            localStorage.setItem(this.STORAGE_KEY, theme);
+        // 2. If saved, use it. If not, detect system preference.
+        let theme;
+        if (savedTheme) {
+            theme = savedTheme;
+        } else {
+            // Check system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            theme = prefersDark ? 'dark' : 'light';
         }
-        if (localStorage.getItem('theme') !== theme) {
-            localStorage.setItem('theme', theme);
-        }
 
-        // Apply theme (idempotent operation)
+        // 3. Apply theme
         this.applyTheme(theme);
 
-        // Sync with Store if available
+        // 4. Sync local storage (optional, maybe we don't want to persist system pref immediately?
+        // User asked to remember MANUAL choice. So if it's auto, we might not need to save it,
+        // but saving ensures consistency across reloads if system changes during session.
+        // Actually best practice: Don't write to LS if it's system default, so we can respect future system changes.
+        // BUT, existing code syncs keys. Let's keep keys in sync ONLY if we have a saved preference.
+        if (savedTheme) {
+            if (localStorage.getItem(this.STORAGE_KEY) !== theme) localStorage.setItem(this.STORAGE_KEY, theme);
+            if (localStorage.getItem('theme') !== theme) localStorage.setItem('theme', theme);
+        }
+
+        // 5. Sync with Store
         if (window.Store && typeof window.Store.setState === 'function') {
             window.Store.setState({ theme });
         }
 
-        // Listen for system theme changes (only if no user preference - but we always use dark by default)
-        // This listener is kept for future system preference support
-        // Note: We use a named function for the listener to avoid duplicates if init is called multiple times,
-        // but since matchMedia returns a new object each time, simple protection is hard.
-        // Ideally init should only run once.
+        // 6. Add Listener for System Changes (Dynamic update if no manual override)
         if (!this._systemListenerAdded) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                // Only react if strict system mode is enabled (currently not UI exposed)
-                // or if we decide to fallback to system when no storage exists.
-                // For now, we stick to manual preference or default dark.
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+            // Modern event listener
+            mediaQuery.addEventListener('change', (e) => {
+                // If user has NO manual preference in localStorage, update theme automatically
+                if (!localStorage.getItem(this.STORAGE_KEY) && !localStorage.getItem('theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    this.applyTheme(newTheme);
+
+                    // Sync Store
+                    if (window.Store && window.Store.setState) {
+                        window.Store.setState({ theme: newTheme });
+                    }
+                    console.log(`[ThemeManager] System theme changed to: ${newTheme}`);
+                }
             });
             this._systemListenerAdded = true;
         }
