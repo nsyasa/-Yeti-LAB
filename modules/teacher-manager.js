@@ -368,13 +368,6 @@ async function loadProgress() {
 // CLASSROOM ACTIONS
 // ==========================================
 
-function openCreateClassroomModal() {
-    const modal = document.getElementById('createClassroomModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('open');
-    document.getElementById('classroomName').focus();
-}
-
 function closeModal(modalId) {
     const el = document.getElementById(modalId);
     if (el) {
@@ -1015,7 +1008,7 @@ window.TeacherManager = {
     loadStudents,
     loadProgress,
     loadProjects,
-    openCreateClassroomModal,
+
     closeModal,
     createClassroom,
     viewClassroom,
@@ -1071,7 +1064,6 @@ window.resetBulkForm = resetBulkForm;
 window.copyBulkList = copyBulkList;
 window.saveBulkStudents = saveBulkStudents;
 window.saveClassroomSettings = saveClassroomSettings;
-window.openCreateClassroomModal = openCreateClassroomModal;
 
 // Student management functions
 window.selectAvatar = selectAvatar;

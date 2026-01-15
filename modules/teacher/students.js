@@ -246,8 +246,8 @@ export const StudentManager = {
             year: 'numeric',
         });
 
-        // FİŞ TASARIMI - Kesilebilir kartlar
-        const printWindow = window.open('', '', 'height=700,width=900');
+        // FİŞ TASARIMI - Kesilebilir kartlar (CSS Grid + A4 + Mobil Uyumlu)
+        const printWindow = window.open('', '', 'height=800,width=1000');
         if (!printWindow) {
             if (window.Toast) Toast.error('Pop-up engelleyici aktif olabilir');
             return;
@@ -259,23 +259,13 @@ export const StudentManager = {
             const cName = StudentManager.classrooms.find((c) => c.id === student.classroom_id)?.name || 'Sınıfsız';
             cardsHTML += `
                 <div class="student-card">
-                    <div class="card-header">
-                        <div class="classroom-name">🏫 ${StudentManager.escapeHtml(cName)}</div>
+                    <div class="header">${StudentManager.escapeHtml(cName)}</div>
+                    <div class="content">
+                        <div class="info-row"><span class="label">Öğrenci:</span> <span class="value strong">${StudentManager.escapeHtml(student.display_name)}</span></div>
+                        <div class="info-row"><span class="label">Şifre:</span> <span class="value code">${student.password || 'Şifresiz'}</span></div>
+                        <div class="info-row"><span class="label">Giriş:</span> <span class="value">yetilab.com</span></div>
                     </div>
-                    <div class="card-body">
-                        <div class="card-row">
-                            <span class="card-label">👤 Öğrenci:</span>
-                            <span class="card-value">${StudentManager.escapeHtml(student.display_name)}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">🔑 Şifre:</span>
-                            <span class="card-value password">${student.password || 'Şifresiz'}</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        🌐 yetilab.com
-                    </div>
-                    <div class="cut-line">✂️ - - - - - - - - - - - - - - - -</div>
+                    <div class="cut-line">✂️ ---------------- KESİNİZ ----------------</div>
                 </div>
             `;
         });
@@ -286,115 +276,109 @@ export const StudentManager = {
             <head>
                 <meta charset="UTF-8">
                 <title>${classroomName} - Öğrenci Şifre Fişleri</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+                    
+                    @page { size: A4; margin: 1cm; }
+                    
                     * { box-sizing: border-box; margin: 0; padding: 0; }
                     body { 
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                        padding: 20px; 
-                        background: #fff;
-                        color: #333;
+                        margin: 0; 
+                        padding: 10px;
+                        background: white;
+                        color: #1e293b;
                     }
-                    .header { 
+
+                    .page-header { 
                         text-align: center; 
                         margin-bottom: 20px;
                         padding-bottom: 15px;
                         border-bottom: 2px solid #333;
                     }
-                    .header h1 { 
-                        font-size: 22px; 
+                    .page-header h1 { 
+                        font-size: 20px; 
                         color: #1f2937; 
                         margin-bottom: 5px;
                     }
-                    .header .info {
+                    .page-header .info {
                         font-size: 12px;
                         color: #666;
                     }
-                    .cards-container {
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 10px;
-                        justify-content: flex-start;
+
+                    .grid-container {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr; /* Yan yana 2 kart */
+                        gap: 20px;
+                        width: 100%;
                     }
+
                     .student-card {
-                        border: 2px dashed #333;
-                        padding: 15px;
-                        page-break-inside: avoid;
-                        width: 45%;
-                        margin: 10px;
-                        background: #f9f9f9;
-                        border-radius: 8px;
+                        border: 2px dashed #94a3b8;
+                        border-radius: 12px;
+                        padding: 16px;
+                        background: #f8fafc;
+                        break-inside: avoid;       /* Modern tarayıcılar */
+                        page-break-inside: avoid;  /* Eski tarayıcılar */
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        min-height: 180px; /* Standart yükseklik */
                     }
-                    .card-header {
-                        text-align: center;
-                        padding-bottom: 10px;
-                        margin-bottom: 10px;
-                        border-bottom: 1px solid #ddd;
-                    }
-                    .card-header .classroom-name {
+
+                    .student-card .header {
                         font-size: 16px;
-                        font-weight: bold;
-                        color: #ea580c;
+                        font-weight: 700;
+                        color: #ea580c; /* Orange-600 */
+                        border-bottom: 2px solid #e2e8f0;
+                        padding-bottom: 8px;
+                        margin-bottom: 12px;
+                        text-align: center;
+                        text-transform: uppercase;
                     }
-                    .card-body {
-                        font-size: 13px;
-                    }
-                    .card-row {
+
+                    .info-row {
                         display: flex;
                         justify-content: space-between;
-                        padding: 5px 0;
-                        border-bottom: 1px dotted #ccc;
+                        margin-bottom: 8px;
+                        font-size: 14px;
                     }
-                    .card-row:last-child {
-                        border-bottom: none;
-                    }
-                    .card-label {
-                        color: #666;
-                        font-weight: 500;
-                    }
-                    .card-value {
-                        font-weight: 600;
-                        color: #1f2937;
-                    }
-                    .card-value.password {
-                        font-family: 'Courier New', monospace;
-                        font-size: 15px;
-                        letter-spacing: 1px;
-                        color: #dc2626;
-                        background: #fef2f2;
-                        padding: 2px 8px;
-                        border-radius: 4px;
-                    }
-                    .card-footer {
-                        margin-top: 10px;
-                        padding-top: 10px;
-                        border-top: 1px solid #ddd;
-                        text-align: center;
-                        font-size: 11px;
-                        color: #999;
-                    }
+
+                    .label { color: #64748b; font-weight: 500; }
+                    .value { color: #0f172a; font-weight: 600; text-align: right; }
+                    .value.code { font-family: monospace; font-size: 16px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+                    .value.strong { font-size: 15px; font-weight: 700; }
+
                     .cut-line {
-                        margin-top: 8px;
+                        margin-top: auto;
+                        padding-top: 10px;
+                        font-size: 11px;
+                        color: #94a3b8;
                         text-align: center;
-                        font-size: 10px;
-                        color: #bbb;
+                        font-style: italic;
                     }
-                    @media print { 
-                        body { padding: 10px; }
-                        .student-card { 
-                            width: 48% !important; 
-                            margin: 5px 1%;
-                        }
-                        .no-print { display: none; }
+
+                    @media print {
+                        body { background: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        .student-card { border-color: #000; } /* Yazıcıda net çıksın */
+                        .page-header { page-break-after: avoid; }
+                    }
+
+                    /* Mobilde tek sütun görünsün (önizleme için) */
+                    @media screen and (max-width: 600px) {
+                        .grid-container { grid-template-columns: 1fr; }
+                        .student-card { min-height: auto; }
                     }
                 </style>
             </head>
             <body>
-                <div class="header">
+                <div class="page-header">
                     <h1>✂️ ${classroomName} - Öğrenci Şifre Fişleri</h1>
                     <div class="info">${currentDate} • ${filteredStudents.length} öğrenci • Yeti LAB</div>
                 </div>
                 
-                <div class="cards-container">
+                <div class="grid-container">
                     ${cardsHTML}
                 </div>
                 

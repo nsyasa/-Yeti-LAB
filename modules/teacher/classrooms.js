@@ -550,16 +550,10 @@ export const ClassroomManager = {
         navigator.clipboard
             .writeText(code)
             .then(() => {
-                if (window.Toast) {
-                    Toast.success(`Kod kopyalandı: ${code}`);
-                } else {
-                    alert(`Kopyalandı: ${code}`);
-                }
+                Toast.info('Sınıf kodu panoya kopyalandı 📋');
             })
             .catch(() => {
-                if (window.Toast) {
-                    Toast.error('Kopyalama başarısız');
-                }
+                Toast.error('Kopyalama başarısız');
             });
     },
 
@@ -571,7 +565,7 @@ export const ClassroomManager = {
         const displayName = input?.value?.trim();
 
         if (!displayName) {
-            if (window.Toast) Toast.error('Öğrenci adı gerekli');
+            Toast.error('Öğrenci adı gerekli');
             return;
         }
 
@@ -599,10 +593,10 @@ export const ClassroomManager = {
             ClassroomManager.closePanel(classroomId);
             ClassroomManager.updateStudentCount(classroomId, 1);
 
-            if (window.Toast) Toast.success(`${data.display_name} eklendi!`);
+            Toast.success(`${data.display_name} eklendi!`);
         } catch (error) {
             console.error('[ClassroomManager] addSingleStudent error:', error);
-            if (window.Toast) Toast.error('Ekleme hatası: ' + error.message);
+            Toast.error('Ekleme hatası: ' + error.message);
         }
     },
 
@@ -614,7 +608,7 @@ export const ClassroomManager = {
         const text = textarea?.value?.trim();
 
         if (!text) {
-            if (window.Toast) Toast.error('En az bir öğrenci adı girin');
+            Toast.error('En az bir öğrenci adı girin');
             return;
         }
 
@@ -624,7 +618,7 @@ export const ClassroomManager = {
             .filter((n) => n.length > 0);
 
         if (names.length === 0) {
-            if (window.Toast) Toast.error('Geçerli isim bulunamadı');
+            Toast.error('Geçerli isim bulunamadı');
             return;
         }
 
@@ -645,10 +639,10 @@ export const ClassroomManager = {
             ClassroomManager.closePanel(classroomId);
             ClassroomManager.updateStudentCount(classroomId, data.length);
 
-            if (window.Toast) Toast.success(`${data.length} öğrenci eklendi!`);
+            Toast.success(`${data.length} öğrenci eklendi!`);
         } catch (error) {
             console.error('[ClassroomManager] addBulkStudents error:', error);
-            if (window.Toast) Toast.error('Toplu ekleme hatası: ' + error.message);
+            Toast.error('Toplu ekleme hatası: ' + error.message);
         }
     },
 
@@ -733,7 +727,7 @@ export const ClassroomManager = {
         const passwordRequired = pwdCheckbox?.checked || false;
 
         if (!name) {
-            if (window.Toast) Toast.warning('Lütfen sınıf adı girin');
+            Toast.warning('Lütfen sınıf adı girin');
             nameInput?.focus();
             return;
         }
@@ -741,10 +735,10 @@ export const ClassroomManager = {
         try {
             await ClassroomManager.create(name, description, null);
             ClassroomManager.toggleNewClassForm(); // Hide form
-            if (window.Toast) Toast.success(`"${name}" sınıfı oluşturuldu!`);
+            Toast.success(`"${name}" sınıfı oluşturuldu! 🎉`);
         } catch (error) {
             console.error('[ClassroomManager] createFromForm error:', error);
-            if (window.Toast) Toast.error('Sınıf oluşturulamadı: ' + error.message);
+            Toast.error('Sınıf oluşturulamadı: ' + error.message);
         }
     },
 
@@ -777,7 +771,7 @@ export const ClassroomManager = {
         const description = descInput?.value?.trim();
 
         if (!name) {
-            if (window.Toast) Toast.error('Sınıf adı gerekli');
+            Toast.error('Sınıf adı gerekli');
             nameInput?.focus();
             return;
         }
@@ -794,7 +788,7 @@ export const ClassroomManager = {
 
             if (result.success) {
                 ClassroomManager.hideNewClassroomForm();
-                if (window.Toast) Toast.success(`"${name}" sınıfı oluşturuldu!`);
+                Toast.success(`"${name}" sınıfı oluşturuldu! 🎉`);
 
                 // Add to local state and re-render
                 if (result.classroom) {
@@ -805,11 +799,11 @@ export const ClassroomManager = {
                     ClassroomManager.renderList();
                 }
             } else {
-                if (window.Toast) Toast.error('Oluşturma hatası: ' + (result.error?.message || 'Bilinmeyen hata'));
+                Toast.error('Oluşturma hatası: ' + (result.error?.message || 'Bilinmeyen hata'));
             }
         } catch (error) {
             console.error('[ClassroomManager] createNewClassroom error:', error);
-            if (window.Toast) Toast.error('Oluşturma hatası: ' + error.message);
+            Toast.error('Oluşturma hatası: ' + error.message);
         } finally {
             if (btn) {
                 btn.disabled = false;
@@ -835,7 +829,7 @@ export const ClassroomManager = {
         const isActive = activeCheckbox?.checked ?? true;
 
         if (!name) {
-            if (window.Toast) Toast.error('Sınıf adı gerekli');
+            Toast.error('Sınıf adı gerekli');
             nameInput?.focus();
             return;
         }
@@ -867,13 +861,166 @@ export const ClassroomManager = {
             if (nameDisplay) nameDisplay.textContent = data.name;
 
             ClassroomManager.closePanel(classroomId);
-            if (window.Toast) Toast.success('Ayarlar güncellendi!');
+            Toast.success('Ayarlar güncellendi!');
 
             // Re-render to update status icons
             ClassroomManager.renderList();
         } catch (error) {
             console.error('[ClassroomManager] saveSettings error:', error);
-            if (window.Toast) Toast.error('Güncelleme hatası: ' + error.message);
+            Toast.error('Güncelleme hatası: ' + error.message);
+        }
+    },
+
+    // ============================================
+    // PRINT STUDENT CREDENTIALS
+    // ============================================
+
+    /**
+     * Print student login credentials for a classroom
+     * Mobil ve A4 kağıt uyumlu, sayfa bölünmesini engelleyen tasarım
+     */
+    printStudentCredentials: async (classroomId, className) => {
+        try {
+            // Sınıf öğrencilerini çek
+            const { data: students, error } = await SupabaseClient.getClient()
+                .from('students')
+                .select('id, first_name, last_name, username, password, display_name')
+                .eq('classroom_id', classroomId)
+                .order('display_name', { ascending: true });
+
+            if (error) throw error;
+
+            if (!students || students.length === 0) {
+                Toast.warning('Bu sınıfta yazdırılacak öğrenci yok.');
+                return;
+            }
+
+            const printWindow = window.open('', '', 'height=800,width=1000');
+            if (!printWindow) {
+                Toast.error('Pop-up engelleyici aktif olabilir');
+                return;
+            }
+
+            let cardsHTML = '';
+            students.forEach((student) => {
+                // İsim: first_name + last_name veya display_name kullan
+                const fullName =
+                    student.first_name && student.last_name
+                        ? student.first_name + ' ' + student.last_name
+                        : student.display_name || 'İsimsiz';
+
+                cardsHTML += `
+                    <div class="student-card">
+                        <div class="header">${ClassroomManager.escapeHtml(className)}</div>
+                        <div class="content">
+                            <div class="info-row"><span class="label">Öğrenci:</span> <span class="value strong">${ClassroomManager.escapeHtml(fullName)}</span></div>
+                            <div class="info-row"><span class="label">Kullanıcı Adı:</span> <span class="value">${ClassroomManager.escapeHtml(student.username || student.display_name || '-')}</span></div>
+                            <div class="info-row"><span class="label">Şifre:</span> <span class="value code">${student.password || '******'}</span></div>
+                            <div class="info-row"><span class="label">Giriş:</span> <span class="value">yetilab.com</span></div>
+                        </div>
+                        <div class="cut-line">✂️ ---------------- KESİNİZ ----------------</div>
+                    </div>
+                `;
+            });
+
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${ClassroomManager.escapeHtml(className)} - Giriş Fişleri</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+                        
+                        @page { size: A4; margin: 1cm; }
+                        
+                        body { 
+                            font-family: 'Segoe UI', sans-serif; 
+                            margin: 0; 
+                            padding: 10px;
+                            background: white;
+                            color: #1e293b;
+                        }
+
+                        .grid-container {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr; /* Yan yana 2 kart */
+                            gap: 20px;
+                            width: 100%;
+                        }
+
+                        .student-card {
+                            border: 2px dashed #94a3b8;
+                            border-radius: 12px;
+                            padding: 16px;
+                            background: #f8fafc;
+                            break-inside: avoid;       /* Modern tarayıcılar */
+                            page-break-inside: avoid;  /* Eski tarayıcılar */
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            min-height: 180px; /* Standart yükseklik */
+                        }
+
+                        .header {
+                            font-size: 16px;
+                            font-weight: 700;
+                            color: #ea580c; /* Orange-600 */
+                            border-bottom: 2px solid #e2e8f0;
+                            padding-bottom: 8px;
+                            margin-bottom: 12px;
+                            text-align: center;
+                            text-transform: uppercase;
+                        }
+
+                        .info-row {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 8px;
+                            font-size: 14px;
+                        }
+
+                        .label { color: #64748b; font-weight: 500; }
+                        .value { color: #0f172a; font-weight: 600; text-align: right; }
+                        .value.code { font-family: monospace; font-size: 16px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+                        .value.strong { font-size: 15px; font-weight: 700; }
+
+                        .cut-line {
+                            margin-top: auto;
+                            padding-top: 10px;
+                            font-size: 11px;
+                            color: #94a3b8;
+                            text-align: center;
+                            font-style: italic;
+                        }
+
+                        @media print {
+                            body { background: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                            .student-card { border-color: #000; } /* Yazıcıda net çıksın */
+                        }
+
+                        /* Mobilde tek sütun görünsün (önizleme için) */
+                        @media screen and (max-width: 600px) {
+                            .grid-container { grid-template-columns: 1fr; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="grid-container">
+                        ${cardsHTML}
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            setTimeout(() => { window.print(); }, 500); // Resimlerin yüklenmesi için ufak bekleme
+                        }
+                    </script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        } catch (error) {
+            console.error('[ClassroomManager] printStudentCredentials error:', error);
+            if (window.Toast) Toast.error('Yazdırma hatası: ' + error.message);
         }
     },
 

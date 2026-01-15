@@ -41,7 +41,7 @@ const DashboardSection = {
                                 <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
                                     🏫 Sınıflarım
                                 </h3>
-                                <button onclick="TeacherManager?.openCreateClassroomModal()"
+                                <button onclick="TeacherView?.showSection('classrooms'); setTimeout(() => ClassroomManager?.toggleNewClassForm(), 100);"
                                     class="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors font-medium relative z-50">
                                     + Yeni
                                 </button>

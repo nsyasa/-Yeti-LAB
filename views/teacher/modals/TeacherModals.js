@@ -8,50 +8,12 @@ const TeacherModals = {
      */
     renderAll() {
         return `
-            ${this.createClassroomModal()}
             ${this.viewClassroomModal()}
             ${this.addStudentModal()}
             ${this.bulkAddModal()}
             ${this.classroomSettingsModal()}
             ${this.editStudentModal()}
             ${this.studentDetailModal()}
-        `;
-    },
-
-    /**
-     * Sınıf oluşturma modalı
-     */
-    createClassroomModal() {
-        return `
-            <div id="createClassroomModal" class="modal-overlay hidden">
-                <div class="modal-content">
-                    <h3 class="text-xl font-bold mb-4">🏫 Yeni Sınıf Oluştur</h3>
-                    <form id="createClassroomForm" onsubmit="TeacherManager.createClassroom(event)">
-                        <div class="mb-4">
-                            <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Sınıf Adı</label>
-                            <input type="text" id="classroomName" required maxlength="100"
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Örn: 5-A Robotik Kulübü" />
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Açıklama (Opsiyonel)</label>
-                            <textarea id="classroomDescription" rows="2"
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Sınıf hakkında kısa bir açıklama..."></textarea>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="button" onclick="TeacherManager.closeModal('createClassroomModal')"
-                                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
-                                İptal
-                            </button>
-                            <button type="submit"
-                                class="flex-1 px-4 py-3 bg-theme text-white rounded-xl font-semibold hover:brightness-110 transition-all">
-                                Oluştur
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         `;
     },
 
