@@ -246,7 +246,7 @@ export const StudentManager = {
             year: 'numeric',
         });
 
-        // FİŞ TASARIMI - Kesilebilir kartlar (CSS Grid + A4 + Mobil Uyumlu)
+        // FİŞ TASARIMI - Güncellenmiş Modern Tasarım (Logo + Class Code)
         const printWindow = window.open('', '', 'height=800,width=1000');
         if (!printWindow) {
             if (window.Toast) Toast.error('Pop-up engelleyici aktif olabilir');
@@ -256,14 +256,34 @@ export const StudentManager = {
         // Build cards HTML
         let cardsHTML = '';
         filteredStudents.forEach((student) => {
-            const cName = StudentManager.classrooms.find((c) => c.id === student.classroom_id)?.name || 'Sınıfsız';
+            const cls = StudentManager.classrooms.find((c) => c.id === student.classroom_id);
+            const cName = cls?.name || 'Sınıfsız';
+            // Use classroom code or fallback to ID (shortened) or '-'
+            const cCode = cls?.code || (cls?.id ? cls.id.substring(0, 6).toUpperCase() : '-');
+
             cardsHTML += `
                 <div class="student-card">
-                    <div class="header">${StudentManager.escapeHtml(cName)}</div>
+                    <div class="card-header">
+                        <div class="header-text">${StudentManager.escapeHtml(cName)}</div>
+                        <img src="img/logo.svg" alt="Yeti Lab" class="card-logo">
+                    </div>
                     <div class="content">
-                        <div class="info-row"><span class="label">Öğrenci:</span> <span class="value strong">${StudentManager.escapeHtml(student.display_name)}</span></div>
-                        <div class="info-row"><span class="label">Şifre:</span> <span class="value code">${student.password || 'Şifresiz'}</span></div>
-                        <div class="info-row"><span class="label">Giriş:</span> <span class="value">yetilab.com</span></div>
+                        <div class="info-row highlight">
+                            <span class="label">Sınıf Kodu:</span> 
+                            <span class="value code">${cCode}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Öğrenci:</span> 
+                            <span class="value strong">${StudentManager.escapeHtml(student.display_name)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Şifre:</span> 
+                            <span class="value monospace">${student.password || 'Şifresiz'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Giriş:</span> 
+                            <span class="value link">yetilab.com</span>
+                        </div>
                     </div>
                     <div class="cut-line">✂️ ---------------- KESİNİZ ----------------</div>
                 </div>
@@ -278,104 +298,172 @@ export const StudentManager = {
                 <title>${classroomName} - Öğrenci Şifre Fişleri</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap');
                     
                     @page { size: A4; margin: 1cm; }
                     
                     * { box-sizing: border-box; margin: 0; padding: 0; }
                     body { 
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                         margin: 0; 
                         padding: 10px;
                         background: white;
-                        color: #1e293b;
+                        color: #0f172a;
                     }
 
                     .page-header { 
                         text-align: center; 
-                        margin-bottom: 20px;
+                        margin-bottom: 25px;
                         padding-bottom: 15px;
-                        border-bottom: 2px solid #333;
+                        border-bottom: 2px solid #e2e8f0;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 5px;
                     }
                     .page-header h1 { 
-                        font-size: 20px; 
-                        color: #1f2937; 
-                        margin-bottom: 5px;
+                        font-size: 24px; 
+                        color: #0d9488; /* Teal-600 */
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
                     }
                     .page-header .info {
-                        font-size: 12px;
-                        color: #666;
+                        font-size: 14px;
+                        color: #64748b;
                     }
 
                     .grid-container {
                         display: grid;
-                        grid-template-columns: 1fr 1fr; /* Yan yana 2 kart */
+                        grid-template-columns: 1fr 1fr;
                         gap: 20px;
                         width: 100%;
                     }
 
                     .student-card {
-                        border: 2px dashed #94a3b8;
-                        border-radius: 12px;
-                        padding: 16px;
-                        background: #f8fafc;
-                        break-inside: avoid;       /* Modern tarayıcılar */
-                        page-break-inside: avoid;  /* Eski tarayıcılar */
+                        border: 2px solid #e2e8f0;
+                        border-radius: 16px;
+                        padding: 20px;
+                        background: white;
+                        break-inside: avoid;
+                        page-break-inside: avoid;
                         display: flex;
                         flex-direction: column;
                         justify-content: space-between;
-                        min-height: 180px; /* Standart yükseklik */
+                        min-height: 200px;
+                        position: relative;
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
                     }
 
-                    .student-card .header {
-                        font-size: 16px;
+                    .card-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        border-bottom: 2px solid #f1f5f9;
+                        padding-bottom: 12px;
+                        margin-bottom: 15px;
+                    }
+
+                    .header-text {
+                        font-size: 18px;
                         font-weight: 700;
-                        color: #ea580c; /* Orange-600 */
-                        border-bottom: 2px solid #e2e8f0;
-                        padding-bottom: 8px;
-                        margin-bottom: 12px;
-                        text-align: center;
-                        text-transform: uppercase;
+                        color: #0f172a;
+                    }
+
+                    .card-logo {
+                        height: 35px;
+                        object-fit: contain;
+                    }
+
+                    .content {
+                        flex-grow: 1;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
                     }
 
                     .info-row {
                         display: flex;
                         justify-content: space-between;
-                        margin-bottom: 8px;
-                        font-size: 14px;
+                        align-items: center;
+                        padding: 4px 0;
+                    }
+                    
+                    .info-row.highlight {
+                        background: #f0fdfa; /* Teal-50 */
+                        padding: 6px 10px;
+                        border-radius: 8px;
+                        border: 1px solid #ccfbf1;
+                        margin-bottom: 5px;
                     }
 
-                    .label { color: #64748b; font-weight: 500; }
-                    .value { color: #0f172a; font-weight: 600; text-align: right; }
-                    .value.code { font-family: monospace; font-size: 16px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
-                    .value.strong { font-size: 15px; font-weight: 700; }
+                    .label { 
+                        color: #64748b; 
+                        font-size: 13px; 
+                        font-weight: 500; 
+                    }
+                    
+                    .value { 
+                        color: #0f172a; 
+                        font-weight: 600; 
+                        font-size: 15px;
+                        text-align: right; 
+                    }
+                    
+                    .value.code { 
+                        font-family: 'JetBrains Mono', 'Courier New', monospace;
+                        font-size: 18px; 
+                        color: #0d9488;
+                        letter-spacing: 1px;
+                    }
+
+                    .value.monospace {
+                        font-family: 'JetBrains Mono', 'Courier New', monospace;
+                        background: #f8fafc;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        border: 1px solid #e2e8f0;
+                        color: #ea580c; /* Orange */
+                    }
+
+                    .value.strong {
+                        font-size: 16px;
+                    }
+                    
+                    .value.link {
+                        color: #2563eb;
+                        text-decoration: underline;
+                    }
 
                     .cut-line {
-                        margin-top: auto;
-                        padding-top: 10px;
-                        font-size: 11px;
+                        margin-top: 20px;
+                        padding-top: 15px;
+                        border-top: 1px dashed #cbd5e1;
+                        font-size: 10px;
                         color: #94a3b8;
                         text-align: center;
-                        font-style: italic;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
                     }
 
                     @media print {
                         body { background: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                        .student-card { border-color: #000; } /* Yazıcıda net çıksın */
-                        .page-header { page-break-after: avoid; }
+                        .student-card { border-color: #cbd5e1; box-shadow: none; }
+                        .info-row.highlight { background: #f0fdfa !important; -webkit-print-color-adjust: exact; }
+                        .value.monospace { background: #f8fafc !important; }
                     }
 
-                    /* Mobilde tek sütun görünsün (önizleme için) */
                     @media screen and (max-width: 600px) {
                         .grid-container { grid-template-columns: 1fr; }
-                        .student-card { min-height: auto; }
                     }
                 </style>
             </head>
             <body>
                 <div class="page-header">
-                    <h1>✂️ ${classroomName} - Öğrenci Şifre Fişleri</h1>
-                    <div class="info">${currentDate} • ${filteredStudents.length} öğrenci • Yeti LAB</div>
+                    <h1>🎓 ${classroomName}</h1>
+                    <div class="info">${currentDate} • ${filteredStudents.length} öğrenci • Yeti LAB Giriş Bilgileri</div>
                 </div>
                 
                 <div class="grid-container">
@@ -384,7 +472,7 @@ export const StudentManager = {
                 
                 <script>
                     window.onload = function() { 
-                        setTimeout(function() { window.print(); }, 500);
+                        setTimeout(function() { window.print(); }, 1000);
                     }
                 </script>
             </body>
