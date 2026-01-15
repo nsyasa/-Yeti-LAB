@@ -1,4 +1,4 @@
-import r from"./courseEnrollmentService-hTjch34r.js";import"./router-DsTj0m_O.js";const i={courses:[],isLoading:!1,studentId:null,async init(t){this.studentId=t,await this.loadCourses()},async loadCourses(){if(this.studentId){this.isLoading=!0;try{this.courses=await r.getMyActiveCourses(this.studentId)}catch(t){console.error("Kurslar yüklenemedi:",t),this.courses=[]}this.isLoading=!1}},render(){return this.isLoading?`
+import r from"./courseEnrollmentService-CnDNuDOr.js";import"./router-BFmYSC8h.js";const i={courses:[],isLoading:!1,studentId:null,async init(t){this.studentId=t,await this.loadCourses()},async loadCourses(){if(this.studentId){this.isLoading=!0;try{this.courses=await r.getMyActiveCourses(this.studentId)}catch(t){console.error("Kurslar yüklenemedi:",t),this.courses=[]}this.isLoading=!1}},render(){return this.isLoading?`
                 <div class="flex items-center justify-center py-8">
                     <div class="animate-spin w-8 h-8 border-4 border-theme border-t-transparent rounded-full"></div>
                 </div>
