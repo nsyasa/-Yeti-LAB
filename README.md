@@ -18,6 +18,7 @@ Yeti LAB, öğrencilere **Arduino**, **Micro:bit**, **Scratch**, **mBlock** ve *
 ### ✨ Temel Özellikler
 
 - 🚀 **Modern SPA Mimarisi**: Hızlı, akıcı ve dinamik sayfa geçişleri.
+- 🌙 **Optimize Edilmiş Dark Mode**: Göz yormayan, yüksek kontrastlı ve estetik "Dark Mode First" deneyimi.
 - 🎨 **Research Lab Teması**: Dark mode glassmorphism tasarım, neon aksan renkleri ile profesyonel görünüm.
 - 🎯 **Global Design System**: Tutarlı CSS değişkenleri ile tüm sayfalarda unified tasarım.
 - ⚡ **Lazy Loading & Code Splitting**: Yüksek performanslı ve optimize edilmiş yükleme süreleri.

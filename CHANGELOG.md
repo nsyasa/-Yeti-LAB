@@ -6,6 +6,32 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.0] - 2026-01-15
+
+### 🌙 Dark Mode & UI Overhaul (Major Update)
+
+#### Visual Refinements
+
+- **Strict Default Dark Mode**: Uygulama artık varsayılan olarak optimize edilmiş koyu modda açılıyor.
+- **Enhanced Course Cards**:
+    - Kart arka planları `bg-slate-900/60` ile daha okunabilir yapıldı.
+    - Emoji ikonları için "beyaz kutu" sorunu giderildi (`bg-slate-800`).
+    - Metin renkleri koyu zemin üzerinde maksimum okunabilirlik için `gray-100` ve `gray-400` olarak güncellendi.
+- **Lesson Cards**: Dashboard ders kartlarına border ve belirgin arka plan eklendi.
+
+#### 📱 Mobile Experience
+
+- **Layout Fixes**: Mobil görünümde kurs kartlarının üst üste binme sorunu (`aspect-square` çakışması) giderildi.
+- **Rocket Icon**: Karşılama ekranındaki roket ikonu mobilde daha görünür hale getirildi (5x büyütüldü).
+
+### 🐛 Düzeltmeler
+
+- `themes.js`: Eksik olan `dark` renk varyasyonları tüm kurslar için tanımlandı.
+- `ui.js`: Sabit `bg-white` sınıfları `dark:` varyasyonları ile değiştirildi.
+- Tailwind dark mode utility sınıflarının düzgün çalışması için `style.css` override kuralları eklendi.
+
+---
+
 ## [1.2.2] - 2026-01-13
 
 ### 🎨 Teacher Panel UX Overhaul
