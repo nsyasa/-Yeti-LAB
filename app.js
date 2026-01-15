@@ -217,13 +217,8 @@ const app = {
     toggleSidebar: () => UI.toggleSidebar(),
 
     // --- Theme Management ---
-    // ThemeManager modülünü kullan (modules/themeManager.js)
-    // Bu fonksiyonlar sadece geriye uyumluluk için burada, ThemeManager'a delege eder
-    initTheme: () => {
-        // ThemeManager otomatik init oluyor, bu fonksiyon artık gereksiz
-        // Ama çağrıldığında hata vermesin diye bırakıldı
-    },
-
+    // ThemeManager manages itself automatically via <head> script and auto-init.
+    // Delegators for backward compatibility:
     setTheme: (mode) => {
         if (window.ThemeManager) {
             window.ThemeManager.setTheme(mode);

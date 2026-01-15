@@ -1,135 +1,109 @@
 /**
  * Global Theme Manager
- * - Detects system preference
- * - Respects user preference from localStorage
- * - Applies theme across all pages
+ * Single Source of Truth: 'yeti_theme'
+ * Policy: STRICT DEFAULT DARK. System preferences are IGNORED.
  */
 const ThemeManager = {
     STORAGE_KEY: 'yeti_theme',
 
     /**
-     * Initialize theme on page load
-     * Priority: 1. User preference  2. Default dark mode
+     * Initialize theme
+     * - Migrates legacy 'theme' key to 'yeti_theme'
+     * - Enforces Dark Mode by default
      */
     init() {
-        // Safe check for document/body
-        if (!document.documentElement || !document.body) {
-            console.warn('ThemeManager: DOM not ready');
-            return;
-        }
+        if (!document.documentElement || !document.body) return;
 
-        // 1. Get saved preference
-        let savedTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme');
-
-        // Cleanup: If 'system', remove it and default to dark
-        if (savedTheme === 'system') {
-            localStorage.removeItem(this.STORAGE_KEY);
+        // 1. MIGRATION: Check for legacy key
+        const legacyTheme = localStorage.getItem('theme');
+        if (legacyTheme) {
+            // Move to new key
+            localStorage.setItem(this.STORAGE_KEY, legacyTheme);
+            // Delete old key
             localStorage.removeItem('theme');
-            savedTheme = 'dark';
+            console.log('ThemeManager: Migrated legacy theme preference');
         }
 
-        // 2. Logic: Only 'light' triggers light mode. Everything else is 'dark'.
+        // 2. GET PREFERENCE: Single source of truth
+        // If null/undefined -> Default to 'dark'
+        const savedTheme = localStorage.getItem(this.STORAGE_KEY);
+
+        // 3. LOGIC: Strict check. Only 'light' triggers Light Mode.
         const theme = savedTheme === 'light' ? 'light' : 'dark';
 
-        // 3. Apply theme
+        // 4. APPLY
         this.applyTheme(theme);
 
-        // 4. Sync localStorage
-        // Only write if we have a specific saved preference to maintain consistency
-        if (savedTheme) {
-            if (localStorage.getItem(this.STORAGE_KEY) !== theme) localStorage.setItem(this.STORAGE_KEY, theme);
-            if (localStorage.getItem('theme') !== theme) localStorage.setItem('theme', theme);
-        }
-
-        // 5. Sync with Store
+        // 5. UPDATE STORE (if available)
         if (window.Store && typeof window.Store.setState === 'function') {
             window.Store.setState({ theme });
         }
-
-        // System listeners removed as per requirement: Site is Default Dark.
     },
 
     /**
-     * Apply theme to document
+     * Apply theme to DOM
      * @param {string} theme - 'light' or 'dark'
      */
     applyTheme(theme) {
         const root = document.documentElement;
         const body = document.body;
-
-        // Meta theme-color managment
         const metaTheme = document.querySelector('meta[name="theme-color"]');
 
         if (theme === 'light') {
-            // Turn ON Light Mode
+            // --- LIGHT MODE ---
+            // Remove dark classes
+            root.classList.remove('dark', 'dark-mode');
             body.classList.remove('dark-mode');
 
-            // Remove 'dark' class which is default on HTML
-            root.classList.remove('dark', 'dark-mode');
+            // Add light classes
+            root.classList.add('light');
 
-            if (!root.classList.contains('light')) root.classList.add('light');
-
+            // Set attributes
             root.setAttribute('data-theme', 'light');
             root.style.colorScheme = 'light';
 
-            if (metaTheme) metaTheme.content = '#f9fafb';
+            // Update Mobile Meta
+            if (metaTheme) metaTheme.content = '#f9fafb'; // gray-50
         } else {
-            // Turn ON Dark Mode (Default) - Revert to default state
-            if (!body.classList.contains('dark-mode')) body.classList.add('dark-mode');
-
-            // Ensure 'dark' class is present (in case it was removed)
-            if (!root.classList.contains('dark')) root.classList.add('dark');
-            if (!root.classList.contains('dark-mode')) root.classList.add('dark-mode');
-
+            // --- DARK MODE (Default) ---
+            // Remove light classes
             root.classList.remove('light');
 
+            // Add dark classes (Ensure they exist)
+            root.classList.add('dark', 'dark-mode');
+            body.classList.add('dark-mode');
+
+            // Set attributes
             root.setAttribute('data-theme', 'dark');
             root.style.colorScheme = 'dark';
 
-            if (metaTheme) metaTheme.content = '#0f172a';
+            // Update Mobile Meta
+            if (metaTheme) metaTheme.content = '#0f172a'; // slate-900
         }
     },
 
     /**
-     * Set user theme preference
-     * @param {string} theme - 'light', 'dark', or 'system'
+     * Set User Preference
+     * @param {string} theme - 'light' or 'dark'
      */
     setTheme(theme) {
-        if (theme === 'system') {
-            // Remove saved preference, use system (but default to dark)
-            localStorage.removeItem(this.STORAGE_KEY);
-            localStorage.removeItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const systemTheme = prefersDark ? 'dark' : 'light';
-            this.applyTheme(systemTheme);
+        // Normalize input
+        const validTheme = theme === 'light' ? 'light' : 'dark';
 
-            // Sync with Store
-            if (window.Store && window.Store.setState) {
-                window.Store.setState({ theme: systemTheme });
-            }
-        } else {
-            // Save user preference to both localStorage keys
-            localStorage.setItem(this.STORAGE_KEY, theme);
-            localStorage.setItem('theme', theme);
-            this.applyTheme(theme);
+        // Save to Storage (Single Source)
+        localStorage.setItem(this.STORAGE_KEY, validTheme);
 
-            // Sync with Store
-            if (window.Store && window.Store.setState) {
-                window.Store.setState({ theme });
-            }
+        // Apply
+        this.applyTheme(validTheme);
+
+        // Sync Store
+        if (window.Store && window.Store.setState) {
+            window.Store.setState({ theme: validTheme });
         }
     },
 
     /**
-     * Get current theme
-     * @returns {string} 'light' or 'dark'
-     */
-    getCurrentTheme() {
-        return document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-    },
-
-    /**
-     * Toggle between light and dark
+     * Toggle Theme
      */
     toggle() {
         const current = this.getCurrentTheme();
@@ -137,49 +111,21 @@ const ThemeManager = {
     },
 
     /**
-     * Toggle Eye Shield (Warm Filter)
+     * Get Current Theme
+     * @returns {string} 'light' or 'dark'
      */
-    toggleEyeShield() {
-        let shield = document.getElementById('eye-shield-overlay');
-        if (!shield) {
-            shield = document.createElement('div');
-            shield.id = 'eye-shield-overlay';
-            shield.style.cssText =
-                'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255, 200, 0, 0.15);pointer-events:none;z-index:9999;mix-blend-mode:multiply;display:none;';
-            document.body.appendChild(shield);
-        }
-
-        const isHidden = shield.style.display === 'none';
-        shield.style.display = isHidden ? 'block' : 'none';
-
-        // Save preference if needed (optional)
-        localStorage.setItem('yeti_eye_shield', isHidden ? 'true' : 'false');
-    },
-
-    load() {
-        // Load Eye Shield state
-        if (localStorage.getItem('yeti_eye_shield') === 'true') {
-            this.toggleEyeShield();
-            // Toggle logic toggles it ON because it starts as none (unless created differently)
-            // Wait, if I call toggleEyeShield() it creates it hidden then shows it. Correct.
-            // But if I call it twice it hides it. Logic is fine.
-            // Actually, need to be careful with double init.
-            const shield = document.getElementById('eye-shield-overlay');
-            if (shield && shield.style.display === 'block') {
-                // Already on, do nothing
-            } else {
-                // It might not exist yet
-            }
-        }
+    getCurrentTheme() {
+        // Truth is in DOM classList
+        return document.documentElement.classList.contains('light') ? 'light' : 'dark';
     },
 };
 
-// Auto-initialize on DOMContentLoaded
+// Auto-initialize
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => ThemeManager.init());
 } else {
     ThemeManager.init();
 }
 
-// Make globally available
+// Export Global
 window.ThemeManager = ThemeManager;
