@@ -6,30 +6,37 @@
         <title>Yeti LAB | İçindeki Yeti'leri Keşfet</title>
         <meta name="theme-color" content="#0f172a" />
 
-        <!-- Anti-FOUC Script for Dark Mode (Default: Dark) -->
+        <!-- Anti-FOUC Script for Strict Default Dark Mode -->
         <script>
             (function () {
                 try {
-                    // Logic: Site is Dark by default (class="dark" on html).
-                    // Only 'light' triggers removal of Dark Mode.
-                    const localTheme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme');
+                    // Single Source of Truth: 'yeti_theme'
+                    // LEGACY MIGRATION: Check if old 'theme' key exists
+                    var legacy = localStorage.getItem('theme');
+                    if (legacy) {
+                        localStorage.setItem('yeti_theme', legacy);
+                        localStorage.removeItem('theme');
+                    }
 
-                    if (localTheme === 'light') {
+                    // CHECK: Only 'light' triggers Light Mode.
+                    var saved = localStorage.getItem('yeti_theme');
+
+                    if (saved === 'light') {
+                        // Turn ON Light Mode
                         document.documentElement.classList.remove('dark', 'dark-mode');
                         document.documentElement.classList.add('light');
                         document.documentElement.setAttribute('data-theme', 'light');
                         document.documentElement.style.colorScheme = 'light';
 
-                        // Update meta theme-color immediately
-                        const meta = document.querySelector('meta[name="theme-color"]');
-                        if (meta) meta.content = '#f9fafb'; // gray-50
+                        var meta = document.querySelector('meta[name="theme-color"]');
+                        if (meta) meta.content = '#f9fafb';
                     } else {
-                        // Already dark by default HTML attribute, but ensure consistency
+                        // Force Default Dark (HTML class="dark" is already set, ensuring attributes match)
                         document.documentElement.setAttribute('data-theme', 'dark');
                         document.documentElement.style.colorScheme = 'dark';
                     }
                 } catch (e) {
-                    // Ignore errors, default is already dark
+                    // Ignore errors, default hardcoded dark logic prevails
                 }
             })();
         </script>
@@ -63,7 +70,7 @@
             /* Light mode override */
             html.light body,
             html[data-theme='light'] body {
-                background-color: #f9fafb;
+                background-color: #f9fafb !important;
                 /* gray-50 */
                 color: #111827;
             }
@@ -105,12 +112,15 @@
         <style>
             /* Inline critical styles or overrides can remain here if needed */
         </style>
-      <script type="module" crossorigin src="./assets/main-89UgIToh.js"></script>
-      <link rel="modulepreload" crossorigin href="./assets/router-__dgyCIu.js">
-      <link rel="stylesheet" crossorigin href="./assets/router-Bbkw7dIS.css">
+      <script type="module" crossorigin src="./assets/main-A_Rv7bmM.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/router-DuwzWHTb.js">
+      <link rel="stylesheet" crossorigin href="./assets/router-DZTB83x5.css">
     </head>
 
-    <body class="preload flex flex-col min-h-screen bg-[#0f172a] text-gray-100 transition-colors duration-300">
+    <body
+        class="preload flex flex-col min-h-screen text-gray-100 transition-colors duration-300"
+        style="background-color: #0f172a"
+    >
         <!-- Sidebar Overlay -->
         <div
             id="sidebar-overlay"
