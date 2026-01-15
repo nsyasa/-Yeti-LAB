@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Yeti LAB | İçindeki Yeti'leri Keşfet</title>
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="./assets/favicon-BVHByT5d.svg" />
+        <link rel="apple-touch-icon" href="./assets/favicon-BVHByT5d.svg" />
+
+        <!-- Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                font-family: 'Outfit', sans-serif;
+            }
+
+            /* Dark mode varsayılan - JavaScript yüklenmeden önce */
+            html {
+                color-scheme: dark light;
+            }
+
+            /* Default: Dark mode */
+            body {
+                background-color: #0f172a;
+                color: #f1f5f9;
+            }
+
+            /* Light mode override (only if explicitly set) */
+            html.light body,
+            html[data-theme='light'] body {
+                background-color: #f9fafb;
+                color: #111827;
+            }
+        </style>
+
+        <!-- Dark mode initialization - CRITICAL: Must run before body renders -->
+        <script>
+            // Apply dark mode immediately to prevent flash of light mode
+            (function () {
+                const theme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme') || 'dark';
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark', 'dark-mode');
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                } else {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark', 'dark-mode');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.style.colorScheme = 'light';
+                }
+            })();
+        </script>
+
+        <!-- Performance Monitor (Critical - Must be first) -->
+        <script>
+            window.Performance = {
+                marks: {},
+                mark(name) {
+                    this.marks[name] = performance.now();
+                },
+                measure(name, startMark) {
+                    if (!this.marks[startMark]) return 0;
+                    const duration = performance.now() - this.marks[startMark];
+                    console.log(`⚡ [Performance] ${name}: ${duration.toFixed(2)}ms`);
+                    return duration;
+                },
+                logPageLoad() {
+                    if (window.performance && window.performance.timing) {
+                        const t = window.performance.timing;
+                        console.log(`⚡ [Performance] Page Load: ${t.loadEventEnd - t.navigationStart}ms`);
+                    }
+                },
+            };
+            window.Performance.mark('app_start');
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+        <!-- 
+            VITE ENTRY POINT
+            Tüm modüller src/main.js üzerinden bundle edilir.
+            Development: Vite dev server ile hot reload
+            Production: Tek optimize edilmiş dosya
+        -->
+
+        <!-- CSS styles are injected via src/main.js -> src/style.css -->
+
+        <style>
+            /* Inline critical styles or overrides can remain here if needed */
+        </style>
+      <script type="module" crossorigin src="./assets/main-Bv3yBPAU.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/router-DfeYsmrJ.js">
+      <link rel="stylesheet" crossorigin href="./assets/router-CTlW14eM.css">
+    </head>
+
+    <body
+        class="preload flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300"
+    >
+        <!-- Sidebar Overlay -->
+        <div
+            id="sidebar-overlay"
+            class="sidebar-overlay fixed inset-0 w-full h-full"
+            onclick="UI.toggleSidebar(false)"
+        ></div>
+
+        <!-- Sidebar (Ders Gezgini) -->
+        <div
+            id="lesson-sidebar"
+            class="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl overflow-y-auto border-r border-gray-200 dark:border-gray-700 flex flex-col pb-10 invisible -translate-x-full"
+        >
+            <div class="p-4 bg-theme text-white flex justify-between items-center sticky top-0 z-10 shadow-md">
+                <h2 class="font-bold text-lg">Ders Listesi</h2>
+                <button
+                    onclick="UI.toggleSidebar(false)"
+                    class="sidebar-close-btn text-white hover:text-gray-200 text-2xl"
+                >
+                    &times;
+                </button>
+            </div>
+            <div id="sidebar-content" class="flex-grow p-2 space-y-2">
+                <!-- Dersler buraya gelecek -->
+            </div>
+        </div>
+
+        <!-- Üst Menü -->
+        <!-- Dynamic Header (Rendered by Navbar.js) -->
+        <header
+            id="main-header"
+            class="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40 transition-all duration-300"
+        ></header>
+
+        <!-- Mobile Search Overlay -->
+        <div id="mobile-search-overlay" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 hidden md:hidden">
+            <div class="p-4">
+                <div class="flex items-center gap-3">
+                    <button
+                        onclick="app.toggleMobileSearch()"
+                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                        <span class="text-2xl">←</span>
+                    </button>
+                    <div class="relative flex-grow">
+                        <input
+                            type="text"
+                            id="mobileSearchInput"
+                            placeholder="Ders ara..."
+                            oninput="Search.handleMobile(this.value)"
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-theme focus:outline-none text-lg"
+                        />
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg
+                                class="w-5 h-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div id="mobileSearchResults" class="mt-4 space-y-2 max-h-[70vh] overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- Ana İçerik -->
+        <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 pb-32">
+            <!-- SPA View Container (Ders Detay, Admin, Profile vb.) -->
+            <div id="main-content" class="w-full transition-opacity duration-300"></div>
+
+            <!-- DERS SEÇİM EKRANI (Ana Sayfa) -->
+
+            <div id="course-selection-view" class="fade-in pb-10">
+                <div
+                    class="flex flex-row items-center justify-center gap-3 lg:gap-6 max-w-5xl mx-auto mb-3 lg:mb-8 mt-1 lg:mt-4 px-2"
+                >
+                    <!-- Yeti Mascot (Fixed high-quality asset with floating animation) -->
+                    <div class="flex-shrink-0 relative">
+                        <!-- Glow effect behind Yeti -->
+                        <div
+                            class="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 rounded-full scale-110 -z-10"
+                        ></div>
+                        <img
+                            src="./assets/yeti-mascot-CyPHZcvN.png"
+                            alt="Yeti Maskot"
+                            class="w-20 sm:w-24 lg:w-48 h-auto object-contain animate-float relative z-10"
+                            style="
+                                filter: drop-shadow(0 25px 50px rgba(0, 151, 156, 0.5))
+                                    drop-shadow(0 10px 25px rgba(255, 255, 255, 0.2));
+                            "
+                        />
+                    </div>
+
+                    <!-- Title Section - Compact on mobile -->
+                    <div class="text-left lg:text-left space-y-1 lg:space-y-4 flex-1 min-w-0">
+                        <h2
+                            class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
+                        >
+                            <span
+                                class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400"
+                            >
+                                İçindeki Yeti'yi
+                            </span>
+                            <br class="hidden sm:block" /><span class="sm:hidden"> </span>Keşfet!
+                        </h2>
+                        <p
+                            class="hidden sm:block text-sm md:text-lg lg:text-xl text-gray-400 dark:text-gray-300 max-w-2xl leading-relaxed font-medium"
+                        >
+                            Yaparak öğren, simülasyonlarla dene ve rozetleri topla.
+                        </p>
+                    </div>
+                    <!-- Rocket Icon - Fixed position -->
+                    <div class="shrink-0 text-base sm:text-xl lg:text-4xl">🚀</div>
+                </div>
+                <div id="course-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
+                    <!-- SKELETON LOADER (JS yüklenene kadar görünür) -->
+                    <div
+                        class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center"
+                    >
+                        <div class="w-16 h-16 bg-gray-200 rounded-full mb-4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                    <div
+                        class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center hidden md:flex"
+                    >
+                        <div class="w-16 h-16 bg-gray-200 rounded-full mb-4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                    <div
+                        class="course-skeleton animate-pulse bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-64 flex flex-col items-center justify-center hidden lg:flex"
+                    >
+                        <div class="w-16 h-16 bg-gray-200 rounded-full mb-4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD (Proje Listesi) -->
+            <div id="dashboard-view" class="hidden space-y-6 fade-in pb-10">
+                <div class="flex items-center justify-between mb-4 mt-2">
+                    <button
+                        onclick="app.renderCourseSelection()"
+                        class="text-slate-400 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg transition-colors duration-200 group bg-transparent"
+                    >
+                        <span class="text-lg group-hover:-translate-x-1 transition-transform duration-300">←</span>
+                        <span class="text-sm font-medium">Dersler</span>
+                    </button>
+                </div>
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <h1 id="course-title" class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                        Arduino Serüveni
+                    </h1>
+
+                    <!-- Progress Bar -->
+                    <div
+                        class="w-full bg-gray-200 rounded-full h-4 mb-4 dark:bg-gray-700 relative group overflow-hidden"
+                    >
+                        <div
+                            id="course-progress-bar"
+                            class="bg-green-500 h-4 rounded-full transition-all duration-500"
+                            style="width: 0%"
+                        ></div>
+                        <span
+                            id="course-progress-text"
+                            class="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-200"
+                            >%0 Tamamlandı</span
+                        >
+                    </div>
+
+                    <p id="course-desc" class="text-gray-600 mb-6">Arduino dünyasına adım atın.</p>
+                </div>
+                <div id="dashboard-content"></div>
+            </div>
+
+            <!-- PROJE DETAY EKRANI -->
+            <div id="project-view" class="hidden flex flex-col lg:flex-row gap-6 h-full pb-10">
+                <!-- SOL KOLON: Simülasyon -->
+                <div class="w-full lg:w-5/12 flex flex-col space-y-4" id="left-column">
+                    <div class="flex gap-2 mb-2">
+                        <button onclick="app.renderDashboard()" class="lesson-nav-btn flex items-center gap-2 group">
+                            <span class="group-hover:-translate-x-1 transition-transform duration-300">←</span> Geri
+                        </button>
+                        <button onclick="app.toggleSidebar()" class="lesson-nav-btn primary flex items-center gap-2">
+                            <span>☰</span> Ders Listesi
+                        </button>
+                    </div>
+
+                    <!-- Video Container (simülasyonun üstünde) -->
+                    <div id="video-container" class="hidden rounded-xl overflow-hidden shadow-lg bg-black">
+                        <div class="aspect-video">
+                            <iframe
+                                id="video-iframe"
+                                width="100%"
+                                height="100%"
+                                src=""
+                                frameborder="0"
+                                allow="
+                                    accelerometer;
+                                    autoplay;
+                                    clipboard-write;
+                                    encrypted-media;
+                                    gyroscope;
+                                    picture-in-picture;
+                                "
+                                allowfullscreen
+                                class="w-full h-full"
+                            ></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Simülatör / İnteraktif Kart -->
+                    <div
+                        id="sim-container"
+                        class="virtual-lab-container flex flex-col relative"
+                        style="min-height: 450px"
+                    >
+                        <div class="virtual-lab-header">
+                            <h3 class="virtual-lab-title" id="sim-title"><span>🔬</span> Sanal Laboratuvar</h3>
+                            <div class="flex items-center gap-3">
+                                <span class="live-badge" id="sim-badge">
+                                    <span class="ml-3">CANLI</span>
+                                </span>
+                                <button
+                                    onclick="UI.toggleFullscreen('sim-container')"
+                                    class="fullscreen-btn"
+                                    title="Tam Ekran"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path
+                                            d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="virtual-lab-content overflow-hidden" id="sim-content-area" style="height: 250px">
+                            <!-- Canvas (Simülasyon Çizimleri) -->
+                            <canvas id="simCanvas" class="w-full h-full object-contain hidden"></canvas>
+
+                            <!-- İnteraktif Görsel (Board Tanıtımı) -->
+                            <div id="interactive-area" class="w-full h-full relative hidden"></div>
+
+                            <!-- Kontrol Paneli (Butonlar/Sliderlar) -->
+                            <div
+                                id="simControls"
+                                class="virtual-lab-controls absolute bottom-0 left-0 right-0 z-30"
+                            ></div>
+                        </div>
+
+                        <!-- Bilgi Kutusu (Parça açıklamaları için) -->
+                        <div id="interactive-info" class="virtual-lab-info hidden h-32 overflow-y-auto transition-all">
+                            <span class="font-bold text-lg block mb-1" id="info-title">Keşfet</span>
+                            <span id="info-desc">Parçaların üzerine gelerek ne işe yaradıklarını öğren.</span>
+                        </div>
+                    </div>
+
+                    <!-- Grafik Kartı -->
+                    <div id="chart-card" class="chart-card hidden">
+                        <h4 class="text-xs font-bold uppercase mb-2 flex justify-between items-center">
+                            <span>📊 Veri Grafiği (Serial Plotter)</span>
+                        </h4>
+                        <div class="chart-container">
+                            <canvas id="dataChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SAĞ KOLON: İçerik (Sekmeler) -->
+                <div
+                    class="lesson-content-panel w-full lg:w-7/12 flex flex-col rounded-xl overflow-hidden"
+                    style="min-height: 600px"
+                >
+                    <div class="lesson-header p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span
+                                    id="project-tag"
+                                    class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 to-red-500 shadow-sm"
+                                    >Giriş</span
+                                >
+                                <h2 id="project-title" class="text-2xl font-bold text-white leading-tight">Başlık</h2>
+                            </div>
+                            <div class="text-5xl cursor-default" id="project-icon">⚡</div>
+                        </div>
+                        <p id="project-desc" class="mt-2 text-slate-300">Açıklama...</p>
+                    </div>
+
+                    <div
+                        id="project-tabs-container"
+                        class="lesson-tabs-container flex overflow-x-auto sticky top-0 z-10"
+                    >
+                        <!-- Tab buttons are dynamically generated by UI.renderTabs() -->
+                    </div>
+
+                    <div
+                        class="lesson-content-area overflow-y-auto flex-grow h-[500px] relative"
+                        id="tab-content-area"
+                    ></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav
+            id="mobile-bottom-nav"
+            class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 shadow-lg z-40 md:hidden"
+        >
+            <div class="grid grid-cols-3 h-16">
+                <button
+                    onclick="app.renderCourseSelection()"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
+                >
+                    <span class="text-xl">🏠</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Ana Sayfa</span>
+                </button>
+                <button
+                    onclick="UI.toggleSidebar()"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
+                >
+                    <span class="text-xl">📚</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Dersler</span>
+                </button>
+                <button
+                    onclick="UI.toggleMobileSearch()"
+                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
+                >
+                    <span class="text-xl">🔍</span>
+                    <span class="text-[10px] mt-0.5 font-medium">Ara</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Image Modal -->
+        <!-- Image Modal -->
+        <div
+            id="image-modal"
+            class="fixed inset-0 hidden flex items-center justify-center bg-black/95 backdrop-blur-md p-4 transition-opacity duration-300 opacity-0"
+            style="z-index: 2147483647 !important"
+            onclick="app.closeImageModal()"
+        >
+            <button
+                onclick="app.closeImageModal()"
+                class="absolute top-4 right-4 text-white hover:text-gray-300 z-50 bg-black/50 rounded-full p-2 transition-transform hover:scale-110"
+            >
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                </svg>
+            </button>
+            <div
+                class="relative flex flex-col items-center justify-center bg-transparent"
+                id="modal-content"
+                onclick="event.stopPropagation()"
+            >
+                <img
+                    id="modal-img"
+                    src=""
+                    alt="Full Screen"
+                    class="rounded-lg shadow-2xl border border-gray-700 bg-white/5 cursor-zoom-out object-contain"
+                    style="max-height: 85vh !important; max-width: 90vw !important; width: auto; height: auto"
+                    onclick="app.closeImageModal()"
+                />
+                <div
+                    id="modal-caption"
+                    class="mt-4 px-6 py-3 rounded-lg text-lg font-bold shadow-2xl tracking-wide"
+                    style="background-color: #000000 !important; color: #ffffff !important"
+                ></div>
+            </div>
+        </div>
+
+        <!-- Dynamic Footer -->
+        <footer id="main-footer"></footer>
+
+        <!-- app.js is now loaded via src/main.js entry point -->
+    </body>
+</html>

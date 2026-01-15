@@ -1,0 +1,57 @@
+﻿<!doctype html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Yönlendiriliyor... - Yeti LAB</title>
+        <script>
+            // Eski admin sayfasından yeni SPA rotasına yönlendirme
+            // Search parametrelerini korumak isteyebiliriz ama şimdilik direkt yönlendiriyoruz
+            window.location.replace('index.html#/admin');
+        </script>
+        <style>
+            body {
+                font-family: 'Nunito', sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f8fafc;
+                color: #475569;
+            }
+
+            .container {
+                text-align: center;
+            }
+
+            .spinner {
+                border: 4px solid #e2e8f0;
+                border-top: 4px solid #0d9488;
+                /* Theme color */
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 20px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="spinner"></div>
+            <p>Yeni Yönetim Paneline yönlendiriliyorsunuz...</p>
+        </div>
+    </body>
+</html>

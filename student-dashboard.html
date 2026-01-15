@@ -1,0 +1,59 @@
+﻿<!doctype html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>İlerleme - Yeti LAB</title>
+        <meta name="description" content="Yeti LAB öğrenci ilerleme paneli" />
+        <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+            }
+
+            .loading {
+                text-align: center;
+            }
+
+            .spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #e5e7eb;
+                border-top-color: #00979c;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+                margin: 0 auto 1rem;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            p {
+                color: #6b7280;
+                font-size: 0.875rem;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Öğrenci paneli yükleniyor...</p>
+        </div>
+
+        <script>
+            // Redirect to SPA student-dashboard route
+            // This page exists for backward compatibility with old links
+            window.location.replace('index.html#/student-dashboard');
+        </script>
+    </body>
+</html>

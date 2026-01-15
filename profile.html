@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Profil - Yeti LAB</title>
+        <meta name="description" content="Yeti LAB profil sayfası" />
+        <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+        <!-- Dark mode initialization - CRITICAL: Must run before body renders -->
+        <script>
+            // Apply dark mode immediately to prevent flash of light mode
+            (function () {
+                const theme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme') || 'dark';
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark', 'dark-mode');
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                } else {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark', 'dark-mode');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.style.colorScheme = 'light';
+                }
+            })();
+        </script>
+
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                font-family: 'Outfit', system-ui, sans-serif;
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                color: #f1f5f9;
+            }
+
+            /* Light mode override */
+            html.light body,
+            html[data-theme='light'] body {
+                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+                color: #111827;
+            }
+
+            .loading {
+                text-align: center;
+            }
+
+            .spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #374151;
+                border-top-color: #00979c;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+                margin: 0 auto 1rem;
+            }
+
+            html.light .spinner,
+            html[data-theme='light'] .spinner {
+                border-color: #e5e7eb;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            p {
+                color: #9ca3af;
+                font-size: 0.875rem;
+            }
+
+            html.light p,
+            html[data-theme='light'] p {
+                color: #6b7280;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Profil yükleniyor...</p>
+        </div>
+
+        <script>
+            // Redirect to SPA profile route
+            // This page exists for backward compatibility with old links
+            window.location.replace('index.html#/profile');
+        </script>
+    </body>
+</html>

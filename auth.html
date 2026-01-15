@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Giriş Yap - Yeti LAB</title>
+        <meta
+            name="description"
+            content="Yeti LAB eğitim platformuna giriş yapın. Öğrenci veya öğretmen olarak başlayın."
+        />
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="./assets/favicon-BVHByT5d.svg" />
+        <link rel="apple-touch-icon" href="./assets/favicon-BVHByT5d.svg" />
+
+        <!-- CSS styles are injected via src/auth.js -> src/style.css -->
+
+        <!-- Dark mode initialization - CRITICAL: Must run before body renders -->
+        <script>
+            // Apply dark mode immediately to prevent flash of light mode
+            (function () {
+                const theme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme') || 'dark';
+
+                // Always ensure dark mode by default if no preference
+                if (theme === 'dark' || !theme) {
+                    document.documentElement.classList.add('dark', 'dark-mode');
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                } else {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark', 'dark-mode');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.style.colorScheme = 'light';
+                }
+            })();
+        </script>
+
+        <!-- Vite Entry Point -->
+
+        <style>
+            /* Auth page specific styles */
+            .auth-bg {
+                background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+                min-height: 100vh;
+            }
+
+            html.dark-mode body .auth-bg {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            }
+
+            .auth-card {
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                background: rgba(255, 255, 255, 0.95);
+                box-shadow:
+                    0 25px 50px -12px rgba(0, 0, 0, 0.1),
+                    0 0 0 1px rgba(0, 0, 0, 0.05);
+            }
+
+            html.dark-mode body .auth-card {
+                background: rgba(30, 41, 59, 0.85);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            /* Code input boxes */
+            .code-box {
+                width: 56px;
+                height: 64px;
+                font-size: 1.75rem;
+                font-weight: 800;
+                text-align: center;
+                text-transform: uppercase;
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                transition: all 0.2s;
+            }
+
+            .code-box:focus {
+                outline: none;
+                border-color: var(--theme-color);
+                box-shadow: 0 0 0 3px rgba(0, 151, 156, 0.2);
+            }
+
+            html.dark-mode body .code-box {
+                background: #1e293b;
+                border-color: #475569;
+                color: #fff;
+            }
+
+            /* OAuth buttons */
+            .btn-oauth {
+                transition: all 0.2s;
+            }
+
+            .btn-oauth:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            /* Floating elements animation */
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0px);
+                }
+
+                50% {
+                    transform: translateY(-20px);
+                }
+            }
+
+            .floating-icon {
+                animation: float 6s ease-in-out infinite;
+            }
+
+            .floating-icon:nth-child(2) {
+                animation-delay: 1s;
+            }
+
+            .floating-icon:nth-child(3) {
+                animation-delay: 2s;
+            }
+
+            /* Tab styles */
+            .auth-tab {
+                transition: all 0.2s;
+            }
+
+            .auth-tab.active {
+                background: var(--theme-color);
+                color: white;
+            }
+
+            /* Classroom info animation */
+            .classroom-found {
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+                }
+
+                50% {
+                    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+                }
+            }
+
+            /* Password Strength Indicator */
+            .password-strength {
+                display: flex;
+                gap: 4px;
+                margin-top: 8px;
+            }
+
+            .password-strength .bar {
+                height: 4px;
+                flex: 1;
+                border-radius: 2px;
+                background: #e5e7eb;
+                transition: all 0.3s ease;
+            }
+
+            .password-strength[data-strength='1'] .bar:nth-child(1) {
+                background: #ef4444;
+            }
+
+            .password-strength[data-strength='2'] .bar:nth-child(1),
+            .password-strength[data-strength='2'] .bar:nth-child(2) {
+                background: #f59e0b;
+            }
+
+            .password-strength[data-strength='3'] .bar:nth-child(1),
+            .password-strength[data-strength='3'] .bar:nth-child(2),
+            .password-strength[data-strength='3'] .bar:nth-child(3) {
+                background: #10b981;
+            }
+
+            .strength-text {
+                font-size: 12px;
+                margin-top: 4px;
+                font-weight: 500;
+            }
+
+            .strength-text.weak {
+                color: #ef4444;
+            }
+
+            .strength-text.medium {
+                color: #f59e0b;
+            }
+
+            .strength-text.strong {
+                color: #10b981;
+            }
+
+            /* Input validation states */
+            .input-error {
+                border-color: #ef4444 !important;
+                background-color: #fef2f2 !important;
+            }
+
+            .input-success {
+                border-color: #10b981 !important;
+                background-color: #f0fdf4 !important;
+            }
+
+            .form-message {
+                font-size: 12px;
+                margin-top: 4px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .form-message.error {
+                color: #ef4444;
+            }
+
+            .form-message.success {
+                color: #10b981;
+            }
+
+            /* Button loading state */
+            .btn-loading {
+                pointer-events: none;
+                opacity: 0.7;
+            }
+
+            .btn-loading .spinner {
+                width: 16px;
+                height: 16px;
+                border: 2px solid transparent;
+                border-top-color: currentColor;
+                border-radius: 50%;
+                animation: spin 0.6s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+      <script type="module" crossorigin src="./assets/auth-DZfy1vRI.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/router-DfeYsmrJ.js">
+      <link rel="stylesheet" crossorigin href="./assets/router-CTlW14eM.css">
+    </head>
+
+    <body
+        class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden"
+    >
+        <div class="auth-bg flex flex-col min-h-screen">
+            <!-- Header (Same style as index.html but compact, no search) -->
+            <header
+                class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border-b border-gray-100 dark:border-white/10 shadow-sm"
+            >
+                <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div class="flex justify-between h-14 items-center">
+                        <!-- Logo -->
+                        <a href="index.html" class="flex items-center gap-2 group">
+                            <div class="relative w-9 h-9 transition-transform group-hover:scale-105">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-tr from-theme to-cyan-300 rounded-lg rotate-3 group-hover:rotate-6 transition-transform opacity-20"
+                                ></div>
+                                <div
+                                    class="absolute inset-0 bg-white dark:bg-gray-700 rounded-lg shadow-sm border border-gray-100 dark:border-gray-600 flex items-center justify-center overflow-hidden"
+                                >
+                                    <img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%20fill='none'%3e%3c!--%20Mountain%20Background%20--%3e%3cpath%20d='M4%2038L16%2014L24%2026L32%2014L44%2038H4Z'%20fill='%2300979C'%20opacity='0.2'/%3e%3c!--%20Main%20Mountain%20--%3e%3cpath%20d='M8%2038L20%2016L28%2028L36%2016L44%2038'%20stroke='%2300979C'%20stroke-width='3'%20stroke-linecap='round'%20stroke-linejoin='round'%20fill='none'/%3e%3c!--%20Snow%20Cap%20--%3e%3cpath%20d='M18%2020L20%2016L22%2020'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cpath%20d='M34%2020L36%2016L38%2020'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c!--%20Yeti%20Eyes%20(cute)%20--%3e%3ccircle%20cx='24'%20cy='30'%20r='2'%20fill='%2300979C'/%3e%3ccircle%20cx='30'%20cy='30'%20r='2'%20fill='%2300979C'/%3e%3c!--%20Yeti%20Smile%20--%3e%3cpath%20d='M25%2034C25%2034%2027%2036%2029%2034'%20stroke='%2300979C'%20stroke-width='1.5'%20stroke-linecap='round'/%3e%3c/svg%3e" alt="YetiLAB" class="w-7 h-7" />
+                                </div>
+                            </div>
+                            <span
+                                class="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-theme transition-colors"
+                                >Yeti<span
+                                    class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400 font-black"
+                                    >LAB</span
+                                ></span
+                            >
+                        </a>
+
+                        <!-- Right: Home Button -->
+                        <a
+                            href="index.html"
+                            class="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-theme hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all text-sm font-medium"
+                        >
+                            <span>←</span>
+                            <span class="hidden sm:inline">Ana Sayfa</span>
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <div class="flex-grow flex items-center justify-center px-3 py-2 relative z-10">
+                <div class="w-full max-w-md">
+                    <!-- Auth Card -->
+                    <div class="auth-card rounded-2xl p-4 sm:p-6 relative">
+                        <!-- Yeti Mascot - Points at login button (Positioned relative to card) -->
+                        <div
+                            class="hidden md:block absolute z-20 right-[410px] top-[180px] w-28 pointer-events-none transform translate-x-0"
+                        >
+                            <div class="relative">
+                                <!-- Circular background -->
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full scale-75"
+                                ></div>
+                                <img
+                                    src="./assets/yeti-pointing-B2az_ees.png"
+                                    alt="Yeti"
+                                    class="w-full h-auto animate-bounce-slow relative z-10 transform -scale-x-100 rotate-0"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Mobile Version (Bottom Right -> Moved to Left side for button focus) -->
+                        <div class="md:hidden absolute z-20 left-[-10px] top-[240px] w-24 pointer-events-none">
+                            <div class="relative">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full scale-75"
+                                ></div>
+                                <img
+                                    src="./assets/yeti-pointing-B2az_ees.png"
+                                    alt="Yeti"
+                                    class="w-full h-auto animate-bounce-slow relative z-10 transform -scale-x-100"
+                                />
+                            </div>
+                        </div>
+                        <!-- Decorative Background Element (hidden on mobile to prevent overflow) -->
+                        <div
+                            class="hidden sm:block absolute top-0 right-0 w-32 h-32 bg-theme/5 rounded-full -mr-16 -mt-16 pointer-events-none"
+                        ></div>
+
+                        <!-- Alert Box -->
+                        <div id="alertBox" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border-l-4"></div>
+
+                        <!-- 📧 SECTION 1: EMAIL LOGIN -->
+                        <div id="emailLoginSection" class="mb-4 relative z-10 transition-all">
+                            <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 text-center">
+                                Giriş Yap
+                            </h2>
+
+                            <form id="teacherForm">
+                                <div class="space-y-3">
+                                    <div>
+                                        <label
+                                            class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-1 ml-1"
+                                            >E-posta</label
+                                        >
+                                        <input
+                                            type="email"
+                                            id="teacherEmail"
+                                            placeholder="mail@ornek.com"
+                                            required
+                                            class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg focus:border-theme focus:ring-2 focus:ring-theme/10 transition-all bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 outline-none text-sm text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1 ml-1">
+                                            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold"
+                                                >Şifre</label
+                                            >
+                                            <a
+                                                href="#"
+                                                onclick="forgotPassword(event)"
+                                                class="text-xs text-theme hover:underline font-medium"
+                                                >Unuttum?</a
+                                            >
+                                        </div>
+                                        <input
+                                            type="password"
+                                            id="teacherPassword"
+                                            placeholder="••••••••"
+                                            required
+                                            class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg focus:border-theme focus:ring-2 focus:ring-theme/10 transition-all bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 outline-none text-sm text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        id="teacherLoginBtn"
+                                        class="w-full bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white py-2.5 rounded-xl font-bold hover:brightness-110 transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transform active:scale-[0.98] flex items-center justify-center gap-2 text-sm"
+                                    >
+                                        <span>Giriş Yap</span>
+                                        <span class="text-xl">🚀</span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                Hesabın yok mu?
+                                <a href="#" onclick="toggleRegisterMode()" class="text-theme font-bold hover:underline"
+                                    >Kayıt Ol</a
+                                >
+                            </div>
+                        </div>
+
+                        <!-- 🌐 SECTION 2: SOCIAL LOGIN -->
+                        <div class="mb-8 relative z-10">
+                            <div class="relative flex justify-center text-sm mb-4">
+                                <span
+                                    class="px-3 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-xs font-medium relative z-10"
+                                    >veya</span
+                                >
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-100 dark:border-gray-700"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex gap-3 justify-center">
+                                <button
+                                    type="button"
+                                    onclick="handleSocialLogin('google')"
+                                    class="flex-1 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                    title="Google ile Giriş"
+                                >
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                        <path
+                                            fill="#4285F4"
+                                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                        />
+                                        <path
+                                            fill="#34A853"
+                                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                        />
+                                        <path
+                                            fill="#FBBC05"
+                                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                        />
+                                        <path
+                                            fill="#EA4335"
+                                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                        />
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Google</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="handleSocialLogin('github')"
+                                    class="flex-1 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                    title="GitHub ile Giriş"
+                                >
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                                        />
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">GitHub</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 🏫 SECTION 3: CLASSROOM CODE -->
+                        <div
+                            id="classroomSection"
+                            class="relative z-10 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700"
+                        >
+                            <div class="text-center mb-2">
+                                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Sınıf Kodu İle Katıl
+                                </h3>
+                            </div>
+
+                            <form id="studentForm">
+                                <!-- Classroom Code Inputs -->
+                                <div class="mb-2">
+                                    <div class="flex gap-1.5 justify-center">
+                                        <input
+                                            type="text"
+                                            class="code-box w-10 h-10 border-2 border-gray-200 dark:border-gray-600 rounded-lg text-center text-lg font-bold focus:border-theme focus:ring-2 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            maxlength="1"
+                                            data-index="0"
+                                            autocomplete="off"
+                                            placeholder="-"
+                                        />
+                                        <input
+                                            type="text"
+                                            class="code-box w-10 h-10 border-2 border-gray-200 dark:border-gray-600 rounded-lg text-center text-lg font-bold focus:border-theme focus:ring-2 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            maxlength="1"
+                                            data-index="1"
+                                            autocomplete="off"
+                                            placeholder="-"
+                                        />
+                                        <input
+                                            type="text"
+                                            class="code-box w-10 h-10 border-2 border-gray-200 dark:border-gray-600 rounded-lg text-center text-lg font-bold focus:border-theme focus:ring-2 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            maxlength="1"
+                                            data-index="2"
+                                            autocomplete="off"
+                                            placeholder="-"
+                                        />
+                                        <input
+                                            type="text"
+                                            class="code-box w-10 h-10 border-2 border-gray-200 dark:border-gray-600 rounded-lg text-center text-lg font-bold focus:border-theme focus:ring-2 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            maxlength="1"
+                                            data-index="3"
+                                            autocomplete="off"
+                                            placeholder="-"
+                                        />
+                                        <input
+                                            type="text"
+                                            class="code-box w-10 h-10 border-2 border-gray-200 dark:border-gray-600 rounded-lg text-center text-lg font-bold focus:border-theme focus:ring-2 focus:ring-theme/20 outline-none transition-all uppercase bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            maxlength="1"
+                                            data-index="4"
+                                            autocomplete="off"
+                                            placeholder="-"
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Classroom Found Info -->
+                                <div
+                                    id="classroomInfo"
+                                    class="hidden mb-4 p-3 bg-green-50 border border-green-200 rounded-xl classroom-found animate-fade-in"
+                                >
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-lg"
+                                        >
+                                            🏫
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-green-800 dark:text-green-300 text-sm">
+                                                Sınıf Bulundu!
+                                            </p>
+                                            <p
+                                                id="classroomDetails"
+                                                class="text-green-700 dark:text-green-400 text-xs"
+                                            ></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Student Identification Section (Animated) -->
+                                <div
+                                    id="studentIdentifySection"
+                                    class="hidden opacity-0 transition-opacity duration-500"
+                                >
+                                    <!-- Student Name Selection -->
+                                    <div class="mb-4">
+                                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-2"
+                                            >İsmin</label
+                                        >
+
+                                        <!-- Selection Mode Only -->
+                                        <div id="nameSelectMode">
+                                            <select
+                                                id="studentSelect"
+                                                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-lg mb-2 cursor-pointer bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                                onchange="handleStudentSelect()"
+                                            >
+                                                <option value="">İsmini Seç...</option>
+                                            </select>
+                                            <p id="noStudentMessage" class="hidden text-red-500 text-sm mt-1">
+                                                Bu sınıfta kayıtlı öğrenci bulunamadı. Lütfen öğretmenine başvur.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Password -->
+                                    <div id="studentPasswordSection" class="mb-4 hidden">
+                                        <input
+                                            type="password"
+                                            id="studentPassword"
+                                            class="w-full px-3 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-theme focus:ring-2 focus:ring-theme/20 transition-all text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            placeholder="Sınıf şifresi..."
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        id="studentLoginBtn"
+                                        class="w-full bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white py-3 rounded-xl font-bold text-sm hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50"
+                                    >
+                                        <span>Sınıfa Katıl</span>
+                                        <span class="text-lg">🚀</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Register Form Overlay (Simple Implementation) -->
+                        <div
+                            id="registerSection"
+                            class="hidden absolute inset-0 bg-white dark:bg-gray-800 p-8 z-20 flex flex-col"
+                        >
+                            <div class="flex items-center mb-6">
+                                <button
+                                    type="button"
+                                    onclick="toggleRegisterMode()"
+                                    class="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors mr-2"
+                                >
+                                    <svg
+                                        class="w-5 h-5 text-gray-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M15 19l-7-7 7-7"
+                                        ></path>
+                                    </svg>
+                                </button>
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Kayıt Ol</h2>
+                            </div>
+
+                            <form id="registerForm" class="flex-grow">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-1">Ad Soyad</label>
+                                        <input
+                                            type="text"
+                                            id="regName"
+                                            placeholder="Adınız Soyadınız"
+                                            required
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-1">E-posta</label>
+                                        <input
+                                            type="email"
+                                            id="regEmail"
+                                            placeholder="mail@ornek.com"
+                                            required
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-1">Şifre</label>
+                                        <input
+                                            type="password"
+                                            id="regPassword"
+                                            placeholder="En az 6 karakter"
+                                            required
+                                            minlength="6"
+                                            oninput="updatePasswordStrength(this.value)"
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-theme bg-gray-50 focus:bg-white outline-none"
+                                        />
+                                        <!-- Password Strength Indicator -->
+                                        <div id="passwordStrength" class="password-strength hidden" data-strength="0">
+                                            <div class="bar"></div>
+                                            <div class="bar"></div>
+                                            <div class="bar"></div>
+                                        </div>
+                                        <p id="strengthText" class="strength-text hidden"></p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-1"
+                                            >Şifre Tekrar</label
+                                        >
+                                        <input
+                                            type="password"
+                                            id="regPasswordConfirm"
+                                            placeholder="Şifrenizi tekrar girin"
+                                            required
+                                            minlength="6"
+                                            oninput="checkPasswordMatch()"
+                                            class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:border-theme bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-800 outline-none text-gray-900 dark:text-gray-100"
+                                        />
+                                        <p id="passwordMatchMsg" class="form-message hidden"></p>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        id="regBtn"
+                                        class="w-full bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white py-3.5 rounded-xl font-bold hover:brightness-110 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 mt-4 transition-all"
+                                    >
+                                        Hesap Oluştur 🚀
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- End of auth-card -->
+                </div>
+            </div>
+
+            <!-- Compact Footer -->
+            <footer class="bg-gray-800 text-white py-3 text-center text-xs">
+                <span class="text-gray-400">© 2026 Yeti LAB</span>
+            </footer>
+        </div>
+
+        <!-- Scripts -->
+        <!-- Scripts loaded via src/auth.js -->
+
+        <script>
+            // ========================================
+            // FORM VALIDATION FUNCTIONS
+            // ========================================
+
+            // Password strength calculator
+            function updatePasswordStrength(password) {
+                const strengthBar = document.getElementById('passwordStrength');
+                const strengthText = document.getElementById('strengthText');
+
+                if (!password || password.length === 0) {
+                    strengthBar.classList.add('hidden');
+                    strengthText.classList.add('hidden');
+                    return;
+                }
+
+                strengthBar.classList.remove('hidden');
+                strengthText.classList.remove('hidden');
+
+                let strength = 0;
+
+                // Length check
+                if (password.length >= 6) strength++;
+                if (password.length >= 8) strength++;
+
+                // Character variety check
+                if (/[A-Z]/.test(password) && /[a-z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                // Calculate final strength (1-3)
+                let finalStrength = 1;
+                if (strength >= 3) finalStrength = 2;
+                if (strength >= 4) finalStrength = 3;
+
+                strengthBar.setAttribute('data-strength', finalStrength);
+
+                // Update text
+                strengthText.classList.remove('weak', 'medium', 'strong');
+                if (finalStrength === 1) {
+                    strengthText.textContent = '🔴 Zayıf şifre';
+                    strengthText.classList.add('weak');
+                } else if (finalStrength === 2) {
+                    strengthText.textContent = '🟡 Orta güçlükte';
+                    strengthText.classList.add('medium');
+                } else {
+                    strengthText.textContent = '🟢 Güçlü şifre';
+                    strengthText.classList.add('strong');
+                }
+            }
+
+            // Password match checker
+            function checkPasswordMatch() {
+                const password = document.getElementById('regPassword').value;
+                const confirm = document.getElementById('regPasswordConfirm').value;
+                const matchMsg = document.getElementById('passwordMatchMsg');
+                const confirmInput = document.getElementById('regPasswordConfirm');
+
+                if (!confirm || confirm.length === 0) {
+                    matchMsg.classList.add('hidden');
+                    confirmInput.classList.remove('input-error', 'input-success');
+                    return;
+                }
+
+                matchMsg.classList.remove('hidden');
+
+                if (password === confirm) {
+                    matchMsg.textContent = '✓ Şifreler eşleşiyor';
+                    matchMsg.classList.remove('error');
+                    matchMsg.classList.add('success');
+                    confirmInput.classList.remove('input-error');
+                    confirmInput.classList.add('input-success');
+                } else {
+                    matchMsg.textContent = '✕ Şifreler eşleşmiyor';
+                    matchMsg.classList.remove('success');
+                    matchMsg.classList.add('error');
+                    confirmInput.classList.remove('input-success');
+                    confirmInput.classList.add('input-error');
+                }
+            }
+
+            // Set button loading state
+            function setButtonLoading(btn, loading) {
+                if (loading) {
+                    btn.classList.add('btn-loading');
+                    btn.dataset.originalText = btn.innerHTML;
+                    btn.innerHTML = '<div class="spinner"></div><span>Lütfen bekleyin...</span>';
+                } else {
+                    btn.classList.remove('btn-loading');
+                    btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+                }
+            }
+
+            // ========================================
+            // MAIN INITIALIZATION
+            // ========================================
+
+            // ========================================
+            // MAIN INITIALIZATION
+            // ========================================
+
+            // Global Error Handler
+            window.onerror = function (msg, url, line, col, error) {
+                console.error('Global Error:', error);
+                // alert('Bir hata oluştu: ' + msg); // Kullanıcıyı çok rahatsız etmemek için önce sessiz log
+                return false;
+            };
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', async () => {
+                // 1. SETUP FORMS FIRST (To prevent page reload on submit even if init fails)
+                setupForms();
+
+                try {
+                    // Initialize Supabase
+                    const supInit = SupabaseClient.init();
+                    if (!supInit) {
+                        showAlert('Sunucu bağlantısı kurulamadı (SDK eksik).', 'error');
+                        return;
+                    }
+
+                    // Check URL params
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const forceShow = urlParams.get('force') === 'true';
+
+                    // ... devamı orijinal kod ...
+
+                    // Check for OAuth callback (URL contains access_token in hash)
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    if (hashParams.get('access_token')) {
+                        // OAuth callback - wait for session to be established
+                        showAlert('Giriş yapılıyor, lütfen bekleyin...', 'info');
+
+                        // Give Supabase time to process the token
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                        // Check session again
+                        const session = await Auth.checkSession();
+                        if (session) {
+                            showAlert('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
+                            setTimeout(() => {
+                                // Clear the hash and redirect to index (teacher can access panel from there)
+                                Router.redirectTo('index.html');
+                            }, 500);
+                            return;
+                        }
+                    }
+
+                    // Check if already logged in
+                    const session = await Auth.checkSession();
+                    if (session && !forceShow) {
+                        Router.redirectTo('index.html');
+                        return;
+                    }
+
+                    // Check student session
+                    if (Auth.checkStudentSession() && !forceShow) {
+                        Router.redirectTo('index.html');
+                        return;
+                    }
+
+                    // If logged in but force=true, show logout option
+                    if (session && forceShow) {
+                        const userName =
+                            session.user?.user_metadata?.full_name ||
+                            session.user?.user_metadata?.name ||
+                            session.user?.email ||
+                            'Kullanıcı';
+                        showAlert(`Zaten giriş yapmışsınız: ${userName}`, 'success');
+
+                        // Replace guest link with logout
+                        const guestLink = document.querySelector('.mt-6.pt-6');
+                        guestLink.innerHTML = `
+                    <button onclick="logout()" class="w-full bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition-all mb-3">
+                        🚪 Çıkış Yap
+                    </button>
+                    <a href="index.html" class="text-gray-500 dark:text-gray-400 hover:text-theme transition-colors">← Ana sayfaya dön</a>
+                `;
+                    }
+
+                    // Setup code inputs
+                    setupCodeInputs();
+                } catch (err) {
+                    console.error('Critical Init Error:', err);
+                    // Try to show in alert box if exists
+                    const alertBox = document.getElementById('alertBox');
+                    if (alertBox) {
+                        alertBox.textContent = 'Sistem hatası: ' + err.message;
+                        alertBox.classList.remove('hidden');
+                        alertBox.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                    }
+                }
+            });
+
+            // Logout function
+            async function logout() {
+                try {
+                    await Auth.signOut();
+                    Auth.studentLogout();
+                    showAlert('Çıkış yapıldı!', 'success');
+                    setTimeout(() => location.reload(), 500);
+                } catch (err) {
+                    showAlert(err.message, 'error');
+                }
+            }
+
+            // Forgot Password Handler
+            async function forgotPassword(e) {
+                e?.preventDefault();
+                const email = prompt('Şifrenizi sıfırlamak için e-posta adresinizi girin:');
+                if (!email) return;
+
+                // Basic email validation
+                if (!email.includes('@') || !email.includes('.')) {
+                    showAlert('Geçerli bir e-posta adresi girin.', 'error');
+                    return;
+                }
+
+                try {
+                    showAlert('Sıfırlama bağlantısı gönderiliyor...', 'info');
+
+                    // Calculate redirect URL
+                    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+                    const redirectUrl = baseUrl + '/auth.html';
+
+                    const { error } = await SupabaseClient.getClient().auth.resetPasswordForEmail(email, {
+                        redirectTo: redirectUrl,
+                    });
+
+                    if (error) throw error;
+                    showAlert(
+                        'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen spam kutunuzu da kontrol edin.',
+                        'success'
+                    );
+                } catch (err) {
+                    showAlert('Hata: ' + err.message, 'error');
+                }
+            }
+
+            // Toggle Register Mode Overlay
+            function toggleRegisterMode() {
+                const section = document.getElementById('registerSection');
+                if (section.classList.contains('hidden')) {
+                    section.classList.remove('hidden');
+                    // Allow browser to render hidden removal before adding opacity class if needed
+                    requestAnimationFrame(() => {
+                        section.classList.add('animate-fade-in');
+                    });
+                } else {
+                    section.classList.add('hidden');
+                }
+            }
+
+            let checkTimeout;
+
+            // Code input handling
+            function setupCodeInputs() {
+                const inputs = document.querySelectorAll('.code-box');
+
+                inputs.forEach((input, index) => {
+                    input.addEventListener('input', (e) => {
+                        const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                        e.target.value = value;
+
+                        if (value && index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+
+                        // Debounce check to prevent flickering
+                        clearTimeout(checkTimeout);
+                        checkTimeout = setTimeout(() => {
+                            checkClassroomCode();
+                        }, 300);
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    });
+
+                    input.addEventListener('paste', (e) => {
+                        e.preventDefault();
+                        const paste = e.clipboardData
+                            .getData('text')
+                            .toUpperCase()
+                            .replace(/[^A-Z0-9]/g, '');
+
+                        for (let i = 0; i < Math.min(paste.length, 5); i++) {
+                            inputs[i].value = paste[i];
+                        }
+
+                        if (paste.length >= 5) {
+                            inputs[4].focus();
+                            checkClassroomCode();
+                        }
+                    });
+                });
+            }
+
+            // Social Login Handler
+            async function handleSocialLogin(provider) {
+                try {
+                    showAlert(`${provider === 'google' ? 'Google' : 'GitHub'} ile bağlanılıyor...`, 'info');
+
+                    // Always redirect to index.html after OAuth - simpler and works for everyone
+                    const baseUrl =
+                        window.location.origin +
+                        window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                    const redirectUrl = baseUrl + '/index.html';
+
+                    const { data, error } = await SupabaseClient.getClient().auth.signInWithOAuth({
+                        provider: provider,
+                        options: {
+                            redirectTo: redirectUrl,
+                        },
+                    });
+
+                    if (error) throw error;
+                } catch (err) {
+                    console.error('Login error:', err);
+                    showAlert(`Giriş hatası: ${err.message}`, 'error');
+                }
+            }
+
+            // Get code from inputs
+            function getClassroomCode() {
+                const inputs = document.querySelectorAll('.code-box');
+                return Array.from(inputs)
+                    .map((i) => i.value)
+                    .join('');
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Check classroom code
+            let currentClassroomData = null; // Store classroom data for later use
+            let classroomStudents = [];
+            let lastCheckedCode = ''; // Cache to prevent flickering
+
+            async function checkClassroomCode() {
+                const code = getClassroomCode();
+                const infoBox = document.getElementById('classroomInfo');
+                const details = document.getElementById('classroomDetails');
+                const passwordSection = document.getElementById('studentPasswordSection');
+                const passwordInput = document.getElementById('studentPassword');
+                const studentSelect = document.getElementById('studentSelect');
+                const identifySection = document.getElementById('studentIdentifySection');
+
+                // If code is incomplete, reset logic
+                if (code.length !== 5) {
+                    lastCheckedCode = ''; // Reset cache
+                    infoBox.classList.add('hidden');
+                    identifySection.classList.add('hidden');
+                    identifySection.classList.add('opacity-0');
+                    passwordSection.classList.add('hidden');
+                    passwordInput.required = false;
+                    currentClassroomData = null;
+                    classroomStudents = [];
+                    studentSelect.innerHTML = '<option value="">İsmini Seç...</option>';
+                    return;
+                }
+
+                // If code hasn't changed, don't re-run logic (Prevents UI flickering)
+                if (code === lastCheckedCode) return;
+                lastCheckedCode = code;
+
+                try {
+                    // Get classroom data
+                    const { data, error } = await SupabaseClient.getClient()
+                        .from('classrooms')
+                        .select('id, name, requires_password, user_profiles(full_name)')
+                        .eq('code', code)
+                        .eq('is_active', true)
+                        .maybeSingle();
+
+                    if (data) {
+                        currentClassroomData = data;
+                        infoBox.classList.remove('hidden');
+
+                        // Show identify section with animation
+                        identifySection.classList.remove('hidden');
+                        // Use timeout to allow DOM to update before removing opacity (for transition)
+                        setTimeout(() => identifySection.classList.remove('opacity-0'), 50);
+
+                        // Show password lock indicator if required
+                        const lockIcon = data.requires_password ? ' 🔒' : '';
+                        details.textContent = `${data.name}${lockIcon} - ${data.user_profiles?.full_name || 'Öğretmen'}`;
+
+                        // Fetch students for this classroom
+                        // GÜVENLİK DÜZELTMESİ: password alanını sorgudan sildik.
+                        const { data: students, error: studentsError } = await SupabaseClient.getClient()
+                            .from('students')
+                            .select('id, display_name')
+                            .eq('classroom_id', data.id)
+                            .order('display_name');
+
+                        if (studentsError) {
+                            console.error('Öğrenci listesi hatası:', studentsError);
+                            showAlert('Öğrenci listesi alınamadı. Hata: ' + studentsError.message, 'error');
+                            return;
+                        }
+
+                        if (students && students.length > 0) {
+                            classroomStudents = students;
+                            studentSelect.innerHTML =
+                                '<option value="">İsmini Seç...</option>' +
+                                students
+                                    .map((s) => `<option value="${s.id}">${escapeHtml(s.display_name)}</option>`)
+                                    .join('');
+
+                            // Show select mode, hide error
+                            document.getElementById('nameSelectMode').classList.remove('hidden');
+                            document.getElementById('noStudentMessage').classList.add('hidden');
+                        } else {
+                            classroomStudents = [];
+                            studentSelect.innerHTML = '<option value="">Listede Kimse Yok</option>';
+                            document.getElementById('noStudentMessage').classList.remove('hidden');
+                        }
+
+                        // Reset password section initially
+                        passwordSection.classList.add('hidden');
+                        passwordInput.required = false;
+                    } else {
+                        infoBox.classList.add('hidden');
+                        identifySection.classList.add('hidden');
+                        identifySection.classList.add('opacity-0');
+                        passwordSection.classList.add('hidden');
+                        passwordInput.required = false;
+                        currentClassroomData = null;
+                    }
+                } catch (err) {
+                    console.warn('Code check error:', err);
+                    infoBox.classList.add('hidden');
+                    identifySection.classList.add('hidden');
+                }
+            }
+
+            function handleStudentSelect() {
+                const studentId = document.getElementById('studentSelect').value;
+                const passwordSection = document.getElementById('studentPasswordSection');
+                const passwordInput = document.getElementById('studentPassword');
+
+                if (!studentId) {
+                    // No selection
+                    passwordSection.classList.add('hidden');
+                    passwordInput.required = false;
+                    passwordInput.value = '';
+                    return;
+                }
+
+                // Always show password section for selected student
+                // The server will handle validation or setting new password
+                passwordSection.classList.remove('hidden');
+                passwordInput.required = true;
+                passwordInput.placeholder = 'Şifreni gir (veya ilk girişinse oluştur)';
+
+                // Focus on password
+                setTimeout(() => passwordInput.focus(), 100);
+            }
+
+            // Setup forms
+            function setupForms() {
+                // Student form
+                document.getElementById('studentForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const code = getClassroomCode();
+                    const studentSelect = document.getElementById('studentSelect');
+                    const studentId = studentSelect.value;
+                    const passwordInput = document.getElementById('studentPassword');
+                    const password = passwordInput.value;
+                    const btn = document.getElementById('studentLoginBtn');
+
+                    if (!studentId) {
+                        showAlert('Lütfen ismini seç.', 'error');
+                        return;
+                    }
+
+                    // Find selected student
+                    const student = classroomStudents.find((s) => s.id === studentId);
+
+                    if (!student) {
+                        showAlert('Öğrenci bulunamadı.', 'error');
+                        return;
+                    }
+
+                    if (!password) {
+                        showAlert('Lütfen şifreni gir.', 'error');
+                        passwordInput.focus();
+                        return;
+                    }
+
+                    setLoading(btn, true);
+
+                    try {
+                        // Pass password to studentLogin
+                        // Server-side validation via RPC 'student_login_secure'
+                        await Auth.studentLogin(code, student.display_name, password);
+                        showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
+                        setTimeout(() => {
+                            Router.redirectTo('index.html');
+                        }, 1000);
+                    } catch (err) {
+                        showAlert(err.message, 'error');
+                        setLoading(btn, false);
+                    }
+                });
+
+                // Teacher form
+                document.getElementById('teacherForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const email = document.getElementById('teacherEmail').value;
+                    const password = document.getElementById('teacherPassword').value;
+                    const btn = document.getElementById('teacherLoginBtn');
+
+                    setLoading(btn, true);
+
+                    try {
+                        // Create timeout promise (10s)
+                        const timeout = new Promise((_, reject) =>
+                            setTimeout(
+                                () =>
+                                    reject(
+                                        new Error(
+                                            'Sunucudan yanıt alınamadı (Zaman aşımı). Lütfen internet bağlantınızı kontrol edin.'
+                                        )
+                                    ),
+                                10000
+                            )
+                        );
+
+                        // Race against login
+                        await Promise.race([Auth.signInWithEmail(email, password), timeout]);
+
+                        showAlert('Giriş başarılı! Yönlendiriliyorsun...', 'success');
+                        setTimeout(() => {
+                            Router.redirectTo('index.html');
+                        }, 1000);
+                    } catch (err) {
+                        showAlert(err.message, 'error');
+                        setLoading(btn, false);
+                    }
+                });
+
+                // Register form handler
+                const registerForm = document.getElementById('registerForm');
+                if (registerForm) {
+                    registerForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+
+                        const name = document.getElementById('regName').value;
+                        const email = document.getElementById('regEmail').value;
+                        const password = document.getElementById('regPassword').value;
+                        const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+                        const btn = document.getElementById('regBtn');
+
+                        if (password !== passwordConfirm) {
+                            showAlert('Şifreler eşleşmiyor, lütfen kontrol edin.', 'error');
+                            return;
+                        }
+
+                        setLoading(btn, true);
+
+                        try {
+                            const { user } = await Auth.signUpWithEmail(email, password, name);
+
+                            // Check if email confirmation is required
+                            if (user && user.identities && user.identities.length === 0) {
+                                showAlert('Bu e-posta adresi zaten kayıtlı.', 'error');
+                            } else {
+                                // Kayıt başarılı - önce formu temizle ve paneli kapat
+                                registerForm.reset();
+                                toggleRegisterMode(); // Kayıt panelini kapat
+
+                                // Sonra alert mesajını göster (kullanıcı hemen görsün)
+                                showAlert(
+                                    '✅ Kayıt başarılı! E-posta adresinize onay maili gönderildi. Lütfen spam/gereksiz klasörünü de kontrol edin.',
+                                    'success'
+                                );
+                            }
+                        } catch (err) {
+                            showAlert(err.message, 'error');
+                        } finally {
+                            setLoading(btn, false);
+                        }
+                    });
+                }
+            }
+
+            // OAuth logins
+            async function teacherGoogleLogin(btn) {
+                if (btn && btn.disabled) return; // Double-click protection
+                setLoading(btn, true);
+                try {
+                    await Auth.signInWithGoogle();
+                    // Auth redirect will happen, keep loading
+                } catch (err) {
+                    showAlert(err.message, 'error');
+                    setLoading(btn, false);
+                }
+            }
+
+            async function teacherGitHubLogin(btn) {
+                if (btn && btn.disabled) return; // Double-click protection
+                setLoading(btn, true);
+                try {
+                    await Auth.signInWithGitHub();
+                    // Auth redirect will happen, keep loading
+                } catch (err) {
+                    showAlert(err.message, 'error');
+                    setLoading(btn, false);
+                }
+            }
+
+            async function studentGoogleLogin(btn) {
+                if (btn && btn.disabled) return; // Double-click protection
+                setLoading(btn, true);
+                try {
+                    await Auth.signInWithGoogle();
+                    // Auth redirect will happen, keep loading
+                } catch (err) {
+                    showAlert(err.message, 'error');
+                    setLoading(btn, false);
+                }
+            }
+
+            function toggleTeacherSignup() {
+                showAlert('Kayıt olmak için Google veya GitHub ile devam edin.', 'info');
+            }
+
+            // Alert helpers
+            function showAlert(message, type) {
+                const alert = document.getElementById('alertBox');
+                alert.className = 'mb-4 p-4 rounded-xl text-sm font-medium';
+
+                if (type === 'error') {
+                    alert.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                } else if (type === 'success') {
+                    alert.classList.add('bg-green-50', 'text-green-700', 'border', 'border-green-200');
+                } else {
+                    alert.classList.add('bg-blue-50', 'text-blue-700', 'border', 'border-blue-200');
+                }
+
+                alert.textContent = message;
+                alert.classList.remove('hidden');
+            }
+
+            function hideAlert() {
+                document.getElementById('alertBox').classList.add('hidden');
+            }
+
+            // Loading state
+            function setLoading(btn, loading) {
+                if (loading) {
+                    btn.disabled = true;
+                    btn.innerHTML =
+                        '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Yükleniyor...';
+                } else {
+                    btn.disabled = false;
+                    if (btn.id === 'studentLoginBtn') {
+                        btn.innerHTML = '<span>Derse Başla</span><span class="text-xl">🚀</span>';
+                    } else {
+                        btn.innerHTML = 'Giriş Yap';
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
