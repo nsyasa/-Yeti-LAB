@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-    base: process.env.NODE_ENV === 'production' ? '/-Yeti-LAB/' : '/', // GitHub Pages base path for prod, root for dev
+    base: './', // Relative path for GitHub Pages compatibility
     plugins: [tailwindcss()],
     // Multi-page app configuration
     build: {
