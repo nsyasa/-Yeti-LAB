@@ -137,21 +137,13 @@ export const ClassroomManager = {
                             <button onclick="ClassroomManager.copyCode('${classroom.code}', event)" 
                                 class="flex items-center gap-1 bg-slate-900 px-2 md:px-3 py-2 rounded border border-slate-600 cursor-pointer active:scale-95 transition-transform hover:border-emerald-500"
                                 title="Kodu Kopyala">
-                                <span class="text-xs text-slate-500 font-bold hidden sm:inline">KOD:</span>
+                                <span class="text-[10px] sm:text-xs text-slate-500 font-bold">Sınıf Kodu:</span>
                                 <span class="text-white font-mono font-bold tracking-widest text-sm md:text-base">${classroom.code}</span>
                                 <span class="text-slate-500 text-xs">📋</span>
                             </button>
 
                             <!-- Action Buttons - Icons only on mobile -->
                             <div class="flex items-center gap-1 md:gap-2">
-                                <!-- Print Credentials -->
-                                <button onclick="ClassroomManager.printStudentCredentials('${classroom.id}', '${escapedName}')" 
-                                    class="h-9 md:h-10 px-2 md:px-3 rounded border border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700 hover:border-orange-500 transition-colors flex items-center justify-center"
-                                    title="Fişleri Yazdır">
-                                    <span class="text-base md:text-lg">🖨️</span>
-                                    <span class="hidden md:inline ml-2 text-xs font-medium">Yazdır</span>
-                                </button>
-                                
                                 <!-- Add Student (Green) -->
                                 <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'single')"
                                     class="h-9 md:h-10 px-2 md:px-3 rounded bg-emerald-900/30 border border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors flex items-center justify-center"

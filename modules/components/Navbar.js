@@ -79,7 +79,6 @@ const Navbar = {
                     </button>
 
                     <div id="navbar-notification-section" class="relative hidden"></div>
-                    <div class="h-8 flex items-center gap-1"></div>
                     <div id="navbar-auth-section" class="ml-2">
                         <div class="animate-pulse flex space-x-2">
                             <div class="w-10 h-10 bg-gray-200 rounded-lg"></div>
