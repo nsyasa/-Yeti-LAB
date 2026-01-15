@@ -1,7 +1,7 @@
 window.courseData = window.courseData || {};
 window.courseData.arduino = {
     title: 'Arduino Eğitimi',
-    description: ' Kapsamlı Ardiuno Eğitimi',
+    description: 'Kapsamlı Arduino Eğitimi',
     data: {
         componentInfo: {
             Arduino: {

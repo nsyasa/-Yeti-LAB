@@ -18,15 +18,18 @@
             body {
                 font-family: 'Outfit', sans-serif;
             }
+
             /* Dark mode varsayılan - JavaScript yüklenmeden önce */
             html {
                 color-scheme: dark light;
             }
+
             /* Default: Dark mode */
             body {
                 background-color: #0f172a;
                 color: #f1f5f9;
             }
+
             /* Light mode override (only if explicitly set) */
             html.light body,
             html[data-theme='light'] body {
@@ -165,16 +168,15 @@
         </div>
 
         <!-- Ana İçerik -->
-        <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+        <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 pb-32">
             <!-- SPA View Container (Ders Detay, Admin, Profile vb.) -->
             <div id="main-content" class="w-full transition-opacity duration-300"></div>
 
             <!-- DERS SEÇİM EKRANI (Ana Sayfa) -->
 
             <div id="course-selection-view" class="fade-in pb-10">
-                <!-- Hero Section - Responsive -->
                 <div
-                    class="flex flex-row items-center justify-center gap-3 lg:gap-6 max-w-5xl mx-auto mb-6 lg:mb-8 mt-2 lg:mt-4 px-2"
+                    class="flex flex-row items-center justify-center gap-3 lg:gap-6 max-w-5xl mx-auto mb-3 lg:mb-8 mt-1 lg:mt-4 px-2"
                 >
                     <!-- Yeti Mascot (Fixed high-quality asset with floating animation) -->
                     <div class="flex-shrink-0 relative">
@@ -185,7 +187,7 @@
                         <img
                             src="img/yeti-mascot.png"
                             alt="Yeti Maskot"
-                            class="w-16 sm:w-20 lg:w-48 h-auto object-contain animate-float relative z-10"
+                            class="w-20 sm:w-24 lg:w-48 h-auto object-contain animate-float relative z-10"
                             style="
                                 filter: drop-shadow(0 25px 50px rgba(0, 151, 156, 0.5))
                                     drop-shadow(0 10px 25px rgba(255, 255, 255, 0.2));
@@ -194,9 +196,9 @@
                     </div>
 
                     <!-- Title Section - Compact on mobile -->
-                    <div class="text-left lg:text-left space-y-1 lg:space-y-4 flex-1">
+                    <div class="text-left lg:text-left space-y-1 lg:space-y-4 flex-1 min-w-0">
                         <h2
-                            class="text-xl sm:text-2xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
+                            class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight"
                         >
                             <span
                                 class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400"
@@ -204,7 +206,6 @@
                                 İçindeki Yeti'yi
                             </span>
                             <br class="hidden sm:block" /><span class="sm:hidden"> </span>Keşfet!
-                            <span class="rocket-icon text-base sm:text-xl lg:text-4xl">🚀</span>
                         </h2>
                         <p
                             class="hidden sm:block text-sm md:text-lg lg:text-xl text-gray-400 dark:text-gray-300 max-w-2xl leading-relaxed font-medium"
@@ -212,6 +213,8 @@
                             Yaparak öğren, simülasyonlarla dene ve rozetleri topla.
                         </p>
                     </div>
+                    <!-- Rocket Icon - Fixed position -->
+                    <div class="shrink-0 text-base sm:text-xl lg:text-4xl">🚀</div>
                 </div>
                 <div id="course-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
                     <!-- SKELETON LOADER (JS yüklenene kadar görünür) -->
@@ -241,16 +244,14 @@
 
             <!-- DASHBOARD (Proje Listesi) -->
             <div id="dashboard-view" class="hidden space-y-6 fade-in pb-10">
-                <div class="flex items-center justify-between mb-8 mt-4">
-                    <div class="flex items-center justify-between mb-8 mt-4">
-                        <button
-                            onclick="app.renderCourseSelection()"
-                            class="text-gray-700 dark:text-gray-200 hover:text-white hover:bg-theme font-bold flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 transform hover:scale-105 active:scale-95 group"
-                        >
-                            <span class="text-xl group-hover:-translate-x-1 transition-transform duration-300">←</span>
-                            <span>Ders Seçimine Dön</span>
-                        </button>
-                    </div>
+                <div class="flex items-center justify-between mb-4 mt-2">
+                    <button
+                        onclick="app.renderCourseSelection()"
+                        class="text-slate-400 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg transition-colors duration-200 group bg-transparent"
+                    >
+                        <span class="text-lg group-hover:-translate-x-1 transition-transform duration-300">←</span>
+                        <span class="text-sm font-medium">Dersler</span>
+                    </button>
                 </div>
                 <div class="text-center max-w-3xl mx-auto mb-10">
                     <h1 id="course-title" class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -420,7 +421,7 @@
         <!-- Mobile Bottom Navigation -->
         <nav
             id="mobile-bottom-nav"
-            class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/10 shadow-lg z-40 md:hidden"
+            class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 shadow-lg z-40 md:hidden"
         >
             <div class="grid grid-cols-4 h-16">
                 <button

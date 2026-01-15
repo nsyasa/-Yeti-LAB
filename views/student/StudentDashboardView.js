@@ -35,7 +35,7 @@ const StudentDashboardView = {
      */
     template() {
         return `
-            <div class="dashboard-bg min-h-screen pb-8">
+            <div class="dashboard-bg min-h-screen pb-32">
                 <!-- Main Content -->
                 <main class="max-w-6xl mx-auto px-4 py-8">
                     <!-- Welcome Section -->

@@ -61,19 +61,24 @@
      Prevents layout shift during page transitions
      ============================================ */
 
-    /* Scrollbar Stabilization - Reserves space even when content is short */
+    /* HTML'e de koyu renk vererek alttaki beyaz şerit sorununu (overscroll) engelle */
     html {
-        scrollbar-gutter: stable;
+        background-color: var(--lab-bg-dark, #0f172a);
+        height: 100%;
         overflow-y: scroll;
-        /* Always show scrollbar track */
+        /* Scrollbar kaymasını engeller */
+        scrollbar-gutter: stable;
     }
 
-    /* Global body - Deep navy background by default */
+    /* 100vh yerine 100dvh (dynamic viewport height) kullanarak mobil adres çubuğu sorununu çöz */
     body {
         @apply font-sans transition-colors duration-300;
         background-color: var(--lab-bg-dark, #0f172a);
         color: var(--text-secondary, #cbd5e1);
-        min-height: 100vh;
+        min-height: 100dvh;
+        /* MOBİL İÇİN KRİTİK DEĞİŞİKLİK */
+        display: flex;
+        flex-direction: column;
         overflow-x: hidden;
         /* Prevent horizontal scroll */
     }

@@ -94,7 +94,7 @@ const TeacherLayout = {
      */
     renderMobileBottomNav() {
         return `
-            <nav class="teacher-mobile-nav lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-700 flex items-center justify-around px-2 z-40">
+            <nav class="teacher-mobile-nav lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-800/95 backdrop-blur-xl border-t border-slate-700 flex items-center justify-around px-2 z-40">
                 
                 <button onclick="TeacherView.showSection('classrooms')"
                     class="teacher-mobile-nav-item flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-all"

@@ -106,85 +106,109 @@ export const ClassroomManager = {
                 const escapedDesc = ClassroomManager.escapeHtml(classroom.description || '');
 
                 return `
-                <div class="classroom-accordion" data-classroom-id="${classroom.id}">
-                    <!-- Main Row -->
-                    <div class="classroom-row w-full flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all">
+                <div class="w-full bg-slate-800 rounded-lg border border-slate-700 mb-4 overflow-hidden shadow-sm hover:border-slate-500 transition-all" data-classroom-id="${classroom.id}">
+                    <!-- Main Row - Flex-col on mobile, flex-row on desktop -->
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between p-4 gap-4">
                         
-                        <!-- Left: Icon + Name + Student Count -->
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-lg shrink-0">
+                        <!-- Left: Icon + Name + Info -->
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <div class="w-12 h-12 md:w-10 md:h-10 rounded-full bg-slate-700 flex items-center justify-center text-2xl md:text-xl shrink-0">
                                 🏫
                             </div>
-                            <div class="min-w-0 flex-1">
+                            
+                            <div class="flex flex-col min-w-0 flex-1">
                                 <div class="flex items-center gap-2">
-                                    <h4 class="font-bold text-sm text-slate-800 dark:text-white truncate" id="name-display-${classroom.id}">${escapedName}</h4>
+                                    <h4 class="text-white font-bold text-base md:text-sm truncate" id="name-display-${classroom.id}">${escapedName}</h4>
                                     <span class="text-xs" title="${statusText}">${statusIcon}</span>
                                 </div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400" id="student-count-${classroom.id}">
-                                    👨‍🎓 <span class="student-count-value">${studentCount}</span> öğrenci • ${ClassroomManager.formatDate(classroom.created_at)}
-                                </p>
+                                <div class="flex items-center gap-2 text-sm text-slate-400 mt-1 flex-wrap">
+                                    <span class="text-orange-400 font-medium whitespace-nowrap">
+                                        👨‍🎓 <span class="student-count-value">${studentCount}</span> öğrenci
+                                    </span>
+                                    <span class="text-slate-500 text-xs hidden sm:inline">• ${ClassroomManager.formatDate(classroom.created_at)}</span>
+                                </div>
                             </div>
                         </div>
-                        
-                        <!-- Center: Classroom Code Badge -->
-                        <div class="shrink-0">
+
+                        <!-- Right: Code + Action Buttons -->
+                        <div class="flex items-center justify-between w-full md:w-auto gap-2 md:gap-3 border-t md:border-t-0 border-slate-700 pt-3 md:pt-0">
+                            
+                            <!-- Classroom Code Badge -->
                             <button onclick="ClassroomManager.copyCode('${classroom.code}', event)" 
-                                class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg font-mono text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-100 dark:hover:bg-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer"
+                                class="flex items-center gap-1 bg-slate-900 px-2 md:px-3 py-2 rounded border border-slate-600 cursor-pointer active:scale-95 transition-transform hover:border-emerald-500"
                                 title="Kodu Kopyala">
-                                ${classroom.code}
+                                <span class="text-xs text-slate-500 font-bold hidden sm:inline">KOD:</span>
+                                <span class="text-white font-mono font-bold tracking-widest text-sm md:text-base">${classroom.code}</span>
+                                <span class="text-slate-500 text-xs">📋</span>
                             </button>
-                        </div>
-                        
-                        <!-- Right: Action Buttons (Text-based) -->
-                        <div class="flex items-center gap-2 shrink-0 flex-wrap">
-                            <!-- Add Single Student (Green) -->
-                            <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'single')"
-                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors">
-                                + Öğrenci Ekle
-                            </button>
-                            
-                            <!-- Bulk Add (Purple) -->
-                            <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'bulk')"
-                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors">
-                                Toplu Ekle
-                            </button>
-                            
-                            <!-- Settings (Blue/Gray) - Now Inline -->
-                            <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'settings')"
-                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
-                                Ayarlar
-                            </button>
-                            
-                            <!-- Delete (Red) -->
-                            <button onclick="ClassroomManager.confirmDelete('${classroom.id}', '${escapedName}')"
-                                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">
-                                Sil
-                            </button>
+
+                            <!-- Action Buttons - Icons only on mobile -->
+                            <div class="flex items-center gap-1 md:gap-2">
+                                <!-- Print Credentials -->
+                                <button onclick="ClassroomManager.printStudentCredentials('${classroom.id}', '${escapedName}')" 
+                                    class="h-9 md:h-10 px-2 md:px-3 rounded border border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700 hover:border-orange-500 transition-colors flex items-center justify-center"
+                                    title="Fişleri Yazdır">
+                                    <span class="text-base md:text-lg">🖨️</span>
+                                    <span class="hidden md:inline ml-2 text-xs font-medium">Yazdır</span>
+                                </button>
+                                
+                                <!-- Add Student (Green) -->
+                                <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'single')"
+                                    class="h-9 md:h-10 px-2 md:px-3 rounded bg-emerald-900/30 border border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors flex items-center justify-center"
+                                    title="Öğrenci Ekle">
+                                    <span class="text-base md:text-lg font-bold">+</span>
+                                    <span class="hidden md:inline ml-1 text-xs font-medium">Ekle</span>
+                                </button>
+                                
+                                <!-- Bulk Add (Purple) -->
+                                <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'bulk')"
+                                    class="h-9 md:h-10 px-2 md:px-3 rounded border border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors flex items-center justify-center"
+                                    title="Toplu Ekle">
+                                    <span class="text-base md:text-lg">👥</span>
+                                    <span class="hidden md:inline ml-1 text-xs font-medium">Toplu</span>
+                                </button>
+                                
+                                <!-- Settings -->
+                                <button onclick="ClassroomManager.togglePanel('${classroom.id}', 'settings')"
+                                    class="h-9 md:h-10 px-2 md:px-3 rounded border border-slate-600 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors flex items-center justify-center"
+                                    title="Ayarlar">
+                                    <span class="text-base md:text-lg">⚙️</span>
+                                </button>
+                                
+                                <!-- Delete (Red) -->
+                                <button onclick="ClassroomManager.confirmDelete('${classroom.id}', '${escapedName}')"
+                                    class="h-9 md:h-10 px-2 md:px-3 rounded border border-red-800 text-red-400 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center"
+                                    title="Sil">
+                                    <span class="text-base md:text-lg">🗑️</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Expand Panel (Hidden by default) -->
-                    <div id="panel-${classroom.id}" class="classroom-panel hidden mt-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div id="panel-${classroom.id}" class="classroom-panel hidden bg-slate-900/50 border-t border-slate-700 p-4">
                         
                         <!-- Single Add Form (Green theme) -->
                         <div id="single-form-${classroom.id}" class="hidden">
                             <div class="flex items-center gap-2 mb-3">
                                 <span class="text-sm">👤</span>
-                                <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Tek Öğrenci Ekle</span>
+                                <span class="text-xs font-semibold text-emerald-400">Tek Öğrenci Ekle</span>
                             </div>
-                            <div class="flex items-center gap-3">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <input type="text" 
                                     id="input-name-${classroom.id}"
                                     placeholder="Öğrenci adı girin..."
-                                    class="flex-1 px-3 py-2 text-sm rounded-lg border border-emerald-300 dark:border-emerald-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
-                                <button onclick="ClassroomManager.addSingleStudent('${classroom.id}')"
-                                    class="px-4 py-2 text-sm font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors">
-                                    Kaydet
-                                </button>
-                                <button onclick="ClassroomManager.closePanel('${classroom.id}')"
-                                    class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                    İptal
-                                </button>
+                                    class="flex-1 px-3 py-2 text-sm rounded-lg border border-emerald-600 bg-slate-700 text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+                                <div class="flex gap-2">
+                                    <button onclick="ClassroomManager.addSingleStudent('${classroom.id}')"
+                                        class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors">
+                                        Kaydet
+                                    </button>
+                                    <button onclick="ClassroomManager.closePanel('${classroom.id}')"
+                                        class="px-3 py-2 text-sm rounded-lg border border-slate-600 text-slate-400 hover:bg-slate-700 transition-colors">
+                                        İptal
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
@@ -192,24 +216,26 @@ export const ClassroomManager = {
                         <div id="bulk-form-${classroom.id}" class="hidden">
                             <div class="flex items-center gap-2 mb-3">
                                 <span class="text-sm">👥</span>
-                                <span class="text-xs font-semibold text-purple-700 dark:text-purple-400">Toplu Öğrenci Ekle</span>
+                                <span class="text-xs font-semibold text-purple-400">Toplu Öğrenci Ekle</span>
                             </div>
                             <div class="space-y-3">
                                 <textarea 
                                     id="input-bulk-${classroom.id}"
                                     rows="4"
                                     placeholder="Her satıra bir öğrenci adı yazın...&#10;Ali Veli&#10;Ayşe Fatma&#10;Mehmet Yılmaz"
-                                    class="w-full px-3 py-2 text-sm rounded-lg border border-purple-300 dark:border-purple-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none resize-none"></textarea>
-                                <div class="flex items-center gap-3">
-                                    <button onclick="ClassroomManager.addBulkStudents('${classroom.id}')"
-                                        class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
-                                        Tümünü Ekle
-                                    </button>
-                                    <button onclick="ClassroomManager.closePanel('${classroom.id}')"
-                                        class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                        İptal
-                                    </button>
-                                    <span class="text-xs text-slate-500 dark:text-slate-400 ml-auto">Her satır = 1 öğrenci</span>
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-purple-600 bg-slate-700 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none resize-none"></textarea>
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                    <div class="flex gap-2">
+                                        <button onclick="ClassroomManager.addBulkStudents('${classroom.id}')"
+                                            class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+                                            Tümünü Ekle
+                                        </button>
+                                        <button onclick="ClassroomManager.closePanel('${classroom.id}')"
+                                            class="px-3 py-2 text-sm rounded-lg border border-slate-600 text-slate-400 hover:bg-slate-700 transition-colors">
+                                            İptal
+                                        </button>
+                                    </div>
+                                    <span class="text-xs text-slate-400 sm:ml-auto text-center sm:text-right">Her satır = 1 öğrenci</span>
                                 </div>
                             </div>
                         </div>
@@ -218,23 +244,23 @@ export const ClassroomManager = {
                         <div id="settings-form-${classroom.id}" class="hidden">
                             <div class="flex items-center gap-2 mb-3">
                                 <span class="text-sm">⚙️</span>
-                                <span class="text-xs font-semibold text-blue-700 dark:text-blue-400">Sınıf Ayarları</span>
+                                <span class="text-xs font-semibold text-blue-400">Sınıf Ayarları</span>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Sınıf Adı</label>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Sınıf Adı</label>
                                     <input type="text" 
                                         id="settings-name-${classroom.id}"
                                         value="${escapedName}"
-                                        class="w-full px-3 py-2 text-sm rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-blue-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Açıklama</label>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Açıklama</label>
                                     <input type="text" 
                                         id="settings-desc-${classroom.id}"
                                         value="${escapedDesc}"
                                         placeholder="Açıklama ekleyin..."
-                                        class="w-full px-3 py-2 text-sm rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-blue-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                                 </div>
                             </div>
                             <div class="flex items-center gap-4 mb-4">
@@ -242,19 +268,21 @@ export const ClassroomManager = {
                                     <input type="checkbox" 
                                         id="settings-active-${classroom.id}"
                                         ${classroom.is_active ? 'checked' : ''}
-                                        class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <span class="text-xs text-slate-600 dark:text-slate-400">Sınıf Aktif</span>
+                                        class="w-4 h-4 text-blue-600 rounded border-slate-500 focus:ring-blue-500 bg-slate-700">
+                                    <span class="text-xs text-slate-400">Sınıf Aktif</span>
                                 </label>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <button onclick="ClassroomManager.saveSettings('${classroom.id}')"
-                                    class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors">
-                                    Güncelle
-                                </button>
-                                <button onclick="ClassroomManager.closePanel('${classroom.id}')"
-                                    class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                    İptal
-                                </button>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                <div class="flex gap-2">
+                                    <button onclick="ClassroomManager.saveSettings('${classroom.id}')"
+                                        class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors">
+                                        Güncelle
+                                    </button>
+                                    <button onclick="ClassroomManager.closePanel('${classroom.id}')"
+                                        class="px-3 py-2 text-sm rounded-lg border border-slate-600 text-slate-400 hover:bg-slate-700 transition-colors">
+                                        İptal
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
