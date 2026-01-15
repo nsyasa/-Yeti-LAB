@@ -181,7 +181,7 @@ const UI = {
 
             return `
                 <div onclick="app.selectCourse('${key}', event)" 
-                     class="course-card card-glow bg-white dark:bg-slate-900 rounded-2xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible transition-all duration-300 hover:-translate-y-2 hover:scale-105 border border-slate-200 dark:border-slate-700 ${hiddenClass}" 
+                     class="course-card card-glow bg-white dark:bg-slate-900 rounded-2xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center min-h-[200px] relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:scale-105 border border-slate-200 dark:border-slate-700 ${hiddenClass}" 
                      data-course="${key}"
                      data-index="${index}">
                     
@@ -494,7 +494,7 @@ const UI = {
 
                 sectionHTML += `
                     <div onclick="${requiresLogin ? "Router.redirectTo('auth.html')" : `app.loadProject(${p.id})`}" 
-                         class="lesson-card flex-shrink-0 w-32 sm:w-36 p-3 ${lockedClass}">
+                         class="lesson-card flex-shrink-0 w-32 sm:w-36 p-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 shadow-sm rounded-xl ${lockedClass}">
                         ${isComplete ? '<div class="lesson-complete-badge">✓</div>' : ''}
                         ${requiresLogin ? '<div class="lesson-lock-icon">🔒</div>' : ''}
                         <div class="lesson-icon">${p.icon}</div>
