@@ -57,19 +57,27 @@ const ThemeManager = {
         const root = document.documentElement;
         const body = document.body;
 
+        // Meta theme-color managment
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+
         if (theme === 'light') {
             // Turn ON Light Mode
             body.classList.remove('dark-mode');
+
+            // Remove 'dark' class which is default on HTML
             root.classList.remove('dark', 'dark-mode');
 
             if (!root.classList.contains('light')) root.classList.add('light');
 
             root.setAttribute('data-theme', 'light');
             root.style.colorScheme = 'light';
+
+            if (metaTheme) metaTheme.content = '#f9fafb';
         } else {
-            // Turn ON Dark Mode (Default)
+            // Turn ON Dark Mode (Default) - Revert to default state
             if (!body.classList.contains('dark-mode')) body.classList.add('dark-mode');
 
+            // Ensure 'dark' class is present (in case it was removed)
             if (!root.classList.contains('dark')) root.classList.add('dark');
             if (!root.classList.contains('dark-mode')) root.classList.add('dark-mode');
 
@@ -77,17 +85,9 @@ const ThemeManager = {
 
             root.setAttribute('data-theme', 'dark');
             root.style.colorScheme = 'dark';
-        }
 
-        // Update meta theme-color for mobile browsers
-        let metaTheme = document.querySelector('meta[name="theme-color"]');
-        if (!metaTheme) {
-            // Create if missing
-            metaTheme = document.createElement('meta');
-            metaTheme.name = 'theme-color';
-            document.head.appendChild(metaTheme);
+            if (metaTheme) metaTheme.content = '#0f172a';
         }
-        metaTheme.content = theme === 'light' ? '#f9fafb' : '#0f172a';
     },
 
     /**

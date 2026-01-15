@@ -1,14 +1,17 @@
 ﻿<!doctype html>
-<html lang="tr">
+<html lang="tr" class="dark">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Yeti LAB | İçindeki Yeti'leri Keşfet</title>
+        <meta name="theme-color" content="#0f172a" />
+
         <!-- Anti-FOUC Script for Dark Mode (Default: Dark) -->
         <script>
             (function () {
                 try {
-                    // Logic: Site is Dark by default. Only 'light' triggers Light Mode.
+                    // Logic: Site is Dark by default (class="dark" on html).
+                    // Only 'light' triggers removal of Dark Mode.
                     const localTheme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme');
 
                     if (localTheme === 'light') {
@@ -16,16 +19,17 @@
                         document.documentElement.classList.add('light');
                         document.documentElement.setAttribute('data-theme', 'light');
                         document.documentElement.style.colorScheme = 'light';
+
+                        // Update meta theme-color immediately
+                        const meta = document.querySelector('meta[name="theme-color"]');
+                        if (meta) meta.content = '#f9fafb'; // gray-50
                     } else {
-                        // Default to Dark
-                        document.documentElement.classList.add('dark', 'dark-mode');
-                        document.documentElement.classList.remove('light');
+                        // Already dark by default HTML attribute, but ensure consistency
                         document.documentElement.setAttribute('data-theme', 'dark');
                         document.documentElement.style.colorScheme = 'dark';
                     }
                 } catch (e) {
-                    // Fallback to Dark
-                    document.documentElement.classList.add('dark', 'dark-mode');
+                    // Ignore errors, default is already dark
                 }
             })();
         </script>
@@ -49,16 +53,18 @@
                 color-scheme: dark light;
             }
 
-            /* Default: Dark mode */
+            /* Default: Dark mode (Hardcoded to prevent white flash) */
             body {
                 background-color: #0f172a;
+                /* slate-900 */
                 color: #f1f5f9;
             }
 
-            /* Light mode override (only if explicitly set) */
+            /* Light mode override */
             html.light body,
             html[data-theme='light'] body {
                 background-color: #f9fafb;
+                /* gray-50 */
                 color: #111827;
             }
         </style>
@@ -102,9 +108,7 @@
         </style>
     </head>
 
-    <body
-        class="preload flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300"
-    >
+    <body class="preload flex flex-col min-h-screen bg-[#0f172a] text-gray-100 transition-colors duration-300">
         <!-- Sidebar Overlay -->
         <div
             id="sidebar-overlay"
