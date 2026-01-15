@@ -25,13 +25,6 @@ const TeacherLayout = {
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-2">
                         
-                        <!-- Theme Toggle -->
-                        <button onclick="ThemeManager?.toggle()"
-                            class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
-                            title="Tema Değiştir">
-                            <span id="teacherThemeIcon" class="text-sm">🌙</span>
-                        </button>
-                        
                         <!-- Back to Main -->
                         <a href="/#/" 
                             class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
