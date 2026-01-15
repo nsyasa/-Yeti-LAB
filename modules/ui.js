@@ -563,20 +563,43 @@ const UI = {
         });
     },
 
-    toggleSidebar: () => {
+    toggleSidebar: (forceState = null) => {
         const sidebar = document.getElementById('lesson-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
 
-        if (sidebar.classList.contains('open')) {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('open');
-            document.body.style.overflow = '';
-        } else {
+        if (!sidebar || !overlay) return;
+
+        // Mevcut durumu kontrol et veya zorlanan durumu uygula
+        const isOpen = sidebar.classList.contains('open');
+        const shouldOpen = forceState !== null ? forceState : !isOpen;
+
+        if (shouldOpen) {
             sidebar.classList.add('open');
             overlay.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            // Trigger render update from app if needed, handled by app logic usually
+            document.body.style.overflow = 'hidden'; // Arka plan scroll'u kilitle
+        } else {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = ''; // Scroll'u serbest bırak
         }
+    },
+
+    // Sidebar içindeki linklere tıklandığında menüyü kapatan yardımcı fonksiyon
+    initSidebarLinks: () => {
+        const sidebar = document.getElementById('lesson-sidebar');
+        if (!sidebar) return;
+
+        // Sidebar içindeki tüm tıklanabilir elemanları yakala
+        sidebar.addEventListener('click', (e) => {
+            // Eğer tıklanan element bir link veya butonsa sidebar'ı kapat
+            // Sadece kapatma butonu değilse (header içindeki X butonu hariç)
+            const isCloseButton = e.target.closest('.sidebar-close-btn');
+            const isLessonLink = e.target.closest('[onclick*="loadProject"]');
+
+            if (isLessonLink || isCloseButton) {
+                UI.toggleSidebar(false);
+            }
+        });
     },
 
     toggleMobileSearch: () => {

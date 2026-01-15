@@ -423,7 +423,7 @@
             id="mobile-bottom-nav"
             class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 shadow-lg z-40 md:hidden"
         >
-            <div class="grid grid-cols-4 h-16">
+            <div class="grid grid-cols-3 h-16">
                 <button
                     onclick="app.renderCourseSelection()"
                     class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
@@ -432,25 +432,18 @@
                     <span class="text-[10px] mt-0.5 font-medium">Ana Sayfa</span>
                 </button>
                 <button
-                    onclick="app.toggleSidebar()"
+                    onclick="UI.toggleSidebar()"
                     class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
                 >
                     <span class="text-xl">📚</span>
                     <span class="text-[10px] mt-0.5 font-medium">Dersler</span>
                 </button>
                 <button
-                    onclick="app.toggleMobileSearch()"
+                    onclick="UI.toggleMobileSearch()"
                     class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
                 >
                     <span class="text-xl">🔍</span>
                     <span class="text-[10px] mt-0.5 font-medium">Ara</span>
-                </button>
-                <button
-                    onclick="Assistant?.toggle()"
-                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
-                >
-                    <span class="text-xl">💬</span>
-                    <span class="text-[10px] mt-0.5 font-medium">Asistan</span>
                 </button>
             </div>
         </nav>

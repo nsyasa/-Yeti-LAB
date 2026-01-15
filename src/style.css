@@ -95,3 +95,29 @@ main {
     /* İçerik kısaysa bile uzamasını sağlar */
     width: 100%;
 }
+
+/* Sidebar Fix - Transform tabanlı göster/gizle */
+#lesson-sidebar {
+    @apply fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl border-r border-gray-200 dark:border-gray-700 flex flex-col pb-10;
+    z-index: 60;
+    /* Navbar'ın (z-50) üzerinde olmalı */
+    transform: translateX(-100%);
+    /* Varsayılan olarak GİZLİ */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#lesson-sidebar.open {
+    transform: translateX(0);
+    /* Sadece .open sınıfı varken görünür */
+}
+
+/* Overlay (Arka plan karartma) */
+.sidebar-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300;
+    z-index: 55;
+    /* Sidebar'ın hemen altında, Navbar'ın üstünde */
+}
+
+.sidebar-overlay.open {
+    @apply opacity-100 pointer-events-auto;
+}
