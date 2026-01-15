@@ -121,3 +121,23 @@ main {
 .sidebar-overlay.open {
     @apply opacity-100 pointer-events-auto;
 }
+
+/* ============================================
+   PRELOAD HACK: Sidebar Flash Prevention
+   Sayfa yüklenirken animasyonları durdurur
+   ============================================ */
+body.preload * {
+    transition: none !important;
+    -webkit-transition: none !important;
+}
+
+/* Başlangıçta sidebar'ı kesinlikle gizle (Flash'ı önler) */
+body.preload #lesson-sidebar {
+    visibility: hidden !important;
+    transform: translateX(-100%) !important;
+}
+
+body.preload .sidebar-overlay {
+    visibility: hidden !important;
+    opacity: 0 !important;
+}

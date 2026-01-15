@@ -117,3 +117,29 @@ if (import.meta.env.DEV) {
         Auth: typeof Auth !== 'undefined',
     });
 }
+
+// ==========================================
+// PHASE 13: Preload Unlock (Sidebar Flash Fix)
+// ==========================================
+// Sayfa yüklendiğinde "Preload" kilidini kaldır
+window.addEventListener('load', () => {
+    // Küçük gecikme ile animasyonları serbest bırak (render tamamlansın)
+    requestAnimationFrame(() => {
+        // 1. Animasyonları serbest bırak
+        document.body.classList.remove('preload');
+
+        // 2. Sidebar'ı görünür yap (ama hala kapalı konumda olacak)
+        const sidebar = document.getElementById('lesson-sidebar');
+        if (sidebar) {
+            // Tailwind 'invisible' sınıfını kaldır, CSS 'open' sınıfı ile yönetilecek
+            sidebar.classList.remove('invisible');
+        }
+
+        // 3. Sidebar link dinleyicilerini başlat
+        if (window.UI?.initSidebarLinks) {
+            UI.initSidebarLinks();
+        }
+
+        console.log('🚀 App Loaded: Transitions enabled, sidebar ready');
+    });
+});

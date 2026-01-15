@@ -97,23 +97,28 @@
     </head>
 
     <body
-        class="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300"
+        class="preload flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300"
     >
         <!-- Sidebar Overlay -->
         <div
             id="sidebar-overlay"
             class="sidebar-overlay fixed inset-0 w-full h-full"
-            onclick="app.toggleSidebar()"
+            onclick="UI.toggleSidebar(false)"
         ></div>
 
         <!-- Sidebar (Ders Gezgini) -->
         <div
             id="lesson-sidebar"
-            class="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl overflow-y-auto border-r border-gray-200 dark:border-gray-700 flex flex-col pb-10"
+            class="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl overflow-y-auto border-r border-gray-200 dark:border-gray-700 flex flex-col pb-10 invisible -translate-x-full"
         >
             <div class="p-4 bg-theme text-white flex justify-between items-center sticky top-0 z-10 shadow-md">
                 <h2 class="font-bold text-lg">Ders Listesi</h2>
-                <button onclick="app.toggleSidebar()" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                <button
+                    onclick="UI.toggleSidebar(false)"
+                    class="sidebar-close-btn text-white hover:text-gray-200 text-2xl"
+                >
+                    &times;
+                </button>
             </div>
             <div id="sidebar-content" class="flex-grow p-2 space-y-2">
                 <!-- Dersler buraya gelecek -->
