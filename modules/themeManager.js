@@ -19,26 +19,23 @@ const ThemeManager = {
         }
 
         // 1. Get saved preference
-        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme');
+        let savedTheme = localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme');
 
-        // 2. If saved, use it. If not, detect system preference.
-        let theme;
-        if (savedTheme) {
-            theme = savedTheme;
-        } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            theme = prefersDark ? 'dark' : 'light';
+        // Cleanup: If 'system', remove it and default to dark
+        if (savedTheme === 'system') {
+            localStorage.removeItem(this.STORAGE_KEY);
+            localStorage.removeItem('theme');
+            savedTheme = 'dark';
         }
+
+        // 2. Logic: Only 'light' triggers light mode. Everything else is 'dark'.
+        const theme = savedTheme === 'light' ? 'light' : 'dark';
 
         // 3. Apply theme
         this.applyTheme(theme);
 
-        // 4. Sync local storage (optional, maybe we don't want to persist system pref immediately?
-        // User asked to remember MANUAL choice. So if it's auto, we might not need to save it,
-        // but saving ensures consistency across reloads if system changes during session.
-        // Actually best practice: Don't write to LS if it's system default, so we can respect future system changes.
-        // BUT, existing code syncs keys. Let's keep keys in sync ONLY if we have a saved preference.
+        // 4. Sync localStorage
+        // Only write if we have a specific saved preference to maintain consistency
         if (savedTheme) {
             if (localStorage.getItem(this.STORAGE_KEY) !== theme) localStorage.setItem(this.STORAGE_KEY, theme);
             if (localStorage.getItem('theme') !== theme) localStorage.setItem('theme', theme);
@@ -49,26 +46,7 @@ const ThemeManager = {
             window.Store.setState({ theme });
         }
 
-        // 6. Add Listener for System Changes (Dynamic update if no manual override)
-        if (!this._systemListenerAdded) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-            // Modern event listener
-            mediaQuery.addEventListener('change', (e) => {
-                // If user has NO manual preference in localStorage, update theme automatically
-                if (!localStorage.getItem(this.STORAGE_KEY) && !localStorage.getItem('theme')) {
-                    const newTheme = e.matches ? 'dark' : 'light';
-                    this.applyTheme(newTheme);
-
-                    // Sync Store
-                    if (window.Store && window.Store.setState) {
-                        window.Store.setState({ theme: newTheme });
-                    }
-                    console.log(`[ThemeManager] System theme changed to: ${newTheme}`);
-                }
-            });
-            this._systemListenerAdded = true;
-        }
+        // System listeners removed as per requirement: Site is Default Dark.
     },
 
     /**
@@ -79,38 +57,37 @@ const ThemeManager = {
         const root = document.documentElement;
         const body = document.body;
 
-        if (theme === 'dark') {
-            // Add both class names to support all CSS selectors
-            if (!body.classList.contains('dark-mode')) body.classList.add('dark-mode');
-
-            // Tailwind 'dark' class on HTML is the standard
-            if (!root.classList.contains('dark')) root.classList.add('dark');
-            if (!root.classList.contains('dark-mode')) root.classList.add('dark-mode');
-
-            // Remove light classes
-            root.classList.remove('light');
-
-            // Set data attribute for CSS attribute selectors
-            root.setAttribute('data-theme', 'dark');
-            root.style.colorScheme = 'dark';
-        } else {
-            // Remove all dark mode classes
+        if (theme === 'light') {
+            // Turn ON Light Mode
             body.classList.remove('dark-mode');
             root.classList.remove('dark', 'dark-mode');
 
-            // Add light class
             if (!root.classList.contains('light')) root.classList.add('light');
 
-            // Set data attribute
             root.setAttribute('data-theme', 'light');
             root.style.colorScheme = 'light';
+        } else {
+            // Turn ON Dark Mode (Default)
+            if (!body.classList.contains('dark-mode')) body.classList.add('dark-mode');
+
+            if (!root.classList.contains('dark')) root.classList.add('dark');
+            if (!root.classList.contains('dark-mode')) root.classList.add('dark-mode');
+
+            root.classList.remove('light');
+
+            root.setAttribute('data-theme', 'dark');
+            root.style.colorScheme = 'dark';
         }
 
         // Update meta theme-color for mobile browsers
-        const metaTheme = document.querySelector('meta[name="theme-color"]');
-        if (metaTheme) {
-            metaTheme.content = theme === 'dark' ? '#0f172a' : '#ffffff';
+        let metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (!metaTheme) {
+            // Create if missing
+            metaTheme = document.createElement('meta');
+            metaTheme.name = 'theme-color';
+            document.head.appendChild(metaTheme);
         }
+        metaTheme.content = theme === 'light' ? '#f9fafb' : '#0f172a';
     },
 
     /**

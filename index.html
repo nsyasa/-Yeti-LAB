@@ -4,22 +4,28 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Yeti LAB | İçindeki Yeti'leri Keşfet</title>
-        <!-- Anti-FOUC Script for Dark Mode -->
+        <!-- Anti-FOUC Script for Dark Mode (Default: Dark) -->
         <script>
             (function () {
                 try {
-                    const savedTheme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme');
-                    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    // Logic: Site is Dark by default. Only 'light' triggers Light Mode.
+                    const localTheme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme');
 
-                    if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-                        document.documentElement.classList.add('dark');
-                        document.body.classList.add('dark-mode');
+                    if (localTheme === 'light') {
+                        document.documentElement.classList.remove('dark', 'dark-mode');
+                        document.documentElement.classList.add('light');
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        document.documentElement.style.colorScheme = 'light';
                     } else {
-                        document.documentElement.classList.remove('dark');
-                        document.body.classList.remove('dark-mode');
+                        // Default to Dark
+                        document.documentElement.classList.add('dark', 'dark-mode');
+                        document.documentElement.classList.remove('light');
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        document.documentElement.style.colorScheme = 'dark';
                     }
                 } catch (e) {
-                    console.error('[Anti-FOUC] Error:', e);
+                    // Fallback to Dark
+                    document.documentElement.classList.add('dark', 'dark-mode');
                 }
             })();
         </script>
