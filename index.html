@@ -4,6 +4,25 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Yeti LAB | İçindeki Yeti'leri Keşfet</title>
+        <!-- Anti-FOUC Script for Dark Mode -->
+        <script>
+            (function () {
+                try {
+                    const savedTheme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme');
+                    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                    if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                        document.documentElement.classList.add('dark');
+                        document.body.classList.add('dark-mode');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        document.body.classList.remove('dark-mode');
+                    }
+                } catch (e) {
+                    console.error('[Anti-FOUC] Error:', e);
+                }
+            })();
+        </script>
 
         <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="./assets/favicon-BVHByT5d.svg" />
@@ -37,25 +56,6 @@
                 color: #111827;
             }
         </style>
-
-        <!-- Dark mode initialization - CRITICAL: Must run before body renders -->
-        <script>
-            // Apply dark mode immediately to prevent flash of light mode
-            (function () {
-                const theme = localStorage.getItem('yeti_theme') || localStorage.getItem('theme') || 'dark';
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark', 'dark-mode');
-                    document.documentElement.classList.remove('light');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    document.documentElement.style.colorScheme = 'dark';
-                } else {
-                    document.documentElement.classList.add('light');
-                    document.documentElement.classList.remove('dark', 'dark-mode');
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    document.documentElement.style.colorScheme = 'light';
-                }
-            })();
-        </script>
 
         <!-- Performance Monitor (Critical - Must be first) -->
         <script>
@@ -93,8 +93,8 @@
         <style>
             /* Inline critical styles or overrides can remain here if needed */
         </style>
-      <script type="module" crossorigin src="./assets/main-BkJzuWdE.js"></script>
-      <link rel="modulepreload" crossorigin href="./assets/router-DfeYsmrJ.js">
+      <script type="module" crossorigin src="./assets/main-CE0Uuwkv.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/router-BpwVUcYk.js">
       <link rel="stylesheet" crossorigin href="./assets/router-CTlW14eM.css">
     </head>
 
