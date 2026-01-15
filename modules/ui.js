@@ -181,7 +181,7 @@ const UI = {
 
             return `
                 <div onclick="app.selectCourse('${key}', event)" 
-                     class="course-card card-glow bg-white dark:bg-slate-800/70 rounded-2xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible transition-all duration-300 hover:-translate-y-2 hover:scale-105 ${hiddenClass}" 
+                     class="course-card card-glow bg-white dark:bg-slate-900 rounded-2xl shadow-md p-4 lg:p-5 cursor-pointer group flex flex-col items-center text-center h-full relative overflow-visible transition-all duration-300 hover:-translate-y-2 hover:scale-105 border border-slate-200 dark:border-slate-700 ${hiddenClass}" 
                      data-course="${key}"
                      data-index="${index}">
                     
@@ -192,7 +192,7 @@ const UI = {
                     </div>
                     
                     <!-- Icon -->
-                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-gray-100 dark:bg-gray-700/80 p-3 lg:p-4 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative z-20">
+                    <div class="text-4xl lg:text-5xl mb-2 lg:mb-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 lg:p-4 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative z-20">
                         ${icon}
                     </div>
                     

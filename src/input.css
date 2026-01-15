@@ -10,7 +10,7 @@
     /* Primary Theme Colors (Teal/Cyan) */
     --theme-color: #00979c;
     --theme-light: #e0f7f8;
-    --theme-dark: #006b6f;
+    --theme-dark: rgba(0, 151, 156, 0.15);
 
     /* Electric Blue/Cyan Accents */
     --accent-cyan: #00d4ff;
@@ -258,6 +258,7 @@ main,
     100% {
         transform: translateY(0) scale(1);
     }
+
     50% {
         transform: translateY(-12px) scale(1.02);
     }
@@ -345,6 +346,7 @@ a:hover .rocket-icon {
         transform: scale(1);
         box-shadow: 0 0 0 0 var(--cta-glow);
     }
+
     50% {
         transform: scale(1.1);
         box-shadow: 0 0 0 8px transparent;
@@ -361,6 +363,7 @@ a:hover .rocket-icon {
     100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-6px);
     }
@@ -456,6 +459,10 @@ a:hover .rocket-icon {
     background-color: var(--theme-light);
 }
 
+.bg-theme-dark {
+    background-color: var(--theme-dark);
+}
+
 .border-theme {
     border-color: var(--theme-color);
 }
@@ -502,6 +509,7 @@ a:hover .rocket-icon {
 .dark-mode .admin-bg {
     background-color: #111827;
 }
+
 /* ============================================
    GLOBAL PROGRESS BARS - CTA Gradient
    ============================================ */
@@ -584,6 +592,7 @@ a:hover .rocket-icon {
     display: block !important;
     visibility: visible !important;
 }
+
 /* ============================================
    FILE UPLOADER STYLES
    Drag & Drop, Progress, Preview Components
@@ -785,6 +794,7 @@ a:hover .rocket-icon {
     100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }
@@ -807,14 +817,17 @@ a:hover .rocket-icon {
     background: rgba(239, 68, 68, 0.2);
     color: #fca5a5;
 }
+
 .file-type-badge.doc {
     background: rgba(59, 130, 246, 0.2);
     color: #93c5fd;
 }
+
 .file-type-badge.zip {
     background: rgba(234, 179, 8, 0.2);
     color: #fde047;
 }
+
 .file-type-badge.image {
     background: rgba(34, 197, 94, 0.2);
     color: #86efac;
@@ -963,12 +976,15 @@ a:hover .rocket-icon {
 .rte-content .ProseMirror h1 {
     font-size: 1.75rem;
 }
+
 .rte-content .ProseMirror h2 {
     font-size: 1.5rem;
 }
+
 .rte-content .ProseMirror h3 {
     font-size: 1.25rem;
 }
+
 .rte-content .ProseMirror h4 {
     font-size: 1.1rem;
 }
@@ -1020,22 +1036,28 @@ a:hover .rocket-icon {
 .rte-content .ProseMirror .hljs-keyword {
     color: #c792ea;
 }
+
 .rte-content .ProseMirror .hljs-string {
     color: #c3e88d;
 }
+
 .rte-content .ProseMirror .hljs-number {
     color: #f78c6c;
 }
+
 .rte-content .ProseMirror .hljs-comment {
     color: #546e7a;
     font-style: italic;
 }
+
 .rte-content .ProseMirror .hljs-function {
     color: #82aaff;
 }
+
 .rte-content .ProseMirror .hljs-variable {
     color: #f07178;
 }
+
 .rte-content .ProseMirror .hljs-built_in {
     color: #ffcb6b;
 }
@@ -1223,7 +1245,8 @@ a:hover .rocket-icon {
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    display: none; /* ⚠️ Tailwind 'hidden' class ile desteklenmeli! */
+    display: none;
+    /* ⚠️ Tailwind 'hidden' class ile desteklenmeli! */
     align-items: center;
     justify-content: center;
     z-index: var(--z-modal);
@@ -1233,7 +1256,8 @@ a:hover .rocket-icon {
 
 .modal-overlay.active,
 .modal-overlay.open {
-    display: flex; /* ⚠️ Çalışması için HTML'de 'hidden' class kaldırılmalı! */
+    display: flex;
+    /* ⚠️ Çalışması için HTML'de 'hidden' class kaldırılmalı! */
 }
 
 .modal-content {
@@ -1253,6 +1277,7 @@ a:hover .rocket-icon {
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1383,6 +1408,7 @@ a:hover .rocket-icon {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1459,6 +1485,7 @@ a:hover .rocket-icon {
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -1531,8 +1558,10 @@ a:hover .rocket-icon {
 
 /* Teacher Dashboard Container - 100vh, no body scroll */
 .teacher-dashboard-container {
-    --teacher-header-height: 3rem; /* h-12 */
-    --teacher-mobile-nav-height: 4rem; /* h-16 */
+    --teacher-header-height: 3rem;
+    /* h-12 */
+    --teacher-mobile-nav-height: 4rem;
+    /* h-16 */
 }
 
 /* Teacher Panel Card - Used in all sections */
@@ -1850,6 +1879,7 @@ button[class*='bg-gradient-to-r'][class*='orange'] {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.7;
         transform: scale(1.2);
@@ -2059,12 +2089,15 @@ button[class*='bg-gradient-to-r'][class*='orange'] {
 .admin-rte-preview h1 {
     font-size: 1.5rem;
 }
+
 .admin-rte-preview h2 {
     font-size: 1.25rem;
 }
+
 .admin-rte-preview h3 {
     font-size: 1.125rem;
 }
+
 .admin-rte-preview h4 {
     font-size: 1rem;
 }

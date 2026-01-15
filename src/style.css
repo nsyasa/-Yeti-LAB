@@ -81,6 +81,25 @@
     backdrop-filter: blur(10px);
 }
 
+/* Dark mode for course card icon container (emoji circle) */
+.dark .course-card .rounded-full {
+    background-color: rgb(30, 41, 59) !important;
+    /* slate-800 */
+    border-color: rgb(51, 65, 85) !important;
+    /* slate-700 */
+}
+
+/* Dark mode for course card text */
+.dark .course-card h3 {
+    color: rgb(243, 244, 246) !important;
+    /* gray-100 */
+}
+
+.dark .course-card p {
+    color: rgb(156, 163, 175) !important;
+    /* gray-400 */
+}
+
 /* Navbar Sabitleme */
 #main-header {
     @apply sticky top-0 z-50 transition-all duration-300;
