@@ -74,6 +74,17 @@ const UI = {
                 else el.classList.add('hidden');
             });
         }
+
+        // Ders Listesi butonunu sadece kurs içinde göster (dashboard veya project view)
+        const lessonsBtn = document.getElementById('btn-lessons-nav');
+        if (lessonsBtn) {
+            const inCourseView = ['dashboard-view', 'project-view'].includes(showId);
+            if (inCourseView) {
+                lessonsBtn.classList.remove('hidden');
+            } else {
+                lessonsBtn.classList.add('hidden');
+            }
+        }
     },
 
     // --- Course Selection Screen ---
@@ -567,20 +578,41 @@ const UI = {
         const sidebar = document.getElementById('lesson-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
 
-        if (!sidebar || !overlay) return;
+        if (!sidebar || !overlay) {
+            console.warn('[UI] Sidebar veya overlay bulunamadı');
+            return;
+        }
 
-        // Mevcut durumu kontrol et veya zorlanan durumu uygula
+        // CSS'te .open class kullanılıyor - bu class'a göre durum belirlenir
         const isOpen = sidebar.classList.contains('open');
         const shouldOpen = forceState !== null ? forceState : !isOpen;
 
         if (shouldOpen) {
+            // AÇMAK İÇİN:
+            // 1. Gizlilik class'larını kaldır (Tailwind)
+            sidebar.classList.remove('invisible', '-translate-x-full');
+
+            // 2. CSS animasyonu için open class ekle
             sidebar.classList.add('open');
             overlay.classList.add('open');
-            document.body.style.overflow = 'hidden'; // Arka plan scroll'u kilitle
+
+            // 3. Sayfanın kaymasını engelle
+            document.body.style.overflow = 'hidden';
         } else {
+            // KAPATMAK İÇİN:
+            // 1. open class'ını kaldır (CSS animasyonu çalışır)
             sidebar.classList.remove('open');
             overlay.classList.remove('open');
-            document.body.style.overflow = ''; // Scroll'u serbest bırak
+
+            // 2. Animasyon bittikten sonra gizlilik class'larını geri ekle
+            setTimeout(() => {
+                if (!sidebar.classList.contains('open')) {
+                    sidebar.classList.add('invisible', '-translate-x-full');
+                }
+            }, 350); // CSS transition süresi
+
+            // 3. Sayfa kaydırmayı serbest bırak
+            document.body.style.overflow = '';
         }
     },
 

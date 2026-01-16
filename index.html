@@ -269,17 +269,20 @@
 
             <!-- DASHBOARD (Proje Listesi) -->
             <div id="dashboard-view" class="hidden space-y-6 fade-in pb-10">
-                <div class="flex items-center justify-between mb-4 mt-2">
+                <!-- Üst Navigasyon -->
+                <div class="flex items-center justify-start mb-2 mt-2">
                     <button
                         onclick="app.renderCourseSelection()"
-                        class="text-slate-400 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg transition-colors duration-200 group bg-transparent"
+                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all group"
                     >
-                        <span class="text-lg group-hover:-translate-x-1 transition-transform duration-300">←</span>
-                        <span class="text-sm font-medium">Dersler</span>
+                        <span class="group-hover:-translate-x-1 transition-transform duration-300">←</span>
+                        <span>Kurslar</span>
                     </button>
                 </div>
-                <div class="text-center max-w-3xl mx-auto mb-10">
-                    <h1 id="course-title" class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+
+                <!-- Kurs Başlığı ve Ders Listesi Butonu -->
+                <div class="text-center max-w-3xl mx-auto mb-6">
+                    <h1 id="course-title" class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-3">
                         Arduino Serüveni
                     </h1>
 
@@ -299,8 +302,19 @@
                         >
                     </div>
 
-                    <p id="course-desc" class="text-gray-600 mb-6">Arduino dünyasına adım atın.</p>
+                    <!-- Ders Listesi Butonu - Kurs Başlığının Altında, Sadece Masaüstünde -->
+                    <button
+                        onclick="UI.toggleSidebar(true)"
+                        class="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-bold text-base shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:-translate-y-1 transition-all"
+                    >
+                        <span class="text-xl">📚</span>
+                        <span>Ders Listesi</span>
+                    </button>
                 </div>
+
+                <p id="course-desc" class="text-gray-600 dark:text-gray-400 text-center max-w-3xl mx-auto mb-6">
+                    Arduino dünyasına adım atın.
+                </p>
                 <div id="dashboard-content"></div>
             </div>
 
@@ -443,32 +457,41 @@
             </div>
         </main>
 
-        <!-- Mobile Bottom Navigation -->
+        <!-- Mobile Bottom Navigation (Sadece Mobilde Görünür) -->
         <nav
             id="mobile-bottom-nav"
             class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 shadow-lg z-40 md:hidden"
         >
-            <div class="grid grid-cols-3 h-16">
-                <button
-                    onclick="app.renderCourseSelection()"
-                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
-                >
-                    <span class="text-xl">🏠</span>
-                    <span class="text-[10px] mt-0.5 font-medium">Ana Sayfa</span>
-                </button>
-                <button
-                    onclick="UI.toggleSidebar()"
-                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
-                >
-                    <span class="text-xl">📚</span>
-                    <span class="text-[10px] mt-0.5 font-medium">Dersler</span>
-                </button>
+            <div class="flex justify-between items-center h-16 px-6">
+                <!-- Ara Butonu - Sol -->
                 <button
                     onclick="UI.toggleMobileSearch()"
-                    class="bottom-nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 active:text-orange-600 active:bg-orange-50 dark:active:bg-orange-900/20 transition-colors"
+                    class="bottom-nav-item flex items-center justify-center w-12 h-12 rounded-full text-gray-400 hover:text-orange-500 hover:bg-white/10 active:text-orange-600 transition-colors"
+                    title="Ara"
                 >
-                    <span class="text-xl">🔍</span>
-                    <span class="text-[10px] mt-0.5 font-medium">Ara</span>
+                    <span class="text-2xl">🔍</span>
+                </button>
+                <!-- Ders Listesi Butonu - Sadece Kurs İçinde Görünür -->
+                <button
+                    id="btn-lessons-nav"
+                    onclick="UI.toggleSidebar(true)"
+                    class="hidden bottom-nav-item flex items-center justify-center w-12 h-12 rounded-full text-gray-400 hover:text-orange-500 hover:bg-white/10 active:text-orange-600 transition-colors"
+                    title="Ders Listesi"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                        />
+                    </svg>
                 </button>
             </div>
         </nav>

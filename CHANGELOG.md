@@ -6,6 +6,73 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.1] - 2026-01-16
+
+### 📱 Navigation UX Overhaul
+
+#### Context-Aware Mobile Navigation
+
+- **Akıllı Buton Görünürlüğü**: Mobil alt menüdeki "Ders Listesi" butonu artık sadece kurs içinde görünüyor
+    - Index (kurs seçim) sayfasında: Sadece 🔍 (Ara) butonu görünür
+    - Dashboard/Ders detayında: Hem 🔍 hem 📖 (Ders Listesi) butonları görünür
+- **`switchView` Fonksiyonu**: Görünüm değişikliklerinde buton durumlarını otomatik güncelliyor
+
+#### Desktop Dashboard Improvements
+
+- **Kurslar Butonu**: Turuncu-kırmızı gradient ile vurgulanmış geri dönüş butonu
+- **Ders Listesi Butonu**: Kurs başlığının altında, teal/cyan gradient ile belirgin CTA
+
+#### Navbar Cleanup
+
+- Navbar'daki arama ikonu mobilde kaldırıldı (alt menüde var)
+- `ThemeManager.load()` → `ThemeManager.init()` hatası düzeltildi
+
+### 🐛 Kritik Bug Fix: Sidebar Açılmıyor
+
+#### Problem Analizi
+
+**Sorun**: Mobilde "Ders Listesi" butonuna tıklandığında sidebar açılmıyordu, sadece overlay (blur) görünüyordu.
+
+**Kök Neden - CSS/JS Class Çakışması**:
+
+1. **HTML** (`index.html`): Sidebar elementi `invisible -translate-x-full` Tailwind class'larıyla başlıyordu
+2. **CSS** (`input.css`): `#lesson-sidebar.open { transform: translateX(0) }` kuralı tanımlıydı
+3. **JS** (`ui.js`): `toggleSidebar` fonksiyonu sadece `.open` class'ı ekliyordu
+
+**Sonuç**: Tailwind'in `-translate-x-full` class'ı `!important` benzeri specificity ile CSS'teki `.open` transform'unu override ediyordu. Sidebar yerinde kalıyordu.
+
+#### Çözüm
+
+`toggleSidebar` fonksiyonu güncellendi:
+
+```javascript
+// AÇARKEN - Tailwind class'larını kaldır + CSS class'ını ekle
+sidebar.classList.remove('invisible', '-translate-x-full');
+sidebar.classList.add('open');
+
+// KAPATIRKEN - CSS class'ını kaldır + animasyon sonrası Tailwind class'larını geri ekle
+sidebar.classList.remove('open');
+setTimeout(() => sidebar.classList.add('invisible', '-translate-x-full'), 350);
+```
+
+### 📝 Öğrenilen Dersler
+
+> **⚠️ Tailwind + Custom CSS Kullanırken Dikkat!**
+>
+> - Tailwind utility class'ları (`-translate-x-full`, `invisible`) CSS specificity savaşı yaratabilir
+> - Animasyon için CSS class, gizleme için Tailwind class kullanıldığında **ikisini de yönetmek** gerekir
+> - Sorunu geç bulmamızın sebebi: Overlay doğru çalıştığı için JS fonksiyonunun doğru çalıştığını düşündük, ancak sorun sidebar elementinin transform değerindeydi
+
+### 🛠️ Değişen Dosyalar
+
+| Dosya                          | Değişiklik                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| `index.html`                   | Mobil nav butonu `hidden` + `id` eklendi, Dashboard layout yeniden düzenlendi |
+| `modules/ui.js`                | `toggleSidebar` Tailwind uyumlu, `switchView` buton görünürlüğü eklendi       |
+| `modules/components/Navbar.js` | Arama ikonu kaldırıldı, ThemeManager hatası düzeltildi                        |
+
+---
+
 ## [1.3.0] - 2026-01-15
 
 ### 🌙 Dark Mode & UI Overhaul (Major Update)

@@ -70,13 +70,6 @@ const Navbar = {
                 </a>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="UI.toggleMobileSearch()" 
-                        class="p-3 text-gray-500 hover:text-theme hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all"
-                        title="Ara">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
 
                     <div id="navbar-notification-section" class="relative hidden"></div>
                     <div id="navbar-auth-section" class="ml-2">
@@ -91,7 +84,7 @@ const Navbar = {
 
         container.innerHTML = html;
         Navbar.updateAuthUI();
-        if (window.ThemeManager) window.ThemeManager.load();
+        if (window.ThemeManager && window.ThemeManager.init) window.ThemeManager.init();
     },
 
     updateAuthUI: (retryCount = 0) => {

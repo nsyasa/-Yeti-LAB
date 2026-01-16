@@ -205,9 +205,11 @@ npx playwright test --ui
 
 ### Mobile Bottom Navigation
 
-- **Glassmorphic Bar**: Backdrop blur efekti
+- **Context-Aware Visibility**: Butonlar mevcut görünüme göre dinamik olarak gösterilir/gizlenir
+    - Index'te: Sadece 🔍 (Ara) butonu
+    - Kurs içinde: 🔍 + 📖 (Ders Listesi) butonları
+- **Glassmorphic Bar**: Backdrop blur efekti (`bg-slate-900/95 backdrop-blur-xl`)
 - **Active States**: Turuncu gradient indicator
-- **Icons**: Emoji tabanlı navigasyon ikonları
 
 ---
 
