@@ -67,13 +67,20 @@ const ComponentManager = {
                         key === ComponentManager.currentKey
                             ? 'bg-purple-50 border-purple-500'
                             : 'hover:bg-gray-50 border-transparent';
+
+                    // XSS Protection: Escape HTML and sanitize onclick parameter
+                    const safeKey = Utils.escapeHtml(String(key ?? ''));
+                    const safeName = Utils.escapeHtml(String(comp?.name ?? key));
+                    const safeIcon = Utils.escapeHtml(String(comp?.icon ?? '📦'));
+                    const onclickParam = JSON.stringify(String(key ?? ''));
+
                     list.innerHTML += `
-                        <div onclick="ComponentManager.load('${key}')" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
+                        <div onclick="ComponentManager.load(${onclickParam})" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
                             <div class="flex items-center">
-                                <span class="text-xl mr-3">${comp.icon || '📦'}</span>
+                                <span class="text-xl mr-3">${safeIcon}</span>
                                 <div>
-                                    <div class="font-bold text-sm text-gray-700">${comp.name || key}</div>
-                                    <div class="text-xs text-gray-400 font-mono">${key}</div>
+                                    <div class="font-bold text-sm text-gray-700">${safeName}</div>
+                                    <div class="text-xs text-gray-400 font-mono">${safeKey}</div>
                                 </div>
                             </div>
                         </div>`;

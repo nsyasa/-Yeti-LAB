@@ -151,7 +151,7 @@ function toggleTheme() {
 }
 
 function applyTheme() {
-    if (window.ThemeManager) window.ThemeManager.load();
+    if (window.ThemeManager) window.ThemeManager.init();
 }
 
 // ==========================================

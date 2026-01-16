@@ -248,6 +248,11 @@ const Auth = {
 
             if (window.Store) window.Store.setProfile(data);
 
+            // Check admin status in content_admins table (for RLS compatibility)
+            if (typeof SupabaseClient !== 'undefined' && SupabaseClient.checkAdminStatus) {
+                await SupabaseClient.checkAdminStatus();
+            }
+
             // Check both DB and Metadata for completion status
             // Metadata is now the primary source of truth for new profiles
             if (data.is_profile_complete) {
@@ -456,9 +461,19 @@ const Auth = {
 
     /**
      * Check if current user is an admin
+     * Uses dual-source check for maximum compatibility:
+     * 1. user_profiles.role === 'admin' (application-level)
+     * 2. SupabaseClient.isAdmin (content_admins table, database-level)
      */
     isAdmin() {
-        return this.userRole === 'admin';
+        // Check user_profiles.role (application-level)
+        const hasAdminRole = this.userRole === 'admin';
+
+        // Check content_admins table (database-level, used by RLS)
+        const isContentAdmin = typeof SupabaseClient !== 'undefined' && SupabaseClient.isAdmin === true;
+
+        // User is admin if EITHER source confirms it
+        return hasAdminRole || isContentAdmin;
     },
 
     /**

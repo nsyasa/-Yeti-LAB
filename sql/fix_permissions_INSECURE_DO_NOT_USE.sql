@@ -1,3 +1,21 @@
+-- ============================================================================
+-- ⚠️⚠️⚠️ DEPRECATED - DO NOT USE IN PRODUCTION ⚠️⚠️⚠️
+-- ============================================================================
+-- 
+-- BU SCRIPT AUTHENTICATED WRITE AÇAR - PRODUCTION'DA KULLANMAYIN!
+-- 
+-- Bu script TÜM authenticated kullanıcılara (öğrenciler dahil) courses 
+-- tablosuna INSERT/UPDATE/DELETE izni verir. Bu CRITICAL bir güvenlik açığıdır!
+--
+-- ❌ SORUN: auth.role() = 'authenticated' → Herkes yazabilir
+-- ✅ ÇÖZÜM: sql/rls_content_admin.sql kullanın
+--
+-- PRODUCTION için güvenli script:
+--   → sql/rls_content_admin.sql
+--
+-- Bu dosya sadece tarihi referans için saklanmaktadır.
+-- ============================================================================
+
 -- Supabase İzinlerini (RLS) Tamir Etme Scripti
 -- Bu script, 'courses' tablosu üzerinde ekleme, silme ve güncelleme yapabilmeniz için gerekli izinleri açar.
 
@@ -22,14 +40,14 @@ DROP POLICY IF EXISTS "Yönetici Silme İzni" ON courses;
 CREATE POLICY "Enable read access for all users" ON "public"."courses"
 FOR SELECT USING (true);
 
--- EKLEME: Sadece giriş yapmış kullanıcılar kurs ekleyebilir
+-- ⚠️ INSECURE: EKLEME: Sadece giriş yapmış kullanıcılar kurs ekleyebilir
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."courses"
 FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
--- GÜNCELLEME: Sadece giriş yapmış kullanıcılar kurs güncelleyebilir (Sıralama, İsim vb.)
+-- ⚠️ INSECURE: GÜNCELLEME: Sadece giriş yapmış kullanıcılar kurs güncelleyebilir (Sıralama, İsim vb.)
 CREATE POLICY "Enable update for authenticated users only" ON "public"."courses"
 FOR UPDATE USING (auth.role() = 'authenticated');
 
--- SİLME: Sadece giriş yapmış kullanıcılar kurs silebilir
+-- ⚠️ INSECURE: SİLME: Sadece giriş yapmış kullanıcılar kurs silebilir
 CREATE POLICY "Enable delete for authenticated users only" ON "public"."courses"
 FOR DELETE USING (auth.role() = 'authenticated');

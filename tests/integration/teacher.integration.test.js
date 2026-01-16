@@ -145,7 +145,7 @@ describe('Teacher Manager Integration', () => {
 
             expect(global.SupabaseClient.init).toHaveBeenCalled();
             expect(global.Auth.init).toHaveBeenCalled();
-            expect(global.ThemeManager.load).toHaveBeenCalled();
+            expect(global.ThemeManager.init).toHaveBeenCalled();
             expect(global.TeacherAnalytics.loadProjects).toHaveBeenCalled();
         });
 

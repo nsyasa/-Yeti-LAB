@@ -244,6 +244,43 @@ const AdminRichTextEditor = {
     _markdownToHtml(markdown) {
         if (!markdown) return '';
 
+        // Helper: Escape HTML attributes (for href/src)
+        const escapeAttr = (str) => {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        };
+
+        // Helper: Check if URL has safe protocol (allowlist approach)
+        const isSafeUrl = (url) => {
+            if (!url) return false;
+            const trimmed = url.trim();
+            const lower = trimmed.toLowerCase();
+
+            // Allowlist: Safe protocols and relative URLs
+            const safePatterns = [
+                /^https?:\/\//i, // http:// or https://
+                /^mailto:/i, // mailto:
+                /^#/, // anchor links
+                /^\?/, // query strings
+                /^\//, // absolute paths
+                /^\.\//, // relative paths ./
+                /^\.\.\//, // parent paths ../
+            ];
+
+            // Check if URL matches any safe pattern
+            const isSafe = safePatterns.some((pattern) => pattern.test(trimmed));
+
+            // Block dangerous protocols explicitly
+            const isDangerous = /^(javascript|vbscript|data|file):/i.test(lower);
+
+            return isSafe && !isDangerous;
+        };
+
         let html = markdown
             // Escape HTML
             .replace(/&/g, '&amp;')
@@ -260,11 +297,29 @@ const AdminRichTextEditor = {
             // Code blocks
             .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
             // Inline code
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            // Links
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-            // Images
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // Images (process before links to avoid conflict)
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
+            if (!isSafeUrl(url)) {
+                return `<span class="blocked-content">[Blocked Image: ${alt}]</span>`;
+            }
+            // Escape quotes in alt text and URL for attribute safety
+            const safeAlt = alt.replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            const safeUrl = escapeAttr(url);
+            return `<img src="${safeUrl}" alt="${safeAlt}" />`;
+        });
+
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+            if (!isSafeUrl(url)) {
+                return `<span class="blocked-link">${text}</span>`;
+            }
+            const safeUrl = escapeAttr(url);
+            return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        });
+
+        html = html
             // Lists
             .replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>')
             // Blockquotes

@@ -78,17 +78,21 @@ const PhaseManager = {
                             ? 'bg-amber-50 border-amber-500'
                             : 'hover:bg-gray-50 border-transparent';
 
-                    const icon = phase?.icon || '📁';
-                    const title = phase?.title || `Bölüm ${index}`;
-                    const desc = phase?.description || '';
+                    // XSS Protection: Escape HTML and sanitize color class
+                    const safeIcon = Utils.escapeHtml(String(phase?.icon ?? '📁'));
+                    const safeTitle = Utils.escapeHtml(String(phase?.title ?? `Bölüm ${index}`));
+                    const safeDesc = Utils.escapeHtml(String(phase?.description ?? ''));
+                    // Sanitize color to prevent class injection (allow only alphanumeric + hyphen)
+                    const rawColor = phase?.color || 'gray';
+                    const safeColor = rawColor.replace(/[^a-z0-9-]/gi, '') || 'gray';
 
                     list.innerHTML += `
                         <div onclick="PhaseManager.load(${index})" class="p-3 border-l-4 cursor-pointer transition ${activeClass}">
                             <div class="flex items-center">
-                                <span class="w-3 h-3 rounded-full bg-${phase?.color || 'gray'}-500 mr-3"></span>
+                                <span class="w-3 h-3 rounded-full bg-${safeColor}-500 mr-3"></span>
                                 <div>
-                                    <div class="font-bold text-sm text-gray-700">${icon} ${title}</div>
-                                    <div class="text-xs text-gray-400">${desc}</div>
+                                    <div class="font-bold text-sm text-gray-700">${safeIcon} ${safeTitle}</div>
+                                    <div class="text-xs text-gray-400">${safeDesc}</div>
                                 </div>
                             </div>
                         </div>`;

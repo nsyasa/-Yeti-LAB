@@ -272,7 +272,7 @@ const AdminView = {
         if (courseSettings) courseSettings.classList.remove('hidden');
 
         // Apply theme
-        if (window.ThemeManager) ThemeManager.load();
+        if (window.ThemeManager) ThemeManager.init();
     },
 
     /**

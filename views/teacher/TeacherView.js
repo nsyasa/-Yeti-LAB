@@ -111,7 +111,7 @@ const TeacherView = {
         }
 
         // Apply theme
-        if (window.ThemeManager) ThemeManager.load();
+        if (window.ThemeManager) ThemeManager.init();
 
         // Parse initial section from URL hash
         // #/teacher → dashboard, #/teacher/classrooms → classrooms

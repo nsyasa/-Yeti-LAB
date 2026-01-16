@@ -66,19 +66,25 @@ const CourseManager = {
                 const isFirst = index === 0;
                 const isLast = index === this.courses.length - 1;
 
+                // XSS Protection: Escape HTML and sanitize onclick parameters
+                const safeKey = Utils.escapeHtml(c.key);
+                const safeTitle = Utils.escapeHtml(c.title);
+                const safeIcon = Utils.escapeHtml(c.icon || '📦');
+                const onclickParam = JSON.stringify(String(c.key));
+
                 return `
             <div class="relative group">
-                <button type="button" onclick="CourseManager.selectCourse('${c.key}')"
+                <button type="button" onclick="CourseManager.selectCourse(${onclickParam})"
                     class="w-full p-3 rounded-lg border-2 transition text-left ${
                         isActive
                             ? 'border-theme bg-theme/10 dark:bg-theme/20 shadow-md'
                             : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow'
                     }">
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl">${c.icon || '📦'}</span>
+                        <span class="text-2xl">${safeIcon}</span>
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate">${c.title}</div>
-                            <div class="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">${c.key}</div>
+                            <div class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate">${safeTitle}</div>
+                            <div class="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">${safeKey}</div>
                         </div>
                     </div>
                 </button>
@@ -306,6 +312,12 @@ const CourseManager = {
                 const isFirst = index === 0;
                 const isLast = index === this.courses.length - 1;
 
+                // XSS Protection: Escape HTML and sanitize onclick parameters
+                const safeKey = Utils.escapeHtml(c.key);
+                const safeTitle = Utils.escapeHtml(c.title);
+                const safeIcon = Utils.escapeHtml(c.icon || '📦');
+                const onclickParam = JSON.stringify(String(c.key));
+
                 return `
             <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-sm hover:shadow transition group" draggable="true" ondragstart="CourseManager.dragStart(event, ${index})" ondragover="CourseManager.allowDrop(event)" ondrop="CourseManager.drop(event, ${index})">
                 <div class="flex items-center gap-4">
@@ -313,10 +325,10 @@ const CourseManager = {
                         <span class="text-xs font-bold text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5">#${index + 1}</span>
                         <span class="cursor-move text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 text-lg">☰</span>
                     </div>
-                    <div class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded text-2xl">${c.icon || '📦'}</div>
+                    <div class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded text-2xl">${safeIcon}</div>
                     <div>
-                        <div class="font-bold text-gray-800 dark:text-gray-100">${c.title}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">${c.key}</div>
+                        <div class="font-bold text-gray-800 dark:text-gray-100">${safeTitle}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">${safeKey}</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -328,7 +340,7 @@ const CourseManager = {
                             class="w-7 h-7 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm ${isLast ? 'invisible' : ''}" 
                             title="Aşağı Taşı">↓</button>
                     </div>
-                    <button onclick="CourseManager.deleteCourse('${c.key}')" class="p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="Sil">🗑️</button>
+                    <button onclick="CourseManager.deleteCourse(${onclickParam})" class="p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="Sil">🗑️</button>
                 </div>
             </div>`;
             })

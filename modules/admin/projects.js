@@ -91,13 +91,17 @@ const ProjectManager = {
                 const isFirst = index === 0;
                 const isLast = index === sortedProjects.length - 1;
 
+                // XSS Protection: Escape HTML
+                const safePTitle = Utils.escapeHtml(String(pTitle ?? 'Untitled'));
+                const safePIcon = Utils.escapeHtml(String(pIcon ?? '📄'));
+
                 const div = document.createElement('div');
                 div.className = `p-3 border-l-4 cursor-pointer transition ${activeClass} group`;
                 div.innerHTML = `
                     <div class="flex justify-between items-center">
-                        <span class="project-title font-bold text-sm text-gray-700 flex-1">#${p.id} ${pTitle}</span>
+                        <span class="project-title font-bold text-sm text-gray-700 flex-1">#${p.id} ${safePTitle}</span>
                         <div class="flex items-center gap-1">
-                            <span class="project-icon text-xs text-gray-400 mr-2">${pIcon}</span>
+                            <span class="project-icon text-xs text-gray-400 mr-2">${safePIcon}</span>
                             <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                 <button onclick="event.stopPropagation(); ProjectManager.moveUp(${p.id})" 
                                     class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 text-xs ${isFirst ? 'invisible' : ''}" 
@@ -755,13 +759,16 @@ const ProjectManager = {
                 const name = comp.name || key;
                 const icon = comp.icon || '📦';
                 const isChecked = p.materials && p.materials.includes(name);
-                const safeName = name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+                // XSS Protection: Escape HTML for both attribute and content
+                const safeName = Utils.escapeHtml(String(name ?? ''));
+                const safeIcon = Utils.escapeHtml(String(icon ?? '📦'));
 
                 htmlContent += `
                     <label class="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer bg-white dark:bg-gray-800 transition-colors">
                         <input type="checkbox" value="${safeName}" class="material-checkbox w-4 h-4 text-blue-600 dark:text-blue-400 rounded dark:bg-gray-700 dark:border-gray-600" ${isChecked ? 'checked' : ''} onchange="ProjectManager.update()">
-                        <span class="text-lg">${icon}</span>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none">${name}</span>
+                        <span class="text-lg">${safeIcon}</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none">${safeName}</span>
                     </label>`;
             });
             matList.innerHTML = htmlContent;

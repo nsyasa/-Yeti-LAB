@@ -124,16 +124,22 @@ const CourseSettings = {
             // Get current label (custom or default)
             const currentLabel = customTabNames[tab.id] || tab.label;
 
+            // XSS Protection: Escape HTML and sanitize tab ID for DOM safety
+            const safeTabId = String(tab.id ?? '').replace(/[^a-z0-9_-]/gi, '_');
+            const safeCurrentLabel = Utils.escapeHtml(String(currentLabel ?? ''));
+            const safeDefaultLabel = Utils.escapeHtml(String(tab.label ?? ''));
+            const onclickParam = JSON.stringify(String(tab.id ?? ''));
+
             const div = document.createElement('div');
             div.className = 'flex items-center gap-1';
             div.innerHTML = `
                 <input 
                     type="text" 
-                    id="tab-name-${tab.id}"
-                    value="${currentLabel}"
-                    placeholder="${tab.label}"
+                    id="tab-name-${safeTabId}"
+                    value="${safeCurrentLabel}"
+                    placeholder="${safeDefaultLabel}"
                     class="flex-1 border rounded px-2 py-1 text-sm"
-                    oninput="CourseSettings.updateTabName('${tab.id}', this.value)"
+                    oninput="CourseSettings.updateTabName(${onclickParam}, this.value)"
                 />
             `;
             container.appendChild(div);

@@ -120,6 +120,36 @@ npm run dev
 
 Tarayıcıda `http://localhost:5173` (veya terminalde belirtilen port) adresine gidin.
 
+### 5. Supabase RLS Güvenliğini Uygulayın
+
+**⚠️ ÖNEMLİ: Production ortamında mutlaka güvenli RLS politikalarını kullanın!**
+
+#### Production İçin (ÖNERİLEN):
+
+```bash
+# Supabase SQL Editor'da çalıştırın:
+sql/rls_content_admin.sql
+```
+
+Bu script:
+
+- ✅ `courses`, `phases`, `projects`, `course_components` tablolarını güvenli hale getirir
+- ✅ Sadece `content_admins` tablosundaki kullanıcılar write yapabilir
+- ✅ Public read (courses/phases/projects), authenticated read (components)
+
+#### ❌ KULLANMAYIN:
+
+```bash
+# Bu script DEPRECATED ve GÜVENSİZDİR:
+sql/fix_permissions_INSECURE_DO_NOT_USE.sql
+```
+
+**Neden güvensiz?**
+
+- Tüm authenticated kullanıcılar (öğrenciler dahil) kurs ekleyebilir/silebilir
+- `auth.role() = 'authenticated'` → Herkes yazabilir
+- Production'da CRITICAL güvenlik açığı yaratır
+
 ---
 
 ## 🧪 Testler

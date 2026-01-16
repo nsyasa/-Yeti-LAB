@@ -6,6 +6,571 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.9] - 2026-01-17
+
+### 🐛 Bugfix - ThemeManager Method Name Consistency
+
+#### Critical Fix: Admin/Teacher Panel Crash
+
+**Sorun**: Admin ve Teacher panelleri açılırken `TypeError: ThemeManager.load is not a function` hatası alınıyordu.
+
+**Kök Neden**: v1.3.1'de `Navbar.js`'de `ThemeManager.load()` → `ThemeManager.init()` değişikliği yapılmış ama diğer dosyalar güncellenmemişti.
+
+**Çözüm**: Tüm `ThemeManager.load()` çağrıları `ThemeManager.init()` olarak güncellendi.
+
+#### Düzeltilen Dosyalar
+
+| Dosya                                           | Satır | Değişiklik                       |
+| ----------------------------------------------- | ----- | -------------------------------- |
+| `views/admin/AdminView.js`                      | 275   | `ThemeManager.load()` → `init()` |
+| `views/teacher/TeacherView.js`                  | 114   | `ThemeManager.load()` → `init()` |
+| `modules/teacher-manager.js`                    | 154   | `ThemeManager.load()` → `init()` |
+| `tests/integration/teacher.integration.test.js` | 148   | Test assertion güncellendi       |
+
+#### Etki
+
+- ✅ Admin paneli artık hatasız açılıyor
+- ✅ Teacher paneli artık hatasız açılıyor
+- ✅ Tema yükleme fonksiyonu tutarlı
+
+---
+
+## [1.3.8] - 2026-01-17
+
+### 🔒 Security Enhancement - Admin Check Unification
+
+#### Dual-Source Admin Verification
+
+**Sorun**: Admin kontrolü iki farklı kaynaktan yapılıyordu ve tutarsızlık yaratabiliyordu:
+
+- `Auth.isAdmin()` → `user_profiles.role === 'admin'` (application-level)
+- `SupabaseClient.isAdmin` → `content_admins` tablosu (database-level, RLS)
+
+**Çözüm**: `Auth.isAdmin()` fonksiyonu her iki kaynağı da kontrol edecek şekilde güncellendi (OR logic).
+
+#### Değişiklikler
+
+**1. Auth.isAdmin() - Dual-Source Check**
+
+```javascript
+isAdmin() {
+    // Check user_profiles.role (application-level)
+    const hasAdminRole = this.userRole === 'admin';
+
+    // Check content_admins table (database-level, used by RLS)
+    const isContentAdmin = typeof SupabaseClient !== 'undefined' &&
+                          SupabaseClient.isAdmin === true;
+
+    // User is admin if EITHER source confirms it
+    return hasAdminRole || isContentAdmin;
+}
+```
+
+**2. Auth.loadUserProfile() - Ensure checkAdminStatus Called**
+
+```javascript
+// Check admin status in content_admins table (for RLS compatibility)
+if (typeof SupabaseClient !== 'undefined' && SupabaseClient.checkAdminStatus) {
+    await SupabaseClient.checkAdminStatus();
+}
+```
+
+#### Güvenlik İyileştirmesi
+
+**ÖNCE:**
+
+```javascript
+// Sadece user_profiles.role kontrolü
+return this.userRole === 'admin';
+```
+
+**SONRA:**
+
+```javascript
+// Dual-source: user_profiles.role OR content_admins
+return this.userRole === 'admin' || SupabaseClient.isAdmin === true;
+```
+
+#### Admin Senaryoları
+
+| Senaryo                | user_profiles.role | content_admins | Auth.isAdmin() |
+| ---------------------- | ------------------ | -------------- | -------------- |
+| Admin (both sources)   | 'admin'            | ✅             | ✅ true        |
+| Admin (app-level only) | 'admin'            | ❌             | ✅ true        |
+| Admin (DB-level only)  | 'teacher'          | ✅             | ✅ true        |
+| Non-admin              | 'teacher'          | ❌             | ❌ false       |
+
+#### Doğrulama
+
+- ✅ Dual-source check implemented
+- ✅ checkAdminStatus called in loadUserProfile
+- ✅ Backward compatible
+- ✅ RLS compatible
+
+#### Dosyalar
+
+- `modules/auth.js` - Lines 251-254, 468-476
+
+---
+
+## [1.3.7] - 2026-01-17
+
+### 🔒 Security Maintenance - SQL Script Deprecation and Consolidation
+
+#### Insecure Script Deprecation
+
+**Sorun**: `sql/fix_permissions.sql` scripti CRITICAL güvenlik açığı içeriyordu ve yanlışlıkla kullanılabilirdi.
+
+**Çözüm**: Script deprecated edildi, consolidated güvenli script oluşturuldu, README'ye uyarılar eklendi.
+
+#### Değişiklikler
+
+**1. File Rename**
+
+```bash
+sql/fix_permissions.sql → sql/fix_permissions_INSECURE_DO_NOT_USE.sql
+```
+
+**2. Deprecation Warning (18-line banner)**
+
+```sql
+-- ============================================================================
+-- ⚠️⚠️⚠️ DEPRECATED - DO NOT USE IN PRODUCTION ⚠️⚠️⚠️
+-- ============================================================================
+--
+-- BU SCRIPT AUTHENTICATED WRITE AÇAR - PRODUCTION'DA KULLANMAYIN!
+--
+-- ❌ SORUN: auth.role() = 'authenticated' → Herkes yazabilir
+-- ✅ ÇÖZÜM: sql/rls_content_admin.sql kullanın
+```
+
+**3. Consolidated Secure Script**
+
+```bash
+# Yeni dosya: sql/rls_content_admin.sql
+# İçerik: 4 tablo, 16 policy (tek dosyada)
+- courses (4 policies)
+- phases (4 policies)
+- projects (4 policies)
+- course_components (4 policies)
+```
+
+**4. README.md Update**
+
+```markdown
+### 5. Supabase RLS Güvenliğini Uygulayın
+
+#### Production İçin (ÖNERİLEN):
+
+sql/rls_content_admin.sql
+
+#### ❌ KULLANMAYIN:
+
+sql/fix_permissions_INSECURE_DO_NOT_USE.sql
+```
+
+#### Güvenlik İyileştirmesi
+
+**ÖNCE:**
+
+- ❌ Scattered scripts (3 farklı dosya)
+- ❌ Kolay yanlışlıkla insecure script kullanımı
+- ❌ Uyarı yok
+
+**SONRA:**
+
+- ✅ Consolidated script (tek dosya)
+- ✅ Büyük deprecation uyarıları
+- ✅ README documentation
+
+#### Doğrulama
+
+- ✅ `git grep "fix_permissions.sql"` → No results
+- ✅ README security section added
+- ✅ All policies verified in Supabase
+
+#### Dosyalar
+
+- `sql/rls_content_admin.sql` - Consolidated production script
+- `sql/fix_permissions_INSECURE_DO_NOT_USE.sql` - Deprecated (⚠️ WARNING)
+
+---
+
+## [1.3.6] - 2026-01-16
+
+### 🔒 Security Hardening - RLS Extension to Content Tables
+
+#### Critical Security Fix: Admin-Only Write Access for Content Tables
+
+**Sorun**: `phases`, `projects`, ve `course_components` tabloları için RLS politikaları eksik veya yetersiz. Bu tablolara write erişimi kısıtlanmamış.
+
+**Çözüm**: `courses` tablosunda uygulanan RLS güvenlik modeli `phases`, `projects`, ve `course_components` tablolarına genişletildi.
+
+#### Değişiklikler
+
+**1. Phases Table (4 policies)**
+
+```sql
+-- SELECT: Public read (marketing funnel)
+CREATE POLICY "phases_select_public" ON public.phases
+FOR SELECT USING (true);
+
+-- INSERT/UPDATE/DELETE: Content admins only
+CREATE POLICY "phases_insert_admin" ON public.phases
+FOR INSERT TO authenticated WITH CHECK (public.is_content_admin());
+
+CREATE POLICY "phases_update_admin" ON public.phases
+FOR UPDATE TO authenticated USING (public.is_content_admin());
+
+CREATE POLICY "phases_delete_admin" ON public.phases
+FOR DELETE TO authenticated USING (public.is_content_admin());
+```
+
+**2. Projects Table (4 policies)**
+
+```sql
+-- SELECT: Public read (marketing funnel)
+CREATE POLICY "projects_select_public" ON public.projects
+FOR SELECT USING (true);
+
+-- INSERT/UPDATE/DELETE: Content admins only
+CREATE POLICY "projects_insert_admin" ON public.projects
+FOR INSERT TO authenticated WITH CHECK (public.is_content_admin());
+
+CREATE POLICY "projects_update_admin" ON public.projects
+FOR UPDATE TO authenticated USING (public.is_content_admin());
+
+CREATE POLICY "projects_delete_admin" ON public.projects
+FOR DELETE TO authenticated USING (public.is_content_admin());
+```
+
+**3. Course Components Table (4 policies)**
+
+```sql
+-- SELECT: Authenticated users only (sensitive data)
+CREATE POLICY "components_select_authenticated" ON public.course_components
+FOR SELECT TO authenticated USING (true);
+
+-- INSERT/UPDATE/DELETE: Content admins only
+CREATE POLICY "components_insert_admin" ON public.course_components
+FOR INSERT TO authenticated WITH CHECK (public.is_content_admin());
+
+CREATE POLICY "components_update_admin" ON public.course_components
+FOR UPDATE TO authenticated USING (public.is_content_admin());
+
+CREATE POLICY "components_delete_admin" ON public.course_components
+FOR DELETE TO authenticated USING (public.is_content_admin());
+```
+
+#### SELECT Policy Kararları
+
+| Table               | SELECT Policy      | Gerekçe                                          |
+| ------------------- | ------------------ | ------------------------------------------------ |
+| `phases`            | Public read        | Kurs yapısı marketing funnel için görünür olmalı |
+| `projects`          | Public read        | Proje listesi anonim ziyaretçilere gösterilmeli  |
+| `course_components` | Authenticated-only | Hassas metadata (quiz cevapları vb.)             |
+
+#### Güvenlik İyileştirmesi
+
+**Kod Kanıtı (supabase-sync.js):**
+
+- `phases`: INSERT (L329), UPDATE (L323), DELETE (L352)
+- `projects`: UPSERT (L246), DELETE (L289)
+- `course_components`: UPSERT (L655)
+
+**Güvenlik Durumu:**
+
+- ✅ 4 tablo güvenli: `courses`, `phases`, `projects`, `course_components`
+- ✅ 16 policy total (4 per table)
+- ✅ Admin-only write, public/authenticated read
+
+#### Doğrulama
+
+- ✅ Policy count: 12 policies (4 per table)
+- ✅ Non-admin write: BLOCKED
+- ✅ Admin write: ALLOWED
+- ✅ Public read (phases/projects): ALLOWED
+- ✅ Authenticated read (components): ALLOWED
+
+#### Dosyalar
+
+- `sql/secure_content_tables_rls.sql` - Production patch
+- `sql/rollback_content_tables_rls.sql` - Emergency rollback (⚠️ INSECURE)
+
+---
+
+## [1.3.5] - 2026-01-16
+
+### 🔒 Security Hardening - RLS Policy Enhancement for Courses Table
+
+#### Critical Security Fix: Admin-Only Write Access
+
+**Sorun**: `courses` tablosu RLS politikaları tüm `authenticated` kullanıcılara (öğrenciler dahil) INSERT, UPDATE, DELETE izni veriyordu. Bu, yetkisiz kurs manipülasyonuna açıktı.
+
+**Çözüm**: RLS politikaları güncellenerek write operasyonları sadece `content_admins` tablosunda kaydı olan kullanıcılarla sınırlandırıldı.
+
+#### Değişiklikler
+
+**1. Helper Function (SECURITY DEFINER + search_path protection)**
+
+```sql
+CREATE OR REPLACE FUNCTION public.is_content_admin()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.content_admins
+    WHERE user_id = auth.uid()
+  );
+$$;
+```
+
+**2. New Secure Policies**
+
+```sql
+-- SELECT: Public read (marketing funnel)
+CREATE POLICY "courses_select_public" ON public.courses
+FOR SELECT USING (true);
+
+-- INSERT: Content admins only
+CREATE POLICY "courses_insert_admin" ON public.courses
+FOR INSERT TO authenticated WITH CHECK (public.is_content_admin());
+
+-- UPDATE: Content admins only
+CREATE POLICY "courses_update_admin" ON public.courses
+FOR UPDATE TO authenticated USING (public.is_content_admin());
+
+-- DELETE: Content admins only
+CREATE POLICY "courses_delete_admin" ON public.courses
+FOR DELETE TO authenticated USING (public.is_content_admin());
+```
+
+#### Güvenlik İyileştirmesi
+
+**ÖNCE (Vulnerable):**
+
+```sql
+-- ❌ Herhangi bir authenticated user kurs ekleyebilir/silebilir
+auth.role() = 'authenticated'
+```
+
+**SONRA (Secure):**
+
+```sql
+-- ✅ Sadece content_admins tablosundaki kullanıcılar
+public.is_content_admin()
+```
+
+#### Admin Kaynağı Seçimi
+
+**Seçilen:** `content_admins` tablosu (database-level security)
+
+**Gerekçe:**
+
+1. Database-level security: RLS'de doğrudan sorgulanabilir
+2. Consistency: Mevcut `supabaseClient.js` zaten bu kaynağı kullanıyor
+
+#### Doğrulama
+
+- ✅ Helper function: `SECURITY DEFINER` + `SET search_path = public`
+- ✅ Policy count: 4 policies (clean)
+- ✅ Non-admin write: BLOCKED
+- ✅ Admin write: ALLOWED
+- ✅ Public read: ALLOWED (marketing funnel)
+
+#### Dosyalar
+
+- `sql/secure_courses_rls.sql` - Production patch
+- `sql/rollback_courses_rls.sql` - Emergency rollback (⚠️ INSECURE)
+
+---
+
+## [1.3.4] - 2026-01-16
+
+### 🔒 Security Enhancement - XSS Hardening Fixes
+
+#### Additional Security Improvements
+
+**Sorun**: P0/P1 XSS patch'lerinden sonra 3 küçük güvenlik açığı tespit edildi:
+
+1. `components.js` - `comp` undefined olursa crash
+2. `phases.js` - `safeColor` boş kalırsa invalid CSS class
+3. `richTextEditor.js` - URL attribute injection riski
+
+**Çözüm**: Minimal diff ile 3 hardening düzeltmesi uygulandı.
+
+#### Değişiklikler
+
+**1. Optional Chaining (components.js)**
+
+```javascript
+// ✅ SAFE: Prevents crash on undefined comp
+const safeName = Utils.escapeHtml(String(comp?.name ?? key));
+const safeIcon = Utils.escapeHtml(String(comp?.icon ?? '📦'));
+```
+
+**2. Color Fallback (phases.js)**
+
+```javascript
+// ✅ SAFE: Prevents empty class name
+const safeColor = rawColor.replace(/[^a-z0-9-]/gi, '') || 'gray';
+```
+
+**3. URL Attribute Escaping + Protocol Allowlist (richTextEditor.js)**
+
+```javascript
+// Helper: Escape HTML attributes
+const escapeAttr = (str) => {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+};
+
+// Allowlist: Safe protocols only
+const safePatterns = [
+    /^https?:\/\//i, // http(s)://
+    /^mailto:/i, // mailto:
+    /^#/, // anchors
+    /^\//, // absolute paths
+    /^\.\//, // relative paths
+];
+```
+
+#### Güvenlik İyileştirmesi
+
+- ✅ **URL Attribute Injection:** `[x](url" onmouseover="alert(1))` → Escaped
+- ✅ **Protocol Allowlist:** `javascript:`, `data:`, `file:` → Blocked
+- ✅ **Relative URLs:** `/`, `./`, `../` → Allowed
+- ✅ **Mailto Links:** `mailto:` → Allowed
+- ✅ **rel="noopener noreferrer":** Added for security
+
+#### Doğrulama
+
+- ✅ Build test: PASS (1.46s)
+- ✅ URL attribute injection test: BLOCKED
+- ✅ JavaScript protocol test: BLOCKED
+- ✅ Relative URLs test: ALLOWED
+
+---
+
+## [1.3.3] - 2026-01-16
+
+### 🔒 Security Fix - XSS Prevention in Admin Courses UI
+
+#### Critical Security Patch: HTML Injection Prevention
+
+**Sorun**: `modules/admin/courses.js` dosyasındaki `renderSelectorGrid()` ve `renderList()` fonksiyonları, kullanıcı tarafından kontrol edilebilir verileri (course title, key, icon) doğrudan `innerHTML` ile render ediyordu. Bu, XSS (Cross-Site Scripting) ve attribute injection saldırılarına açıktı.
+
+**Çözüm**: Minimal diff ile güvenlik açığı kapatıldı. HTML özel karakterleri escape edildi ve onclick parametreleri güvenli şekilde serialize edildi.
+
+#### Değişiklikler
+
+**HTML Escaping:**
+
+```javascript
+// ✅ SAFE: Escape HTML special characters
+const safeKey = Utils.escapeHtml(String(c.key ?? ''));
+const safeTitle = Utils.escapeHtml(String(c.title ?? ''));
+const safeIcon = Utils.escapeHtml(String(c.icon ?? '📦'));
+```
+
+**Onclick Parameter Sanitization:**
+
+```javascript
+// ❌ BEFORE: String interpolation (vulnerable to injection)
+onclick = "CourseManager.selectCourse('${c.key}')";
+
+// ✅ AFTER: JSON.stringify (safe serialization)
+const onclickParam = JSON.stringify(String(c.key ?? ''));
+onclick = 'CourseManager.selectCourse(${onclickParam})';
+```
+
+#### Güvenlik İyileştirmesi
+
+- ✅ **HTML Injection:** `<img src=x onerror="alert()">` → Escaped, script çalışmaz
+- ✅ **Attribute Injection:** `test' onclick='alert(1)'` → Escaped, onclick hijack olmaz
+- ✅ **Script Injection:** `</span><script>alert()</script>` → Escaped, tag kırılmaz
+
+#### Etkilenen Fonksiyonlar
+
+| Fonksiyon              | Satırlar | Değişiklik                            |
+| ---------------------- | -------- | ------------------------------------- |
+| `renderSelectorGrid()` | 63-96    | +6 satır (escape logic), 4 değişiklik |
+| `renderList()`         | 304-335  | +6 satır (escape logic), 4 değişiklik |
+
+#### Doğrulama
+
+- ✅ Grep test: Vulnerable pattern kalmadı
+- ✅ Build test: Hatasız build (2.72s)
+- ✅ Fonksiyonellik: Tüm özellikler çalışıyor
+- ✅ Performance: Bundle size değişmedi
+
+---
+
+## [1.3.2] - 2026-01-16
+
+### 🔒 Security Hardening - RLS Policy Update
+
+#### Critical Security Fix: Courses Table Access Control
+
+**Sorun**: `courses` tablosu RLS politikaları tüm `authenticated` kullanıcılara write izni veriyordu. Bu, öğrenciler dahil herhangi bir giriş yapmış kullanıcının kurs ekleyebileceği/silebileceği anlamına geliyordu.
+
+**Çözüm**: RLS politikaları güncellenerek write operasyonları sadece `content_admins` tablosunda kaydı olan kullanıcılarla sınırlandırıldı.
+
+#### Değişiklikler
+
+- **Helper Function**: `public.is_content_admin()` fonksiyonu eklendi
+    - `STABLE` ve `SECURITY DEFINER` olarak tanımlandı
+    - `content_admins` tablosunda kullanıcı kontrolü yapıyor
+    - `authenticated` role'üne execute yetkisi verildi
+
+- **RLS Policies Güncellendi**:
+    - ✅ `SELECT`: Public erişim korundu (herkes kursları okuyabilir)
+    - 🔒 `INSERT`: Sadece content_admins
+    - 🔒 `UPDATE`: Sadece content_admins
+    - 🔒 `DELETE`: Sadece content_admins
+
+#### Yeni Dosyalar
+
+| Dosya                          | Açıklama               |
+| ------------------------------ | ---------------------- |
+| `sql/secure_courses_rls.sql`   | Ana güvenlik patch'i   |
+| `sql/rollback_courses_rls.sql` | Acil geri alma scripti |
+
+#### Admin Tanımı - Tek Kaynak
+
+**Önceki Durum**: İki farklı admin kaynağı kullanılıyordu
+
+- `Auth.isAdmin()` → `user_profiles.role === 'admin'`
+- `SupabaseClient.checkAdminStatus()` → `content_admins` tablosu
+
+**Yeni Durum**: RLS politikaları için `content_admins` tablosu tek kaynak olarak seçildi
+
+- Database-level güvenlik sağlar
+- Foreign key constraint ile veri bütünlüğü garantili
+- RLS'de doğrudan sorgulanabilir
+
+#### Doğrulama
+
+- ✅ Admin olmayan kullanıcı ile INSERT/UPDATE/DELETE → `403 Forbidden` (RLS policy violation)
+- ✅ Admin kullanıcı ile tüm CRUD operasyonları → Başarılı
+- ✅ Public SELECT erişimi → Korundu
+
+#### Etki
+
+- **Güvenlik**: Yetkisiz kurs manipülasyonu riski ortadan kaldırıldı
+- **Fonksiyonellik**: Admin kullanıcılar için değişiklik yok
+- **Kullanıcı Deneyimi**: Public kurs görüntüleme etkilenmedi
+
+---
+
 ## [1.3.1] - 2026-01-16
 
 ### 📱 Navigation UX Overhaul
