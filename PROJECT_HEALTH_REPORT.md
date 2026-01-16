@@ -1,130 +1,159 @@
 # 🏥 Yeti LAB Proje Sağlık Raporu
 
-**Tarih:** 10 Ocak 2026
-**Durum:** Kritik İyileştirmeler Gerekiyor
+**Son Güncelleme:** 16 Ocak 2026
+**Versiyon:** 1.3.1
+**Durum:** İyi (İyileştirmeler Devam Ediyor)
 
-Bu rapor, Yeti LAB projesinin 5 aşamalı detaylı teknik analizinin sonucudur. Projenin modern bir SPA mimarisine geçiş sürecinde olduğu, ancak bu geçişin getirdiği bazı "büyüme sancıları" ve güvenlik riskleri taşıdığı tespit edilmiştir.
+Bu rapor, Yeti LAB projesinin teknik analizini ve güncel durumunu içerir.
 
 ---
 
 ## 📊 Genel Puanlama
 
-| Kategori               | Puan (10 üzerinden) | Durum                                                      |
-| :--------------------- | :-----------------: | :--------------------------------------------------------- |
-| **Mimari Bütünlük**    |        6/10         | 🟡 Geliştirilmeli (God Objects & Split Routing)            |
-| **Frontend/UX**        |        7/10         | 🟢 İyi (Vite/Tailwind yapısı sağlam ama CSS kirliliği var) |
-| **Backend & Güvenlik** |        4/10         | 🔴 Kritik (API Key ifşası & Kırılgan Auth)                 |
-| **Test & Stabilite**   |        5/10         | 🟡 Orta (Test var ama "False Positive" riski yüksek)       |
-| **Sürdürülebilirlik**  |        6/10         | 🟡 Geliştirilmeli (Dokümantasyon dağınıklığı)              |
+| Kategori               | Puan (10 üzerinden) | Durum                                                     |
+| :--------------------- | :-----------------: | :-------------------------------------------------------- |
+| **Mimari Bütünlük**    |        7/10         | � İyi (Modüler yapı, ViewLoader/Router ayrımı tamamlandı) |
+| **Frontend/UX**        |        8/10         | 🟢 Çok İyi (Context-aware nav, responsive design)         |
+| **Backend & Güvenlik** |        6/10         | � Geliştirilmeli (.env kullanımı var, RLS aktif)          |
+| **Test & Stabilite**   |        7/10         | � İyi (Tüm testler geçiyor, 6 minor lint uyarısı)         |
+| **Sürdürülebilirlik**  |        8/10         | � Çok İyi (Temiz workflow, güncel CHANGELOG)              |
 
 ---
 
-## 🚨 Kritik Bulgular (Acil Müdahale Gerekenler)
+## ✅ Son Düzeltmeler (v1.3.1 - 16 Ocak 2026)
 
-### 1. Güvenlik: API Key İfşası (P0)
+### 🎯 Navigation UX Overhaul
 
-- **Sorun:** `supabaseClient.js` dosyasında `SUPABASE_ANON_KEY` hardcoded olarak bulunuyor.
-- **Risk:** Repo'ya erişimi olan herkes bu anahtarı kullanarak (RLS kuralları zayıfsa) veritabanını manipüle edebilir.
-- **Çözüm:** Fallback değerler silinmeli, sadece `.env` veya Build-time environment variables kullanılmalı.
+- **Context-Aware Mobile Nav**: Ders Listesi butonu sadece kurs içinde görünür
+- **Sidebar CSS/JS Fix**: Tailwind + Custom CSS class çakışması çözüldü
+- **Dashboard Buttons**: Kurslar (turuncu), Ders Listesi (cyan) gradient tasarım
 
-### 2. Mimari: Hibrit Routing Çatışması (P1)
+### 🛠️ Teknik İyileştirmeler
 
-- **Sorun:** Hem `router.js` hem de `app.js` (handleRouteChange) routing işini üstlenmiş durumda.
-- **Sonuç:** Sayfa geçişlerinde (örn. Profile -> Teacher) eski sayfanın ekranda kalması (Ghost View) sorunu yaşanıyor.
-- **Çözüm:** Tüm routing mantığı merkezi `Router` modülüne ve `ViewManager`'a devredilmeli.
+- `toggleSidebar` fonksiyonu Tailwind class yönetimi ile güncellendi
+- `switchView` fonksiyonuna buton görünürlük yönetimi eklendi
+- ThemeManager.load() → init() hatası düzeltildi
 
-### 3. Stabilite: Supabase "Sync Loop" (P1)
+### 📚 Dokümantasyon
 
-- **Sorun:** Admin panelindeki `saveToSupabase` fonksiyonu, her kayıtta tüm veriyi tekrar çekip (read) sonra parça parça kaydediyor (write). `Debounce` mekanizması zayıf.
-- **Risk:** Veri kaybı (Race Condition) ve yüksek veritabanı maliyeti.
-- **Çözüm:** Auto-save işlemine `debounce` eklenmeli ve sadece değişen veriyi (patch) gönderecek yapıya geçilmeli.
-
-### 4. Test: Aşırı Mocklama (Over-Mocking) (P2)
-
-- **Sorun:** Entegrasyon testleri, sistemin neredeyse tamamını mockluyor.
-- **Sonuç:** Testler yeşil yansa bile uygulama bozuk olabilir (False Positive).
-- **Çözüm:** Mock kullanımı azaltılmalı, gerçek logic test edilmeli.
+- `/debug-visibility` workflow oluşturuldu (Tailwind/CSS debug)
+- 3 eski roadmap dosyası silindi (-5700 satır)
+- CHANGELOG.md ve README.md güncellendi
 
 ---
 
-## 🗺️ Önerilen Yol Haritası (Roadmap)
+## 📈 Mevcut Durum
 
-Aşağıdaki sırayla ilerlenmesi önerilir:
+### Test Sonuçları ✅
 
-### 🛑 Faz 1: Acil Güvenlik & Stabilite (Hemen)
+```
+Tüm testler geçiyor (Unit + Integration)
+- supabaseClient.test.js: 16 tests ✓
+- navbar.test.js: 25 tests ✓
+- validators.test.js: 32 tests ✓
+- router.test.js: 41 tests ✓
+- submissionService.test.js: 41 tests ✓
+- assignmentService.test.js: 28 tests ✓
+- ve diğerleri...
+```
 
-- [x] `supabaseClient.js` temizliği: Hardcoded key'lerin silinmesi.
-- [x] `.env` yapılandırmasının doğrulanması.
-- [x] `Auth` modülündeki `AbortError` yaması yerine kök neden (retry logic) çözümü.
-- [x] Admin Panel `AutoSave` için `debounce` (3sn) eklenmesi.
+### Lint Durumu 🟡
 
-### 🏗️ Faz 2: Mimari Temizlik (Refactoring)
-
-- [x] `app.js` diyeti: Routing mantığının `Router` ve `ViewManager`'a taşınması.
-- [x] `modules/admin.js` dosyasının parçalanması (`AdminController`, `AdminState` vb.).
-- [x] CSS temizliği: `styles/*.css` dosyalarındaki çakışan stillerin Tailwind'e taşınması (Fix: Safelist eklendi).
-
-### 🧪 Faz 3: Güven Ağı (Testing)
-
-- [x] `teacher.integration.test.js` mock temizliği (Daha gerçekçi testler).
-- [x] `vitest.config.js` coverage ayarlarının düzenlenmesi (Admin modülü dahil edildi).
-- [x] GitHub Actions workflow analizi ve stabilizasyon (Smoke Test eklendi).
-
-### 📚 Faz 4: Sürdürülebilirlik
-
-- [x] `.agent/workflows` klasöründeki 17 dosyanın 3 ana dosyada birleştirilmesi (Tamamlandı).
-- [x] `CHANGELOG.md` güncellemesi (Tamamlandı).
-- [x] `README.md` güncellemesi (Simülasyon ekleme rehberi vb. eklendi).
+```
+6 Uyarı (Hata yok)
+- modules/admin/hotspots.js: unused 'editor'
+- modules/admin/projects.js: unused 'project'
+- modules/admin/richTextEditor.js: unused 'preview'
+- modules/admin/storage.js: unused 'data', 'e' x2
+```
 
 ---
 
-## 🎯 Yarın Yapılacaklar (Next Sprint - 12-13 Ocak 2026)
+## ✅ Tamamlanan Fazlar
 
-### **🎨 GÖREV 1: Admin Panel CSS Beyazlıkları Düzeltme**
+### 🛑 Faz 1: Acil Güvenlik & Stabilite ✅
 
-- **Zaman:** 30-45 dakika
-- **Başlangıç Kodu:**
-    - `src/input.css` - Admin section CSS'leri
-    - `views/admin/AdminLayout.js`
-    - `views/admin/sections/*.js`
-- **Kontrol Edilecek:**
-    - Admin header/nav beyaz arka planları
-    - Modal arka planları
-    - Input/form alanları
-    - Card/section arka planları
-- **İşlem:** `--lab-bg-dark` ve `--lab-surface` ile koyu tema sağlanacak
-- **Sonuç:** Admin panel tam dark mode uyumlu
+- [x] `supabaseClient.js` temizliği: .env kullanımı
+- [x] Auth modülü AbortError düzeltmesi
+- [x] Admin Panel AutoSave debounce
 
-### **📝 GÖREV 2: Proje Amacı İçin Zengin Metin Editörü**
+### 🏗️ Faz 2: Mimari Temizlik ✅
 
-- **Zaman:** 20-30 dakika
-- **Başlangıç Kodu:**
-    - `modules/admin/richTextEditor.js` - Önceden hazır
-    - `views/admin/sections/ProjectsSection.js`
-    - `views/admin/modals/AdminModals.js`
-- **İşlem:**
-    - Project creation modalında "Amaç" metin alanı ekle
-    - RichTextEditor widget'ı initialize et
-    - Markdown → HTML dönüşümü
-    - Supabase'e markdown olarak kaydet
-- **Sonuç:** Admin'ler projeler için HTML formatted açıklama yazabilecek
+- [x] `app.js` diyeti: Router ve ViewLoader ayrımı
+- [x] `modules/admin.js` parçalanması
+- [x] CSS temizliği: Tailwind safelist
 
-### **🎬 GÖREV 3: Simülasyon Bölümünde YouTube Video Desteği**
+### 🧪 Faz 3: Test & Stabilite ✅
 
-- **Zaman:** 25-40 dakika
-- **Başlangıç Kodu:**
-    - `modules/simulations.js` - Data schema
-    - `views/student/SimulationView.js` veya `StudentCourseView.js`
-    - `modules/simulation/simController.js`
-- **İşlem:**
-    - Simülasyon JSON schema'sında `youtube_url` alanı ekle
-    - Video validation (URL parsing)
-    - Responsive iframe embed
-    - Video play butonu ekleme
-- **Sonuç:** Simülasyonlarla ilgili YouTube videoları gösterebilecek
+- [x] Integration testleri güncellendi
+- [x] Coverage ayarları düzenlendi
+- [x] GitHub Actions stabilizasyonu
+
+### 📚 Faz 4: Sürdürülebilirlik ✅
+
+- [x] Workflow dosyaları organize edildi (1 aktif workflow)
+- [x] CHANGELOG.md güncel (v1.3.1)
+- [x] README.md güncel
+
+### 📱 Faz 5: Mobile UX ✅ (YENİ)
+
+- [x] Context-aware mobile navigation
+- [x] Sidebar açılma/kapanma çözüldü
+- [x] Dashboard button repositioning
 
 ---
 
-**Tahmini Total Zaman:** 75-115 dakika (Bir gün içinde tamamlanabilir)
+## � Gelecek İyileştirmeler (Planlanan)
 
-_Rapor güncellendi: 12 Ocak 2026_
+### 🟡 Orta Öncelik
+
+| Görev               | Açıklama                            | Tahmini Süre |
+| ------------------- | ----------------------------------- | ------------ |
+| Admin Dark Mode     | Admin panel beyaz alanlarını düzelt | 30-45 dk     |
+| YouTube Video Embed | Simülasyonlara video desteği        | 25-40 dk     |
+| Lint Uyarıları      | 6 unused variable düzelt            | 10 dk        |
+
+### 🟢 Düşük Öncelik
+
+| Görev            | Açıklama                             |
+| ---------------- | ------------------------------------ |
+| Rich Text Editor | Proje açıklamaları için zengin metin |
+| PWA Desteği      | Offline kullanım                     |
+| Gamification     | Rozet sistemi                        |
+
+---
+
+## 📝 Öğrenilen Dersler
+
+### Tailwind + Custom CSS Uyumluluğu
+
+> **⚠️ Kritik**: Tailwind utility class'ları (`-translate-x-full`, `invisible`) ile CSS animasyonları (`.open`) birlikte kullanıldığında **her ikisini de JS'te yönetmek** gerekir.
+
+**Çözüm Yaklaşımı:**
+
+```javascript
+// AÇARKEN - Tailwind class'larını kaldır, CSS class ekle
+element.classList.remove('invisible', '-translate-x-full');
+element.classList.add('open');
+
+// KAPATIRKEN - CSS class kaldır, animasyon sonrası Tailwind ekle
+element.classList.remove('open');
+setTimeout(() => element.classList.add('invisible', '-translate-x-full'), 350);
+```
+
+**Referans:** `/debug-visibility` workflow
+
+---
+
+## 🔗 Önemli Dosyalar
+
+| Dosya                                  | Açıklama               |
+| -------------------------------------- | ---------------------- |
+| `CHANGELOG.md`                         | Versiyon geçmişi       |
+| `.agent/workflows/debug-visibility.md` | CSS debug rehberi      |
+| `modules/ui.js`                        | UI ve sidebar yönetimi |
+| `modules/router.js`                    | SPA routing            |
+
+---
+
+_Rapor güncellendi: 16 Ocak 2026 - v1.3.1_
