@@ -50,6 +50,19 @@ npm run preflight
 DB'deki RLS politikalarının repo ile uyumunu doğrulamak için SQL sorgusuz hazırlandı.
 Beklenen: 16 policy (4 tablo × 4 policy), `is_content_admin()` function aktif.
 
+#### npm audit Analizi
+
+6 moderate vulnerability - tümü **dev dependency** (production'ı etkilemez):
+
+| Paket                                                | Zincir        | Öncelik |
+| ---------------------------------------------------- | ------------- | ------- |
+| `esbuild` ≤0.24.2                                    | direct (vite) | Sonra   |
+| `vite` ≤6.1.6                                        | direct        | Sonra   |
+| `vitest` ≤2.2.0                                      | direct        | Sonra   |
+| `vite-node`, `@vitest/mocker`, `@vitest/coverage-v8` | transitive    | Sonra   |
+
+**Karar:** Tümü dev-only + `npm audit fix --force` major version bump gerektirir (breaking change riski). Şu an için **NO ACTION** - sonraki sprint'te yönetilecek.
+
 ---
 
 ## [1.3.11] - 2026-01-17
