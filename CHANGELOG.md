@@ -6,6 +6,37 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.10] - 2026-01-17
+
+### 🔧 CI Fix - Window Mock Compatibility
+
+**Sorun**: GitHub Actions CI'da testler fail oluyordu ama localde geçiyordu.
+
+- `Utils is not defined` (courses.integration.test.js)
+- `ThemeManager.init is not a spy` (teacher.integration.test.js)
+
+**Kök Neden**: CI ortamında modül import sırası farklı çalışıyor. Modüller `window` objesinden değişkenleri okuyor ama biz sadece `global`'e mock eklemiştik.
+
+**Çözüm**: Mock'ları hem `global` hem `window` objesine ekledik.
+
+```javascript
+// courses.integration.test.js
+window.Utils = global.Utils;
+window.admin = global.admin;
+window.SupabaseClient = global.SupabaseClient;
+window.CourseLoader = global.CourseLoader;
+
+// teacher.integration.test.js
+window.ThemeManager = global.ThemeManager;
+```
+
+**Doğrulama**:
+
+- ✅ Local: 457/457 PASS
+- ✅ GitHub CI: PASS
+
+---
+
 ## [1.3.9] - 2026-01-17
 
 ### 🐛 Bugfix - ThemeManager Method Name Consistency
