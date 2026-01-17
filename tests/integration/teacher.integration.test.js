@@ -122,6 +122,7 @@ describe('Teacher Manager Integration', () => {
         window.SupabaseClient = global.SupabaseClient;
         window.Auth = global.Auth;
         window.Toast = global.Toast;
+        window.ThemeManager = global.ThemeManager; // Add for CI compatibility
 
         // Load Main Module
         await import('../../modules/teacher-manager.js');

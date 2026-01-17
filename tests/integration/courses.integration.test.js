@@ -99,6 +99,12 @@ describe('Admin Courses Integration', () => {
         global.alert = vi.fn();
         global.confirm = vi.fn(() => true);
 
+        // Ensure mocks are also on window (for CI compatibility)
+        window.Utils = global.Utils;
+        window.admin = global.admin;
+        window.SupabaseClient = global.SupabaseClient;
+        window.CourseLoader = global.CourseLoader;
+
         // Clean window
         delete window.CourseManager;
 
