@@ -45,6 +45,11 @@ npm run preflight
 # ✅ PREFLIGHT PASS - Release için hazır!
 ```
 
+#### RLS Drift Check
+
+DB'deki RLS politikalarının repo ile uyumunu doğrulamak için SQL sorgusuz hazırlandı.
+Beklenen: 16 policy (4 tablo × 4 policy), `is_content_admin()` function aktif.
+
 ---
 
 ## [1.3.11] - 2026-01-17
