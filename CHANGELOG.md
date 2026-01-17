@@ -31,6 +31,20 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 - ✅ RLS aktif (4 tablo: courses, phases, projects, course_components)
 - ✅ Supabase init guard (credentials yoksa graceful degradation)
 
+#### Preflight Script (YENİ)
+
+`npm run preflight` - Tek komutla kalite kapısı:
+
+1. Git status kontrolü (temiz mi?)
+2. Artifact kontrolü (timestamp/coverage git'te mi?)
+3. Build çalıştır
+4. Test çalıştır
+
+```bash
+npm run preflight
+# ✅ PREFLIGHT PASS - Release için hazır!
+```
+
 ---
 
 ## [1.3.11] - 2026-01-17

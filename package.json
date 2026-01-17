@@ -16,7 +16,8 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
-        "prepare": "husky"
+        "prepare": "husky",
+        "preflight": "node scripts/preflight.js"
     },
     "lint-staged": {
         "*.js": [

@@ -36,6 +36,16 @@ Bu rapor, Yeti LAB projesinin teknik analizini ve güncel durumunu içerir.
 - ✅ **Supabase Init Guard**: Credentials yoksa graceful degradation
 - ✅ **CSRF**: Supabase Auth PKCE flow
 
+### Preflight Script
+
+Tek komutla kalite kapısı: `npm run preflight`
+
+```bash
+npm run preflight
+# Kontroller: Git status, artifact, build, test
+# ✅ PREFLIGHT PASS - Release için hazır!
+```
+
 ---
 
 ## 📊 Genel Puanlama
