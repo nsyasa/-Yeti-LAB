@@ -120,6 +120,12 @@ npm run dev
 
 Tarayıcıda `http://localhost:5173` (veya terminalde belirtilen port) adresine gidin.
 
+> ⚠️ **Dev Server Güvenliği**: `npm run dev` sadece localhost'ta çalışır.
+>
+> - `--host` flag'i ile LAN'a expose etmeyin
+> - Güvenilmeyen ağlarda dev server çalıştırmayın
+> - Production için mutlaka `npm run build` kullanın
+
 ### 5. Supabase RLS Güvenliğini Uygulayın
 
 **⚠️ ÖNEMLİ: Production ortamında mutlaka güvenli RLS politikalarını kullanın!**

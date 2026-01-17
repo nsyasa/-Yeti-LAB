@@ -40,8 +40,14 @@ export default defineConfig({
         target: 'es2020',
     },
     server: {
+        // Security hardening: localhost-only (mitigates esbuild/vite dev server vulnerabilities)
+        host: '127.0.0.1', // Only localhost, never expose to LAN
         port: 3000,
-        open: true, // Auto-open browser
+        strictPort: true, // Fail if port in use (no random port exposure)
+        open: false, // Manual browser open for security
+        hmr: {
+            host: 'localhost', // HMR only on localhost
+        },
     },
     // Define global constants
     define: {
