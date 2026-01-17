@@ -38,7 +38,7 @@ Yeti LAB, öğrencilere **Arduino**, **Micro:bit**, **Scratch**, **mBlock** ve *
 | Kategori       | Teknolojiler                                        |
 | -------------- | --------------------------------------------------- |
 | **Frontend**   | Vanilla JS (ES6+), HTML5, CSS3                      |
-| **Build Tool** | **Vite 5** (Production Optimization)                |
+| **Build Tool** | **Vite 7 (v7.3.1)** (Production Optimization)       |
 | **Styling**    | **Tailwind CSS v4** (Custom Theme) ⚠️               |
 | **Backend**    | **Supabase** (Auth, Postgres DB, Realtime)          |
 | **Testing**    | **Playwright** (E2E), **Vitest** (Unit/Integration) |

@@ -12,12 +12,12 @@ Bu rapor, Yeti LAB projesinin teknik analizini ve güncel durumunu içerir.
 
 ### Pre-Release Verification Results
 
-| Komut                 | Sonuç   | Detay                                         |
-| --------------------- | ------- | --------------------------------------------- |
-| `npm ci`              | ✅ PASS | 380 paket, 6 moderate vulnerabilities (known) |
-| `npm run build`       | ✅ PASS | 138 modül, 2.52s                              |
-| `npm test`            | ✅ PASS | Tüm unit/integration testler green            |
-| `npx playwright test` | ✅ PASS | 24/24 e2e test, 17.5s                         |
+| Komut                 | Sonuç   | Detay                                |
+| --------------------- | ------- | ------------------------------------ |
+| `npm ci`              | ✅ PASS | 380 paket, 0 vulnerabilities (Clean) |
+| `npm run build`       | ✅ PASS | 138 modül, 2.52s                     |
+| `npm test`            | ✅ PASS | Tüm unit/integration testler green   |
+| `npx playwright test` | ✅ PASS | 24/24 e2e test, 17.5s                |
 
 ### Smoke Checklist
 
