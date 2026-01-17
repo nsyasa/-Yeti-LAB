@@ -6,6 +6,40 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.11] - 2026-01-17
+
+### 🧹 Repository Hygiene & PR Evaluation
+
+#### Repo Cleanup
+
+- **Vite Timestamp Files**: 5 adet `vite.config.mjs.timestamp-*.mjs` dosyası git'ten ve diskten silindi
+- **`.gitignore` Güncellendi**:
+    - `coverage/`, `.nyc_output/` eklendi
+    - `.vite/` eklendi
+    - `vite.config.mjs.timestamp-*.mjs` pattern eklendi
+    - Bozuk encoding (satır 49) düzeltildi
+
+#### PR Değerlendirmesi
+
+| PR  | Başlık                                        | Karar       | Gerekçe                                         |
+| --- | --------------------------------------------- | ----------- | ----------------------------------------------- |
+| #2  | Fix Supabase client crash on missing env vars | ✅ Alındı   | Mantıklı güvenlik iyileştirmesi                 |
+| #1  | Update README.md                              | ❌ Alınmadı | Spam PR - body sadece "..L", faydalı içerik yok |
+
+#### Supabase Init Guard (PR #2 Uygulaması)
+
+```javascript
+// init() fonksiyonuna eklendi
+if (!this.SUPABASE_URL || !this.SUPABASE_ANON_KEY) {
+    console.warn('[SupabaseClient] Missing credentials. Skipping initialization.');
+    return false;
+}
+```
+
+**Etki**: `.env` yokken veya credentials eksikken uygulama crash etmez, graceful degradation yapar.
+
+---
+
 ## [1.3.10] - 2026-01-17
 
 ### 🔧 CI Fix - Window Mock Compatibility

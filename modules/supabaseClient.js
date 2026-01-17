@@ -48,6 +48,12 @@ const SupabaseClient = {
             return true;
         }
 
+        // Guard: Missing credentials - graceful degradation (PR #2 fix)
+        if (!this.SUPABASE_URL || !this.SUPABASE_ANON_KEY) {
+            console.warn('[SupabaseClient] Missing credentials. Skipping initialization.');
+            return false;
+        }
+
         try {
             // Create client with auth options to prevent AbortError
             // FIX: Add custom fetch with extended timeout for large data operations
