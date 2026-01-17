@@ -7,15 +7,22 @@ const mockSupabase = {
     },
 };
 global.SupabaseClient = { client: mockSupabase };
-global.window = {
+
+// Ensure window exists and extend it
+global.window = global.window || {};
+Object.assign(global.window, {
     location: { hash: '' },
     confirm: vi.fn(() => true),
-};
-global.document = {
+    alert: vi.fn(), // Missing alert mock
+});
+
+// Ensure document exists and extend it
+global.document = global.document || {};
+Object.assign(global.document, {
     getElementById: vi.fn(() => ({
         classList: { remove: vi.fn(), add: vi.fn(), toggle: vi.fn() },
         addEventListener: vi.fn(),
-        querySelector: vi.fn(() => ({ textContent: '' })), // Fix: Add querySelector to element mock
+        querySelector: vi.fn(() => ({ textContent: '' })),
     })),
     querySelector: vi.fn(),
     querySelectorAll: vi.fn(() => []),
@@ -23,14 +30,45 @@ global.document = {
         classList: { remove: vi.fn(), add: vi.fn() },
         click: vi.fn(),
         querySelector: vi.fn(() => ({ textContent: '' })),
+        setAttribute: vi.fn(),
     })),
-    body: { appendChild: vi.fn() },
-};
-// URL Mock
-global.URL = {
-    createObjectURL: vi.fn(() => 'blob:mock-url'),
-    revokeObjectURL: vi.fn(),
-};
+});
+
+// Mock body.appendChild separately to respect JSDOM
+if (global.document.body) {
+    global.document.body.appendChild = vi.fn();
+} else {
+    // Should not happen in JSDOM, but fallback
+    try {
+        global.document.body = { appendChild: vi.fn() };
+    } catch (e) {
+        // Read-only body, ignore
+    }
+}
+// URL Mock - Force Overwrite
+try {
+    global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    global.URL.revokeObjectURL = vi.fn();
+} catch (e) {
+    // console.warn('Could not patch URL directly, trying defineProperty');
+    try {
+        Object.defineProperty(global.URL, 'createObjectURL', {
+            value: vi.fn(() => 'blob:mock-url'),
+            writable: true,
+            configurable: true,
+        });
+        Object.defineProperty(global.URL, 'revokeObjectURL', { value: vi.fn(), writable: true, configurable: true });
+    } catch (e2) {
+        // console.error('Failed to mock URL:', e2);
+    }
+}
+
+// Ensure window.URL is linked
+if (global.window) {
+    global.window.URL = global.URL;
+    global.window.Blob = global.Blob;
+}
+
 global.Blob = class Blob {
     constructor(content) {
         this.content = content;

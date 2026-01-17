@@ -48,28 +48,18 @@ npm run preflight
 
 ### 🔒 Security / npm audit
 
-**Durum:** 6 moderate vulnerability (Risk Kabul)
+### 🔒 Security / npm audit
 
-| Bulgu               | Paket                    | Etki Alanı  |
-| ------------------- | ------------------------ | ----------- |
-| GHSA-67mh-4wv8-2f99 | `esbuild` ≤0.24.2        | Dev server  |
-| Server info leak    | `vite` ≤6.1.6            | Dev server  |
-| Test env injection  | `vitest` ≤2.2.0          | Test runner |
-| Transitive          | `vite-node`, `@vitest/*` | Dev/Test    |
+**Durum:** ✅ 0 vulnerabilities (Clean - v1.4.0)
 
-**Risk Değerlendirmesi:**
+**Çözüm:** Vite 7 ve Vitest 4 upgrade ile önceki 6 moderate vulnerability (dev dependency) kalıcı olarak giderildi.
 
-- ❌ Production bundle'ı **ETKİLEMEZ** (dev-only dependencies)
-- ❌ GitHub Pages deployment'ı **ETKİLEMEZ**
-- ✅ Sadece local development sırasında teorik risk
+**Geçmiş Kayıt:**
 
-**Mitigasyon (Uygulandı):**
+- v1.3.12: Risk kabul edilmişti (breaking change nedeniyle).
+- v1.4.0: Major upgrade ile temizlendi.
 
-- `vite.config.mjs`: Dev server localhost-only (`host: '127.0.0.1'`)
-- `strictPort: true` + `hmr.host: 'localhost'`
-- README'de güvenlik uyarısı
-
-**CI Policy:** `npm audit` CI'da çalıştırılmıyor (yanlış alarm engellenmiş).
+**CI Policy:** `npm audit` artık CI pipeline'ına eklenebilir.
 
 ---
 

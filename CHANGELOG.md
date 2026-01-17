@@ -6,6 +6,21 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.4.0] - 2026-01-17
+
+### 🚀 Major Upgrade (Vite 7)
+
+- **Vite Updated**: v5.x → **v7.3.1**
+    - Performans artışı, 0 security vulnerability.
+    - Node 20+ gereksinimi karşılandı.
+- **Vitest Updated**: v2.x → **v4.0.17**
+    - `npm test` altyapısı güncellendi.
+    - `URL` constructor mock hatası giderildi (Integration testleri için).
+
+### 🛠️ Fixes
+
+- **Tests**: `admin_refactor.test.js` içindeki global mock çakışmaları (JSDOM/Window) düzeltildi.
+
 ## [1.3.12] - 2026-01-17
 
 ### ✅ Pre-Release Verification
