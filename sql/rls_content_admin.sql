@@ -33,6 +33,7 @@ AS $$
   );
 $$;
 
+REVOKE ALL ON FUNCTION public.is_content_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_content_admin() TO authenticated;
 
 COMMENT ON FUNCTION public.is_content_admin() IS 
