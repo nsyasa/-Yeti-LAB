@@ -45,6 +45,12 @@ describe('Admin Courses Integration', () => {
             populateCourseSelector: vi.fn(),
         };
 
+        // Utils mock for XSS protection functions
+        global.Utils = {
+            escapeHtml: vi.fn((str) => str), // Pass-through for testing
+            sanitizeOnclickParam: vi.fn((str) => str),
+        };
+
         global.SupabaseClient = {
             client: {
                 from: vi.fn(() => ({
@@ -136,14 +142,14 @@ describe('Admin Courses Integration', () => {
             document.getElementById('new-course-title').value = 'New Course';
             document.getElementById('new-course-key').value = 'new-course';
 
-            // Mock Supabase success
-            const insertSpy = vi.spyOn(global.SupabaseClient.client, 'from');
+            // Get reference to already-mocked from function (it's already a vi.fn)
+            const fromSpy = global.SupabaseClient.client.from;
 
             await CourseManager.createCourse();
 
             // Verify Supabase interaction
-            expect(insertSpy).toHaveBeenCalledWith('courses');
-            expect(insertSpy).toHaveBeenCalledWith('phases'); // Default phase
+            expect(fromSpy).toHaveBeenCalledWith('courses');
+            expect(fromSpy).toHaveBeenCalledWith('phases'); // Default phase
 
             // Verify Local Update
             expect(global.admin.allCourseData['new-course']).toBeDefined();

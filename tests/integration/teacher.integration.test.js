@@ -99,6 +99,7 @@ describe('Teacher Manager Integration', () => {
 
         global.ThemeManager = {
             load: vi.fn(),
+            init: vi.fn(), // Add init mock for test assertion
         };
 
         // DYNAMICALLY IMPORT MODULES

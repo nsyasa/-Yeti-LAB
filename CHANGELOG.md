@@ -35,6 +35,61 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.9] - 2026-01-17
+
+### 🧪 Test Fixes - Spy Error Corrections
+
+#### Test Suite Regression Fixes
+
+**Sorun**: RLS güncellemeleri sonrası test suite'de spy hataları ortaya çıktı.
+
+**Çözüm**: Mock konfigürasyonları düzeltildi, eksik global mock'lar eklendi.
+
+#### Değişiklikler
+
+**1. courses.integration.test.js**
+
+- `vi.spyOn()` yerine doğrudan `vi.fn()` referansı kullanıldı
+- `Utils` global mock eklendi (XSS fonksiyonları için)
+
+```javascript
+// ÖNCE (Hatalı)
+const insertSpy = vi.spyOn(global.SupabaseClient.client, 'from');
+
+// SONRA (Doğru)
+const fromSpy = global.SupabaseClient.client.from; // Already a vi.fn
+
+// Utils mock eklendi
+global.Utils = {
+    escapeHtml: vi.fn((str) => str),
+    sanitizeOnclickParam: vi.fn((str) => str),
+};
+```
+
+**2. teacher.integration.test.js**
+
+- `ThemeManager.init` mock fonksiyonu eklendi
+
+```javascript
+global.ThemeManager = {
+    load: vi.fn(),
+    init: vi.fn(), // Added
+};
+```
+
+#### Doğrulama
+
+- ✅ Build: PASS (1.54s)
+- ✅ All Tests: 457/457 PASS
+- ✅ Exit code: 0
+
+#### Dosyalar
+
+- `tests/integration/courses.integration.test.js`
+- `tests/integration/teacher.integration.test.js`
+
+---
+
 ## [1.3.8] - 2026-01-17
 
 ### 🔒 Security Enhancement - Admin Check Unification
