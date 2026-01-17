@@ -6,6 +6,33 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 ---
 
+## [1.3.12] - 2026-01-17
+
+### ✅ Pre-Release Verification
+
+#### Tüm Kontroller PASS
+
+| Komut                 | Sonuç   | Detay                              |
+| --------------------- | ------- | ---------------------------------- |
+| `npm ci`              | ✅ PASS | 380 paket, 16s                     |
+| `npm run build`       | ✅ PASS | 138 modül, 2.52s                   |
+| `npm test`            | ✅ PASS | Tüm unit/integration testler green |
+| `npx playwright test` | ✅ PASS | 24/24 e2e test, 17.5s              |
+
+#### Smoke Checklist
+
+- ✅ Admin login → Admin panel (lazy load verified)
+- ✅ Non-admin read OK, write engelli (RLS aktif)
+- ✅ Navigation, sidebar, theme switching çalışıyor
+
+#### Güvenlik Durumu
+
+- ✅ XSS koruması aktif (escapeHtml, sanitizeOnclickParam)
+- ✅ RLS aktif (4 tablo: courses, phases, projects, course_components)
+- ✅ Supabase init guard (credentials yoksa graceful degradation)
+
+---
+
 ## [1.3.11] - 2026-01-17
 
 ### 🧹 Repository Hygiene & PR Evaluation
