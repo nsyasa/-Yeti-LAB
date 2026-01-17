@@ -21,6 +21,17 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 
 - **Tests**: `admin_refactor.test.js` içindeki global mock çakışmaları (JSDOM/Window) düzeltildi.
 
+### 🔐 Security - Student RPC Layer (Phase 1)
+
+- **Model B (session_token)**: Öğrenciler Supabase Auth kullanmıyor, `session_token` tabanlı authentication
+- **8 SECURITY DEFINER RPC Fonksiyonu**: `student_get_profile`, `student_get_classroom`, `student_list_assignments`, `student_list_submissions`, `student_upsert_submission`, `student_get_progress`, `student_upsert_progress`, `student_delete_progress`
+- **Direct Table Access Blocked**: `REVOKE ALL ON TABLE ... FROM anon` ile tablo erişimi kapatıldı
+- **Token Format Guard**: `^[0-9a-f]{64}$` regex ile geçersiz tokenler rejected
+- **Classroom Code Hidden**: `student_get_classroom` artık kod döndürmüyor (güvenlik)
+- **Explicit Permission Model**: `REVOKE ALL FROM PUBLIC` + `GRANT TO anon/authenticated`
+- **Dosya**: `sql/rls_student_rpc_phase1.sql`
+- **Frontend Integration**: `modules/progress.js` RPC kullanacak şekilde güncellendi (hibrit pattern: session-token → RPC, OAuth → direct table)
+
 ## [1.3.12] - 2026-01-17
 
 ### ✅ Pre-Release Verification

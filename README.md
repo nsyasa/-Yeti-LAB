@@ -156,6 +156,12 @@ sql/fix_permissions_INSECURE_DO_NOT_USE.sql
 - `auth.role() = 'authenticated'` → Herkes yazabilir
 - Production'da CRITICAL güvenlik açığı yaratır
 
+#### 🔐 Student Auth Model
+
+> **Önemli**: Öğrenciler Supabase Auth **kullanmaz**. `session_token` tabanlı özel auth sistemi kullanılır.
+> Öğrenci verileri direkt tablo erişimi yerine **SECURITY DEFINER RPC fonksiyonları** üzerinden güvenli şekilde sağlanır.
+> Detaylar için: `sql/rls_student_rpc_phase1.sql`
+
 ---
 
 ## 🧪 Testler

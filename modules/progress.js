@@ -71,6 +71,7 @@ const Progress = {
 
     /**
      * Load progress from Supabase (for logged-in students)
+     * Uses RPC for session-token students, direct table for OAuth
      */
     loadFromServer: async () => {
         const studentId = Progress._getStudentId();
@@ -78,34 +79,49 @@ const Progress = {
             return;
         }
 
-        // Validate studentId is a valid UUID (not a temporary code like "123")
-        // Use Validators module if available, fallback to inline regex
-        const isValidUUID =
-            typeof Validators !== 'undefined'
-                ? Validators.isValidUUID(studentId)
-                : /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId);
-
-        if (!isValidUUID) {
-            console.warn('[Progress] Invalid student_id (not UUID), clearing invalid session:', studentId);
-            // Clear invalid session
-            if (typeof Auth !== 'undefined') {
-                localStorage.removeItem('yeti_student_session');
-                localStorage.removeItem('yeti_user_role');
-                Auth.currentStudent = null;
-                Auth.userRole = null;
-            }
-            return;
-        }
+        // Check if this is a session-token based student
+        const isSessionTokenStudent = typeof Auth !== 'undefined' && Auth.currentStudent?.sessionToken;
 
         Progress.isLoading = true;
 
         try {
-            const { data, error } = await SupabaseClient.getClient()
-                .from('student_progress')
-                .select('course_id, project_id, completed_at, quiz_score')
-                .eq('student_id', studentId);
+            let data;
 
-            if (error) throw error;
+            if (isSessionTokenStudent) {
+                // Use RPC for session-token students (secure)
+                const { data: rpcData, error } = await SupabaseClient.getClient().rpc('student_get_progress', {
+                    p_session_token: Auth.currentStudent.sessionToken,
+                });
+
+                if (error) throw error;
+                data = rpcData;
+            } else {
+                // OAuth students - validate UUID first
+                const isValidUUID =
+                    typeof Validators !== 'undefined'
+                        ? Validators.isValidUUID(studentId)
+                        : /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId);
+
+                if (!isValidUUID) {
+                    console.warn('[Progress] Invalid student_id (not UUID), clearing invalid session:', studentId);
+                    if (typeof Auth !== 'undefined') {
+                        localStorage.removeItem('yeti_student_session');
+                        localStorage.removeItem('yeti_user_role');
+                        Auth.currentStudent = null;
+                        Auth.userRole = null;
+                    }
+                    return;
+                }
+
+                // Direct table access for OAuth users (RLS protected)
+                const { data: tableData, error } = await SupabaseClient.getClient()
+                    .from('student_progress')
+                    .select('course_id, project_id, completed_at, quiz_score')
+                    .eq('student_id', studentId);
+
+                if (error) throw error;
+                data = tableData;
+            }
 
             // Organize by course
             Progress.data = {};
@@ -140,6 +156,7 @@ const Progress = {
 
     /**
      * Save a single progress entry to Supabase
+     * Uses RPC for session-token students, direct table for OAuth
      */
     saveToServer: async (courseKey, projectId, completed) => {
         const studentId = Progress._getStudentId();
@@ -147,35 +164,58 @@ const Progress = {
             return false;
         }
 
+        // Check if this is a session-token based student
+        const isSessionTokenStudent = typeof Auth !== 'undefined' && Auth.currentStudent?.sessionToken;
+
         try {
-            if (completed) {
-                // Insert progress record
-                const payload = {
-                    student_id: studentId,
-                    course_id: courseKey,
-                    project_id: projectId,
-                    completed_at: new Date().toISOString(),
-                };
+            if (isSessionTokenStudent) {
+                // Use RPC for session-token students (secure)
+                if (completed) {
+                    const { error } = await SupabaseClient.getClient().rpc('student_upsert_progress', {
+                        p_session_token: Auth.currentStudent.sessionToken,
+                        p_course_id: courseKey,
+                        p_project_id: projectId,
+                        p_quiz_score: null,
+                    });
 
-                const { error } = await SupabaseClient.getClient().from('student_progress').upsert(payload, {
-                    onConflict: 'student_id,project_id',
-                });
+                    if (error) throw error;
+                } else {
+                    const { error } = await SupabaseClient.getClient().rpc('student_delete_progress', {
+                        p_session_token: Auth.currentStudent.sessionToken,
+                        p_project_id: projectId,
+                    });
 
-                if (error) {
-                    console.error('[Progress] Save error:', error.message);
-                    throw error;
+                    if (error) throw error;
                 }
             } else {
-                // Delete progress record
-                const { error } = await SupabaseClient.getClient()
-                    .from('student_progress')
-                    .delete()
-                    .eq('student_id', studentId)
-                    .eq('project_id', projectId);
+                // OAuth students - direct table access (RLS protected)
+                if (completed) {
+                    const payload = {
+                        student_id: studentId,
+                        course_id: courseKey,
+                        project_id: projectId,
+                        completed_at: new Date().toISOString(),
+                    };
 
-                if (error) {
-                    console.error('[Progress] Delete error:', error.message);
-                    throw error;
+                    const { error } = await SupabaseClient.getClient().from('student_progress').upsert(payload, {
+                        onConflict: 'student_id,project_id',
+                    });
+
+                    if (error) {
+                        console.error('[Progress] Save error:', error.message);
+                        throw error;
+                    }
+                } else {
+                    const { error } = await SupabaseClient.getClient()
+                        .from('student_progress')
+                        .delete()
+                        .eq('student_id', studentId)
+                        .eq('project_id', projectId);
+
+                    if (error) {
+                        console.error('[Progress] Delete error:', error.message);
+                        throw error;
+                    }
                 }
             }
 
