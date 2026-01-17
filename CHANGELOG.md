@@ -74,6 +74,11 @@ Beklenen: 16 policy (4 tablo × 4 policy), `is_content_admin()` function aktif.
 
 Bu mitigasyon ile dev server vulnerabilities pratik etkisi **sıfıra** düşürüldü.
 
+#### Maintenance
+
+- **Repo temizliği**: `coverage/` klasörü git takibinden çıkarıldı ve silindi (65 dosya, ~50k satır).
+- **Preflight gereksinimi**: Artık build artifactleri (dist, coverage, timestamp) repoda barındırılmaz.
+
 ---
 
 ## [1.3.11] - 2026-01-17
