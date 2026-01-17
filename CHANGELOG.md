@@ -63,6 +63,17 @@ Beklenen: 16 policy (4 tablo × 4 policy), `is_content_admin()` function aktif.
 
 **Karar:** Tümü dev-only + `npm audit fix --force` major version bump gerektirir (breaking change riski). Şu an için **NO ACTION** - sonraki sprint'te yönetilecek.
 
+#### Dev Server Hardening
+
+`vite.config.mjs` güvenlik ayarları güncellendi:
+
+- `host: '127.0.0.1'` → Sadece localhost
+- `strictPort: true` → Random port açmaz
+- `open: false` → Otomatik tarayıcı açmaz
+- `hmr.host: 'localhost'` → HMR sadece localhost
+
+Bu mitigasyon ile dev server vulnerabilities pratik etkisi **sıfıra** düşürüldü.
+
 ---
 
 ## [1.3.11] - 2026-01-17

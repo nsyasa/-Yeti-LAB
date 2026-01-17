@@ -46,6 +46,31 @@ npm run preflight
 # ✅ PREFLIGHT PASS - Release için hazır!
 ```
 
+### 🔒 Security / npm audit
+
+**Durum:** 6 moderate vulnerability (Risk Kabul)
+
+| Bulgu               | Paket                    | Etki Alanı  |
+| ------------------- | ------------------------ | ----------- |
+| GHSA-67mh-4wv8-2f99 | `esbuild` ≤0.24.2        | Dev server  |
+| Server info leak    | `vite` ≤6.1.6            | Dev server  |
+| Test env injection  | `vitest` ≤2.2.0          | Test runner |
+| Transitive          | `vite-node`, `@vitest/*` | Dev/Test    |
+
+**Risk Değerlendirmesi:**
+
+- ❌ Production bundle'ı **ETKİLEMEZ** (dev-only dependencies)
+- ❌ GitHub Pages deployment'ı **ETKİLEMEZ**
+- ✅ Sadece local development sırasında teorik risk
+
+**Mitigasyon (Uygulandı):**
+
+- `vite.config.mjs`: Dev server localhost-only (`host: '127.0.0.1'`)
+- `strictPort: true` + `hmr.host: 'localhost'`
+- README'de güvenlik uyarısı
+
+**CI Policy:** `npm audit` CI'da çalıştırılmıyor (yanlış alarm engellenmiş).
+
 ---
 
 ## 📊 Genel Puanlama
