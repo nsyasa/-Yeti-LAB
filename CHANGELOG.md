@@ -31,6 +31,7 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 - **Explicit Permission Model**: `REVOKE ALL FROM PUBLIC` + `GRANT TO anon/authenticated`
 - **Dosya**: `sql/rls_student_rpc_phase1.sql`
 - **Frontend Integration**: `modules/progress.js` RPC kullanacak şekilde güncellendi (hibrit pattern: session-token → RPC, OAuth → direct table)
+- **IDOR Tests**: 15 yeni test eklendi - profile isolation, cross-classroom IDOR, progress scoping, anon denial, token validation
 
 ## [1.3.12] - 2026-01-17
 

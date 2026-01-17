@@ -32,7 +32,8 @@ Bu rapor, Yeti LAB projesinin teknik analizini ve güncel durumunu içerir.
 ### Güvenlik Durumu
 
 - ✅ **XSS Koruması**: `Utils.escapeHtml()`, `Utils.sanitizeOnclickParam()` aktif
-- ✅ **RLS Aktif**: 4 tablo (courses, phases, projects, course_components)
+- ✅ **RLS Aktif**: 7 tablo (courses, phases, projects, course_components, students, submissions, student_progress)
+- ✅ **Student RPC Layer**: 8 SECURITY DEFINER fonksiyon, anon table access blocked
 - ✅ **Supabase Init Guard**: Credentials yoksa graceful degradation
 - ✅ **CSRF**: Supabase Auth PKCE flow
 
@@ -114,17 +115,24 @@ npm run preflight
 - [x] Supabase init guard (PR #2)
 - [x] Repo hijyen (timestamp dosyaları temizlendi)
 
+### 🔐 Faz 7: Student RPC Security Layer ✅ (YENİ)
+
+- [x] 8 SECURITY DEFINER RPC fonksiyonu
+- [x] Direct table access blocked (REVOKE ALL FROM anon)
+- [x] Token format guard + classroom code hidden
+- [x] Frontend RPC integration (progress.js)
+- [x] IDOR integration tests (15 test, 472 total)
+
 ---
 
 ## 📝 Son Değişiklikler (v1.3.11 → v1.3.12)
 
-| Değişiklik  | Detay                                   |
-| ----------- | --------------------------------------- |
-| Repo hijyen | 5 vite timestamp dosyası silindi        |
-| .gitignore  | coverage/, .nyc_output/, .vite/ eklendi |
-| PR #2       | Supabase init guard uygulandı           |
-| PR #1       | Spam/empty PR, reddedildi               |
-| Pre-release | Tüm testler PASS                        |
+| Değişiklik  | Detay                                             |
+| ----------- | ------------------------------------------------- |
+| Student RPC | 8 SECURITY DEFINER fonksiyon, anon erişimi kapalı |
+| progress.js | RPC entegrasyonu (hibrit pattern)                 |
+| IDOR Tests  | 15 yeni test, toplamda 472 test PASS              |
+| SQL Script  | `sql/rls_student_rpc_phase1.sql`                  |
 
 ---
 
@@ -139,4 +147,4 @@ npm run preflight
 
 ---
 
-_Rapor güncellendi: 17 Ocak 2026 - v1.3.12_
+_Rapor güncellendi: 17 Ocak 2026 - v1.4.0_
