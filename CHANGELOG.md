@@ -42,7 +42,21 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
     - `submitAssignment()` → `student_upsert_submission`
     - `uploadFile()/deleteFile()` → Blocked (Phase 1 - OAuth only)
 - **IDOR Tests**: 15 yeni test eklendi - profile isolation, cross-classroom IDOR, progress scoping, anon denial, token validation
-- **Test Count**: 472/472 PASS
+
+### 🔐 Security - Student Storage Signed Upload (Phase 3)
+
+- **Edge Function (`student-storage`)**: Supabase Edge Function ile güvenli dosya yükleme
+    - `createUpload`: Session token doğrulama → Submission ownership kontrolü → Signed upload URL
+    - `deleteFile`: Dosya ownership doğrulama → Storage + DB silme
+    - File type allowlist + 10MB size limit
+- **Yeni RPC'ler**: `student_list_submission_files`, `student_add_submission_file`
+- **submission_files Table**: `REVOKE ALL FROM anon` - direct access blocked
+- **Frontend Integration**:
+    - `uploadFile()` → Edge Function signed URL → Storage → RPC
+    - `deleteFile()` → Edge Function
+    - `getAssignmentDetail()` → `student_list_submission_files` RPC ile files yükleme
+- **Yeni Testler**: 12 test - file list isolation, add IDOR, anon denial, Edge Function behavior
+- **Test Count**: 484/484 PASS
 
 ## [1.3.12] - 2026-01-17
 

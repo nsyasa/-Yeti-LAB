@@ -180,7 +180,7 @@ export const StudentSubmissionService = {
                     .filter((s) => s.assignment_id === assignmentId)
                     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-                return {
+                const detailResult = {
                     id: assignment.id,
                     title: assignment.title,
                     description: assignment.description,
@@ -196,6 +196,21 @@ export const StudentSubmissionService = {
                     my_submissions: mySubmissions,
                     current_submission: mySubmissions[0] || null,
                 };
+
+                // Load files for each submission via RPC
+                for (const sub of detailResult.my_submissions) {
+                    try {
+                        const { data: files, error: filesError } = await supabase.rpc('student_list_submission_files', {
+                            p_session_token: sessionToken,
+                            p_submission_id: sub.id,
+                        });
+                        sub.files = filesError ? [] : files || [];
+                    } catch {
+                        sub.files = [];
+                    }
+                }
+
+                return detailResult;
             }
 
             // OAuth student path: existing direct query behavior
@@ -422,14 +437,70 @@ export const StudentSubmissionService = {
      */
     async uploadFile(submissionId, file, onProgress = null) {
         try {
-            // Session-token students: file uploads not supported in Phase 1
-            if (this._isSessionTokenStudent()) {
-                throw new Error('File uploads are not supported for session-token students yet.');
-            }
-
             const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
+            // Session-token student path: use Edge Function signed upload
+            if (this._isSessionTokenStudent()) {
+                const sessionToken = this._getSessionToken();
+
+                // Get Edge Function URL from Supabase
+                const supabaseUrl =
+                    window.SupabaseClient?.supabaseUrl || window.SUPABASE_URL || 'https://your-project.supabase.co';
+
+                // Step 1: Call Edge Function to get signed upload URL
+                const response = await fetch(`${supabaseUrl}/functions/v1/student-storage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'createUpload',
+                        session_token: sessionToken,
+                        submission_id: submissionId,
+                        file_name: file.name,
+                        content_type: file.type || 'application/octet-stream',
+                        file_size: file.size,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Upload failed: ${response.status}`);
+                }
+
+                const { path, signed_url, token, public_url } = await response.json();
+
+                // Step 2: Upload file to storage using signed URL
+                const uploadResponse = await supabase.storage.from('submissions').uploadToSignedUrl(path, token, file, {
+                    contentType: file.type || 'application/octet-stream',
+                });
+
+                if (uploadResponse.error) {
+                    throw new Error(`Storage upload failed: ${uploadResponse.error.message}`);
+                }
+
+                // Step 3: Create file record via RPC
+                const { data: fileRecord, error: rpcError } = await supabase.rpc('student_add_submission_file', {
+                    p_session_token: sessionToken,
+                    p_submission_id: submissionId,
+                    p_file_name: file.name,
+                    p_file_path: path,
+                    p_file_url: public_url,
+                    p_file_size: file.size,
+                    p_file_type: file.type || 'application/octet-stream',
+                });
+
+                if (rpcError) {
+                    throw new Error(`File record creation failed: ${rpcError.message}`);
+                }
+
+                // Return the file record (first row from RPC)
+                const result = Array.isArray(fileRecord) ? fileRecord[0] : fileRecord;
+                return result;
+            }
+
+            // OAuth student path: existing direct behavior
             const {
                 data: { user },
             } = await supabase.auth.getUser();
@@ -493,14 +564,38 @@ export const StudentSubmissionService = {
      */
     async deleteFile(fileId) {
         try {
-            // Session-token students: file operations not supported in Phase 1
-            if (this._isSessionTokenStudent()) {
-                throw new Error('File operations are not supported for session-token students yet.');
-            }
-
             const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
+            // Session-token student path: use Edge Function
+            if (this._isSessionTokenStudent()) {
+                const sessionToken = this._getSessionToken();
+
+                // Get Edge Function URL from Supabase
+                const supabaseUrl =
+                    window.SupabaseClient?.supabaseUrl || window.SUPABASE_URL || 'https://your-project.supabase.co';
+
+                const response = await fetch(`${supabaseUrl}/functions/v1/student-storage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'deleteFile',
+                        session_token: sessionToken,
+                        file_id: fileId,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Delete failed: ${response.status}`);
+                }
+
+                return true;
+            }
+
+            // OAuth student path: existing direct behavior
             // Dosya bilgisini al
             const { data: file } = await supabase
                 .from('submission_files')
