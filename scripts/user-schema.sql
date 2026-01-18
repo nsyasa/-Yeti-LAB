@@ -128,10 +128,11 @@ CREATE TABLE IF NOT EXISTS students (
 );
 
 -- Session token oluşturma fonksiyonu
+-- Note: Supabase'de pgcrypto extensions şemasında olduğu için schema-qualified kullanılır
 CREATE OR REPLACE FUNCTION generate_session_token()
 RETURNS VARCHAR(64) AS $$
 BEGIN
-    RETURN encode(gen_random_bytes(32), 'hex');
+    RETURN encode(extensions.gen_random_bytes(32), 'hex');
 END;
 $$ LANGUAGE plpgsql;
 

@@ -75,7 +75,8 @@ BEGIN
 
     -- 4. Session Token Kontrolü (Yoksa oluştur)
     IF v_session_token IS NULL THEN
-        v_session_token := encode(gen_random_bytes(32), 'hex');
+        -- Note: Supabase'de pgcrypto extensions şemasında
+        v_session_token := encode(extensions.gen_random_bytes(32), 'hex');
         UPDATE students SET session_token = v_session_token WHERE id = v_student_id;
     END IF;
 
