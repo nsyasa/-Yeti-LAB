@@ -69,8 +69,9 @@ Deno.serve(async (req) => {
         }
 
         // Create Supabase client with service role (bypass RLS)
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+        // Note: Secret names cannot start with SUPABASE_ prefix
+        const supabaseUrl = Deno.env.get('PROJECT_URL')!
+        const supabaseServiceKey = Deno.env.get('SERVICE_ROLE_KEY')!
         const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
         // Validate session and get student info
