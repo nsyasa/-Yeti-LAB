@@ -1,6 +1,6 @@
 # 🏥 Yeti LAB Proje Sağlık Raporu
 
-**Son Güncelleme:** 17 Ocak 2026
+**Son Güncelleme:** 18 Ocak 2026
 **Versiyon:** 1.4.0
 **Durum:** ✅ Stabil (Release-Ready)
 
@@ -115,24 +115,27 @@ npm run preflight
 - [x] Supabase init guard (PR #2)
 - [x] Repo hijyen (timestamp dosyaları temizlendi)
 
-### 🔐 Faz 7: Student RPC Security Layer ✅ (YENİ)
+### 🔐 Faz 7: Student RPC Security Layer ✅ (TAMAMLANDI)
 
 - [x] 8 SECURITY DEFINER RPC fonksiyonu
 - [x] Direct table access blocked (REVOKE ALL FROM anon)
 - [x] Token format guard + classroom code hidden
-- [x] Frontend RPC integration (progress.js)
+- [x] Frontend RPC integration:
+    - auth.js: `verifyStudentSession()` → `student_get_profile`
+    - StudentDashboardView.js: `loadProgressData()` → `student_get_progress`
+    - studentSubmissionService.js: 5 method → RPC (assignments, submissions)
 - [x] IDOR integration tests (15 test, 472 total)
 
 ---
 
-## 📝 Son Değişiklikler (v1.3.11 → v1.3.12)
+## 📝 Son Değişiklikler (v1.4.0 - 18 Ocak 2026)
 
-| Değişiklik  | Detay                                             |
-| ----------- | ------------------------------------------------- |
-| Student RPC | 8 SECURITY DEFINER fonksiyon, anon erişimi kapalı |
-| progress.js | RPC entegrasyonu (hibrit pattern)                 |
-| IDOR Tests  | 15 yeni test, toplamda 472 test PASS              |
-| SQL Script  | `sql/rls_student_rpc_phase1.sql`                  |
+| Değişiklik               | Detay                                                |
+| ------------------------ | ---------------------------------------------------- |
+| Frontend RPC Complete    | Session-token öğrenciler artık sadece RPC kullanıyor |
+| auth.js                  | `verifyStudentSession()` + `isSessionTokenStudent()` |
+| studentSubmissionService | 5 method RPC entegrasyonu                            |
+| Test Count               | 472/472 PASS                                         |
 
 ---
 
@@ -147,4 +150,4 @@ npm run preflight
 
 ---
 
-_Rapor güncellendi: 17 Ocak 2026 - v1.4.0_
+_Rapor güncellendi: 18 Ocak 2026 - v1.4.0_

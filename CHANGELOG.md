@@ -30,8 +30,19 @@ Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına uyg
 - **Classroom Code Hidden**: `student_get_classroom` artık kod döndürmüyor (güvenlik)
 - **Explicit Permission Model**: `REVOKE ALL FROM PUBLIC` + `GRANT TO anon/authenticated`
 - **Dosya**: `sql/rls_student_rpc_phase1.sql`
-- **Frontend Integration**: `modules/progress.js` RPC kullanacak şekilde güncellendi (hibrit pattern: session-token → RPC, OAuth → direct table)
+
+### 🔐 Security - Frontend RPC Integration (Phase 2)
+
+- **auth.js**: `verifyStudentSession()` artık `student_get_profile` RPC kullanıyor, `isSessionTokenStudent()` helper eklendi
+- **StudentDashboardView.js**: `loadProgressData()` artık `student_get_progress` RPC kullanıyor
+- **studentSubmissionService.js**: Session-token öğrenciler için 5 RPC entegrasyonu:
+    - `getMyAssignments()` → `student_list_assignments`
+    - `getAssignmentDetail()` → `student_list_assignments` + `student_list_submissions`
+    - `saveSubmission()` → `student_upsert_submission`
+    - `submitAssignment()` → `student_upsert_submission`
+    - `uploadFile()/deleteFile()` → Blocked (Phase 1 - OAuth only)
 - **IDOR Tests**: 15 yeni test eklendi - profile isolation, cross-classroom IDOR, progress scoping, anon denial, token validation
+- **Test Count**: 472/472 PASS
 
 ## [1.3.12] - 2026-01-17
 
