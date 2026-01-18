@@ -1,5 +1,5 @@
 const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./courseEnrollmentService-CB3PYceP.js","./router-DkhU4yIh.js","./router-P-fjebgT.css"])))=>i.map(i=>d[i]);
-import{_ as n}from"./main-sKBrUKyE.js";import"./router-DkhU4yIh.js";const d={courses:[],classrooms:[],enrollmentStats:{},selectedCourse:null,selectedCourseIndex:0,isLoading:!1,render(){return`
+import{_ as n}from"./main-QWdJgBHC.js";import"./router-DkhU4yIh.js";const d={courses:[],classrooms:[],enrollmentStats:{},selectedCourse:null,selectedCourseIndex:0,isLoading:!1,render(){return`
             <div class="h-full flex flex-col p-4 pb-20 lg:pb-4">
                 
                 <!-- Header with Stats -->

@@ -1,5 +1,5 @@
 const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./analyticsService-CYdFpIOy.js","./router-DkhU4yIh.js","./router-P-fjebgT.css"])))=>i.map(i=>d[i]);
-import{_ as o}from"./main-sKBrUKyE.js";import"./router-DkhU4yIh.js";const c={summary:null,submissionTrend:[],classroomPerformance:[],assignmentStats:[],topStudents:[],statusDistribution:null,recentActivity:[],isLoading:!1,render(){return`
+import{_ as o}from"./main-QWdJgBHC.js";import"./router-DkhU4yIh.js";const c={summary:null,submissionTrend:[],classroomPerformance:[],assignmentStats:[],topStudents:[],statusDistribution:null,recentActivity:[],isLoading:!1,render(){return`
             <div class="h-full flex flex-col p-4 pb-20 lg:pb-4">
                 
                 <!-- Header with Refresh -->
