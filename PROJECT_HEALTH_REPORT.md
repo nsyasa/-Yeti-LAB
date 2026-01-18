@@ -126,16 +126,25 @@ npm run preflight
     - studentSubmissionService.js: 5 method → RPC (assignments, submissions)
 - [x] IDOR integration tests (15 test, 472 total)
 
+### 🔐 Faz 8: Student Storage Signed Upload ✅ (YENİ)
+
+- [x] Edge Function: `student-storage` (createUpload, deleteFile)
+- [x] Signed URL ile güvenli dosya yükleme
+- [x] 2 yeni RPC: `student_list_submission_files`, `student_add_submission_file`
+- [x] submission_files: `REVOKE ALL FROM anon`
+- [x] File type allowlist + 10MB size limit
+- [x] 12 yeni test (484 total)
+
 ---
 
 ## 📝 Son Değişiklikler (v1.4.0 - 18 Ocak 2026)
 
-| Değişiklik               | Detay                                                |
-| ------------------------ | ---------------------------------------------------- |
-| Frontend RPC Complete    | Session-token öğrenciler artık sadece RPC kullanıyor |
-| auth.js                  | `verifyStudentSession()` + `isSessionTokenStudent()` |
-| studentSubmissionService | 5 method RPC entegrasyonu                            |
-| Test Count               | 472/472 PASS                                         |
+| Değişiklik            | Detay                                        |
+| --------------------- | -------------------------------------------- |
+| Student Storage       | Edge Function + Signed URL ile dosya yükleme |
+| Edge Function Secrets | PROJECT_URL, SERVICE_ROLE_KEY                |
+| SQL Migration         | `sql/rls_student_storage.sql`                |
+| Test Count            | 484/484 PASS                                 |
 
 ---
 
