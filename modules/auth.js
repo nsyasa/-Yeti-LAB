@@ -408,30 +408,60 @@ const Auth = {
     },
 
     /**
-     * Verify student session is still valid
+     * Verify student session is still valid (uses RPC for session-token students)
      */
     async verifyStudentSession() {
-        if (!this.currentStudent) return false;
+        if (!this.currentStudent?.sessionToken) return false;
 
-        const { data, error } = await SupabaseClient.getClient()
-            .from('students')
-            .select('id, display_name, classroom_id')
-            .eq('session_token', this.currentStudent.sessionToken)
-            .maybeSingle();
+        try {
+            const { data, error } = await SupabaseClient.getClient().rpc('student_get_profile', {
+                p_session_token: this.currentStudent.sessionToken,
+            });
 
-        if (error || !data) {
-            console.warn('[Auth] Student session invalid, logging out...');
+            // Handle error or empty response
+            if (error) {
+                console.warn('[Auth] Student session verification failed:', error.message);
+                this.studentLogout();
+                return false;
+            }
+
+            // RPC returns array, pick first row
+            const profile = Array.isArray(data) ? data[0] : data;
+
+            if (!profile?.id) {
+                console.warn('[Auth] Student session invalid (no profile), logging out...');
+                this.studentLogout();
+                return false;
+            }
+
+            // Refresh cached currentStudent fields from RPC response
+            // Note: RPC internally updates last_active_at
+            this.currentStudent = {
+                ...this.currentStudent,
+                studentId: profile.id,
+                displayName: profile.display_name,
+                avatarEmoji: profile.avatar_emoji,
+                classroomId: profile.classroom_id,
+                classroomName: profile.classroom_name,
+                teacherName: profile.teacher_name,
+            };
+
+            // Persist updated session to localStorage
+            localStorage.setItem(this.STUDENT_SESSION_KEY, JSON.stringify(this.currentStudent));
+
+            return true;
+        } catch (err) {
+            console.error('[Auth] verifyStudentSession error:', err);
             this.studentLogout();
             return false;
         }
+    },
 
-        // Update last active
-        await SupabaseClient.getClient()
-            .from('students')
-            .update({ last_active_at: new Date().toISOString() })
-            .eq('id', data.id);
-
-        return true;
+    /**
+     * Check if current user is a session-token based student (not OAuth)
+     */
+    isSessionTokenStudent() {
+        return !!this.currentStudent?.sessionToken;
     },
 
     // ==========================================

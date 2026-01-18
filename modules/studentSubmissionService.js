@@ -2,9 +2,21 @@
  * Yeti LAB - Student Submission Service
  * Öğrenci tarafı ödev gönderme işlemleri
  * Faz 4: Student Assignment Submission
+ * Updated: Session-token students use RPCs, OAuth students use direct table access
  */
 
 export const StudentSubmissionService = {
+    // ==========================================
+    // HELPER: Check if session-token student
+    // ==========================================
+    _isSessionTokenStudent() {
+        return !!window.Auth?.currentStudent?.sessionToken;
+    },
+
+    _getSessionToken() {
+        return window.Auth?.currentStudent?.sessionToken;
+    },
+
     // ==========================================
     // ÖDEV LİSTELEME
     // ==========================================
@@ -22,9 +34,54 @@ export const StudentSubmissionService = {
         } = options;
 
         try {
-            const supabase = window.SupabaseClient?.client;
+            const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
+            // Session-token student path: use RPC
+            if (this._isSessionTokenStudent()) {
+                const sessionToken = this._getSessionToken();
+                const { data, error } = await supabase.rpc('student_list_assignments', {
+                    p_session_token: sessionToken,
+                });
+
+                if (error) throw error;
+
+                // Map RPC flat rows to UI-expected shape
+                let assignments = (data || []).map((row) => ({
+                    id: row.id,
+                    title: row.title,
+                    description: row.description,
+                    status: row.status,
+                    due_date: row.due_date,
+                    max_score: row.max_score,
+                    late_submission_allowed: row.late_submission_allowed,
+                    course_id: row.course_id,
+                    created_at: row.created_at,
+                    // Map to expected nested structure
+                    course: row.course_id ? { id: row.course_id, title: row.course_title, slug: null } : null,
+                    my_submission: row.my_submission_id
+                        ? {
+                              id: row.my_submission_id,
+                              status: row.my_submission_status,
+                              grade: row.my_submission_score,
+                          }
+                        : null,
+                }));
+
+                // Apply status filter client-side
+                if (status === 'active') {
+                    assignments = assignments.filter((a) => a.status === 'published');
+                }
+
+                // Apply course filter
+                if (courseId) {
+                    assignments = assignments.filter((a) => a.course_id === courseId);
+                }
+
+                return assignments.slice(0, limit);
+            }
+
+            // OAuth student path: existing direct query behavior
             const {
                 data: { user },
             } = await supabase.auth.getUser();
@@ -92,9 +149,56 @@ export const StudentSubmissionService = {
      */
     async getAssignmentDetail(assignmentId) {
         try {
-            const supabase = window.SupabaseClient?.client;
+            const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
+            // Session-token student path: use RPCs
+            if (this._isSessionTokenStudent()) {
+                const sessionToken = this._getSessionToken();
+
+                // Get assignment from list RPC
+                const { data: assignments, error: assignmentError } = await supabase.rpc('student_list_assignments', {
+                    p_session_token: sessionToken,
+                });
+
+                if (assignmentError) throw assignmentError;
+
+                const assignment = (assignments || []).find((a) => a.id === assignmentId);
+                if (!assignment) {
+                    throw new Error('Assignment not found or not accessible');
+                }
+
+                // Get submissions via RPC
+                const { data: submissions, error: submissionError } = await supabase.rpc('student_list_submissions', {
+                    p_session_token: sessionToken,
+                });
+
+                if (submissionError) throw submissionError;
+
+                // Filter submissions for this assignment
+                const mySubmissions = (submissions || [])
+                    .filter((s) => s.assignment_id === assignmentId)
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                return {
+                    id: assignment.id,
+                    title: assignment.title,
+                    description: assignment.description,
+                    status: assignment.status,
+                    due_date: assignment.due_date,
+                    max_score: assignment.max_score,
+                    late_submission_allowed: assignment.late_submission_allowed,
+                    course: assignment.course_id
+                        ? { id: assignment.course_id, title: assignment.course_title, slug: null }
+                        : null,
+                    classroom: null, // Not available from RPC
+                    rubric: null, // Not available from RPC (Phase 1 limitation)
+                    my_submissions: mySubmissions,
+                    current_submission: mySubmissions[0] || null,
+                };
+            }
+
+            // OAuth student path: existing direct query behavior
             const {
                 data: { user },
             } = await supabase.auth.getUser();
@@ -153,9 +257,35 @@ export const StudentSubmissionService = {
      */
     async saveSubmission(submissionData) {
         try {
-            const supabase = window.SupabaseClient?.client;
+            const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
+            // Session-token student path: use RPC
+            if (this._isSessionTokenStudent()) {
+                const sessionToken = this._getSessionToken();
+                const { data, error } = await supabase.rpc('student_upsert_submission', {
+                    p_session_token: sessionToken,
+                    p_assignment_id: submissionData.assignment_id,
+                    p_content: submissionData.content || '',
+                    p_status: 'draft',
+                });
+
+                if (error) throw error;
+
+                // RPC returns array, pick first row
+                const result = Array.isArray(data) ? data[0] : data;
+
+                return {
+                    id: result?.id || null,
+                    status: result?.status || 'draft',
+                    attempt_number: result?.attempt_number || 1,
+                    submitted_at: null,
+                    content: submissionData.content || '',
+                    files: [], // File uploads not supported for session-token students
+                };
+            }
+
+            // OAuth student path: existing behavior
             const {
                 data: { user },
             } = await supabase.auth.getUser();
@@ -225,9 +355,46 @@ export const StudentSubmissionService = {
      */
     async submitAssignment(submissionId) {
         try {
-            const supabase = window.SupabaseClient?.client;
+            const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
+            // Session-token student path: use RPC
+            if (this._isSessionTokenStudent()) {
+                const sessionToken = this._getSessionToken();
+
+                // First, get the submission to find assignment_id and content
+                const { data: submissions, error: listError } = await supabase.rpc('student_list_submissions', {
+                    p_session_token: sessionToken,
+                });
+
+                if (listError) throw listError;
+
+                const submission = (submissions || []).find((s) => s.id === submissionId);
+                if (!submission) {
+                    throw new Error('Submission not found or not accessible');
+                }
+
+                // Submit via RPC with status 'submitted'
+                const { data, error } = await supabase.rpc('student_upsert_submission', {
+                    p_session_token: sessionToken,
+                    p_assignment_id: submission.assignment_id,
+                    p_content: submission.content || '',
+                    p_status: 'submitted',
+                });
+
+                if (error) throw error;
+
+                const result = Array.isArray(data) ? data[0] : data;
+
+                return {
+                    id: result?.id || submissionId,
+                    status: 'submitted',
+                    submitted_at: new Date().toISOString(),
+                    content: submission.content || '',
+                };
+            }
+
+            // OAuth student path: existing behavior
             const { data, error } = await supabase
                 .from('submissions')
                 .update({
@@ -255,7 +422,12 @@ export const StudentSubmissionService = {
      */
     async uploadFile(submissionId, file, onProgress = null) {
         try {
-            const supabase = window.SupabaseClient?.client;
+            // Session-token students: file uploads not supported in Phase 1
+            if (this._isSessionTokenStudent()) {
+                throw new Error('File uploads are not supported for session-token students yet.');
+            }
+
+            const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
             const {
@@ -321,7 +493,12 @@ export const StudentSubmissionService = {
      */
     async deleteFile(fileId) {
         try {
-            const supabase = window.SupabaseClient?.client;
+            // Session-token students: file operations not supported in Phase 1
+            if (this._isSessionTokenStudent()) {
+                throw new Error('File operations are not supported for session-token students yet.');
+            }
+
+            const supabase = window.SupabaseClient?.client || window.SupabaseClient?.getClient();
             if (!supabase) throw new Error('Supabase client not initialized');
 
             // Dosya bilgisini al

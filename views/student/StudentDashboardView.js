@@ -186,17 +186,33 @@ const StudentDashboardView = {
 
     /**
      * Load progress data from Supabase
+     * Uses RPC for session-token students, direct table for OAuth
      */
     async loadProgressData() {
         try {
-            const { data, error } = await SupabaseClient.getClient()
-                .from('student_progress')
-                .select('*')
-                .eq('student_id', this.studentData.studentId)
-                .order('completed_at', { ascending: false });
+            const sessionToken = this.studentData?.sessionToken;
 
-            if (error) throw error;
-            this.progressData = data || [];
+            if (sessionToken) {
+                // Session-token student: use RPC
+                const { data, error } = await SupabaseClient.getClient().rpc('student_get_progress', {
+                    p_session_token: sessionToken,
+                });
+
+                if (error) throw error;
+
+                // RPC returns flat rows, sort by completed_at desc
+                this.progressData = (data || []).sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
+            } else {
+                // OAuth student: direct table access (RLS protected)
+                const { data, error } = await SupabaseClient.getClient()
+                    .from('student_progress')
+                    .select('*')
+                    .eq('student_id', this.studentData.studentId)
+                    .order('completed_at', { ascending: false });
+
+                if (error) throw error;
+                this.progressData = data || [];
+            }
         } catch (err) {
             console.error('[StudentDashboardView] Error loading progress:', err);
             this.progressData = [];
@@ -204,23 +220,13 @@ const StudentDashboardView = {
     },
 
     /**
-     * Load quiz data from Supabase
+     * Load quiz data - derived from progressData (no separate DB call)
      */
     async loadQuizData() {
-        try {
-            const { data, error } = await SupabaseClient.getClient()
-                .from('student_progress')
-                .select('*')
-                .eq('student_id', this.studentData.studentId)
-                .not('quiz_score', 'is', null)
-                .order('completed_at', { ascending: false });
-
-            if (error) throw error;
-            this.quizData = data || [];
-        } catch (err) {
-            console.error('[StudentDashboardView] Error loading quiz data:', err);
-            this.quizData = [];
-        }
+        // Filter progressData for entries with quiz_score, keep sorted by completed_at desc
+        this.quizData = this.progressData
+            .filter((p) => p.quiz_score !== null && p.quiz_score !== undefined)
+            .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
     },
 
     /**
